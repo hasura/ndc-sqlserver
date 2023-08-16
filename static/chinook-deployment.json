@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "postgres_database_url": "postgresql://postgres:password@localhost:64002",
+  "mssql_connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!",
   "tables": {
     "Album": {
       "schema_name": "public",

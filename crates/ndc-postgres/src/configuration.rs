@@ -4,18 +4,15 @@ use super::metrics;
 use ndc_hub::connector;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use sqlx::postgres::{PgConnection, PgPool, PgPoolOptions};
-use sqlx::{Connection, Executor, Row};
 use thiserror::Error;
 
 const CURRENT_VERSION: u32 = 1;
-const CONFIGURATION_QUERY: &str = include_str!("configuration.sql");
 
 /// User configuration.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
 pub struct DeploymentConfiguration {
     pub version: u32,
-    pub postgres_database_url: String,
+    pub mssql_connection_string: String,
     pub tables: query_engine::metadata::TablesInfo,
     pub aggregate_functions: query_engine::metadata::AggregateFunctions,
 }
@@ -24,7 +21,7 @@ impl DeploymentConfiguration {
     pub fn empty() -> Self {
         Self {
             version: CURRENT_VERSION,
-            postgres_database_url: "".into(),
+            mssql_connection_string: "".into(),
             tables: query_engine::metadata::TablesInfo::default(),
             aggregate_functions: query_engine::metadata::AggregateFunctions::default(),
         }
@@ -75,12 +72,9 @@ pub async fn create_state(
 
 /// Create a connection pool with default settings.
 async fn create_mssql_pool(
-    _configuration: &DeploymentConfiguration,
+    configuration: &DeploymentConfiguration,
 ) -> Result<bb8::Pool<bb8_tiberius::ConnectionManager>, bb8_tiberius::Error> {
-    let connection_string =
-        "DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!";
-
-    let mut config = tiberius::Config::from_ado_string(connection_string)?;
+    let mut config = tiberius::Config::from_ado_string(&configuration.mssql_connection_string)?;
 
     // TODO: this is bad and we need to make TLS work properly before releasing this
     config.trust_cert();
@@ -95,27 +89,13 @@ async fn create_mssql_pool(
 pub async fn configure(
     args: &DeploymentConfiguration,
 ) -> Result<DeploymentConfiguration, connector::UpdateConfigurationError> {
-    let mut connection = PgConnection::connect(&args.postgres_database_url)
-        .await
-        .map_err(|e| connector::UpdateConfigurationError::Other(e.into()))?;
-
-    let row = connection
-        .fetch_one(CONFIGURATION_QUERY)
-        .await
-        .map_err(|e| connector::UpdateConfigurationError::Other(e.into()))?;
-
-    let tables: query_engine::metadata::TablesInfo = serde_json::from_value(row.get(0))
-        .map_err(|e| connector::UpdateConfigurationError::Other(e.into()))?;
-
-    let aggregate_functions: query_engine::metadata::AggregateFunctions =
-        serde_json::from_value(row.get(1))
-            .map_err(|e| connector::UpdateConfigurationError::Other(e.into()))?;
+    // YOU WILL NOTICE NOTHING HAPPENS HERE, WE NEED TO INSPECT THE DATABASE PLEASE
 
     Ok(DeploymentConfiguration {
         version: 1,
-        postgres_database_url: args.postgres_database_url.clone(),
-        tables,
-        aggregate_functions,
+        mssql_connection_string: args.mssql_connection_string.clone(),
+        tables: query_engine::metadata::TablesInfo::default(),
+        aggregate_functions: query_engine::metadata::AggregateFunctions::default(),
     })
 }
 

@@ -14,7 +14,6 @@ use ndc_hub::models;
 use query_engine::phases;
 
 use super::configuration;
-use super::metrics;
 
 #[derive(Clone, Default)]
 pub struct Postgres {}
@@ -70,7 +69,7 @@ impl connector::Connector for Postgres {
     /// can be polled but not updated directly.
     fn fetch_metrics(
         _configuration: &configuration::DeploymentConfiguration,
-        state: &configuration::State,
+        _state: &configuration::State,
     ) -> Result<(), connector::FetchMetricsError> {
         // We'd call something `update_pool_metrics` here ideally, see Postgres NDC
 
@@ -179,10 +178,6 @@ impl connector::Connector for Postgres {
                 phases::execution::Error::Query(err) => {
                     tracing::error!("{}", err);
                     connector::QueryError::Other(err.into())
-                }
-                phases::execution::Error::DB(err) => {
-                    tracing::error!("{}", err);
-                    connector::QueryError::Other(err.to_string().into())
                 }
             })?;
 

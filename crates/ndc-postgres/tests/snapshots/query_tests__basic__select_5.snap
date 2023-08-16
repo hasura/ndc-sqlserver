@@ -6,19 +6,8 @@ expression: result
   {
     "rows": [
       {
-        "Title": "Let There Be Rock"
-      },
-      {
-        "Title": "Big Ones"
-      },
-      {
-        "Title": "Jagged Little Pill"
-      },
-      {
-        "Title": "Facelift"
-      },
-      {
-        "Title": "Warner 25 Anos"
+        "first": "hello",
+        "second": "world"
       }
     ]
   }

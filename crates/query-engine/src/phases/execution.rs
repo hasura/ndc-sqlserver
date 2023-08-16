@@ -3,7 +3,6 @@
 use std::collections::BTreeMap;
 
 use serde_json;
-use sqlx;
 
 use ndc_hub::models;
 
@@ -102,11 +101,4 @@ async fn execute_mssql_query(
 
 pub enum Error {
     Query(String),
-    DB(sqlx::Error),
-}
-
-impl From<sqlx::Error> for Error {
-    fn from(err: sqlx::Error) -> Error {
-        Error::DB(err)
-    }
 }
