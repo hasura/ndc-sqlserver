@@ -262,6 +262,22 @@ impl Expression {
                 count_type.to_sql(sql);
                 sql.append_syntax(")")
             }
+            Expression::JsonQuery(target, path) => {
+                sql.append_syntax("JSON_QUERY");
+                sql.append_syntax("(");
+                target.to_sql(sql);
+                sql.append_syntax(", ");
+                sql.append_syntax(path);
+                sql.append_syntax(")")
+            }
+            Expression::JsonValue(target, path) => {
+                sql.append_syntax("JSON_VALUE");
+                sql.append_syntax("(");
+                target.to_sql(sql);
+                sql.append_syntax(", ");
+                sql.append_syntax(path);
+                sql.append_syntax(")")
+            }
         }
     }
 }

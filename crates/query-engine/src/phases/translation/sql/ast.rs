@@ -138,6 +138,9 @@ pub enum Expression {
     ColumnName(ColumnName),
     Value(Value),
     Count(CountType),
+    JsonQuery(Box<Expression>, String), // JSON_QUERY([album].[json], '$.title') for multiple
+    // values
+    JsonValue(Box<Expression>, String), // JSON_QUERY([album].[json], '$.title') for single values
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

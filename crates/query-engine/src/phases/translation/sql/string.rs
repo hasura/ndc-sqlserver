@@ -38,10 +38,10 @@ impl SQL {
         self.sql.push_str(sql);
     }
     /// Append a SQL identifier like a column or a table name, which will be
-    /// inserted surrounded by quotes
+    /// inserted surrounded by square brackets
     pub fn append_identifier(&mut self, sql: &String) {
         // todo: sanitize
-        self.sql.push_str(format!("\"{}\"", sql).as_str());
+        self.sql.push_str(format!("[{}]", sql).as_str());
     }
     /// Append a parameter to a parameterized query. Will be represented as $1, $2, and so on,
     /// in the sql query text, and will be inserted to the `params` vector, so we can
