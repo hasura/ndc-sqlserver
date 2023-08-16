@@ -1,6 +1,6 @@
 //! Configuration and state for our connector.
-
 use super::metrics;
+
 use ndc_hub::connector;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -34,7 +34,6 @@ impl DeploymentConfiguration {
 /// State for our connector.
 #[derive(Debug, Clone)]
 pub struct State {
-    pub pool: PgPool,
     pub mssql_pool: bb8::Pool<bb8_tiberius::ConnectionManager>,
     pub metrics: metrics::Metrics,
 }
@@ -62,9 +61,6 @@ pub async fn create_state(
     configuration: &DeploymentConfiguration,
     metrics_registry: &mut prometheus::Registry,
 ) -> Result<State, connector::InitializationError> {
-    let pool = create_pool(configuration).await.map_err(|e| {
-        connector::InitializationError::Other(InitializationError::UnableToCreatePool(e).into())
-    })?;
     let mssql_pool = create_mssql_pool(configuration).await.map_err(|e| {
         connector::InitializationError::Other(
             InitializationError::UnableToCreateMSSQLPool(e).into(),
@@ -72,7 +68,6 @@ pub async fn create_state(
     })?;
     let metrics = metrics::initialise_metrics(metrics_registry).await?;
     Ok(State {
-        pool,
         mssql_pool,
         metrics,
     })
@@ -96,14 +91,6 @@ async fn create_mssql_pool(
     bb8::Pool::builder().max_size(2).build(mgr).await
 }
 
-/// Create a connection pool with default settings.
-async fn create_pool(configuration: &DeploymentConfiguration) -> Result<PgPool, sqlx::Error> {
-    PgPoolOptions::new()
-        .max_connections(50)
-        .connect(&configuration.postgres_database_url)
-        .await
-}
-
 /// Construct the deployment configuration by introspecting the database.
 pub async fn configure(
     args: &DeploymentConfiguration,
@@ -119,6 +106,7 @@ pub async fn configure(
 
     let tables: query_engine::metadata::TablesInfo = serde_json::from_value(row.get(0))
         .map_err(|e| connector::UpdateConfigurationError::Other(e.into()))?;
+
     let aggregate_functions: query_engine::metadata::AggregateFunctions =
         serde_json::from_value(row.get(1))
             .map_err(|e| connector::UpdateConfigurationError::Other(e.into()))?;
@@ -134,8 +122,6 @@ pub async fn configure(
 /// State initialization error.
 #[derive(Debug, Error)]
 pub enum InitializationError {
-    #[error("unable to initialize connection pool: {0}")]
-    UnableToCreatePool(sqlx::Error),
     #[error("unable to initialize mssql connection pool: {0}")]
     UnableToCreateMSSQLPool(bb8_tiberius::Error),
     #[error("error initializing Prometheus metrics: {0}")]

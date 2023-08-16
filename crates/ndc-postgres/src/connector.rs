@@ -72,7 +72,7 @@ impl connector::Connector for Postgres {
         _configuration: &configuration::DeploymentConfiguration,
         state: &configuration::State,
     ) -> Result<(), connector::FetchMetricsError> {
-        metrics::update_pool_metrics(&state.pool, &state.metrics);
+        // We'd call something `update_pool_metrics` here ideally, see Postgres NDC
 
         Ok(())
     }
