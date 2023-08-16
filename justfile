@@ -146,13 +146,17 @@ run-engine: start-dependencies
     --bin engine -- \
     --metadata-path ./static/chinook-metadata.json
 
+import-chinook-dataset: start-dependencies
+  sqlcmd -S localhost,64003 -U SA -P "Password!" -i "./static/chinook-sqlserver.sql"
+  echo "chinook achieved"
+
 ## repl-sqlserver: start a sqlserver docker image and connect to it using sqlcmd
 repl-sqlserver:
   #!/usr/bin/env bash
   docker compose up -d sqlserver
   # need a proper health check here instead ... but yolo
   sleep 2
-  sqlcmd -S localhost,64003 -U SA -P "Password!"
+  sqlcmd -S localhost,64003 -U SA -P "Password!" -d "Chinook"
 
 # run `clippy` linter
 lint *FLAGS:

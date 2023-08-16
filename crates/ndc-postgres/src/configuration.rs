@@ -83,7 +83,7 @@ async fn create_mssql_pool(
     _configuration: &DeploymentConfiguration,
 ) -> Result<bb8::Pool<bb8_tiberius::ConnectionManager>, bb8_tiberius::Error> {
     let connection_string =
-        "DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Pwd=Password!";
+        "DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!";
 
     let mut config = tiberius::Config::from_ado_string(connection_string)?;
 

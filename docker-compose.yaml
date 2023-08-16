@@ -25,10 +25,6 @@ services:
       retries: 20
 
   sqlserver:
-    # We cannot use this image on arm64, as it's not available.
-    # Instead, we use `mcr.microsoft.com/azure-sql-edge`.
-    # This uses an environment variable so it can be overridden by scripts to
-    # provide that image instead.
     image: mcr.microsoft.com/azure-sql-edge
     init: true # azure-sql-edge doesn't shut down properly without this
     ports:
@@ -37,13 +33,9 @@ services:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "Password!"
       MSSQL_SA_PASSWORD: "Password!"
-        #    volumes:
-        # - type: tmpfs
-        #target: /var/opt/mssql
-          #      - type: bind
-          #source: ./static/chinook-sqlserver.sql
-          #target: /chinook.sql
-          #read_only: true
+      MSSQL_PID: "Developer"
+    volumes:
+      - /var/opt/mssql
 
   prometheus:
     image: prom/prometheus
