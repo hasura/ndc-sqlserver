@@ -16,9 +16,11 @@ path = "bin/main.rs"
 [dependencies]
 ndc-hub = { git = "https://github.com/hasura/ndc-hub.git", tag = "v0.1.0-rc.1", package = "ndc-sdk" }
 query-engine = { path = "../query-engine" }
+
 tokio-util = { version = "0.7.8", features = ["compat"] }
 tiberius = { version = "0.12.2", default-features = false, features = ["rustls"] }
-
+bb8 = "0.8.1"
+bb8-tiberius = "0.15.0"
 anyhow = "1.0.74"
 async-trait = "0.1.73"
 clap = { version = "4.3.21", features = ["derive"] }

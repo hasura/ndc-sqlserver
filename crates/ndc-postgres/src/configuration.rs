@@ -35,6 +35,7 @@ impl DeploymentConfiguration {
 #[derive(Debug, Clone)]
 pub struct State {
     pub pool: PgPool,
+    pub mssql_pool: bb8::Pool<bb8_tiberius::ConnectionManager>,
     pub metrics: metrics::Metrics,
 }
 
@@ -64,9 +65,35 @@ pub async fn create_state(
     let pool = create_pool(configuration).await.map_err(|e| {
         connector::InitializationError::Other(InitializationError::UnableToCreatePool(e).into())
     })?;
-
+    let mssql_pool = create_mssql_pool(configuration).await.map_err(|e| {
+        connector::InitializationError::Other(
+            InitializationError::UnableToCreateMSSQLPool(e).into(),
+        )
+    })?;
     let metrics = metrics::initialise_metrics(metrics_registry).await?;
-    Ok(State { pool, metrics })
+    Ok(State {
+        pool,
+        mssql_pool,
+        metrics,
+    })
+}
+
+/// Create a connection pool with default settings.
+async fn create_mssql_pool(
+    _configuration: &DeploymentConfiguration,
+) -> Result<bb8::Pool<bb8_tiberius::ConnectionManager>, bb8_tiberius::Error> {
+    let connection_string =
+        "DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Pwd=Password!";
+
+    let mut config = tiberius::Config::from_ado_string(connection_string)?;
+
+    // TODO: this is bad and we need to make TLS work properly before releasing this
+    config.trust_cert();
+    // TODO: LOOK UP LOOK UP
+
+    let mgr = bb8_tiberius::ConnectionManager::new(config);
+
+    bb8::Pool::builder().max_size(2).build(mgr).await
 }
 
 /// Create a connection pool with default settings.
@@ -109,6 +136,8 @@ pub async fn configure(
 pub enum InitializationError {
     #[error("unable to initialize connection pool: {0}")]
     UnableToCreatePool(sqlx::Error),
+    #[error("unable to initialize mssql connection pool: {0}")]
+    UnableToCreateMSSQLPool(bb8_tiberius::Error),
     #[error("error initializing Prometheus metrics: {0}")]
     PrometheusError(prometheus::Error),
 }
