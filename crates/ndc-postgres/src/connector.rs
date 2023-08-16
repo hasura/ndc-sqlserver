@@ -5,6 +5,10 @@
 //! The relevant types for configuration and state are defined in
 //! `super::configuration`.
 
+use tiberius::{AuthMethod, Client, Config, Query};
+use tokio::net::TcpStream;
+use tokio_util::compat::TokioAsyncWriteCompatExt;
+
 use std::collections::BTreeMap;
 
 use async_trait::async_trait;
@@ -73,6 +77,7 @@ impl connector::Connector for Postgres {
         state: &configuration::State,
     ) -> Result<(), connector::FetchMetricsError> {
         metrics::update_pool_metrics(&state.pool, &state.metrics);
+
         Ok(())
     }
 
@@ -84,7 +89,9 @@ impl connector::Connector for Postgres {
         _configuration: &Self::Configuration,
         _state: &Self::State,
     ) -> Result<(), connector::HealthError> {
-        Ok(())
+        health_check_connect()
+            .await
+            .map_err(|e| connector::HealthError::Other(Box::new(e)))
     }
 
     /// Get the connector's capabilities.
@@ -344,4 +351,42 @@ impl connector::Connector for Postgres {
 
         Ok(result)
     }
+}
+
+// let's connect to our sql server and get the party started
+async fn health_check_connect() -> Result<(), tiberius::error::Error> {
+    let mut config = Config::new();
+
+    config.host("localhost");
+    config.port(64003);
+    config.authentication(AuthMethod::sql_server("SA", "Password!"));
+    config.trust_cert(); // on production, it is not a good idea to do this
+
+    let tcp = TcpStream::connect(config.get_addr()).await?;
+    tcp.set_nodelay(true)?;
+
+    // To be able to use Tokio's tcp, we're using the `compat_write` from
+    // the `TokioAsyncWriteCompatExt` to get a stream compatible with the
+    // traits from the `futures` crate.
+    let mut client = Client::connect(config, tcp.compat_write()).await?;
+
+    // let's do a query to check everything is ok
+    let params = vec![String::from("hello"), String::from("world")];
+    let mut select = Query::new("SELECT @P1, @P2");
+
+    // bind parameters....
+    for param in params.into_iter() {
+        select.bind(param);
+    }
+
+    // go!
+    let stream = select.query(&mut client).await?;
+
+    // Nothing is fetched, the first result set starts.
+    let row = stream.into_row().await?.unwrap();
+
+    let inner_result: Vec<Option<&str>> = vec![row.get(0), row.get(1)];
+
+    assert!(inner_result == vec![Some("hello"), Some("world")]);
+    Ok(())
 }

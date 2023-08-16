@@ -1,9 +1,9 @@
 set shell := ["bash", "-c"]
 
-CONNECTOR_IMAGE_NAME := "ghcr.io/hasura/postgres-agent-rs"
+CONNECTOR_IMAGE_NAME := "ghcr.io/hasura/sqlserver-agent-rs"
 CONNECTOR_IMAGE_TAG := "dev"
 CONNECTOR_IMAGE := CONNECTOR_IMAGE_NAME + ":" + CONNECTOR_IMAGE_TAG
-POSTGRESQL_CONNECTION_STRING := "postgresql://postgres:password@localhost:64002"
+POSTGRESQL_CONNECTION_STRING := "sqlserverql://sqlserver:password@localhost:64002"
 CHINOOK_DEPLOYMENT := "static/chinook-deployment.json"
 
 # Notes:
@@ -26,30 +26,30 @@ run-in-docker: build-docker-with-nix start-dependencies
 
   echo '> Generating the configuration...'
   docker run \
-    --name=postgres-ndc-configuration \
+    --name=sqlserver-ndc-configuration \
     --rm \
     --detach \
     --platform=linux/amd64 \
-    --net='postgres-ndc_default' \
+    --net='sqlserver-ndc_default' \
     --publish='9100:9100' \
     {{CONNECTOR_IMAGE}} \
     configuration serve
-  trap 'docker stop postgres-ndc-configuration' EXIT
+  trap 'docker stop sqlserver-ndc-configuration' EXIT
   CONFIGURATION_SERVER_URL='http://localhost:9100/'
   ./scripts/wait-until --timeout=30 --report -- nc -z localhost 9100
   curl -fsS "$CONFIGURATION_SERVER_URL" \
-    | jq --arg postgres_database_url 'postgresql://postgres:password@postgres' '. + {"postgres_database_url": $postgres_database_url}' \
+    | jq --arg sqlserver_database_url 'sqlserverql://sqlserver:password@sqlserver' '. + {"sqlserver_database_url": $sqlserver_database_url}' \
     | curl -fsS "$CONFIGURATION_SERVER_URL" -H 'Content-Type: application/json' -d @- \
     > "$configuration_file"
 
   echo '> Starting the server...'
   docker run \
-    --name=postgres-ndc \
+    --name=sqlserver-ndc \
     --rm \
     --interactive \
     --tty \
     --platform=linux/amd64 \
-    --net='postgres-ndc_default' \
+    --net='sqlserver-ndc_default' \
     --publish='8100:8100' \
     --env=RUST_LOG='INFO' \
     --mount="type=bind,source=${configuration_file},target=/deployment.json,readonly=true" \
@@ -73,11 +73,11 @@ watch-run: start-dependencies
     -c \
     -x 'run -- serve --configuration {{CHINOOK_DEPLOYMENT}}'
 
-# Run ndc-postgres with rust-gdb.
+# Run ndc-sqlserver with rust-gdb.
 debug: start-dependencies
   cargo build
   RUST_LOG=DEBUG \
-    rust-gdb --args target/debug/ndc-postgres serve --configuration {{CHINOOK_DEPLOYMENT}}
+    rust-gdb --args target/debug/ndc-sqlserver serve --configuration {{CHINOOK_DEPLOYMENT}}
 
 # Run the server and produce a flamegraph profile
 flamegraph: start-dependencies
@@ -116,17 +116,19 @@ generate-chinook-configuration: build
     exit 1
   fi
   curl -fsS http://localhost:9100 \
-    | jq --arg postgres_database_url '{{POSTGRESQL_CONNECTION_STRING}}' '. + {"postgres_database_url": $postgres_database_url}' \
+    | jq --arg sqlserver_database_url '{{POSTGRESQL_CONNECTION_STRING}}' '. + {"sqlserver_database_url": $sqlserver_database_url}' \
     | curl -fsS http://localhost:9100 -H 'Content-Type: application/json' -d @- \
     | jq . \
     > '{{CHINOOK_DEPLOYMENT}}'
 
-# run postgres + jaeger
+# run sqlserver + jaeger
 start-dependencies:
   # start jaeger, configured to listen to V3
   docker compose -f ../v3-engine/docker-compose.yaml up -d jaeger
-  # start postgres
+  # start postgres for now
   docker compose up --wait postgres
+  # start sqlserver
+  docker compose up -d sqlserver
 
 # run prometheus + grafana
 start-metrics:
@@ -144,10 +146,13 @@ run-engine: start-dependencies
     --bin engine -- \
     --metadata-path ./static/chinook-metadata.json
 
-# start a postgres docker image and connect to it using psql
-repl-postgres:
-  @docker compose up --wait postgres
-  psql {{POSTGRESQL_CONNECTION_STRING}}
+## repl-sqlserver: start a sqlserver docker image and connect to it using sqlcmd
+repl-sqlserver:
+  #!/usr/bin/env bash
+  docker compose up -d sqlserver
+  # need a proper health check here instead ... but yolo
+  sleep 2
+  sqlcmd -S localhost,64003 -U SA -P "Password!"
 
 # run `clippy` linter
 lint *FLAGS:
