@@ -3,17 +3,15 @@
 use std::collections::BTreeMap;
 
 use serde_json;
-use sqlformat;
 use sqlx;
-use sqlx::Row;
 
 use ndc_hub::models;
 
 use super::translation::sql;
 
 /// Execute a query against postgres.
-pub async fn execute(
-    pool: &sqlx::PgPool,
+pub async fn mssql_execute(
+    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
     plan: sql::execution_plan::ExecutionPlan,
 ) -> Result<models::QueryResponse, Error> {
     let query = plan.query();
@@ -30,13 +28,13 @@ pub async fn execute(
     let rows: Vec<serde_json::Value> = match plan.variables {
         None => {
             let empty_map = BTreeMap::new();
-            let rows = execute_query(pool, &query, &empty_map).await?;
+            let rows = execute_mssql_query(mssql_pool, &query, &empty_map).await?;
             vec![rows]
         }
         Some(variable_sets) => {
             let mut sets_of_rows = vec![];
             for vars in &variable_sets {
-                let rows = execute_query(pool, &query, vars).await?;
+                let rows = execute_mssql_query(mssql_pool, &query, vars).await?;
                 sets_of_rows.push(rows);
             }
             sets_of_rows
@@ -66,105 +64,40 @@ fn rows_to_response(results: Vec<serde_json::Value>) -> models::QueryResponse {
     models::QueryResponse(rowsets)
 }
 
-/// Convert a query to an EXPLAIN query and execute it against postgres.
-pub async fn explain(
-    pool: &sqlx::PgPool,
-    plan: sql::execution_plan::ExecutionPlan,
-) -> Result<(String, String), Error> {
-    let query = plan.explain_query();
+/// Execute the query on one set of variables.
+async fn execute_mssql_query(
+    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+    _query: &sql::string::SQL,
+    _variables: &BTreeMap<String, serde_json::Value>,
+) -> Result<serde_json::Value, Error> {
+    let mut connection = mssql_pool.get().await.unwrap();
 
-    tracing::info!(
-        "\nGenerated SQL: {}\nWith params: {:?}\nAnd variables: {:?}",
-        query.sql,
-        &query.params,
-        &plan.variables,
-    );
+    // let's do a query to check everything is ok
+    let query_text = "SELECT @P1 as [first], @P2 as [second] FOR JSON PATH, ROOT('rows')";
 
-    let empty_map = BTreeMap::new();
-    let sqlx_query = match &plan.variables {
-        None => build_query_with_params(&query, &empty_map).await?,
-        // When we get an explain with multiple variable sets,
-        // we choose the first one and return the plan for it,
-        // as returning multiple plans isn't really supported.
-        Some(variable_sets) => match variable_sets.get(0) {
-            None => build_query_with_params(&query, &empty_map).await?,
-            Some(vars) => build_query_with_params(&query, vars).await?,
-        },
-    };
+    let mut query = tiberius::Query::new(query_text);
 
-    // run and fetch from the database
-    let rows: Vec<sqlx::postgres::PgRow> = sqlx_query.fetch_all(pool).await?;
+    let params = vec![String::from("hello"), String::from("world")];
 
-    let mut results: Vec<String> = vec![];
-    for row in rows.into_iter() {
-        match row.get(0) {
-            None => {}
-            Some(col) => {
-                results.push(col);
-            }
-        }
+    // bind parameters....
+    for param in params.into_iter() {
+        query.bind(param);
     }
 
-    let pretty = sqlformat::format(
-        &query.sql,
-        &sqlformat::QueryParams::None,
-        sqlformat::FormatOptions::default(),
-    );
+    // go!
+    let stream = query.query(&mut connection).await.unwrap();
 
-    Ok((pretty, results.join("\n")))
-}
+    // Nothing is fetched, the first result set starts.
+    let rows = stream.into_row().await.unwrap().unwrap();
 
-/// Execute the query on one set of variables.
-async fn execute_query(
-    pool: &sqlx::PgPool,
-    query: &sql::string::SQL,
-    variables: &BTreeMap<String, serde_json::Value>,
-) -> Result<serde_json::Value, Error> {
+    let single_item: &str = rows.get(0).unwrap();
+
+    let json_value = serde_json::from_str(single_item).unwrap();
+
     // build query
-    let sqlx_query = build_query_with_params(query, variables).await?;
+    //    let tiberius_query = build_mssql_query_with_params(query, variables).await?;
 
-    // run and fetch from the database
-    let rows = sqlx_query
-        .map(|row: sqlx::postgres::PgRow| row.get(0))
-        .fetch_one(pool)
-        .await?;
-
-    Ok(rows)
-}
-
-/// Create a SQLx query based on our SQL query and bind our parameters and variables to it.
-async fn build_query_with_params<'a>(
-    query: &'a sql::string::SQL,
-    variables: &'a BTreeMap<String, serde_json::Value>,
-) -> Result<sqlx::query::Query<'a, sqlx::Postgres, sqlx::postgres::PgArguments>, Error> {
-    let sqlx_query = sqlx::query(query.sql.as_str());
-
-    let sqlx_query = query
-        .params
-        .iter()
-        .try_fold(sqlx_query, |sqlx_query, param| match param {
-            sql::string::Param::String(s) => Ok(sqlx_query.bind(s)),
-            sql::string::Param::Variable(var) => match variables.get(var) {
-                Some(value) => match value {
-                    serde_json::Value::String(s) => Ok(sqlx_query.bind(s)),
-                    serde_json::Value::Number(n) => Ok(sqlx_query.bind(n.as_f64())),
-                    serde_json::Value::Bool(b) => Ok(sqlx_query.bind(b)),
-                    // this is a problem - we don't know the type of the value!
-                    serde_json::Value::Null => Err(Error::Query(
-                        "null variable not currently supported".to_string(),
-                    )),
-                    serde_json::Value::Array(_array) => Err(Error::Query(
-                        "array variable not currently supported".to_string(),
-                    )),
-                    serde_json::Value::Object(_object) => Err(Error::Query(
-                        "object variable not currently supported".to_string(),
-                    )),
-                },
-                None => Err(Error::Query(format!("Variable not found '{}'", var))),
-            },
-        })?;
-
-    Ok(sqlx_query)
+    Ok(json_value)
 }
 
 pub enum Error {
