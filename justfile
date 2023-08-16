@@ -125,8 +125,6 @@ generate-chinook-configuration: build
 start-dependencies:
   # start jaeger, configured to listen to V3
   docker compose -f ../v3-engine/docker-compose.yaml up -d jaeger
-  # start postgres for now
-  docker compose up --wait postgres
   # start sqlserver
   docker compose up -d sqlserver
 
@@ -149,6 +147,11 @@ run-engine: start-dependencies
 import-chinook-dataset: start-dependencies
   sqlcmd -S localhost,64003 -U SA -P "Password!" -i "./static/chinook-sqlserver.sql"
   echo "chinook achieved"
+
+# pasting multiline SQL into `sqlcmd` is a bad time, so here is a script to
+# smash a file in for rapid fire application development business value
+run-temp-sql: start-dependencies
+  sqlcmd -S localhost,64003 -U SA -P "Password!" -d "Chinook" -i "./temp.sql"
 
 ## repl-sqlserver: start a sqlserver docker image and connect to it using sqlcmd
 repl-sqlserver:

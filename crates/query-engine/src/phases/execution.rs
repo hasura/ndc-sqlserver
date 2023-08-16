@@ -66,25 +66,25 @@ fn rows_to_response(results: Vec<serde_json::Value>) -> models::QueryResponse {
 /// Execute the query on one set of variables.
 async fn execute_mssql_query(
     mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
-    _query: &sql::string::SQL,
+    query: &sql::string::SQL,
     _variables: &BTreeMap<String, serde_json::Value>,
 ) -> Result<serde_json::Value, Error> {
     let mut connection = mssql_pool.get().await.unwrap();
 
     // let's do a query to check everything is ok
-    let query_text = "SELECT @P1 as [first], @P2 as [second] FOR JSON PATH, ROOT('rows')";
+    let query_text = query.sql.as_str();
 
-    let mut query = tiberius::Query::new(query_text);
+    let mut mssql_query = tiberius::Query::new(query_text);
 
     let params = vec![String::from("hello"), String::from("world")];
 
     // bind parameters....
     for param in params.into_iter() {
-        query.bind(param);
+        mssql_query.bind(param);
     }
 
     // go!
-    let stream = query.query(&mut connection).await.unwrap();
+    let stream = mssql_query.query(&mut connection).await.unwrap();
 
     // Nothing is fetched, the first result set starts.
     let rows = stream.into_row().await.unwrap().unwrap();
