@@ -5,7 +5,7 @@
 //! The relevant types for configuration and state are defined in
 //! `super::configuration`.
 
-use tiberius::{AuthMethod, Client, Config, Query};
+use tiberius::{Client, Config, Query};
 use tokio::net::TcpStream;
 use tokio_util::compat::TokioAsyncWriteCompatExt;
 
@@ -355,11 +355,11 @@ impl connector::Connector for Postgres {
 
 // let's connect to our sql server and get the party started
 async fn health_check_connect() -> Result<(), tiberius::error::Error> {
-    let mut config = Config::new();
+    let connection_string =
+        "DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Pwd=Password!";
 
-    config.host("localhost");
-    config.port(64003);
-    config.authentication(AuthMethod::sql_server("SA", "Password!"));
+    let mut config = Config::from_ado_string(connection_string)?;
+
     config.trust_cert(); // on production, it is not a good idea to do this
 
     let tcp = TcpStream::connect(config.get_addr()).await?;
