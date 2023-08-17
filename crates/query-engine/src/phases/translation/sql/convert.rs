@@ -301,7 +301,7 @@ impl Expression {
                 sql.append_syntax("(");
                 target.to_sql(sql);
                 sql.append_syntax(", ");
-                sql.append_syntax(path);
+                sql.append_string_literal(path);
                 sql.append_syntax(")")
             }
             Expression::JsonValue(target, path) => {
@@ -309,7 +309,7 @@ impl Expression {
                 sql.append_syntax("(");
                 target.to_sql(sql);
                 sql.append_syntax(", ");
-                sql.append_syntax(path);
+                sql.append_string_literal(path);
                 sql.append_syntax(")")
             }
         }

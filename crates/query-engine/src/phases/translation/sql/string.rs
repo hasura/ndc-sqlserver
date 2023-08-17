@@ -37,6 +37,12 @@ impl SQL {
     pub fn append_syntax(&mut self, sql: &str) {
         self.sql.push_str(sql);
     }
+
+    /// Append a string literal, wrapped in single quotes
+    pub fn append_string_literal(&mut self, sql: &str) {
+        self.sql.push_str(format!("'{}'", sql).as_str());
+    }
+
     /// Append a SQL identifier like a column or a table name, which will be
     /// inserted surrounded by square brackets
     pub fn append_identifier(&mut self, sql: &String) {

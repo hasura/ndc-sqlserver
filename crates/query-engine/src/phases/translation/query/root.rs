@@ -47,14 +47,18 @@ pub fn translate_aggregate_query(
 
     // create the select clause and the joins, order by, where clauses.
     // We don't add the limit afterwards.
-    translate_query_part(
+    let mut select = translate_query_part(
         tables_info,
         &current_table,
         relationships,
         query,
         aggregate_columns,
         vec![],
-    )
+    )?;
+
+    select.for_json = sql::ast::ForJson::ForJsonPathWithoutArrayWrapper;
+
+    Ok(select)
 }
 
 /// Translate rows part of query to sql ast.

@@ -97,7 +97,6 @@ pub fn translate_joins(
             let json_select = sql::helpers::select_rowset(
                 sql::helpers::make_column_alias(alias.name.clone()),
                 sql::helpers::make_table_alias(alias.name.clone()),
-                sql::helpers::make_column_alias("rows".to_string()),
                 sql::helpers::make_table_alias("rows".to_string()),
                 sql::helpers::make_column_alias("rows".to_string()),
                 sql::helpers::make_table_alias("aggregates".to_string()),
