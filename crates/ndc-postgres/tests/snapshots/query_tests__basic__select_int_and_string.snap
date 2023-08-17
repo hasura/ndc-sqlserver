@@ -6,8 +6,8 @@ expression: result
   {
     "rows": [
       {
-        "first": "hello",
-        "second": "world"
+        "AlbumId": 35,
+        "title": "Garage Inc. (Disc 1)"
       }
     ]
   }

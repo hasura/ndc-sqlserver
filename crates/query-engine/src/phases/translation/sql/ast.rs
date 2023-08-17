@@ -29,7 +29,7 @@ pub struct Select {
     pub where_: Where,
     pub group_by: GroupBy,
     pub order_by: OrderBy,
-    pub limit: Limit,
+    pub limit: Option<Limit>,
     pub for_json: ForJson,
 }
 
@@ -103,7 +103,7 @@ pub struct OrderByElement {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Limit {
     pub limit: Option<u32>,
-    pub offset: Option<u32>,
+    pub offset: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

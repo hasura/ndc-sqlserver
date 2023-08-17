@@ -76,10 +76,8 @@ async fn execute_mssql_query(
 
     let mut mssql_query = tiberius::Query::new(query_text);
 
-    let params = vec![String::from("hello"), String::from("world")];
-
     // bind parameters....
-    for param in params.into_iter() {
+    for param in query.params.clone().into_iter() {
         mssql_query.bind(param);
     }
 
@@ -97,6 +95,15 @@ async fn execute_mssql_query(
     //    let tiberius_query = build_mssql_query_with_params(query, variables).await?;
 
     Ok(json_value)
+}
+
+impl tiberius::IntoSql<'_> for sql::string::Param {
+    fn into_sql(self) -> tiberius::ColumnData<'static> {
+        match self {
+            sql::string::Param::String(string) => string.into_sql(),
+            sql::string::Param::Variable(var) => var.into_sql(),
+        }
+    }
 }
 
 pub enum Error {

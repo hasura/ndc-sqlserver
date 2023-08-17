@@ -18,14 +18,13 @@ FROM
         WHERE
           (
             (
-              (
-                1 = 1
-                AND ([artist].[Name] = $1)
-              )
-              AND ([album].[ArtistId] = [artist].[ArtistId])
-            ) FOR JSON PATH
+              (1 = 1)
+              AND ([artist].[Name] = @P1)
+            )
+            AND ([album].[ArtistId] = [artist].[ArtistId])
           ) FOR JSON PATH
-      ) AS [rows]([json]) FOR JSON PATH,
-      WITHOUT_ARRAY_WRAPPER
+      ) FOR JSON PATH
+  ) AS [rows]([json]) FOR JSON PATH,
+  WITHOUT_ARRAY_WRAPPER
 
 [(1, String("Gilberto Gil"))]

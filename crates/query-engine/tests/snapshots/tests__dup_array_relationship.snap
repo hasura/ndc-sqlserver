@@ -22,34 +22,32 @@ FROM
               [public].[Album] AS [Album]
             WHERE
               (
-                (
-                  1 = 1
-                  AND ([Artist].[ArtistId] = [Album].[ArtistId])
-                ) FOR JSON PATH
-              ) AS [rows]([json]) FOR JSON PATH,
-              WITHOUT_ARRAY_WRAPPER
-          ) AS [albums] ON ('true')
-          LEFT OUTER JOIN LATERAL (
-            SELECT
-              [rows].[rows] AS [rows]
-            FROM
-              (
-                SELECT
-                  [Album].[Title] AS [title]
-                FROM
-                  [public].[Album] AS [Album]
-                WHERE
-                  (
-                    (
-                      1 = 1
-                      AND ([Artist].[ArtistId] = [Album].[ArtistId])
-                    ) FOR JSON PATH
-                  ) AS [rows]([json]) FOR JSON PATH,
-                  WITHOUT_ARRAY_WRAPPER
-              ) AS [Albums] ON ('true')
-            ORDER BY
-              [Artist].[ArtistId] ASC FETCH NEXT 5 ROWS ONLY FOR JSON PATH
+                (1 = 1)
+                AND ([Artist].[ArtistId] = [Album].[ArtistId])
+              ) FOR JSON PATH
           ) AS [rows]([json]) FOR JSON PATH,
           WITHOUT_ARRAY_WRAPPER
+      ) AS [albums] ON ('true')
+      LEFT OUTER JOIN LATERAL (
+        SELECT
+          [rows].[rows] AS [rows]
+        FROM
+          (
+            SELECT
+              [Album].[Title] AS [title]
+            FROM
+              [public].[Album] AS [Album]
+            WHERE
+              (
+                (1 = 1)
+                AND ([Artist].[ArtistId] = [Album].[ArtistId])
+              ) FOR JSON PATH
+          ) AS [rows]([json]) FOR JSON PATH,
+          WITHOUT_ARRAY_WRAPPER
+      ) AS [Albums] ON ('true')
+    ORDER BY
+      [Artist].[ArtistId] ASC OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH
+  ) AS [rows]([json]) FOR JSON PATH,
+  WITHOUT_ARRAY_WRAPPER
 
 []

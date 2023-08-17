@@ -22,25 +22,24 @@ FROM
               [public].[Album] AS [album]
             WHERE
               (
-                (
-                  1 = 1
-                  AND ([artist].[ArtistId] = [album].[ArtistId])
-                ) FOR JSON PATH
-              ) AS [rows]([json]) FOR JSON PATH,
-              WITHOUT_ARRAY_WRAPPER
-          ) AS [albums] ON ('true')
-        WHERE
-          EXISTS (
-            SELECT
-            FROM
-              [public].[Album] AS [album]
-            WHERE
-              (
-                ([album].[Title] LIKE $1)
+                (1 = 1)
                 AND ([artist].[ArtistId] = [album].[ArtistId])
               ) FOR JSON PATH
+          ) AS [rows]([json]) FOR JSON PATH,
+          WITHOUT_ARRAY_WRAPPER
+      ) AS [albums] ON ('true')
+    WHERE
+      EXISTS (
+        SELECT
+        FROM
+          [public].[Album] AS [album]
+        WHERE
+          (
+            ([album].[Title] LIKE @P1)
+            AND ([artist].[ArtistId] = [album].[ArtistId])
           ) FOR JSON PATH
-      ) AS [rows]([json]) FOR JSON PATH,
-      WITHOUT_ARRAY_WRAPPER
+      ) FOR JSON PATH
+  ) AS [rows]([json]) FOR JSON PATH,
+  WITHOUT_ARRAY_WRAPPER
 
 [(1, String("Supernatural"))]

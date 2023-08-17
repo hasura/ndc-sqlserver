@@ -34,14 +34,6 @@ pub fn empty_order_by() -> OrderBy {
     OrderBy { elements: vec![] }
 }
 
-/// Empty `LIMIT` and `OFFSET` clauses.
-pub fn empty_limit() -> Limit {
-    Limit {
-        limit: None,
-        offset: None,
-    }
-}
-
 /// A `true` expression.
 pub fn true_expr() -> Expression {
     Expression::Value(Value::Bool(true))
@@ -111,7 +103,7 @@ pub fn simple_select(select_list: Vec<(ColumnAlias, Expression)>) -> Select {
         where_: Where(empty_where()),
         group_by: empty_group_by(),
         order_by: empty_order_by(),
-        limit: empty_limit(),
+        limit: None,
         for_json: ForJson::ForJsonPath,
     }
 }
@@ -126,7 +118,7 @@ pub fn star_select(from: From) -> Select {
         where_: Where(empty_where()),
         group_by: empty_group_by(),
         order_by: empty_order_by(),
-        limit: empty_limit(),
+        limit: None,
         for_json: ForJson::ForJsonPath,
     }
 }

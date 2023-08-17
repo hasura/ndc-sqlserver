@@ -30,23 +30,21 @@ FROM
                       [public].[Track] AS [Track]
                     WHERE
                       (
-                        (
-                          1 = 1
-                          AND ([Album].[AlbumId] = [Track].[AlbumId])
-                        ) FOR JSON PATH
-                      ) AS [rows]([json]) FOR JSON PATH,
-                      WITHOUT_ARRAY_WRAPPER
-                  ) AS [Tracks] ON ('true')
-                WHERE
-                  (
-                    (
-                      1 = 1
-                      AND ([Artist].[ArtistId] = [Album].[ArtistId])
-                    ) FOR JSON PATH
+                        (1 = 1)
+                        AND ([Album].[AlbumId] = [Track].[AlbumId])
+                      ) FOR JSON PATH
                   ) AS [rows]([json]) FOR JSON PATH,
                   WITHOUT_ARRAY_WRAPPER
-              ) AS [Albums] ON ('true') FOR JSON PATH
+              ) AS [Tracks] ON ('true')
+            WHERE
+              (
+                (1 = 1)
+                AND ([Artist].[ArtistId] = [Album].[ArtistId])
+              ) FOR JSON PATH
           ) AS [rows]([json]) FOR JSON PATH,
           WITHOUT_ARRAY_WRAPPER
+      ) AS [Albums] ON ('true') FOR JSON PATH
+  ) AS [rows]([json]) FOR JSON PATH,
+  WITHOUT_ARRAY_WRAPPER
 
 []

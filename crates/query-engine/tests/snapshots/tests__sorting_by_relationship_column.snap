@@ -21,15 +21,14 @@ FROM
               [Artist] AS [Artist]
             WHERE
               (
-                (
-                  1 = 1
-                  AND ([Album].[ArtistId] = [Artist].[ArtistId])
-                ) FOR JSON PATH
-              ) AS [Artist] FOR JSON PATH
-          ) AS [%ORDER_0_FOR_Album] ON ('true')
-        ORDER BY
-          [%ORDER_0_FOR_Album].[Name] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH
-      ) AS [rows]([json]) FOR JSON PATH,
-      WITHOUT_ARRAY_WRAPPER
+                (1 = 1)
+                AND ([Album].[ArtistId] = [Artist].[ArtistId])
+              ) FOR JSON PATH
+          ) AS [Artist] FOR JSON PATH
+      ) AS [%ORDER_0_FOR_Album] ON ('true')
+    ORDER BY
+      [%ORDER_0_FOR_Album].[Name] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH
+  ) AS [rows]([json]) FOR JSON PATH,
+  WITHOUT_ARRAY_WRAPPER
 
 []

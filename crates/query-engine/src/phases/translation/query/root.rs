@@ -147,10 +147,12 @@ pub fn translate_rows_query(
     }
 
     // Add the limit.
-    select.limit = sql::ast::Limit {
-        limit: query.limit,
-        offset: query.offset,
+    select.limit = match (query.limit, query.offset) {
+        (None, None) => None,
+        (limit, Some(offset)) => Some(sql::ast::Limit { limit, offset }),
+        (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
     };
+
     Ok(select)
 }
 

@@ -107,7 +107,10 @@ impl Select {
 
         self.order_by.to_sql(sql);
 
-        self.limit.to_sql(sql);
+        match &self.limit {
+            Some(limit) => limit.to_sql(sql),
+            None => (),
+        }
 
         self.for_json.to_sql(sql);
     }
@@ -406,14 +409,9 @@ impl Value {
 
 impl Limit {
     pub fn to_sql(&self, sql: &mut SQL) {
-        match self.offset {
-            None => (),
-            Some(offset) => {
-                sql.append_syntax(" OFFSET ");
-                sql.append_syntax(format!("{}", offset).as_str());
-                sql.append_syntax(" ROWS ");
-            }
-        };
+        sql.append_syntax(" OFFSET ");
+        sql.append_syntax(format!("{}", self.offset).as_str());
+        sql.append_syntax(" ROWS ");
         match self.limit {
             None => (),
             Some(limit) => {

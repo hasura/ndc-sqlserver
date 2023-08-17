@@ -11,7 +11,7 @@ FROM
     FROM
       [public].[Album] AS [Album]
     WHERE
-      ([Album].[Title] IN ($1, $2)) FOR JSON PATH
+      ([Album].[Title] IN (@P1, @P2)) FOR JSON PATH
   ) AS [rows]([json]) FOR JSON PATH,
   WITHOUT_ARRAY_WRAPPER
 

@@ -26,28 +26,26 @@ FROM
                   [public].[Album] AS [Album]
                 WHERE
                   (
-                    (
-                      1 = 1
-                      AND ([Artist].[ArtistId] = [Album].[ArtistId])
-                    ) FOR JSON PATH
-                  ) AS [rows]
-                  CROSS JOIN (
-                    SELECT
-                      COUNT(*) AS [how_many_albums]
-                    FROM
-                      [public].[Album] AS [Album]
-                    WHERE
-                      (
-                        (
-                          1 = 1
-                          AND ([Artist].[ArtistId] = [Album].[ArtistId])
-                        ) FOR JSON PATH
-                      ) AS [aggregates] FOR JSON PATH
-                  ) AS [Albums] FOR JSON PATH
-              ) AS [Albums] ON ('true')
-            ORDER BY
-              [Artist].[ArtistId] ASC OFFSET 1 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH
-          ) AS [rows]([json]) FOR JSON PATH,
-          WITHOUT_ARRAY_WRAPPER
+                    (1 = 1)
+                    AND ([Artist].[ArtistId] = [Album].[ArtistId])
+                  ) FOR JSON PATH
+              ) AS [rows]
+              CROSS JOIN (
+                SELECT
+                  COUNT(*) AS [how_many_albums]
+                FROM
+                  [public].[Album] AS [Album]
+                WHERE
+                  (
+                    (1 = 1)
+                    AND ([Artist].[ArtistId] = [Album].[ArtistId])
+                  ) FOR JSON PATH
+              ) AS [aggregates] FOR JSON PATH
+          ) AS [Albums] FOR JSON PATH
+      ) AS [Albums] ON ('true')
+    ORDER BY
+      [Artist].[ArtistId] ASC OFFSET 1 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH
+  ) AS [rows]([json]) FOR JSON PATH,
+  WITHOUT_ARRAY_WRAPPER
 
 []

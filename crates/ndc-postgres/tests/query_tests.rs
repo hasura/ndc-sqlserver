@@ -14,16 +14,13 @@ mod basic {
         insta::assert_json_snapshot!(result);
     }
 
-    /*
     #[tokio::test]
     async fn select_int_and_string() {
         let result = run_query("select_int_and_string").await;
         insta::assert_json_snapshot!(result);
     }
-    */
 }
 
-/*
 mod predicates {
     use super::common::run_query;
 
@@ -39,6 +36,7 @@ mod predicates {
         insta::assert_json_snapshot!(result);
     }
 
+    /*
     #[tokio::test]
     async fn select_where_album_id_less_than() {
         let result = run_query("select_where_album_id_less_than").await;
@@ -158,8 +156,10 @@ mod predicates {
         let result = run_query("select_where_related_exists").await;
         insta::assert_json_snapshot!(result);
     }
+    */
 }
 
+/*
 mod sorting {
     use super::common::run_query;
 
