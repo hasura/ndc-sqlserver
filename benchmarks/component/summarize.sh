@@ -22,7 +22,7 @@ trap 'rm -rf "$directory"' EXIT
 
 docker run \
   --rm \
-  --mount 'type=volume,source=postgres-ndc-component-benchmarks_benchmark_output,target=/output' \
+  --mount 'type=volume,source=sqlserver-ndc-component-benchmarks_benchmark_output,target=/output' \
   busybox \
   tar c -C /output . \
   | tar x -C "$directory"

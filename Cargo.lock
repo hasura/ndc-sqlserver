@@ -1149,34 +1149,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ndc-postgres"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "axum",
- "axum-test-helper",
- "bb8",
- "bb8-tiberius",
- "clap",
- "env_logger",
- "insta",
- "ndc-sdk",
- "prometheus",
- "query-engine",
- "schemars",
- "serde",
- "serde_derive",
- "serde_json",
- "similar-asserts",
- "thiserror",
- "tiberius",
- "tokio",
- "tokio-util",
- "tracing",
-]
-
-[[package]]
 name = "ndc-sdk"
 version = "0.1.0"
 source = "git+https://github.com/hasura/ndc-hub.git?tag=v0.1.0-rc.1#212e7e6953cacc65462e2371361a41094ae22f95"
@@ -1202,6 +1174,34 @@ dependencies = [
  "tracing-opentelemetry",
  "tracing-subscriber",
  "uuid",
+]
+
+[[package]]
+name = "ndc-sqlserver"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "axum",
+ "axum-test-helper",
+ "bb8",
+ "bb8-tiberius",
+ "clap",
+ "env_logger",
+ "insta",
+ "ndc-sdk",
+ "prometheus",
+ "query-engine",
+ "schemars",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "similar-asserts",
+ "thiserror",
+ "tiberius",
+ "tokio",
+ "tokio-util",
+ "tracing",
 ]
 
 [[package]]

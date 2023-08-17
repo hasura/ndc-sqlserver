@@ -22,8 +22,8 @@ info 'Building the agent'
 cargo build --release
 
 info 'Starting the dependencies'
-docker compose up --detach --wait postgres grafana
-POSTGRESQL_SOCKET="$(docker compose port postgres 5432)"
+docker compose up --detach --wait sqlserver grafana
+POSTGRESQL_SOCKET="$(docker compose port sqlserver 5432)"
 
 info 'Generating the deployment configuration'
 mkdir -p generated
@@ -36,7 +36,7 @@ if ! kill -0 "$AGENT_PID"; then
   exit 1
 fi
 curl -fsS http://localhost:9100 \
-  | jq --arg postgres_database_url "postgresql://postgres:password@${POSTGRESQL_SOCKET}" '. + {"postgres_database_url": $postgres_database_url}' \
+  | jq --arg sqlserver_database_url "sqlserverql://sqlserver:password@${POSTGRESQL_SOCKET}" '. + {"sqlserver_database_url": $sqlserver_database_url}' \
   | curl -fsS http://localhost:9100 -H 'Content-Type: application/json' -d @- \
   > ./generated/deployment.json
 kill "$AGENT_PID"

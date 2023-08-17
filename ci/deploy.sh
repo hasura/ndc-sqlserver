@@ -6,7 +6,7 @@
 #
 set -euo pipefail
 
-IMAGE_PATH=ghcr.io/hasura/postgres-agent-rs
+IMAGE_PATH=ghcr.io/hasura/sqlserver-agent-rs
 
 if [ -z "${1+x}" ]; then
     echo "Expected argument of the form refs/heads/<branch name> or refs/tags/<tag name>."

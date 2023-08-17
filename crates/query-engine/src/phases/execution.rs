@@ -8,7 +8,7 @@ use ndc_hub::models;
 
 use super::translation::sql;
 
-/// Execute a query against postgres.
+/// Execute a query against sqlserver.
 pub async fn mssql_execute(
     mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
     plan: sql::execution_plan::ExecutionPlan,
@@ -53,7 +53,7 @@ pub async fn mssql_execute(
     Ok(response)
 }
 
-/// Take the postgres results and return them as a QueryResponse.
+/// Take the sqlserver results and return them as a QueryResponse.
 fn rows_to_response(results: Vec<serde_json::Value>) -> models::QueryResponse {
     let rowsets = results
         .into_iter()

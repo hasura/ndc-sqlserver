@@ -3,6 +3,6 @@ version = "0.1.0"
 
 [workspace]
 members = [
-  "crates/ndc-postgres",
+  "crates/ndc-sqlserver",
   "crates/query-engine",
 ]

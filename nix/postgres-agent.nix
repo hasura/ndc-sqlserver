@@ -1,4 +1,4 @@
-# Dependencies and build configuration for the postgres-agent crate.
+# Dependencies and build configuration for the sqlserver-agent crate.
 #
 # To add runtime library dependencies, add packge names to the argument set
 # here, and add the same name to the `buildInputs` list below.
@@ -37,7 +37,7 @@ let
   buildArgs = {
     inherit src;
 
-    pname = "postgres-ndc";
+    pname = "sqlserver-ndc";
 
     buildInputs = [
       openssl

@@ -47,7 +47,7 @@ impl SQL {
     /// in the sql query text, and will be inserted to the `params` vector, so we can
     /// bind them later when we run the query.
     pub fn append_param(&mut self, param: Param) {
-        // we want the postgres param to start from 1
+        // we want the sqlserver param to start from 1
         // so we first push the param and then check the length of the vector.
         self.params.push(param);
         self.sql

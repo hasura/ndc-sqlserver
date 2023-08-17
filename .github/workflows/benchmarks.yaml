@@ -1,6 +1,6 @@
 on: [push]
 
-name: Postgres NDC component benchmarks
+name: SQLServer NDC component benchmarks
 
 permissions:
   contents: write
@@ -27,7 +27,7 @@ jobs:
       - name: Start dependencies ▶️
         run: |
           cd benchmarks/component
-          docker compose up --detach --wait postgres grafana
+          docker compose up --detach --wait sqlserver grafana
 
       - name: Generate the deployment configuration 🚧
         run: |
@@ -39,7 +39,7 @@ jobs:
           CONFIGURATION_SERVER_URL="http://localhost:${CONFIGURATION_SERVER_PORT}/"
           ../../scripts/wait-until --timeout=30 --report -- nc -z localhost "$CONFIGURATION_SERVER_PORT"
           curl -fsS "$CONFIGURATION_SERVER_URL" \
-            | jq --arg postgres_database_url 'postgresql://postgres:password@postgres' '. + {"postgres_database_url": $postgres_database_url}' \
+            | jq --arg sqlserver_database_url 'sqlserverql://sqlserver:password@sqlserver' '. + {"sqlserver_database_url": $sqlserver_database_url}' \
             | curl -fsS "$CONFIGURATION_SERVER_URL" -H 'Content-Type: application/json' -d @- \
             | jq . \
             | tee ./generated/deployment.json

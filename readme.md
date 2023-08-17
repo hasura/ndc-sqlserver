@@ -1,4 +1,4 @@
-# Postgres Native Data Connector
+# SQLServer Native Data Connector
 
 ## Build
 
@@ -29,7 +29,7 @@ cargo build
 
 ### Run
 
-Run the postgres agent with:
+Run the sqlserver agent with:
 
 ```
 just run
@@ -37,11 +37,11 @@ just run
 
 ### Develop
 
-1. Start the sample chinook postgres db, compile, run tests, and rerun server on file changes: `just dev`
+1. Start the sample chinook sqlserver db, compile, run tests, and rerun server on file changes: `just dev`
 2. Query the connector via curl:
    ```
    curl -H "Content-Type: application/json" \
-     --data "@crates/ndc-postgres/tests/goldenfiles/select_where_variable.json" \
+     --data "@crates/ndc-sqlserver/tests/goldenfiles/select_where_variable.json" \
 	 http://localhost:8100/query \
 	 | jq
    ```
@@ -60,7 +60,7 @@ We can produce a flamegraph using `just flamegraph` using [flamegraph-rs](https:
 
 See [./benchmarks/component/README.md](./benchmarks/component/README.md).
 
-A benchmark history can be viewed [here](https://hasura.github.io/postgres-ndc/dev/bench).
+A benchmark history can be viewed [here](https://hasura.github.io/sqlserver-ndc/dev/bench).
 
 ## General structure
 
@@ -83,8 +83,8 @@ See [architecture.md](./architecture.md).
 
 ## Write a database execution test
 
-1. Create a new file under `crates/ndc-postgres/tests/goldenfiles/<your-test-name>.json`
-2. Create a new test in `crates/ndc-postgres/tests/tests.rs` that looks like this:
+1. Create a new file under `crates/ndc-sqlserver/tests/goldenfiles/<your-test-name>.json`
+2. Create a new test in `crates/ndc-sqlserver/tests/tests.rs` that looks like this:
    ```rs
    #[tokio::test]
    async fn select_5() {

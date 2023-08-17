@@ -10,7 +10,7 @@ One place in particular that uses the Query Engine is the `/query` endpoint (def
 `/query` endpoints receives a `QueryRequest`, and calls the `translate` function from the Query Engine
 with it and with the information about the tables tracked in the metadata to receive and `ExecutionPlan`.
 It then calls the `execute` function from the Query Engine with the same `ExecutionPlan`
-(which then runs it against postgres) and gets back a `QueryResponse` which it can then return to the caller.
+(which then runs it against sqlserver) and gets back a `QueryResponse` which it can then return to the caller.
 
 API:
 
@@ -99,14 +99,14 @@ We separate the SQL to AST and string representation so we can write transformat
 
 The SQL string representation should be generated from the SQL AST by pretty printing the result.
 The result of converting ([phases/translation/sql/convert.rs](/crates/query-engine/src/phases/translation/sql/convert.rs)) a sql ast to string should produce
-a query string that can be run against postgres as a parameterized query, as well as the parameters that are supplied by the user.
+a query string that can be run against sqlserver as a parameterized query, as well as the parameters that are supplied by the user.
 
 Please use the API provided by the `SQL` type. It provides functions for constructing SQL strings in an easy way, such as appending syntax (like keywords and punctuation),
 identifiers, and params. Don't use `append_syntax` for things that are not syntax.
 
 ### Query Execution
 
-The query execution receives a pool and a plan and executes it against postgres. It then returns the results from the query part
+The query execution receives a pool and a plan and executes it against sqlserver. It then returns the results from the query part
 back to the caller of the function.
 The code can be found in [phases/execution.rs](/crates/query-engine/src/phases/execution.rs)
 

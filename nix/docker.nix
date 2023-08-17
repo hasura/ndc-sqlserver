@@ -1,9 +1,9 @@
 # This is a function that returns a derivation for a docker image.
-{ postgres-agent
+{ sqlserver-agent
 , dockerTools
 , lib
 , architecture ? null
-, name ? "ghcr.io/hasura/postgres-agent-rs"
+, name ? "ghcr.io/hasura/sqlserver-agent-rs"
 , tag ? null # defaults to the output hash
 , extraConfig ? { } # see config options at: https://github.com/moby/moby/blob/master/image/spec/v1.2.md#image-json-field-descriptions
 }:
@@ -15,7 +15,7 @@ let
 
     config = {
       Entrypoint = [
-        "${postgres-agent}/bin/ndc-postgres"
+        "${sqlserver-agent}/bin/ndc-sqlserver"
       ];
       ExposedPorts = { "8100/tcp" = { }; };
     } // extraConfig;

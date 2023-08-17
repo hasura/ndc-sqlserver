@@ -1,0 +1,9 @@
+---
+source: crates/ndc-sqlserver/tests/query_tests.rs
+expression: result
+---
+[
+  {
+    "rows": []
+  }
+]

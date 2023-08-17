@@ -31,24 +31,24 @@
       let
         pkgs = nixpkgs.legacyPackages.${localSystem};
 
-        # Edit ./nix/postgres-agent.nix to adjust library and buildtime
-        # dependencies or other build configuration for postgres-agent
-        crateExpression = import ./nix/postgres-agent.nix;
+        # Edit ./nix/sqlserver-agent.nix to adjust library and buildtime
+        # dependencies or other build configuration for sqlserver-agent
+        crateExpression = import ./nix/sqlserver-agent.nix;
         cargoBuild = import ./nix/cargo-build.nix;
 
         # Build for the architecture and OS that is running the build
-        postgres-agent = cargoBuild {
+        sqlserver-agent = cargoBuild {
           inherit crateExpression nixpkgs crane rust-overlay localSystem;
         };
 
-        inherit (postgres-agent) cargoArtifacts rustToolchain craneLib buildArgs;
+        inherit (sqlserver-agent) cargoArtifacts rustToolchain craneLib buildArgs;
 
-        postgres-agent-x86_64-linux = cargoBuild {
+        sqlserver-agent-x86_64-linux = cargoBuild {
           inherit crateExpression nixpkgs crane rust-overlay localSystem;
           crossSystem = "x86_64-linux";
         };
 
-        postgres-agent-aarch64-linux = cargoBuild {
+        sqlserver-agent-aarch64-linux = cargoBuild {
           inherit crateExpression nixpkgs crane rust-overlay localSystem;
           crossSystem = "aarch64-linux";
         };
@@ -60,7 +60,7 @@
       {
         checks = {
           # Build the crate as part of `nix flake check`
-          inherit postgres-agent;
+          inherit sqlserver-agent;
 
           crate-clippy = craneLib.cargoClippy (buildArgs // {
             inherit cargoArtifacts;
@@ -75,29 +75,29 @@
 
           crate-audit = craneLib.cargoAudit {
             inherit advisory-db;
-            inherit (postgres-agent) src;
+            inherit (sqlserver-agent) src;
           };
         };
 
         packages = {
-          default = postgres-agent;
-          postgres-agent-x86_64-linux = postgres-agent-x86_64-linux;
-          postgres-agent-aarch64-linux = postgres-agent-aarch64-linux;
+          default = sqlserver-agent;
+          sqlserver-agent-x86_64-linux = sqlserver-agent-x86_64-linux;
+          sqlserver-agent-aarch64-linux = sqlserver-agent-aarch64-linux;
 
-          docker = pkgs.callPackage ./nix/docker.nix { inherit postgres-agent; };
+          docker = pkgs.callPackage ./nix/docker.nix { inherit sqlserver-agent; };
 
           dockerDev = pkgs.callPackage ./nix/docker.nix {
-            inherit postgres-agent;
+            inherit sqlserver-agent;
             tag = "dev";
           };
 
           docker-x86_64-linux = pkgs.callPackage ./nix/docker.nix {
-            postgres-agent = postgres-agent-x86_64-linux;
+            sqlserver-agent = sqlserver-agent-x86_64-linux;
             architecture = "amd64";
           };
 
           docker-aarch64-linux = pkgs.callPackage ./nix/docker.nix {
-            postgres-agent = postgres-agent-aarch64-linux;
+            sqlserver-agent = sqlserver-agent-aarch64-linux;
             architecture = "arm64";
           };
 

@@ -162,7 +162,7 @@ pub enum UnaryOperator {
     IsNull,
 }
 
-// we should consider at least the list in `Hasura.Backends.Postgres.Translate.BoolExp`
+// we should consider at least the list in `Hasura.Backends.SQLServer.Translate.BoolExp`
 // have skipped column checks for now, ie, CEQ, CNE, CGT etc
 // have skipped casts for now
 // we'd like to remove all the Not variants internally, but first we'll check there are no

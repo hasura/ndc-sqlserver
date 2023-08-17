@@ -1,4 +1,4 @@
-name: Postgres NDC build and deploy with Nix
+name: SQLServer NDC build and deploy with Nix
 
 on:
   push:
@@ -34,8 +34,8 @@ jobs:
       - name: Create release 🚀
         uses: actions/upload-artifact@v3
         with:
-          name: hasura-postgres-agent-rs
-          path: result/bin/ndc-postgres
+          name: hasura-sqlserver-agent-rs
+          path: result/bin/ndc-sqlserver
 
       # scream into Slack if something goes wrong
       - name: Report Status
