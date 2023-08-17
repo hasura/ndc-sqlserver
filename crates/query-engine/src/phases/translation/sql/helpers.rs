@@ -168,7 +168,7 @@ pub fn select_rowset(
     select_set: SelectSet,
 ) -> Select {
     let row = vec![(
-        output_column_alias.clone(),
+        output_column_alias,
         (Expression::RowToJson(TableName::AliasedTable(output_table_alias.clone()))),
     )];
 

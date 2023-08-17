@@ -70,8 +70,6 @@ pub fn translate_rows_query(
         .get(current_table_name)
         .ok_or(Error::TableNotFound(current_table_name.to_string()))?;
 
-    tracing::info!("table info {:?}", table_info);
-
     let current_table_alias: sql::ast::TableAlias =
         sql::helpers::make_table_alias(current_table_name.to_string());
 
@@ -143,14 +141,8 @@ pub fn translate_rows_query(
 
     // if query has limit or offset, and no order_by, then create a default
     let has_limit_or_offset: bool = Option::is_some(&query.limit) || Option::is_some(&query.offset);
-    let has_empty_order_by = select.order_by.elements.len() == 0;
-    tracing::info!(
-        "has limit or offset: {}, has empty order {}",
-        has_limit_or_offset,
-        has_empty_order_by
-    );
 
-    if has_limit_or_offset && has_empty_order_by {
+    if has_limit_or_offset && select.order_by.elements.is_empty() {
         select.order_by = sorting::default_order_by(table_info, current_table_alias_name)?;
     }
 

@@ -388,7 +388,7 @@ impl Value {
             Value::Int4(i) => sql.append_syntax(format!("{}", i).as_str()),
             Value::String(s) => sql.append_param(Param::String(s.clone())),
             Value::Variable(v) => sql.append_param(Param::Variable(v.clone())),
-            Value::Bool(true) => sql.append_syntax("(1 = 1"),
+            Value::Bool(true) => sql.append_syntax("(1 = 1)"),
             Value::Bool(false) => sql.append_syntax("(0 = 1)"),
             Value::Array(items) => {
                 sql.append_syntax("ARRAY [");

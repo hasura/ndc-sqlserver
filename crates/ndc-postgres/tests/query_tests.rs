@@ -2,13 +2,12 @@ pub mod common;
 
 mod basic {
     use super::common::run_query;
-    /*
-        #[tokio::test]
-        async fn select_by_pk() {
-            let result = run_query("select_by_pk").await;
-            insta::assert_json_snapshot!(result);
-        }
-    */
+    #[tokio::test]
+    async fn select_by_pk() {
+        let result = run_query("select_by_pk").await;
+        insta::assert_json_snapshot!(result);
+    }
+
     #[tokio::test]
     async fn select_5() {
         let result = run_query("select_5").await;
