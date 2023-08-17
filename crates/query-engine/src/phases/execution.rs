@@ -40,7 +40,7 @@ pub async fn mssql_execute(
         }
     };
 
-    // tracing::info!("Database rows result: {:?}", rows);
+    tracing::info!("Database rows result: {:?}", rows);
 
     // Hack a response from the query results. See the 'response_hack' for more details.
     let response = rows_to_response(rows);

@@ -30,6 +30,13 @@ pub struct Select {
     pub group_by: GroupBy,
     pub order_by: OrderBy,
     pub limit: Limit,
+    pub for_json: ForJson,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ForJson {
+    ForJsonPath,
+    ForJsonPathWithoutArrayWrapper,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -47,6 +54,7 @@ pub enum From {
     Select {
         select: Box<Select>,
         alias: TableAlias,
+        alias_path: Vec<String>,
     },
 }
 

@@ -3,68 +3,51 @@ source: crates/query-engine/tests/tests.rs
 expression: result
 ---
 SELECT
-  row_to_json("universe") AS "universe"
+  [rows].[json] AS [rows]
 FROM
   (
     SELECT
-      *
+      [Artist].[Name] AS [Name],
+      [Albums].[Albums] AS [Albums]
     FROM
-      (
+      [public].[Artist] AS [Artist]
+      LEFT OUTER JOIN LATERAL (
         SELECT
-          coalesce(json_agg(row_to_json("rows")), '[]') AS "rows"
+          row_to_json([Albums]) AS [Albums]
         FROM
           (
             SELECT
-              "Artist"."Name" AS "Name",
-              "Albums"."Albums" AS "Albums"
+              *
             FROM
-              "public"."Artist" AS "Artist"
-              LEFT OUTER JOIN LATERAL (
+              (
                 SELECT
-                  row_to_json("Albums") AS "Albums"
+                  [Album].[Title] AS [Title]
                 FROM
+                  [public].[Album] AS [Album]
+                WHERE
                   (
+                    (
+                      1 = 1
+                      AND ([Artist].[ArtistId] = [Album].[ArtistId])
+                    ) FOR JSON PATH
+                  ) AS [rows]
+                  CROSS JOIN (
                     SELECT
-                      *
+                      COUNT(*) AS [how_many_albums]
                     FROM
+                      [public].[Album] AS [Album]
+                    WHERE
                       (
-                        SELECT
-                          coalesce(json_agg(row_to_json("rows")), '[]') AS "rows"
-                        FROM
-                          (
-                            SELECT
-                              "Album"."Title" AS "Title"
-                            FROM
-                              "public"."Album" AS "Album"
-                            WHERE
-                              (
-                                true
-                                AND ("Artist"."ArtistId" = "Album"."ArtistId")
-                              )
-                          ) AS "rows"
-                      ) AS "rows"
-                      CROSS JOIN (
-                        SELECT
-                          coalesce(row_to_json("aggregates"), '[]') AS "aggregates"
-                        FROM
-                          (
-                            SELECT
-                              COUNT(*) AS "how_many_albums"
-                            FROM
-                              "public"."Album" AS "Album"
-                            WHERE
-                              (
-                                true
-                                AND ("Artist"."ArtistId" = "Album"."ArtistId")
-                              )
-                          ) AS "aggregates"
-                      ) AS "aggregates"
-                  ) AS "Albums"
-              ) AS "Albums" ON ('true')
-            LIMIT
-              5 OFFSET 1
-          ) AS "rows"
-      ) AS "rows"
-  ) AS "universe"
+                        (
+                          1 = 1
+                          AND ([Artist].[ArtistId] = [Album].[ArtistId])
+                        ) FOR JSON PATH
+                      ) AS [aggregates] FOR JSON PATH
+                  ) AS [Albums] FOR JSON PATH
+              ) AS [Albums] ON ('true')
+            ORDER BY
+              [Artist].[ArtistId] ASC OFFSET 1 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH
+          ) AS [rows]([json]) FOR JSON PATH,
+          WITHOUT_ARRAY_WRAPPER
 
 []

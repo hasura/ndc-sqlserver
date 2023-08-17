@@ -33,8 +33,9 @@ pub fn translate(
     let json_select = sql::helpers::select_rowset(
         sql::helpers::make_column_alias("universe".to_string()),
         sql::helpers::make_table_alias("universe".to_string()),
-        sql::helpers::make_table_alias("rows".to_string()),
         sql::helpers::make_column_alias("rows".to_string()),
+        sql::helpers::make_table_alias("rows".to_string()),
+        sql::helpers::make_column_alias("json".to_string()),
         sql::helpers::make_table_alias("aggregates".to_string()),
         sql::helpers::make_column_alias("aggregates".to_string()),
         select_set,

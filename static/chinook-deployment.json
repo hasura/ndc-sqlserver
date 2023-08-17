@@ -3,7 +3,7 @@
   "mssql_connection_string": "DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!",
   "tables": {
     "Album": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "Album",
       "columns": {
         "AlbumId": {
@@ -31,7 +31,7 @@
       }
     },
     "Artist": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "Artist",
       "columns": {
         "ArtistId": {
@@ -49,7 +49,7 @@
       "foreign_relations": {}
     },
     "Customer": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "Customer",
       "columns": {
         "Address": {
@@ -107,7 +107,7 @@
       }
     },
     "Employee": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "Employee",
       "columns": {
         "Address": {
@@ -171,7 +171,7 @@
       }
     },
     "Genre": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "Genre",
       "columns": {
         "GenreId": {
@@ -189,7 +189,7 @@
       "foreign_relations": {}
     },
     "Invoice": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "Invoice",
       "columns": {
         "BillingAddress": {
@@ -235,7 +235,7 @@
       }
     },
     "InvoiceLine": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "InvoiceLine",
       "columns": {
         "InvoiceId": {
@@ -275,7 +275,7 @@
       }
     },
     "MediaType": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "MediaType",
       "columns": {
         "MediaTypeId": {
@@ -293,7 +293,7 @@
       "foreign_relations": {}
     },
     "Playlist": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "Playlist",
       "columns": {
         "Name": {
@@ -311,7 +311,7 @@
       "foreign_relations": {}
     },
     "PlaylistTrack": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "PlaylistTrack",
       "columns": {
         "PlaylistId": {
@@ -343,7 +343,7 @@
       }
     },
     "Track": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "Track",
       "columns": {
         "AlbumId": {
@@ -401,7 +401,7 @@
       }
     },
     "geography_columns": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "geography_columns",
       "columns": {
         "coord_dimension": {
@@ -430,7 +430,7 @@
       "foreign_relations": {}
     },
     "geometry_columns": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "geometry_columns",
       "columns": {
         "coord_dimension": {
@@ -459,7 +459,7 @@
       "foreign_relations": {}
     },
     "spatial_ref_sys": {
-      "schema_name": "public",
+      "schema_name": "dbo",
       "table_name": "spatial_ref_sys",
       "columns": {
         "auth_name": {

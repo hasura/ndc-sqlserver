@@ -6,6 +6,11 @@
       "Title": {
         "name": "Title"
       }
+    },
+    "uniqueness_constraints": {
+      "PK_Album": [
+        "AlbumId"
+      ]
     }
   }
 }

@@ -12,6 +12,11 @@
       "ArtistId": {
         "name": "ArtistId"
       }
+    },
+    "uniqueness_constraints": {
+      "PK_Album": [
+        "AlbumId"
+      ]
     }
   },
   "Artist": {
@@ -24,6 +29,11 @@
       "Name": {
         "name": "Name"
       }
+    },
+    "uniqueness_constraints": {
+      "PK_Artist": [
+        "ArtistId"
+      ]
     }
   }
 }

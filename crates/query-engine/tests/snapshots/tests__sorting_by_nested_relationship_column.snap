@@ -3,54 +3,45 @@ source: crates/query-engine/tests/tests.rs
 expression: result
 ---
 SELECT
-  row_to_json("universe") AS "universe"
+  [rows].[json] AS [rows]
 FROM
   (
     SELECT
-      *
+      [Track].[Name] AS [Name]
     FROM
-      (
+      [public].[Track] AS [Track]
+      LEFT OUTER JOIN LATERAL (
         SELECT
-          coalesce(json_agg(row_to_json("rows")), '[]') AS "rows"
+          [Artist].[Name] AS [Name]
         FROM
           (
             SELECT
-              "Track"."Name" AS "Name"
+              [Album].[ArtistId] AS [ArtistId]
             FROM
-              "public"."Track" AS "Track"
+              [Album] AS [Album]
+            WHERE
+              (
+                (
+                  1 = 1
+                  AND ([Track].[AlbumId] = [Album].[AlbumId])
+                ) FOR JSON PATH
+              ) AS [Album]
               LEFT OUTER JOIN LATERAL (
                 SELECT
-                  "Artist"."Name" AS "Name"
+                  [Artist].[Name] AS [Name]
                 FROM
+                  [Artist] AS [Artist]
+                WHERE
                   (
-                    SELECT
-                      "Album"."ArtistId" AS "ArtistId"
-                    FROM
-                      "Album" AS "Album"
-                    WHERE
-                      (
-                        true
-                        AND ("Track"."AlbumId" = "Album"."AlbumId")
-                      )
-                  ) AS "Album"
-                  LEFT OUTER JOIN LATERAL (
-                    SELECT
-                      "Artist"."Name" AS "Name"
-                    FROM
-                      "Artist" AS "Artist"
-                    WHERE
-                      (
-                        true
-                        AND ("Album"."ArtistId" = "Artist"."ArtistId")
-                      )
-                  ) AS "Artist" ON ('true')
-              ) AS "%ORDER_0_FOR_Track" ON ('true')
+                    (
+                      1 = 1
+                      AND ([Album].[ArtistId] = [Artist].[ArtistId])
+                    ) FOR JSON PATH
+                  ) AS [Artist] ON ('true') FOR JSON PATH
+              ) AS [%ORDER_0_FOR_Track] ON ('true')
             ORDER BY
-              "%ORDER_0_FOR_Track"."Name" ASC
-            LIMIT
-              5 OFFSET 3
-          ) AS "rows"
-      ) AS "rows"
-  ) AS "universe"
+              [%ORDER_0_FOR_Track].[Name] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH
+          ) AS [rows]([json]) FOR JSON PATH,
+          WITHOUT_ARRAY_WRAPPER
 
 []

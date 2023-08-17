@@ -3,38 +3,28 @@ source: crates/query-engine/tests/tests.rs
 expression: result
 ---
 SELECT
-  row_to_json("universe") AS "universe"
+  [rows].[json] AS [rows]
 FROM
   (
     SELECT
-      *
+      [Artist].[Name] AS [Name]
     FROM
-      (
+      [public].[Artist] AS [Artist]
+      LEFT OUTER JOIN LATERAL (
         SELECT
-          coalesce(json_agg(row_to_json("rows")), '[]') AS "rows"
+          COUNT(*) AS [count]
         FROM
+          [Album] AS [Album]
+        WHERE
           (
-            SELECT
-              "Artist"."Name" AS "Name"
-            FROM
-              "public"."Artist" AS "Artist"
-              LEFT OUTER JOIN LATERAL (
-                SELECT
-                  COUNT(*) AS "count"
-                FROM
-                  "Album" AS "Album"
-                WHERE
-                  (
-                    true
-                    AND ("Artist"."ArtistId" = "Album"."ArtistId")
-                  )
-              ) AS "%ORDER_0_COUNT_Artist" ON ('true')
-            ORDER BY
-              "%ORDER_0_COUNT_Artist"."count" DESC
-            LIMIT
-              5
-          ) AS "rows"
-      ) AS "rows"
-  ) AS "universe"
+            (
+              1 = 1
+              AND ([Artist].[ArtistId] = [Album].[ArtistId])
+            ) FOR JSON PATH
+          ) AS [%ORDER_0_COUNT_Artist] ON ('true')
+        ORDER BY
+          [%ORDER_0_COUNT_Artist].[count] DESC FETCH NEXT 5 ROWS ONLY FOR JSON PATH
+      ) AS [rows]([json]) FOR JSON PATH,
+      WITHOUT_ARRAY_WRAPPER
 
 []
