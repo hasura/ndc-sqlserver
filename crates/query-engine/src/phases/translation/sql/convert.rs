@@ -78,9 +78,9 @@ impl SelectList {
 impl ForJson {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
-            ForJson::ForJsonPath => sql.append_syntax(" FOR JSON PATH "),
+            ForJson::ForJsonPath => sql.append_syntax(" FOR JSON PATH, INCLUDE_NULL_VALUES "),
             ForJson::ForJsonPathWithoutArrayWrapper => {
-                sql.append_syntax(" FOR JSON PATH, WITHOUT_ARRAY_WRAPPER")
+                sql.append_syntax(" FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER")
             }
         }
     }
@@ -289,6 +289,7 @@ impl Expression {
                 select.to_sql(sql);
                 sql.append_syntax(")");
             }
+            Expression::Table(table_name) => table_name.to_sql(sql),
             Expression::Count(count_type) => {
                 sql.append_syntax("COUNT");
                 sql.append_syntax("(");
@@ -387,7 +388,7 @@ impl CountType {
 impl Value {
     pub fn to_sql(&self, sql: &mut SQL) {
         match &self {
-            Value::EmptyJsonArray => sql.append_syntax("'[]'"),
+            Value::EmptyJsonArray => sql.append_syntax("JSON_VALUE('[]','$')"),
             Value::Int4(i) => sql.append_syntax(format!("{}", i).as_str()),
             Value::String(s) => sql.append_param(Param::String(s.clone())),
             Value::Variable(v) => sql.append_param(Param::Variable(v.clone())),

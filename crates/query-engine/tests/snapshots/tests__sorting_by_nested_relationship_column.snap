@@ -23,7 +23,8 @@ FROM
               (
                 (1 = 1)
                 AND ([Track].[AlbumId] = [Album].[AlbumId])
-              ) FOR JSON PATH
+              ) FOR JSON PATH,
+              INCLUDE_NULL_VALUES
           ) AS [Album]
           LEFT OUTER JOIN LATERAL (
             SELECT
@@ -34,12 +35,16 @@ FROM
               (
                 (1 = 1)
                 AND ([Album].[ArtistId] = [Artist].[ArtistId])
-              ) FOR JSON PATH
-          ) AS [Artist] ON ('true') FOR JSON PATH
+              ) FOR JSON PATH,
+              INCLUDE_NULL_VALUES
+          ) AS [Artist] ON ('true') FOR JSON PATH,
+          INCLUDE_NULL_VALUES
       ) AS [%ORDER_0_FOR_Track] ON ('true')
     ORDER BY
-      [%ORDER_0_FOR_Track].[Name] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH
+      [%ORDER_0_FOR_Track].[Name] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
+      INCLUDE_NULL_VALUES
   ) AS [rows]([json]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
   WITHOUT_ARRAY_WRAPPER
 
 []

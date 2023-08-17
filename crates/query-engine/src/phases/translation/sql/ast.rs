@@ -143,6 +143,7 @@ pub enum Expression {
     // one row. For now we can only do this with 'row_to_json'.
     // Consider changing this if we encounter more ways.
     RowToJson(TableName),
+    Table(TableName),
     ColumnName(ColumnName),
     Value(Value),
     Count(CountType),

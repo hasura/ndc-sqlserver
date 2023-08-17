@@ -11,18 +11,28 @@ FROM
     FROM
       (
         SELECT
-          [Album].[Title] AS [Title]
+          coalesce([rows], JSON_VALUE('[]', '$')) AS [json]
         FROM
-          [public].[Album] AS [Album]
-        ORDER BY
-          [Album].[AlbumId] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH
+          (
+            SELECT
+              [Album].[Title] AS [Title]
+            FROM
+              [public].[Album] AS [Album]
+            ORDER BY
+              [Album].[AlbumId] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
+              INCLUDE_NULL_VALUES
+          ) AS [rows] FOR JSON PATH,
+          INCLUDE_NULL_VALUES
       ) AS [rows]
       CROSS JOIN (
         SELECT
           COUNT(*) AS [how_many_albums]
         FROM
-          [public].[Album] AS [Album] FOR JSON PATH
-      ) AS [aggregates] FOR JSON PATH
-  ) AS [universe] FOR JSON PATH
+          [public].[Album] AS [Album] FOR JSON PATH,
+          INCLUDE_NULL_VALUES
+      ) AS [aggregates] FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [universe] FOR JSON PATH,
+  INCLUDE_NULL_VALUES
 
 []

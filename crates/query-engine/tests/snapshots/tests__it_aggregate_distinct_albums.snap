@@ -13,8 +13,11 @@ FROM
         SELECT
           COUNT(DISTINCT [Album].[ArtistId]) AS [how_many_distinct_artist_ids]
         FROM
-          [public].[Album] AS [Album] FOR JSON PATH
-      ) AS [aggregates] FOR JSON PATH
-  ) AS [universe] FOR JSON PATH
+          [public].[Album] AS [Album] FOR JSON PATH,
+          INCLUDE_NULL_VALUES
+      ) AS [aggregates] FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [universe] FOR JSON PATH,
+  INCLUDE_NULL_VALUES
 
 []

@@ -188,7 +188,7 @@ pub fn select_rowset(
             let mut final_row_select = simple_select(rows_row);
 
             final_row_select.from = Some(From::Select {
-                alias: row_table_alias, //-- output_row_alias,
+                alias: row_table_alias.clone(), //-- output_row_alias,
                 select: Box::new(row_select),
                 alias_path: vec!["json".to_string()],
             });
@@ -249,20 +249,13 @@ pub fn select_rowset(
 ///
 pub fn select_rows_as_json(
     row_select: Select,
-    _column_alias: ColumnAlias,
-    _table_alias: TableAlias,
+    column_alias: ColumnAlias,
+    table_alias: TableAlias,
 ) -> Select {
-    row_select
-    /*
     let expression = Expression::FunctionCall {
         function: Function::Coalesce,
         args: vec![
-            Expression::FunctionCall {
-                function: Function::JsonAgg,
-                args: vec![Expression::RowToJson(TableName::AliasedTable(
-                    table_alias.clone(),
-                ))],
-            },
+            Expression::Table(TableName::AliasedTable(table_alias.clone())),
             Expression::Value(Value::EmptyJsonArray),
         ],
     };
@@ -270,8 +263,9 @@ pub fn select_rows_as_json(
     select.from = Some(From::Select {
         select: Box::new(row_select),
         alias: table_alias,
+        alias_path: vec![],
     });
-    select*/
+    select
 }
 
 /// Wrap an query that returns a single row in

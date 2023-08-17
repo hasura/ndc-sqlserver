@@ -21,14 +21,21 @@ FROM
             FROM
               (
                 SELECT
-                  [Album].[Title] AS [Title]
+                  coalesce([rows], JSON_VALUE('[]', '$')) AS [rows]
                 FROM
-                  [public].[Album] AS [Album]
-                WHERE
                   (
-                    (1 = 1)
-                    AND ([Artist].[ArtistId] = [Album].[ArtistId])
-                  ) FOR JSON PATH
+                    SELECT
+                      [Album].[Title] AS [Title]
+                    FROM
+                      [public].[Album] AS [Album]
+                    WHERE
+                      (
+                        (1 = 1)
+                        AND ([Artist].[ArtistId] = [Album].[ArtistId])
+                      ) FOR JSON PATH,
+                      INCLUDE_NULL_VALUES
+                  ) AS [rows] FOR JSON PATH,
+                  INCLUDE_NULL_VALUES
               ) AS [rows]
               CROSS JOIN (
                 SELECT
@@ -39,13 +46,18 @@ FROM
                   (
                     (1 = 1)
                     AND ([Artist].[ArtistId] = [Album].[ArtistId])
-                  ) FOR JSON PATH
-              ) AS [aggregates] FOR JSON PATH
-          ) AS [Albums] FOR JSON PATH
+                  ) FOR JSON PATH,
+                  INCLUDE_NULL_VALUES
+              ) AS [aggregates] FOR JSON PATH,
+              INCLUDE_NULL_VALUES
+          ) AS [Albums] FOR JSON PATH,
+          INCLUDE_NULL_VALUES
       ) AS [Albums] ON ('true')
     ORDER BY
-      [Artist].[ArtistId] ASC OFFSET 1 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH
+      [Artist].[ArtistId] ASC OFFSET 1 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
+      INCLUDE_NULL_VALUES
   ) AS [rows]([json]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
   WITHOUT_ARRAY_WRAPPER
 
 []

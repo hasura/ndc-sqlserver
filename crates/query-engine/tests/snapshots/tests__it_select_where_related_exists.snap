@@ -24,8 +24,10 @@ FROM
               (
                 (1 = 1)
                 AND ([artist].[ArtistId] = [album].[ArtistId])
-              ) FOR JSON PATH
+              ) FOR JSON PATH,
+              INCLUDE_NULL_VALUES
           ) AS [rows]([json]) FOR JSON PATH,
+          INCLUDE_NULL_VALUES,
           WITHOUT_ARRAY_WRAPPER
       ) AS [albums] ON ('true')
     WHERE
@@ -37,9 +39,12 @@ FROM
           (
             ([album].[Title] LIKE @P1)
             AND ([artist].[ArtistId] = [album].[ArtistId])
-          ) FOR JSON PATH
-      ) FOR JSON PATH
+          ) FOR JSON PATH,
+          INCLUDE_NULL_VALUES
+      ) FOR JSON PATH,
+      INCLUDE_NULL_VALUES
   ) AS [rows]([json]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
   WITHOUT_ARRAY_WRAPPER
 
 [(1, String("Supernatural"))]
