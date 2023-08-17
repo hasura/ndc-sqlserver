@@ -214,7 +214,7 @@ pub fn select_rowset(
 
             final_aggregate_select
         }
-        SelectSet::RowsAndAggregates(row_select, _aggregate_select) => {
+        SelectSet::RowsAndAggregates(row_select, aggregate_select) => {
             let both_row = vec![
                 (
                     make_column_alias("rows".to_string()),
@@ -226,16 +226,19 @@ pub fn select_rowset(
                         "$.json".to_string(),
                     ),
                 ),
-                /* (
+                (
                     make_column_alias("aggregates".to_string()),
                     Expression::JsonQuery(
-                        Box::new(Expression::ColumnName(ColumnName::AliasedColumn {
-                            name: row_column_alias.clone(),
-                            table: TableName::AliasedTable(aggregate_table_alias.clone()),
-                        })),
+                        Box::new(Expression::JsonValue(
+                            Box::new(Expression::ColumnName(ColumnName::AliasedColumn {
+                                name: row_column_alias.clone(),
+                                table: TableName::AliasedTable(aggregate_table_alias.clone()),
+                            })),
+                            "$.json".to_string(),
+                        )),
                         "$".to_string(),
                     ),
-                ),*/
+                ),
             ];
 
             let mut final_select = simple_select(both_row);
@@ -248,18 +251,20 @@ pub fn select_rowset(
 
             row_select_star.for_json = ForJson::ForJsonPathWithoutArrayWrapper;
 
-            /*            let mut left_outer_select_star = star_select(From::Select {
-                alias: row_table_alias.clone(),
-                select: Box::new(left_select_star),
+            let mut aggregate_select_star = star_select(From::Select {
+                alias: aggregate_table_alias.clone(),
+                select: Box::new(aggregate_select),
                 alias_path: vec!["json".to_string()],
-            });*/
-            /*
-                        row_select_star.joins = vec![Join::CrossJoin(CrossJoin {
-                            select: Box::new(aggregate_select),
-                            alias: aggregate_table_alias.clone(),
-                            alias_path: vec!["json".to_string()],
-                        })];
-            */
+            });
+
+            aggregate_select_star.for_json = ForJson::ForJsonPathWithoutArrayWrapper;
+
+            final_select.joins = vec![Join::CrossJoin(CrossJoin {
+                select: Box::new(aggregate_select_star),
+                alias: aggregate_table_alias.clone(),
+                alias_path: vec!["json".to_string()],
+            })];
+
             final_select.from = Some(From::Select {
                 alias: row_table_alias,
                 select: Box::new(row_select_star),
