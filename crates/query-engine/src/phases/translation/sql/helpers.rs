@@ -150,23 +150,18 @@ pub fn star_select(from: From) -> Select {
 ///
 /// The `row_select` and `aggregate_set` will not be included if they are not relevant
 pub fn select_rowset(
-    output_column_alias: ColumnAlias,
-    output_table_alias: TableAlias,
+    _output_column_alias: ColumnAlias,
+    _output_table_alias: TableAlias,
     row_table_alias: TableAlias,
     row_column_alias: ColumnAlias,
     aggregate_table_alias: TableAlias,
     aggregate_column_alias: ColumnAlias,
     select_set: SelectSet,
 ) -> Select {
-    let row = vec![(
-        output_column_alias,
-        (Expression::RowToJson(TableName::AliasedTable(output_table_alias.clone()))),
-    )];
-
-    let wrap_row =
+    let _wrap_row =
         |row_sel| select_rows_as_json(row_sel, row_column_alias.clone(), row_table_alias.clone());
 
-    let wrap_aggregate = |aggregate_sel| {
+    let _wrap_aggregate = |aggregate_sel| {
         select_row_as_json_with_default(
             aggregate_sel,
             aggregate_column_alias,
@@ -219,25 +214,59 @@ pub fn select_rowset(
 
             final_aggregate_select
         }
-        SelectSet::RowsAndAggregates(row_select, aggregate_select) => {
-            let mut final_select = simple_select(row);
+        SelectSet::RowsAndAggregates(row_select, _aggregate_select) => {
+            let both_row = vec![
+                (
+                    make_column_alias("rows".to_string()),
+                    Expression::JsonQuery(
+                        Box::new(Expression::ColumnName(ColumnName::AliasedColumn {
+                            name: row_column_alias.clone(),
+                            table: TableName::AliasedTable(row_table_alias.clone()),
+                        })),
+                        "$.json".to_string(),
+                    ),
+                ),
+                /* (
+                    make_column_alias("aggregates".to_string()),
+                    Expression::JsonQuery(
+                        Box::new(Expression::ColumnName(ColumnName::AliasedColumn {
+                            name: row_column_alias.clone(),
+                            table: TableName::AliasedTable(aggregate_table_alias.clone()),
+                        })),
+                        "$".to_string(),
+                    ),
+                ),*/
+            ];
 
-            let mut select_star = star_select(From::Select {
+            let mut final_select = simple_select(both_row);
+
+            let mut row_select_star = star_select(From::Select {
                 alias: row_table_alias.clone(),
-                select: Box::new(wrap_row(row_select)),
-                alias_path: vec![],
+                select: Box::new(row_select),
+                alias_path: vec!["json".to_string()],
             });
 
-            select_star.joins = vec![Join::CrossJoin(CrossJoin {
-                select: Box::new(wrap_aggregate(aggregate_select)),
-                alias: aggregate_table_alias.clone(),
-            })];
+            row_select_star.for_json = ForJson::ForJsonPathWithoutArrayWrapper;
 
+            /*            let mut left_outer_select_star = star_select(From::Select {
+                alias: row_table_alias.clone(),
+                select: Box::new(left_select_star),
+                alias_path: vec!["json".to_string()],
+            });*/
+            /*
+                        row_select_star.joins = vec![Join::CrossJoin(CrossJoin {
+                            select: Box::new(aggregate_select),
+                            alias: aggregate_table_alias.clone(),
+                            alias_path: vec!["json".to_string()],
+                        })];
+            */
             final_select.from = Some(From::Select {
-                alias: output_table_alias,
-                select: Box::new(select_star),
-                alias_path: vec![],
+                alias: row_table_alias,
+                select: Box::new(row_select_star),
+                alias_path: vec!["json".to_string()],
             });
+
+            final_select.for_json = ForJson::ForJsonPathWithoutArrayWrapper;
 
             final_select
         }

@@ -68,6 +68,7 @@ pub enum Join {
 pub struct CrossJoin {
     pub select: Box<Select>,
     pub alias: TableAlias,
+    pub alias_path: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

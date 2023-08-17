@@ -210,12 +210,12 @@ mod aggregation {
         insta::assert_json_snapshot!(result);
     }
 
-    /*
     #[tokio::test]
     async fn aggregate_count_albums_plus_field() {
         let result = run_query("aggregate_count_albums_plus_field").await;
         insta::assert_json_snapshot!(result);
     }
+    /*
 
 
         #[tokio::test]
