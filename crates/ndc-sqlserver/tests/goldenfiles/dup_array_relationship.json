@@ -2,7 +2,7 @@
   "collection": "Artist",
   "query": {
     "fields": {
-      "albums": {
+      "Albums": {
         "type": "relationship",
         "relationship": "ArtistAlbums",
         "arguments": {},
@@ -16,7 +16,7 @@
           }
         }
       },
-      "Albums": {
+      "Albums2": {
         "type": "relationship",
         "relationship": "ArtistAlbums",
         "arguments": {},
