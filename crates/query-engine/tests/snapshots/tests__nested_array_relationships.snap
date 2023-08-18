@@ -3,25 +3,25 @@ source: crates/query-engine/tests/tests.rs
 expression: result
 ---
 SELECT
-  [rows].[json] AS [rows]
+  [rows].[row_json] AS [rows]
 FROM
   (
     SELECT
-      [Albums].[Albums] AS [Albums]
+      JSON_QUERY([Albums].[json], '$') AS [Albums]
     FROM
       [public].[Artist] AS [Artist]
-      LEFT OUTER JOIN LATERAL (
+      OUTER APPLY (
         SELECT
-          [rows].[rows] AS [rows]
+          [rows].[row_json] AS [rows]
         FROM
           (
             SELECT
-              [Tracks].[Tracks] AS [Tracks]
+              JSON_QUERY([Tracks].[json], '$') AS [Tracks]
             FROM
               [public].[Album] AS [Album]
-              LEFT OUTER JOIN LATERAL (
+              OUTER APPLY (
                 SELECT
-                  [rows].[rows] AS [rows]
+                  [rows].[row_json] AS [rows]
                 FROM
                   (
                     SELECT
@@ -34,22 +34,22 @@ FROM
                         AND ([Album].[AlbumId] = [Track].[AlbumId])
                       ) FOR JSON PATH,
                       INCLUDE_NULL_VALUES
-                  ) AS [rows]([json]) FOR JSON PATH,
+                  ) AS [rows]([row_json]) FOR JSON PATH,
                   INCLUDE_NULL_VALUES,
                   WITHOUT_ARRAY_WRAPPER
-              ) AS [Tracks] ON ('true')
+              ) AS [Tracks]([json])
             WHERE
               (
                 (1 = 1)
                 AND ([Artist].[ArtistId] = [Album].[ArtistId])
               ) FOR JSON PATH,
               INCLUDE_NULL_VALUES
-          ) AS [rows]([json]) FOR JSON PATH,
+          ) AS [rows]([row_json]) FOR JSON PATH,
           INCLUDE_NULL_VALUES,
           WITHOUT_ARRAY_WRAPPER
-      ) AS [Albums] ON ('true') FOR JSON PATH,
+      ) AS [Albums]([json]) FOR JSON PATH,
       INCLUDE_NULL_VALUES
-  ) AS [rows]([json]) FOR JSON PATH,
+  ) AS [rows]([row_json]) FOR JSON PATH,
   INCLUDE_NULL_VALUES,
   WITHOUT_ARRAY_WRAPPER
 

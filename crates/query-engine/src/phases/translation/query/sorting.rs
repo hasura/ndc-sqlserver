@@ -93,13 +93,19 @@ pub fn translate_order_by(
                                         &root_and_current_tables.current_table.name,
                                     );
 
+                                    let whole_column_alias =
+                                        sql::helpers::make_column_alias("json".to_string());
+
                                     // Build a join and push it to the accumulated joins.
-                                    let new_join = sql::ast::LeftOuterJoinLateral {
+                                    let new_join = sql::ast::OuterApply {
                                         select: Box::new(select),
                                         alias: table_alias.clone(),
+                                        alias_path: sql::ast::AliasPath {
+                                            elements: vec![whole_column_alias],
+                                        },
                                     };
 
-                                    joins.push(sql::ast::Join::LeftOuterJoinLateral(new_join));
+                                    joins.push(sql::ast::Join::OuterApply(new_join));
 
                                     // Build an alias to query the column from this select.
                                     let column_name = sql::ast::Expression::ColumnName(
@@ -131,14 +137,20 @@ pub fn translate_order_by(
                                 index, root_and_current_tables.current_table.name
                             ));
 
+                            let whole_column_alias =
+                                sql::helpers::make_column_alias("json".to_string());
+
                             // Build a join ...
-                            let new_join = sql::ast::LeftOuterJoinLateral {
+                            let new_join = sql::ast::OuterApply {
                                 select: Box::new(select),
                                 alias: table_alias.clone(),
+                                alias_path: sql::ast::AliasPath {
+                                    elements: vec![whole_column_alias],
+                                },
                             };
 
                             // ... push it to the accumulated joins.
-                            joins.push(sql::ast::Join::LeftOuterJoinLateral(new_join));
+                            joins.push(sql::ast::Join::OuterApply(new_join));
 
                             // Build an alias to query the column from this select.
                             let column_name = sql::ast::Expression::ColumnName(
@@ -269,7 +281,7 @@ fn translate_order_by_target_for_column(
     // Note that "Track" will be supplied by the caller of this function.
 
     // We will add joins according to the path element.
-    let mut joins: Vec<sql::ast::LeftOuterJoinLateral> = vec![];
+    let mut joins: Vec<sql::ast::OuterApply> = vec![];
 
     // This will be the column we reference in the order by.
     let selected_column_alias = sql::helpers::make_column_alias(column_name);
@@ -370,9 +382,10 @@ fn translate_order_by_target_for_column(
                     });
 
                     // build a join from it, and
-                    let join = sql::ast::LeftOuterJoinLateral {
+                    let join = sql::ast::OuterApply {
                         select: Box::new(select),
                         alias: target_collection_alias,
+                        alias_path: sql::helpers::empty_alias_path(),
                     };
 
                     // add the join to our pile'o'joins
@@ -419,13 +432,13 @@ fn translate_order_by_target_for_column(
             select.from = Some(sql::ast::From::Select {
                 select: inner_select,
                 alias: inner_alias,
-                alias_path: vec![],
+                alias_path: sql::helpers::empty_alias_path(),
             });
 
             // and add the joins
             select.joins = joins
                 .into_iter()
-                .map(sql::ast::Join::LeftOuterJoinLateral)
+                .map(sql::ast::Join::OuterApply)
                 .collect::<Vec<sql::ast::Join>>();
 
             // and return the requested column alias and the inner select.

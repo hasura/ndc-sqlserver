@@ -3,18 +3,21 @@ source: crates/query-engine/tests/tests.rs
 expression: result
 ---
 SELECT
-  [rows].[json] AS [rows]
+  [rows].[row_json] AS [rows]
 FROM
   (
     SELECT
       [Artist].[Name] AS [Name],
-      [Albums].[Albums] AS [Albums]
+      JSON_QUERY([Albums].[json], '$') AS [Albums]
     FROM
       [public].[Artist] AS [Artist]
-      LEFT OUTER JOIN LATERAL (
+      OUTER APPLY (
         SELECT
-          JSON_QUERY([rows].[rows], '$.json') AS [rows],
-          JSON_QUERY(JSON_VALUE([aggregates].[rows], '$.json'), '$') AS [aggregates]
+          JSON_QUERY([rows].[row_json], '$.row_json') AS [rows],
+          JSON_QUERY(
+            JSON_VALUE([aggregates].[agg_json], '$.agg_json'),
+            '$'
+          ) AS [aggregates]
         FROM
           (
             SELECT
@@ -31,10 +34,10 @@ FROM
                     AND ([Artist].[ArtistId] = [Album].[ArtistId])
                   ) FOR JSON PATH,
                   INCLUDE_NULL_VALUES
-              ) AS [rows]([json]) FOR JSON PATH,
+              ) AS [Albums]([row_json]) FOR JSON PATH,
               INCLUDE_NULL_VALUES,
               WITHOUT_ARRAY_WRAPPER
-          ) AS [rows]([json])
+          ) AS [rows]([row_json])
           CROSS JOIN (
             SELECT
               *
@@ -51,17 +54,17 @@ FROM
                   ) FOR JSON PATH,
                   INCLUDE_NULL_VALUES,
                   WITHOUT_ARRAY_WRAPPER
-              ) AS [aggregates]([json]) FOR JSON PATH,
+              ) AS [aggregates]([agg_json]) FOR JSON PATH,
               INCLUDE_NULL_VALUES,
               WITHOUT_ARRAY_WRAPPER
-          ) AS [aggregates]([json]) FOR JSON PATH,
+          ) AS [aggregates]([agg_json]) FOR JSON PATH,
           INCLUDE_NULL_VALUES,
           WITHOUT_ARRAY_WRAPPER
-      ) AS [Albums] ON ('true')
+      ) AS [Albums]([json])
     ORDER BY
       [Artist].[ArtistId] ASC OFFSET 1 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
       INCLUDE_NULL_VALUES
-  ) AS [rows]([json]) FOR JSON PATH,
+  ) AS [rows]([row_json]) FOR JSON PATH,
   INCLUDE_NULL_VALUES,
   WITHOUT_ARRAY_WRAPPER
 

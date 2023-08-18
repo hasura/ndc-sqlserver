@@ -16,7 +16,7 @@ expression: result
             }
           ]
         },
-        "albums": {
+        "Albums2": {
           "rows": [
             {
               "title": "For Those About To Rock We Salute You"
@@ -38,7 +38,7 @@ expression: result
             }
           ]
         },
-        "albums": {
+        "Albums2": {
           "rows": [
             {
               "title": "Balls to the Wall"
@@ -57,7 +57,7 @@ expression: result
             }
           ]
         },
-        "albums": {
+        "Albums2": {
           "rows": [
             {
               "title": "Big Ones"

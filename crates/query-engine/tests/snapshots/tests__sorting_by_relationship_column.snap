@@ -3,14 +3,14 @@ source: crates/query-engine/tests/tests.rs
 expression: result
 ---
 SELECT
-  [rows].[json] AS [rows]
+  [rows].[row_json] AS [rows]
 FROM
   (
     SELECT
       [Album].[Title] AS [Name]
     FROM
       [public].[Album] AS [Album]
-      LEFT OUTER JOIN LATERAL (
+      OUTER APPLY (
         SELECT
           [Artist].[Name] AS [Name]
         FROM
@@ -27,11 +27,11 @@ FROM
               INCLUDE_NULL_VALUES
           ) AS [Artist] FOR JSON PATH,
           INCLUDE_NULL_VALUES
-      ) AS [%ORDER_0_FOR_Album] ON ('true')
+      ) AS [%ORDER_0_FOR_Album]([json])
     ORDER BY
       [%ORDER_0_FOR_Album].[Name] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
       INCLUDE_NULL_VALUES
-  ) AS [rows]([json]) FOR JSON PATH,
+  ) AS [rows]([row_json]) FOR JSON PATH,
   INCLUDE_NULL_VALUES,
   WITHOUT_ARRAY_WRAPPER
 

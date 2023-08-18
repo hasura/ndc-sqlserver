@@ -135,19 +135,39 @@ impl From {
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 alias.to_sql(sql);
-                match alias_path.is_empty() {
-                    true => {}
-                    false => {
-                        sql.append_syntax("(");
-                        for (i, path_item) in alias_path.iter().enumerate() {
-                            sql.append_identifier(path_item);
-                            if i < alias_path.len() - 1 {
-                                sql.append_syntax(",");
-                            }
-                        }
-                        sql.append_syntax(")");
+                alias_path.to_sql(sql)
+            }
+        }
+    }
+}
+
+impl JsonPath {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        sql.append_syntax("'$");
+        for ColumnAlias {
+            name: path_item, ..
+        } in self.elements.iter()
+        {
+            sql.append_syntax(".");
+            sql.append_syntax(path_item);
+        }
+        sql.append_syntax("'");
+    }
+}
+
+impl AliasPath {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        match self.elements.is_empty() {
+            true => {}
+            false => {
+                sql.append_syntax("(");
+                for (i, path_item) in self.elements.iter().enumerate() {
+                    path_item.to_sql(sql);
+                    if i < self.elements.len() - 1 {
+                        sql.append_syntax(",");
                     }
                 }
+                sql.append_syntax(")");
             }
         }
     }
@@ -156,14 +176,14 @@ impl From {
 impl Join {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
-            Join::LeftOuterJoinLateral(join) => {
-                sql.append_syntax(" LEFT OUTER JOIN LATERAL ");
+            Join::OuterApply(join) => {
+                sql.append_syntax(" OUTER APPLY ");
                 sql.append_syntax("(");
                 join.select.to_sql(sql);
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 join.alias.to_sql(sql);
-                sql.append_syntax(" ON ('true') ");
+                join.alias_path.to_sql(sql)
             }
             Join::CrossJoin(join) => {
                 sql.append_syntax(" CROSS JOIN ");
@@ -172,19 +192,7 @@ impl Join {
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 join.alias.to_sql(sql);
-                match join.alias_path.is_empty() {
-                    true => {}
-                    false => {
-                        sql.append_syntax("(");
-                        for (i, path_item) in join.alias_path.iter().enumerate() {
-                            sql.append_identifier(path_item);
-                            if i < join.alias_path.len() - 1 {
-                                sql.append_syntax(",");
-                            }
-                        }
-                        sql.append_syntax(")");
-                    }
-                }
+                join.alias_path.to_sql(sql)
             }
         }
     }
@@ -278,30 +286,6 @@ impl Expression {
                 select.to_sql(sql);
                 sql.append_syntax(")");
             }
-            Expression::JsonBuildObject(map) => {
-                sql.append_syntax("json_build_object");
-                sql.append_syntax("(");
-
-                for (index, (label, item)) in map.iter().enumerate() {
-                    sql.append_syntax("'");
-                    sql.append_syntax(label);
-                    sql.append_syntax("'");
-                    sql.append_syntax(", ");
-                    item.to_sql(sql);
-
-                    if index < (map.len() - 1) {
-                        sql.append_syntax(", ")
-                    }
-                }
-
-                sql.append_syntax(")");
-            }
-            Expression::RowToJson(select) => {
-                sql.append_syntax("row_to_json");
-                sql.append_syntax("(");
-                select.to_sql(sql);
-                sql.append_syntax(")");
-            }
             Expression::Table(table_name) => table_name.to_sql(sql),
             Expression::Count(count_type) => {
                 sql.append_syntax("COUNT");
@@ -314,7 +298,7 @@ impl Expression {
                 sql.append_syntax("(");
                 target.to_sql(sql);
                 sql.append_syntax(", ");
-                sql.append_string_literal(path);
+                path.to_sql(sql);
                 sql.append_syntax(")")
             }
             Expression::JsonValue(target, path) => {
@@ -322,7 +306,7 @@ impl Expression {
                 sql.append_syntax("(");
                 target.to_sql(sql);
                 sql.append_syntax(", ");
-                sql.append_string_literal(path);
+                path.to_sql(sql);
                 sql.append_syntax(")")
             }
         }

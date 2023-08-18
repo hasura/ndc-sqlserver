@@ -1,7 +1,5 @@
 //! Type definitions of a SQL AST representation.
 
-use std::collections::BTreeMap;
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Explain<'a> {
     Select(&'a Select),
@@ -54,13 +52,18 @@ pub enum From {
     Select {
         select: Box<Select>,
         alias: TableAlias,
-        alias_path: Vec<String>,
+        alias_path: AliasPath,
     },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AliasPath {
+    pub elements: Vec<ColumnAlias>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Join {
-    LeftOuterJoinLateral(LeftOuterJoinLateral),
+    OuterApply(OuterApply),
     CrossJoin(CrossJoin),
 }
 
@@ -68,13 +71,14 @@ pub enum Join {
 pub struct CrossJoin {
     pub select: Box<Select>,
     pub alias: TableAlias,
-    pub alias_path: Vec<String>,
+    pub alias_path: AliasPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct LeftOuterJoinLateral {
+pub struct OuterApply {
     pub select: Box<Select>,
     pub alias: TableAlias,
+    pub alias_path: AliasPath,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -139,18 +143,19 @@ pub enum Expression {
     Exists {
         select: Box<Select>,
     },
-    JsonBuildObject(BTreeMap<String, Box<Expression>>),
-    // SELECT queries can appear in a select list if they return
-    // one row. For now we can only do this with 'row_to_json'.
-    // Consider changing this if we encounter more ways.
-    RowToJson(TableName),
     Table(TableName),
     ColumnName(ColumnName),
     Value(Value),
     Count(CountType),
-    JsonQuery(Box<Expression>, String), // JSON_QUERY([album].[json], '$.title') for multiple
+    JsonQuery(Box<Expression>, JsonPath), // JSON_QUERY([album].[json], '$.title') for multiple
     // values
-    JsonValue(Box<Expression>, String), // JSON_QUERY([album].[json], '$.title') for single values
+    JsonValue(Box<Expression>, JsonPath), // JSON_VALUE([album].[json], '$.title') for single values
+}
+
+// JSON selector path for expressing '$.user.name'
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct JsonPath {
+    pub elements: Vec<ColumnAlias>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
