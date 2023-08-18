@@ -60,7 +60,7 @@ pub enum From {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Join {
-    LeftOuterJoinLateral(LeftOuterJoinLateral),
+    OuterApply(OuterApply),
     CrossJoin(CrossJoin),
 }
 
@@ -72,9 +72,10 @@ pub struct CrossJoin {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct LeftOuterJoinLateral {
+pub struct OuterApply {
     pub select: Box<Select>,
     pub alias: TableAlias,
+    pub alias_path: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

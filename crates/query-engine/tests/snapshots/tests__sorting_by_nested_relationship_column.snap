@@ -10,7 +10,7 @@ FROM
       [Track].[Name] AS [Name]
     FROM
       [public].[Track] AS [Track]
-      LEFT OUTER JOIN LATERAL (
+      OUTER APPLY (
         SELECT
           [Artist].[Name] AS [Name]
         FROM
@@ -26,7 +26,7 @@ FROM
               ) FOR JSON PATH,
               INCLUDE_NULL_VALUES
           ) AS [Album]
-          LEFT OUTER JOIN LATERAL (
+          OUTER APPLY (
             SELECT
               [Artist].[Name] AS [Name]
             FROM
@@ -37,9 +37,9 @@ FROM
                 AND ([Album].[ArtistId] = [Artist].[ArtistId])
               ) FOR JSON PATH,
               INCLUDE_NULL_VALUES
-          ) AS [Artist] ON ('true') FOR JSON PATH,
+          ) AS [Artist] FOR JSON PATH,
           INCLUDE_NULL_VALUES
-      ) AS [%ORDER_0_FOR_Track] ON ('true')
+      ) AS [%ORDER_0_FOR_Track]
     ORDER BY
       [%ORDER_0_FOR_Track].[Name] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
       INCLUDE_NULL_VALUES

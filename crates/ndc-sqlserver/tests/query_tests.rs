@@ -190,38 +190,39 @@ mod aggregation {
     */
 }
 
-/*
 mod relationships {
-    use super::common::run_query;
+    /*
+        use super::common::run_query;
+        #[tokio::test]
+        async fn select_album_object_relationship_to_artist() {
+            let result = run_query("select_album_object_relationship_to_artist").await;
+            insta::assert_json_snapshot!(result);
+        }
 
-    #[tokio::test]
-    async fn select_album_object_relationship_to_artist() {
-        let result = run_query("select_album_object_relationship_to_artist").await;
-        insta::assert_json_snapshot!(result);
-    }
+    */
+    /*
+        #[tokio::test]
+        async fn select_artist_array_relationship_to_album() {
+            let result = run_query("select_artist_array_relationship_to_album").await;
+            insta::assert_json_snapshot!(result);
+        }
 
-    #[tokio::test]
-    async fn select_artist_array_relationship_to_album() {
-        let result = run_query("select_artist_array_relationship_to_album").await;
-        insta::assert_json_snapshot!(result);
-    }
+        #[tokio::test]
+        async fn nested_array_relationships() {
+            let result = run_query("nested_array_relationships").await;
+            insta::assert_json_snapshot!(result);
+        }
 
-    #[tokio::test]
-    async fn nested_array_relationships() {
-        let result = run_query("nested_array_relationships").await;
-        insta::assert_json_snapshot!(result);
-    }
+        #[tokio::test]
+        async fn nested_object_relationships() {
+            let result = run_query("nested_object_relationships").await;
+            insta::assert_json_snapshot!(result);
+        }
 
-    #[tokio::test]
-    async fn nested_object_relationships() {
-        let result = run_query("nested_object_relationships").await;
-        insta::assert_json_snapshot!(result);
-    }
-
-    #[tokio::test]
-    async fn dup_array_relationship() {
-        let result = run_query("dup_array_relationship").await;
-        insta::assert_json_snapshot!(result);
-    }
+        #[tokio::test]
+        async fn dup_array_relationship() {
+            let result = run_query("dup_array_relationship").await;
+            insta::assert_json_snapshot!(result);
+        }
+    */
 }
-*/

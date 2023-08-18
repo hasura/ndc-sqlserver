@@ -150,25 +150,13 @@ pub fn star_select(from: From) -> Select {
 ///
 /// The `row_select` and `aggregate_set` will not be included if they are not relevant
 pub fn select_rowset(
-    _output_column_alias: ColumnAlias,
-    _output_table_alias: TableAlias,
+    output_table_alias: TableAlias,
     row_table_alias: TableAlias,
     row_column_alias: ColumnAlias,
     aggregate_table_alias: TableAlias,
     aggregate_column_alias: ColumnAlias,
     select_set: SelectSet,
 ) -> Select {
-    let _wrap_row =
-        |row_sel| select_rows_as_json(row_sel, row_column_alias.clone(), row_table_alias.clone());
-
-    let _wrap_aggregate = |aggregate_sel| {
-        select_row_as_json_with_default(
-            aggregate_sel,
-            aggregate_column_alias,
-            aggregate_table_alias.clone(),
-        )
-    };
-
     match select_set {
         SelectSet::Rows(row_select) => {
             let rows_row = vec![(
@@ -195,7 +183,7 @@ pub fn select_rowset(
                 make_column_alias("aggregates".to_string()),
                 Expression::JsonQuery(
                     Box::new(Expression::ColumnName(ColumnName::AliasedColumn {
-                        name: row_column_alias.clone(),
+                        name: aggregate_column_alias.clone(),
                         table: TableName::AliasedTable(aggregate_table_alias.clone()),
                     })),
                     "$".to_string(),
@@ -231,7 +219,7 @@ pub fn select_rowset(
                     Expression::JsonQuery(
                         Box::new(Expression::JsonValue(
                             Box::new(Expression::ColumnName(ColumnName::AliasedColumn {
-                                name: row_column_alias.clone(),
+                                name: aggregate_column_alias.clone(),
                                 table: TableName::AliasedTable(aggregate_table_alias.clone()),
                             })),
                             "$.json".to_string(),
@@ -244,7 +232,7 @@ pub fn select_rowset(
             let mut final_select = simple_select(both_row);
 
             let mut row_select_star = star_select(From::Select {
-                alias: row_table_alias.clone(),
+                alias: output_table_alias,
                 select: Box::new(row_select),
                 alias_path: vec!["json".to_string()],
             });

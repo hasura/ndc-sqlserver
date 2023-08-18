@@ -156,14 +156,13 @@ impl From {
 impl Join {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
-            Join::LeftOuterJoinLateral(join) => {
-                sql.append_syntax(" LEFT OUTER JOIN LATERAL ");
+            Join::OuterApply(join) => {
+                sql.append_syntax(" OUTER APPLY ");
                 sql.append_syntax("(");
                 join.select.to_sql(sql);
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 join.alias.to_sql(sql);
-                sql.append_syntax(" ON ('true') ");
             }
             Join::CrossJoin(join) => {
                 sql.append_syntax(" CROSS JOIN ");

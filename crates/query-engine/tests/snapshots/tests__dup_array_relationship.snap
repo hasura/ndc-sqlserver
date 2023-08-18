@@ -11,9 +11,9 @@ FROM
       [Albums].[Albums] AS [Albums]
     FROM
       [public].[Artist] AS [Artist]
-      LEFT OUTER JOIN LATERAL (
+      OUTER APPLY (
         SELECT
-          [rows].[rows] AS [rows]
+          [rows].[json] AS [rows]
         FROM
           (
             SELECT
@@ -29,10 +29,10 @@ FROM
           ) AS [rows]([json]) FOR JSON PATH,
           INCLUDE_NULL_VALUES,
           WITHOUT_ARRAY_WRAPPER
-      ) AS [albums] ON ('true')
-      LEFT OUTER JOIN LATERAL (
+      ) AS [albums]
+      OUTER APPLY (
         SELECT
-          [rows].[rows] AS [rows]
+          [rows].[json] AS [rows]
         FROM
           (
             SELECT
@@ -48,7 +48,7 @@ FROM
           ) AS [rows]([json]) FOR JSON PATH,
           INCLUDE_NULL_VALUES,
           WITHOUT_ARRAY_WRAPPER
-      ) AS [Albums] ON ('true')
+      ) AS [Albums]
     ORDER BY
       [Artist].[ArtistId] ASC OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
       INCLUDE_NULL_VALUES

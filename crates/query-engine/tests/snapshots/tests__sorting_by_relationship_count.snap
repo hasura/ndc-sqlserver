@@ -10,7 +10,7 @@ FROM
       [Artist].[Name] AS [Name]
     FROM
       [public].[Artist] AS [Artist]
-      LEFT OUTER JOIN LATERAL (
+      OUTER APPLY (
         SELECT
           COUNT(*) AS [count]
         FROM
@@ -21,7 +21,7 @@ FROM
             AND ([Artist].[ArtistId] = [Album].[ArtistId])
           ) FOR JSON PATH,
           INCLUDE_NULL_VALUES
-      ) AS [%ORDER_0_COUNT_Artist] ON ('true')
+      ) AS [%ORDER_0_COUNT_Artist]
     ORDER BY
       [%ORDER_0_COUNT_Artist].[count] DESC OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
       INCLUDE_NULL_VALUES
