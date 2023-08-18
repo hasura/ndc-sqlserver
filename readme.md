@@ -1,5 +1,31 @@
 # SQLServer Native Data Connector
 
+## Introduction
+
+This a very work in progress Native Data Connector for SQLServer made in the
+Hasura Hackathon August 2023. It is a fork of
+[postgres-ndc](https://github.com/hasura/postgres-ndc) and aims to follow the
+conventions established there.
+
+Things we have:
+
+- basic queries
+- filtering
+- basic ordering
+- relationships
+
+Things we definitely don't have:
+
+- database introspection
+- explain queries
+- variables / foreach
+- reinstate benchmarks
+- CI job for testing config server
+
+The best view of progress is probably `/crates/ndc-sqlserver/tests/`, and look
+at which tests are still commented out. If you'd to contribute, a very good
+start would be to uncomment one and try to fix any query errors.
+
 ## Build
 
 ### Prequisites
