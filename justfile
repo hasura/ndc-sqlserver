@@ -121,10 +121,8 @@ generate-chinook-configuration: build
     | jq . \
     > '{{CHINOOK_DEPLOYMENT}}'
 
-# run sqlserver + jaeger
+# run sqlserver
 start-dependencies:
-  # start jaeger, configured to listen to V3
-  docker compose -f ../v3-engine/docker-compose.yaml up -d jaeger
   # start sqlserver
   docker compose up -d sqlserver
 
