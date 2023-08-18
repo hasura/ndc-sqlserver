@@ -27,6 +27,9 @@ jobs:
           services: |
             sqlserver
 
+      - name: Load Chinook data
+        run: just import-chinook-dataset
+
       - uses: actions-rs/cargo@v1
         with:
           command: test
