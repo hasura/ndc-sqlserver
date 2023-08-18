@@ -192,7 +192,7 @@ pub fn select_rowset(
                         name: aggregate_column_alias.clone(),
                         table: TableName::AliasedTable(aggregate_table_alias.clone()),
                     })),
-                    "$".to_string(),
+                    JsonPath { elements: vec![] },
                 ),
             )];
 
@@ -219,7 +219,9 @@ pub fn select_rowset(
                             name: row_column_alias.clone(),
                             table: TableName::AliasedTable(row_table_alias.clone()),
                         })),
-                        "$.json".to_string(),
+                        JsonPath {
+                            elements: vec![row_column_alias.clone()],
+                        },
                     ),
                 ),
                 (
@@ -230,9 +232,11 @@ pub fn select_rowset(
                                 name: aggregate_column_alias.clone(),
                                 table: TableName::AliasedTable(aggregate_table_alias.clone()),
                             })),
-                            "$.json".to_string(),
+                            JsonPath {
+                                elements: vec![aggregate_column_alias.clone()],
+                            },
                         )),
-                        "$".to_string(),
+                        JsonPath { elements: vec![] },
                     ),
                 ),
             ];

@@ -141,6 +141,20 @@ impl From {
     }
 }
 
+impl JsonPath {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        sql.append_syntax("'$");
+        for ColumnAlias {
+            name: path_item, ..
+        } in self.elements.iter()
+        {
+            sql.append_syntax(".");
+            sql.append_syntax(path_item);
+        }
+        sql.append_syntax("'");
+    }
+}
+
 impl AliasPath {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self.elements.is_empty() {
@@ -308,7 +322,7 @@ impl Expression {
                 sql.append_syntax("(");
                 target.to_sql(sql);
                 sql.append_syntax(", ");
-                sql.append_string_literal(path);
+                path.to_sql(sql);
                 sql.append_syntax(")")
             }
             Expression::JsonValue(target, path) => {
@@ -316,7 +330,7 @@ impl Expression {
                 sql.append_syntax("(");
                 target.to_sql(sql);
                 sql.append_syntax(", ");
-                sql.append_string_literal(path);
+                path.to_sql(sql);
                 sql.append_syntax(")")
             }
         }
