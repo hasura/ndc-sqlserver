@@ -13,12 +13,12 @@ Things we have:
 - filtering
 - basic ordering
 - relationships
+- variables
 
 Things we definitely don't have:
 
 - database introspection
 - explain queries
-- variables / foreach
 - reinstate benchmarks
 - CI job for testing config server
 
