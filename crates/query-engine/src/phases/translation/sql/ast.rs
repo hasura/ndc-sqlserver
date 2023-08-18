@@ -1,7 +1,5 @@
 //! Type definitions of a SQL AST representation.
 
-use std::collections::BTreeMap;
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Explain<'a> {
     Select(&'a Select),
@@ -145,11 +143,6 @@ pub enum Expression {
     Exists {
         select: Box<Select>,
     },
-    JsonBuildObject(BTreeMap<String, Box<Expression>>),
-    // SELECT queries can appear in a select list if they return
-    // one row. For now we can only do this with 'row_to_json'.
-    // Consider changing this if we encounter more ways.
-    RowToJson(TableName),
     Table(TableName),
     ColumnName(ColumnName),
     Value(Value),
