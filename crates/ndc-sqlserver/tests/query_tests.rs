@@ -86,7 +86,6 @@ mod predicates {
         insta::assert_json_snapshot!(result);
     }
 
-    /*
     // need to run query for each set of variables
     #[tokio::test]
     async fn select_where_variable() {
@@ -101,6 +100,7 @@ mod predicates {
         insta::assert_json_snapshot!(result);
     }
 
+    /*
     // fix exists implementation
     #[tokio::test]
     async fn select_where_unrelated_exists() {
