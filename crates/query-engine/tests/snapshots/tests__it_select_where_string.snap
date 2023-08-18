@@ -3,25 +3,18 @@ source: crates/query-engine/tests/tests.rs
 expression: result
 ---
 SELECT
-  row_to_json("universe") AS "universe"
+  [rows].[json] AS [rows]
 FROM
   (
     SELECT
-      *
+      [Album].[AlbumId] AS [AlbumId]
     FROM
-      (
-        SELECT
-          coalesce(json_agg(row_to_json("rows")), '[]') AS "rows"
-        FROM
-          (
-            SELECT
-              "Album"."AlbumId" AS "AlbumId"
-            FROM
-              "public"."Album" AS "Album"
-            WHERE
-              ("Album"."Title" IN ($1, $2))
-          ) AS "rows"
-      ) AS "rows"
-  ) AS "universe"
+      [public].[Album] AS [Album]
+    WHERE
+      ([Album].[Title] IN (@P1, @P2)) FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [rows]([json]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
 
 [(1, String("Mozart: Chamber Music")), (2, String("Something else"))]

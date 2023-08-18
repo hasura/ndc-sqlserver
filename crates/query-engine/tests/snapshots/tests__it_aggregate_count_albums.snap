@@ -3,7 +3,8 @@ source: crates/query-engine/tests/tests.rs
 expression: result
 ---
 SELECT
-  row_to_json("universe") AS "universe"
+  JSON_QUERY([rows].[json], '$.json') AS [rows],
+  JSON_QUERY(JSON_VALUE([aggregates].[json], '$.json'), '$') AS [aggregates]
 FROM
   (
     SELECT
@@ -11,28 +12,32 @@ FROM
     FROM
       (
         SELECT
-          coalesce(json_agg(row_to_json("rows")), '[]') AS "rows"
+          [Album].[Title] AS [Title]
         FROM
-          (
-            SELECT
-              "Album"."Title" AS "Title"
-            FROM
-              "public"."Album" AS "Album"
-            LIMIT
-              5 OFFSET 3
-          ) AS "rows"
-      ) AS "rows"
-      CROSS JOIN (
+          [public].[Album] AS [Album]
+        ORDER BY
+          [Album].[AlbumId] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
+          INCLUDE_NULL_VALUES
+      ) AS [rows]([json]) FOR JSON PATH,
+      INCLUDE_NULL_VALUES,
+      WITHOUT_ARRAY_WRAPPER
+  ) AS [rows]([json])
+  CROSS JOIN (
+    SELECT
+      *
+    FROM
+      (
         SELECT
-          coalesce(row_to_json("aggregates"), '[]') AS "aggregates"
+          COUNT(*) AS [how_many_albums]
         FROM
-          (
-            SELECT
-              COUNT(*) AS "how_many_albums"
-            FROM
-              "public"."Album" AS "Album"
-          ) AS "aggregates"
-      ) AS "aggregates"
-  ) AS "universe"
+          [public].[Album] AS [Album] FOR JSON PATH,
+          INCLUDE_NULL_VALUES,
+          WITHOUT_ARRAY_WRAPPER
+      ) AS [aggregates]([json]) FOR JSON PATH,
+      INCLUDE_NULL_VALUES,
+      WITHOUT_ARRAY_WRAPPER
+  ) AS [aggregates]([json]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
 
 []

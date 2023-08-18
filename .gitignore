@@ -22,3 +22,6 @@ generated/
 
 # nix outputs
 result
+
+# temporary sql file used in justfile
+temp.sql

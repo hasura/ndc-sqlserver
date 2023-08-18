@@ -1,31 +1,19 @@
 version: "3.6"
 
 services:
-  postgres:
-    image: postgis/postgis:15-3.3-alpine
-    platform: linux/amd64
-    command:
-      - -F # turn fsync off for speed
-      - -N 1000 # increase max connections from 100 so we can run more HGEs
+
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge
+    init: true # azure-sql-edge doesn't shut down properly without this
     ports:
-      - 64002:5432
+      - 64003:1433
     environment:
-      POSTGRES_PASSWORD: "password"
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Password!"
+      MSSQL_SA_PASSWORD: "Password!"
+      MSSQL_PID: "Developer"
     volumes:
-      - type: tmpfs
-        target: /var/lib/postgresql/data
-      - type: bind
-        source: ./static/chinook-postgres.sql
-        target: /docker-entrypoint-initdb.d/chinook-postgres.sql
-        read_only: true
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - psql -U "$${POSTGRES_USER:-postgres}" < /dev/null && sleep 5 && psql -U "$${POSTGRES_USER:-postgres}" < /dev/null
-      start_period: 5s
-      interval: 5s
-      timeout: 10s
-      retries: 20
+      - /var/opt/mssql
 
   prometheus:
     image: prom/prometheus

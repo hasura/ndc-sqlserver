@@ -1,4 +1,4 @@
-name: Postgres NDC check formatting with Rustfmt
+name: SQLServer NDC check formatting with Rustfmt
 
 on:
   push:

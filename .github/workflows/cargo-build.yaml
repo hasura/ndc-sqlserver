@@ -1,10 +1,10 @@
 on: [push]
 
-name: Postgres NDC build
+name: SQLServer NDC build
 
 jobs:
   build_and_test:
-    name: Build Postgres NDC
+    name: Build SQLServer NDC
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

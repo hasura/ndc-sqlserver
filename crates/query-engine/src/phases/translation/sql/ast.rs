@@ -29,7 +29,14 @@ pub struct Select {
     pub where_: Where,
     pub group_by: GroupBy,
     pub order_by: OrderBy,
-    pub limit: Limit,
+    pub limit: Option<Limit>,
+    pub for_json: ForJson,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ForJson {
+    ForJsonPath,
+    ForJsonPathWithoutArrayWrapper,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -47,6 +54,7 @@ pub enum From {
     Select {
         select: Box<Select>,
         alias: TableAlias,
+        alias_path: Vec<String>,
     },
 }
 
@@ -60,6 +68,7 @@ pub enum Join {
 pub struct CrossJoin {
     pub select: Box<Select>,
     pub alias: TableAlias,
+    pub alias_path: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -95,7 +104,7 @@ pub struct OrderByElement {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Limit {
     pub limit: Option<u32>,
-    pub offset: Option<u32>,
+    pub offset: u32,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -135,9 +144,13 @@ pub enum Expression {
     // one row. For now we can only do this with 'row_to_json'.
     // Consider changing this if we encounter more ways.
     RowToJson(TableName),
+    Table(TableName),
     ColumnName(ColumnName),
     Value(Value),
     Count(CountType),
+    JsonQuery(Box<Expression>, String), // JSON_QUERY([album].[json], '$.title') for multiple
+    // values
+    JsonValue(Box<Expression>, String), // JSON_QUERY([album].[json], '$.title') for single values
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -150,7 +163,7 @@ pub enum UnaryOperator {
     IsNull,
 }
 
-// we should consider at least the list in `Hasura.Backends.Postgres.Translate.BoolExp`
+// we should consider at least the list in `Hasura.Backends.SQLServer.Translate.BoolExp`
 // have skipped column checks for now, ie, CEQ, CNE, CGT etc
 // have skipped casts for now
 // we'd like to remove all the Not variants internally, but first we'll check there are no

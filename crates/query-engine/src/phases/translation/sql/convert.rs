@@ -75,6 +75,17 @@ impl SelectList {
     }
 }
 
+impl ForJson {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        match self {
+            ForJson::ForJsonPath => sql.append_syntax(" FOR JSON PATH, INCLUDE_NULL_VALUES "),
+            ForJson::ForJsonPathWithoutArrayWrapper => {
+                sql.append_syntax(" FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER")
+            }
+        }
+    }
+}
+
 impl Select {
     pub fn to_sql(&self, sql: &mut SQL) {
         sql.append_syntax("SELECT ");
@@ -96,7 +107,12 @@ impl Select {
 
         self.order_by.to_sql(sql);
 
-        self.limit.to_sql(sql);
+        match &self.limit {
+            Some(limit) => limit.to_sql(sql),
+            None => (),
+        }
+
+        self.for_json.to_sql(sql);
     }
 }
 
@@ -109,12 +125,29 @@ impl From {
                 sql.append_syntax(" AS ");
                 alias.to_sql(sql);
             }
-            From::Select { select, alias } => {
+            From::Select {
+                select,
+                alias,
+                alias_path,
+            } => {
                 sql.append_syntax("(");
                 select.to_sql(sql);
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 alias.to_sql(sql);
+                match alias_path.is_empty() {
+                    true => {}
+                    false => {
+                        sql.append_syntax("(");
+                        for (i, path_item) in alias_path.iter().enumerate() {
+                            sql.append_identifier(path_item);
+                            if i < alias_path.len() - 1 {
+                                sql.append_syntax(",");
+                            }
+                        }
+                        sql.append_syntax(")");
+                    }
+                }
             }
         }
     }
@@ -139,6 +172,19 @@ impl Join {
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 join.alias.to_sql(sql);
+                match join.alias_path.is_empty() {
+                    true => {}
+                    false => {
+                        sql.append_syntax("(");
+                        for (i, path_item) in join.alias_path.iter().enumerate() {
+                            sql.append_identifier(path_item);
+                            if i < join.alias_path.len() - 1 {
+                                sql.append_syntax(",");
+                            }
+                        }
+                        sql.append_syntax(")");
+                    }
+                }
             }
         }
     }
@@ -256,10 +302,27 @@ impl Expression {
                 select.to_sql(sql);
                 sql.append_syntax(")");
             }
+            Expression::Table(table_name) => table_name.to_sql(sql),
             Expression::Count(count_type) => {
                 sql.append_syntax("COUNT");
                 sql.append_syntax("(");
                 count_type.to_sql(sql);
+                sql.append_syntax(")")
+            }
+            Expression::JsonQuery(target, path) => {
+                sql.append_syntax("JSON_QUERY");
+                sql.append_syntax("(");
+                target.to_sql(sql);
+                sql.append_syntax(", ");
+                sql.append_string_literal(path);
+                sql.append_syntax(")")
+            }
+            Expression::JsonValue(target, path) => {
+                sql.append_syntax("JSON_VALUE");
+                sql.append_syntax("(");
+                target.to_sql(sql);
+                sql.append_syntax(", ");
+                sql.append_string_literal(path);
                 sql.append_syntax(")")
             }
         }
@@ -338,12 +401,12 @@ impl CountType {
 impl Value {
     pub fn to_sql(&self, sql: &mut SQL) {
         match &self {
-            Value::EmptyJsonArray => sql.append_syntax("'[]'"),
+            Value::EmptyJsonArray => sql.append_syntax("JSON_VALUE('[]','$')"),
             Value::Int4(i) => sql.append_syntax(format!("{}", i).as_str()),
             Value::String(s) => sql.append_param(Param::String(s.clone())),
             Value::Variable(v) => sql.append_param(Param::Variable(v.clone())),
-            Value::Bool(true) => sql.append_syntax("true"),
-            Value::Bool(false) => sql.append_syntax("false"),
+            Value::Bool(true) => sql.append_syntax("(1 = 1)"),
+            Value::Bool(false) => sql.append_syntax("(0 = 1)"),
             Value::Array(items) => {
                 sql.append_syntax("ARRAY [");
                 for (index, item) in items.iter().enumerate() {
@@ -360,18 +423,15 @@ impl Value {
 
 impl Limit {
     pub fn to_sql(&self, sql: &mut SQL) {
+        sql.append_syntax(" OFFSET ");
+        sql.append_syntax(format!("{}", self.offset).as_str());
+        sql.append_syntax(" ROWS ");
         match self.limit {
             None => (),
             Some(limit) => {
-                sql.append_syntax(" LIMIT ");
+                sql.append_syntax(" FETCH NEXT ");
                 sql.append_syntax(format!("{}", limit).as_str());
-            }
-        };
-        match self.offset {
-            None => (),
-            Some(offset) => {
-                sql.append_syntax(" OFFSET ");
-                sql.append_syntax(format!("{}", offset).as_str());
+                sql.append_syntax(" ROWS ONLY");
             }
         };
     }

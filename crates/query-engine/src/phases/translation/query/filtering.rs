@@ -114,7 +114,7 @@ pub fn translate_expression(
                 tables_info,
                 relationships,
                 root_and_current_tables,
-                *column.clone(),
+                *column,
             )?;
             let right = values
                 .iter()
@@ -301,14 +301,14 @@ pub fn translate_exists_in_collection(
             // build a SELECT querying this table with the relevant predicate.
             let mut select = simple_select(vec![]);
             select.from = Some(sql::ast::From::Table {
-                name: db_table_name.clone(),
+                name: db_table_name,
                 alias: table_alias.clone(),
             });
 
             let new_root_and_current_tables = RootAndCurrentTables {
                 root_table: root_and_current_tables.root_table.clone(),
                 current_table: TableNameAndReference {
-                    reference: table_alias.clone(),
+                    reference: table_alias,
                     name: collection.clone(),
                 },
             };
@@ -364,14 +364,14 @@ pub fn translate_exists_in_collection(
             // build a SELECT querying this table with the relevant predicate.
             let mut select = simple_select(vec![]);
             select.from = Some(sql::ast::From::Table {
-                name: db_table_name.clone(),
+                name: db_table_name,
                 alias: table_alias.clone(),
             });
 
             let new_root_and_current_tables = RootAndCurrentTables {
                 root_table: root_and_current_tables.root_table.clone(),
                 current_table: TableNameAndReference {
-                    reference: table_alias.clone(),
+                    reference: table_alias,
                     name: relationship.target_collection.clone(),
                 },
             };

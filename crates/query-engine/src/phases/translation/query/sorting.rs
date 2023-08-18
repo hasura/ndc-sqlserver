@@ -8,6 +8,35 @@ use super::relationships;
 use crate::metadata;
 use crate::phases::translation::sql;
 
+// if we are using limit / offset then we MUST have an ordering too, so this orders by the first
+// unique column we see
+pub fn default_order_by(
+    table_info: &metadata::TableInfo,
+    table_name: sql::ast::TableName,
+) -> Result<sql::ast::OrderBy, Error> {
+    tracing::info!("{:?}", table_info);
+    match &table_info.uniqueness_constraints {
+        metadata::UniquenessConstraints(uniques_map) => match uniques_map.clone().pop_first() {
+            Some((_, metadata::UniquenessConstraint(constraint))) => {
+                let order_by_element = sql::ast::OrderByElement {
+                    direction: sql::ast::OrderByDirection::Asc,
+                    target: sql::ast::Expression::ColumnName(sql::ast::ColumnName::AliasedColumn {
+                        table: table_name,
+                        name: sql::helpers::make_column_alias(
+                            constraint.first().unwrap().to_string(),
+                        ),
+                    }),
+                };
+
+                Ok(sql::ast::OrderBy {
+                    elements: vec![order_by_element],
+                })
+            }
+            None => Err(Error::NoConstraintsForOrdering),
+        },
+    }
+}
+
 /// Convert the order by fields from a QueryRequest to a SQL ORDER BY clause and potentially
 /// JOINs when we order by relationship fields.
 pub fn translate_order_by(
@@ -390,6 +419,7 @@ fn translate_order_by_target_for_column(
             select.from = Some(sql::ast::From::Select {
                 select: inner_select,
                 alias: inner_alias,
+                alias_path: vec![],
             });
 
             // and add the joins

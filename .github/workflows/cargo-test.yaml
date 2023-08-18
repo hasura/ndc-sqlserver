@@ -1,10 +1,10 @@
 on: [push]
 
-name: Postgres NDC tests
+name: SQLServer NDC tests
 
 jobs:
   build_and_test:
-    name: Test Postgres NDC
+    name: Test SQLServer NDC
     runs-on: ubuntu-latest
     steps:
       - name: Install Protoc
@@ -25,13 +25,16 @@ jobs:
           compose-file: "./docker-compose.yaml"
           down-flags: "--volumes"
           services: |
-            postgres
+            sqlserver
+
+      - name: Load Chinook data
+        run: sqlcmd -S localhost,64003 -U SA -P "Password!" -i "./static/chinook-sqlserver.sql"
 
       - uses: actions-rs/cargo@v1
         with:
           command: test
         env:
-          POSTGRESQL_CONNECTION_STRING: postgresql://postgres:password@localhost:64002
+          POSTGRESQL_CONNECTION_STRING: sqlserverql://sqlserver:password@localhost:64002
           RUST_LOG: INFO
           CARGO_NET_GIT_FETCH_WITH_CLI: "true"
 

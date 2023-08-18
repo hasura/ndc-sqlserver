@@ -1,8 +1,8 @@
 # Debugging the connector
 
-We can use GDB as a step-debugger for Rust code to debug ndc-postgres.
+We can use GDB as a step-debugger for Rust code to debug ndc-sqlserver.
 
-You can start ndc-postgres in gdb in the terminal using the command `just debug`.
+You can start ndc-sqlserver in gdb in the terminal using the command `just debug`.
 That will start a gdb session to which you can add breakpoints and then run the program.
 
 Here's an example session:
@@ -16,11 +16,11 @@ Copyright (C) 2023 Free Software Foundation, Inc.
 
 For help, type "help".
 Type "apropos word" to search for commands related to "word"...
-Reading symbols from target/debug/ndc-postgres...
+Reading symbols from target/debug/ndc-sqlserver...
 (gdb) break crates/query-engine/src/phases/translation.rs:148
 Breakpoint 1 at 0x919267: crates/query-engine/src/phases/translation.rs:148. (2 locations)
 (gdb) run
-Starting program: /home/gilmi/code/postgres-ndc/target/debug/ndc-postgres serve --configuration static/chinook-deployment.json
+Starting program: /home/gilmi/code/sqlserver-ndc/target/debug/ndc-sqlserver serve --configuration static/chinook-deployment.json
 
 This GDB supports auto-downloading debuginfo from the following URLs:
   <https://debuginfod.fedoraproject.org/>
@@ -42,7 +42,7 @@ For example, running a test:
 
 ```sh
 curl -H "Content-Type: application/json" \
-  --data "@crates/ndc-postgres/tests/goldenfiles/dup_array_relationship.json" \
+  --data "@crates/ndc-sqlserver/tests/goldenfiles/dup_array_relationship.json" \
   http://localhost:8100/query
 ```
 
@@ -53,8 +53,8 @@ Then we can go back to our GDB window:
 2023-08-01T08:29:03.927167Z DEBUG hyper::proto::h1::conn: incoming body is content-length (943 bytes)
 2023-08-01T08:29:03.927305Z DEBUG hyper::proto::h1::conn: incoming body completed
 2023-08-01T08:29:03.927440Z DEBUG request{method=POST uri=/query version=HTTP/1.1}: tower_http::trace::on_request: started processing request
-2023-08-01T08:29:03.927992Z  INFO request{method=POST uri=/query version=HTTP/1.1}: ndc_postgres::connector: {"table":"Artist","query":{"fields":{"Albums":{"type":"relationship","query":{"fields":{"title":{"type":"column","column":"Title","arguments":{}}}},"relationship":"ArtistAlbums","arguments":{}},"albums":{"type":"relationship","query":{"fields":{"title":{"type":"column","column":"Title","arguments":{}}}},"relationship":"ArtistAlbums","arguments":{}}},"limit":5},"arguments":{},"table_relationships":{"ArtistAlbums":{"column_mapping":{"ArtistId":"ArtistId"},"relationship_type":"array","source_table_or_type":"Artist","target_table":"Album","arguments":{}}}}
-2023-08-01T08:29:03.928040Z  INFO request{method=POST uri=/query version=HTTP/1.1}: ndc_postgres::connector: QueryRequest { table: "Artist", query: Query { aggregates: None, fields: Some({"Albums": Relationship { query: Query { aggregates: None, fields: Some({"title": Column { column: "Title", arguments: {} }}), limit: None, offset: None, order_by: None, predicate: None }, relationship: "ArtistAlbums", arguments: {} }, "albums": Relationship { query: Query { aggregates: None, fields: Some({"title": Column { column: "Title", arguments: {} }}), limit: None, offset: None, order_by: None, predicate: None }, relationship: "ArtistAlbums", arguments: {} }}), limit: Some(5), offset: None, order_by: None, predicate: None }, arguments: {}, table_relationships: {"ArtistAlbums": Relationship { column_mapping: {"ArtistId": "ArtistId"}, relationship_type: Array, source_table_or_type: "Artist", target_table: "Album", arguments: {} }}, variables: None }
+2023-08-01T08:29:03.927992Z  INFO request{method=POST uri=/query version=HTTP/1.1}: ndc_sqlserver::connector: {"table":"Artist","query":{"fields":{"Albums":{"type":"relationship","query":{"fields":{"title":{"type":"column","column":"Title","arguments":{}}}},"relationship":"ArtistAlbums","arguments":{}},"albums":{"type":"relationship","query":{"fields":{"title":{"type":"column","column":"Title","arguments":{}}}},"relationship":"ArtistAlbums","arguments":{}}},"limit":5},"arguments":{},"table_relationships":{"ArtistAlbums":{"column_mapping":{"ArtistId":"ArtistId"},"relationship_type":"array","source_table_or_type":"Artist","target_table":"Album","arguments":{}}}}
+2023-08-01T08:29:03.928040Z  INFO request{method=POST uri=/query version=HTTP/1.1}: ndc_sqlserver::connector: QueryRequest { table: "Artist", query: Query { aggregates: None, fields: Some({"Albums": Relationship { query: Query { aggregates: None, fields: Some({"title": Column { column: "Title", arguments: {} }}), limit: None, offset: None, order_by: None, predicate: None }, relationship: "ArtistAlbums", arguments: {} }, "albums": Relationship { query: Query { aggregates: None, fields: Some({"title": Column { column: "Title", arguments: {} }}), limit: None, offset: None, order_by: None, predicate: None }, relationship: "ArtistAlbums", arguments: {} }}), limit: Some(5), offset: None, order_by: None, predicate: None }, arguments: {}, table_relationships: {"ArtistAlbums": Relationship { column_mapping: {"ArtistId": "ArtistId"}, relationship_type: Array, source_table_or_type: "Artist", target_table: "Album", arguments: {} }}, variables: None }
 [Switching to Thread 0x7ffff77406c0 (LWP 143304)]
 
 Thread 2 "tokio-runtime-w" hit Breakpoint 1.1, query_engine::phases::translation::Translate::translate_query (self=0x7ffff772bf28, tables_info=0x7ffff000a658, table_name=0x7ffff772bfe8, relationships=0x7ffff772c030, query=...)

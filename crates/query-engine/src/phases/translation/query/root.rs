@@ -47,14 +47,18 @@ pub fn translate_aggregate_query(
 
     // create the select clause and the joins, order by, where clauses.
     // We don't add the limit afterwards.
-    translate_query_part(
+    let mut select = translate_query_part(
         tables_info,
         &current_table,
         relationships,
         query,
         aggregate_columns,
         vec![],
-    )
+    )?;
+
+    select.for_json = sql::ast::ForJson::ForJsonPathWithoutArrayWrapper;
+
+    Ok(select)
 }
 
 /// Translate rows part of query to sql ast.
@@ -72,6 +76,7 @@ pub fn translate_rows_query(
 
     let current_table_alias: sql::ast::TableAlias =
         sql::helpers::make_table_alias(current_table_name.to_string());
+
     let current_table = TableNameAndReference {
         name: current_table_name.to_string(),
         reference: current_table_alias,
@@ -138,11 +143,20 @@ pub fn translate_rows_query(
         join_fields,
     )?;
 
+    // if query has limit or offset, and no order_by, then create a default
+    let has_limit_or_offset: bool = Option::is_some(&query.limit) || Option::is_some(&query.offset);
+
+    if has_limit_or_offset && select.order_by.elements.is_empty() {
+        select.order_by = sorting::default_order_by(table_info, current_table_alias_name)?;
+    }
+
     // Add the limit.
-    select.limit = sql::ast::Limit {
-        limit: query.limit,
-        offset: query.offset,
+    select.limit = match (query.limit, query.offset) {
+        (None, None) => None,
+        (limit, Some(offset)) => Some(sql::ast::Limit { limit, offset }),
+        (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
     };
+
     Ok(select)
 }
 

@@ -1,0 +1,41 @@
+[package]
+name = "ndc-sqlserver"
+version = "0.1.0"
+edition = "2021"
+
+default-run = "ndc-sqlserver"
+
+[lib]
+name = "ndc_sqlserver"
+path = "src/lib.rs"
+
+[[bin]]
+name = "ndc-sqlserver"
+path = "bin/main.rs"
+
+[dependencies]
+ndc-hub = { git = "https://github.com/hasura/ndc-hub.git", tag = "v0.1.0-rc.1", package = "ndc-sdk" }
+query-engine = { path = "../query-engine" }
+
+tokio-util = { version = "0.7.8", features = ["compat"] }
+tiberius = { version = "0.12.2", default-features = false, features = ["rustls"] }
+bb8 = "0.8.1"
+bb8-tiberius = "0.15.0"
+anyhow = "1.0.74"
+async-trait = "0.1.73"
+clap = { version = "4.3.21", features = ["derive"] }
+schemars = { version = "0.8.12", features = ["smol_str"] }
+serde = "1.0.179"
+serde_derive = "^1.0"
+serde_json = { version = "1.0.104", features = ["raw_value"] }
+tokio = { version = "1.31.0", features = ["full"] }
+tracing = "0.1.37"
+prometheus = "0.13.3"
+thiserror = "1.0"
+
+[dev-dependencies]
+axum = "0.6.19"
+axum-test-helper = "0.3.0"
+insta = { version = "1.31.0", features = ["json"] }
+env_logger = "0.10.0"
+similar-asserts = "1.4.2"

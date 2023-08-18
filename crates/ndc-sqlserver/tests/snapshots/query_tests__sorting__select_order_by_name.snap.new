@@ -1,0 +1,26 @@
+---
+source: crates/ndc-sqlserver/tests/query_tests.rs
+assertion_line: 126
+expression: result
+---
+[
+  {
+    "rows": [
+      {
+        "Title": "A Copland Celebration, Vol. I"
+      },
+      {
+        "Title": "A Matter of Life and Death"
+      },
+      {
+        "Title": "A Real Dead One"
+      },
+      {
+        "Title": "A Real Live One"
+      },
+      {
+        "Title": "A Soprano Inspired"
+      }
+    ]
+  }
+]
