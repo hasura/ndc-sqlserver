@@ -375,7 +375,7 @@ fn translate_order_by_target_for_column(
                     let join = sql::ast::OuterApply {
                         select: Box::new(select),
                         alias: target_collection_alias,
-                        alias_path: vec!["json".to_string()],
+                        alias_path: vec![],
                     };
 
                     // add the join to our pile'o'joins
@@ -422,7 +422,7 @@ fn translate_order_by_target_for_column(
             select.from = Some(sql::ast::From::Select {
                 select: inner_select,
                 alias: inner_alias,
-                alias_path: vec![],
+                alias_path: sql::helpers::empty_alias_path(),
             });
 
             // and add the joins

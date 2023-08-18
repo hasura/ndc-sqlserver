@@ -135,19 +135,25 @@ impl From {
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 alias.to_sql(sql);
-                match alias_path.is_empty() {
-                    true => {}
-                    false => {
-                        sql.append_syntax("(");
-                        for (i, path_item) in alias_path.iter().enumerate() {
-                            sql.append_identifier(path_item);
-                            if i < alias_path.len() - 1 {
-                                sql.append_syntax(",");
-                            }
-                        }
-                        sql.append_syntax(")");
+                alias_path.to_sql(sql)
+            }
+        }
+    }
+}
+
+impl AliasPath {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        match self.elements.is_empty() {
+            true => {}
+            false => {
+                sql.append_syntax("(");
+                for (i, path_item) in self.elements.iter().enumerate() {
+                    path_item.to_sql(sql);
+                    if i < self.elements.len() - 1 {
+                        sql.append_syntax(",");
                     }
                 }
+                sql.append_syntax(")");
             }
         }
     }

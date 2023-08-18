@@ -54,8 +54,13 @@ pub enum From {
     Select {
         select: Box<Select>,
         alias: TableAlias,
-        alias_path: Vec<String>,
+        alias_path: AliasPath,
     },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AliasPath {
+    pub elements: Vec<ColumnAlias>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
