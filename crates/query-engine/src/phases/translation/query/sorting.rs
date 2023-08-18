@@ -93,11 +93,16 @@ pub fn translate_order_by(
                                         &root_and_current_tables.current_table.name,
                                     );
 
+                                    let whole_column_alias =
+                                        sql::helpers::make_column_alias("json".to_string());
+
                                     // Build a join and push it to the accumulated joins.
                                     let new_join = sql::ast::OuterApply {
                                         select: Box::new(select),
                                         alias: table_alias.clone(),
-                                        alias_path: vec!["json".to_string()],
+                                        alias_path: sql::ast::AliasPath {
+                                            elements: vec![whole_column_alias],
+                                        },
                                     };
 
                                     joins.push(sql::ast::Join::OuterApply(new_join));
@@ -132,11 +137,16 @@ pub fn translate_order_by(
                                 index, root_and_current_tables.current_table.name
                             ));
 
+                            let whole_column_alias =
+                                sql::helpers::make_column_alias("json".to_string());
+
                             // Build a join ...
                             let new_join = sql::ast::OuterApply {
                                 select: Box::new(select),
                                 alias: table_alias.clone(),
-                                alias_path: vec!["json".to_string()],
+                                alias_path: sql::ast::AliasPath {
+                                    elements: vec![whole_column_alias],
+                                },
                             };
 
                             // ... push it to the accumulated joins.
@@ -375,7 +385,7 @@ fn translate_order_by_target_for_column(
                     let join = sql::ast::OuterApply {
                         select: Box::new(select),
                         alias: target_collection_alias,
-                        alias_path: vec![],
+                        alias_path: sql::helpers::empty_alias_path(),
                     };
 
                     // add the join to our pile'o'joins

@@ -253,7 +253,7 @@ pub fn select_rowset(
                 alias: aggregate_table_alias.clone(),
                 select: Box::new(aggregate_select),
                 alias_path: AliasPath {
-                    elements: vec![aggregate_column_alias],
+                    elements: vec![aggregate_column_alias.clone()],
                 },
             });
 
@@ -262,8 +262,9 @@ pub fn select_rowset(
             final_select.joins = vec![Join::CrossJoin(CrossJoin {
                 select: Box::new(aggregate_select_star),
                 alias: aggregate_table_alias.clone(),
-
-                alias_path: vec!["json".to_string()],
+                alias_path: AliasPath {
+                    elements: vec![aggregate_column_alias],
+                },
             })];
 
             final_select.from = Some(From::Select {

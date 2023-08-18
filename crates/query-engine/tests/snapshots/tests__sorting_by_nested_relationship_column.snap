@@ -39,7 +39,7 @@ FROM
               INCLUDE_NULL_VALUES
           ) AS [Artist] FOR JSON PATH,
           INCLUDE_NULL_VALUES
-      ) AS [%ORDER_0_FOR_Track]
+      ) AS [%ORDER_0_FOR_Track]([json])
     ORDER BY
       [%ORDER_0_FOR_Track].[Name] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
       INCLUDE_NULL_VALUES

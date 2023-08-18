@@ -169,6 +169,7 @@ impl Join {
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 join.alias.to_sql(sql);
+                join.alias_path.to_sql(sql)
             }
             Join::CrossJoin(join) => {
                 sql.append_syntax(" CROSS JOIN ");
@@ -177,19 +178,7 @@ impl Join {
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 join.alias.to_sql(sql);
-                match join.alias_path.is_empty() {
-                    true => {}
-                    false => {
-                        sql.append_syntax("(");
-                        for (i, path_item) in join.alias_path.iter().enumerate() {
-                            sql.append_identifier(path_item);
-                            if i < join.alias_path.len() - 1 {
-                                sql.append_syntax(",");
-                            }
-                        }
-                        sql.append_syntax(")");
-                    }
-                }
+                join.alias_path.to_sql(sql)
             }
         }
     }
