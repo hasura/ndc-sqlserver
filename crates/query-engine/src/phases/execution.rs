@@ -67,7 +67,7 @@ fn rows_to_response(results: Vec<serde_json::Value>) -> models::QueryResponse {
 async fn execute_mssql_query(
     mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
     query: &sql::string::SQL,
-    _variables: &BTreeMap<String, serde_json::Value>,
+    variables: &BTreeMap<String, serde_json::Value>,
 ) -> Result<serde_json::Value, Error> {
     let mut connection = mssql_pool.get().await.unwrap();
 
@@ -78,7 +78,39 @@ async fn execute_mssql_query(
 
     // bind parameters....
     for param in query.params.clone().into_iter() {
-        mssql_query.bind(param);
+        match param {
+            sql::string::Param::String(string) => {
+                mssql_query.bind(string);
+                Ok(())
+            }
+            sql::string::Param::Variable(var) => match variables.get(&var) {
+                Some(value) => match value {
+                    serde_json::Value::String(s) => {
+                        mssql_query.bind(s);
+                        Ok(())
+                    }
+                    serde_json::Value::Number(n) => {
+                        mssql_query.bind(n.as_f64());
+                        Ok(())
+                    }
+                    serde_json::Value::Bool(b) => {
+                        mssql_query.bind(*b);
+                        Ok(())
+                    }
+                    // this is a problem - we don't know the type of the value!
+                    serde_json::Value::Null => Err(Error::Query(
+                        "null variable not currently supported".to_string(),
+                    )),
+                    serde_json::Value::Array(_array) => Err(Error::Query(
+                        "array variable not currently supported".to_string(),
+                    )),
+                    serde_json::Value::Object(_object) => Err(Error::Query(
+                        "object variable not currently supported".to_string(),
+                    )),
+                },
+                None => Err(Error::Query(format!("Variable not found '{}'", var))),
+            },
+        }?
     }
 
     // go!
@@ -91,19 +123,7 @@ async fn execute_mssql_query(
 
     let json_value = serde_json::from_str(single_item).unwrap();
 
-    // build query
-    //    let tiberius_query = build_mssql_query_with_params(query, variables).await?;
-
     Ok(json_value)
-}
-
-impl tiberius::IntoSql<'_> for sql::string::Param {
-    fn into_sql(self) -> tiberius::ColumnData<'static> {
-        match self {
-            sql::string::Param::String(string) => string.into_sql(),
-            sql::string::Param::Variable(var) => var.into_sql(),
-        }
-    }
 }
 
 pub enum Error {
