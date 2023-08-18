@@ -28,7 +28,7 @@ jobs:
             sqlserver
 
       - name: Load Chinook data
-        run: just import-chinook-dataset
+        run: sqlcmd -S localhost,64003 -U SA -P "Password!" -i "./static/chinook-sqlserver.sql"
 
       - uses: actions-rs/cargo@v1
         with:
