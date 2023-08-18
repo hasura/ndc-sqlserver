@@ -7,13 +7,13 @@ SELECT
 FROM
   (
     SELECT
-      [albums].[albums] AS [albums],
-      [Albums].[Albums] AS [Albums]
+      JSON_QUERY([albums].[json], '$') AS [albums],
+      JSON_QUERY([Albums].[json], '$') AS [Albums]
     FROM
       [public].[Artist] AS [Artist]
       OUTER APPLY (
         SELECT
-          [rows].[json] AS [rows]
+          [rows].[row_json] AS [rows]
         FROM
           (
             SELECT
@@ -26,13 +26,13 @@ FROM
                 AND ([Artist].[ArtistId] = [Album].[ArtistId])
               ) FOR JSON PATH,
               INCLUDE_NULL_VALUES
-          ) AS [rows]([json]) FOR JSON PATH,
+          ) AS [rows]([row_json]) FOR JSON PATH,
           INCLUDE_NULL_VALUES,
           WITHOUT_ARRAY_WRAPPER
       ) AS [albums]([json])
       OUTER APPLY (
         SELECT
-          [rows].[json] AS [rows]
+          [rows].[row_json] AS [rows]
         FROM
           (
             SELECT
@@ -45,7 +45,7 @@ FROM
                 AND ([Artist].[ArtistId] = [Album].[ArtistId])
               ) FOR JSON PATH,
               INCLUDE_NULL_VALUES
-          ) AS [rows]([json]) FOR JSON PATH,
+          ) AS [rows]([row_json]) FOR JSON PATH,
           INCLUDE_NULL_VALUES,
           WITHOUT_ARRAY_WRAPPER
       ) AS [Albums]([json])

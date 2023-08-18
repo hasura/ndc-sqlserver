@@ -191,15 +191,13 @@ mod aggregation {
 }
 
 mod relationships {
-    /*
-        use super::common::run_query;
-        #[tokio::test]
-        async fn select_album_object_relationship_to_artist() {
-            let result = run_query("select_album_object_relationship_to_artist").await;
-            insta::assert_json_snapshot!(result);
-        }
+    use super::common::run_query;
+    #[tokio::test]
+    async fn select_album_object_relationship_to_artist() {
+        let result = run_query("select_album_object_relationship_to_artist").await;
+        insta::assert_json_snapshot!(result);
+    }
 
-    */
     /*
         #[tokio::test]
         async fn select_artist_array_relationship_to_album() {

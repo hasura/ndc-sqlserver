@@ -48,6 +48,10 @@ pub fn empty_alias_path() -> AliasPath {
     AliasPath { elements: vec![] }
 }
 
+pub fn empty_json_path() -> JsonPath {
+    JsonPath { elements: vec![] }
+}
+
 // Aliasing //
 
 /// Generate a column expression refering to a specific table.
@@ -60,6 +64,14 @@ pub fn make_column(
         alias,
         Expression::ColumnName(ColumnName::TableColumn { table, name }),
     )
+}
+
+/// we need this in a bunch of places
+pub fn make_json_column_alias() -> ColumnAlias {
+    ColumnAlias {
+        unique_index: 0,
+        name: "json".to_string(),
+    }
 }
 
 /// Create column aliases using this function so we build everything in one place.

@@ -92,18 +92,16 @@ pub fn translate_joins(
                 }
             }?;
 
-            // TODO: this should be passed into `select_rowset` so we have levers for controlling
-            // uniqueness
-            let whole_column_alias = sql::helpers::make_column_alias("json".to_string());
+            let json_column_alias = sql::helpers::make_json_column_alias();
 
             // form a single JSON item shaped `{ rows: [], aggregates: {} }`
             // that matches the models::RowSet type
             let json_select = sql::helpers::select_rowset(
                 sql::helpers::make_table_alias(alias.name.clone()),
                 sql::helpers::make_table_alias("rows".to_string()),
-                sql::helpers::make_column_alias("json".to_string()),
+                sql::helpers::make_column_alias("row_json".to_string()),
                 sql::helpers::make_table_alias("aggregates".to_string()),
-                sql::helpers::make_column_alias("json".to_string()),
+                sql::helpers::make_column_alias("agg_json".to_string()),
                 final_select_set,
             );
 
@@ -111,7 +109,7 @@ pub fn translate_joins(
                 select: Box::new(json_select),
                 alias,
                 alias_path: sql::ast::AliasPath {
-                    elements: vec![whole_column_alias],
+                    elements: vec![json_column_alias],
                 },
             }))
         })

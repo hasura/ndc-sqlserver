@@ -122,12 +122,19 @@ pub fn translate_rows_query(
             } => {
                 let table_alias = sql::helpers::make_table_alias(alias.clone());
                 let column_alias = sql::helpers::make_column_alias(alias);
+                let json_column_alias = sql::helpers::make_json_column_alias();
                 let column_name = sql::ast::ColumnName::AliasedColumn {
                     table: sql::ast::TableName::AliasedTable(table_alias.clone()),
-                    name: column_alias.clone(),
+                    name: json_column_alias.clone(),
                 };
                 join_fields.push((table_alias, relationship, *query));
-                Ok((column_alias, sql::ast::Expression::ColumnName(column_name)))
+                Ok((
+                    column_alias,
+                    sql::ast::Expression::JsonQuery(
+                        Box::new(sql::ast::Expression::ColumnName(column_name)),
+                        sql::helpers::empty_json_path(),
+                    ),
+                ))
             }
         })
         .collect::<Result<Vec<_>, Error>>()?;

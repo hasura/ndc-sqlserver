@@ -7,12 +7,12 @@ SELECT
 FROM
   (
     SELECT
-      [Artist].[Artist] AS [Artist]
+      JSON_QUERY([Artist].[json], '$') AS [Artist]
     FROM
       [public].[Album] AS [Album]
       OUTER APPLY (
         SELECT
-          [rows].[json] AS [rows]
+          [rows].[row_json] AS [rows]
         FROM
           (
             SELECT
@@ -25,7 +25,7 @@ FROM
                 AND ([Album].[ArtistId] = [Artist].[ArtistId])
               ) FOR JSON PATH,
               INCLUDE_NULL_VALUES
-          ) AS [rows]([json]) FOR JSON PATH,
+          ) AS [rows]([row_json]) FOR JSON PATH,
           INCLUDE_NULL_VALUES,
           WITHOUT_ARRAY_WRAPPER
       ) AS [Artist]([json])
