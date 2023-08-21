@@ -19,9 +19,8 @@ FROM
           (
             (1 = 1)
             AND ([Artist].[ArtistId] = [Album].[ArtistId])
-          ) FOR JSON PATH,
-          INCLUDE_NULL_VALUES
-      ) AS [%ORDER_0_COUNT_Artist]([json])
+          )
+      ) AS [%ORDER_0_COUNT_Artist]
     ORDER BY
       [%ORDER_0_COUNT_Artist].[count] DESC OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
       INCLUDE_NULL_VALUES

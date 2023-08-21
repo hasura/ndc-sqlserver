@@ -33,6 +33,7 @@ pub struct Select {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ForJson {
+    NoJson,
     ForJsonPath,
     ForJsonPathWithoutArrayWrapper,
 }

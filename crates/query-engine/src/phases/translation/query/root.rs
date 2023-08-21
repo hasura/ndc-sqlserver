@@ -205,6 +205,8 @@ fn translate_query_part(
     // construct a simple select with the table name, alias, and selected columns.
     let mut select = sql::helpers::simple_select(columns);
 
+    select.for_json = sql::ast::ForJson::ForJsonPath;
+
     select.from = Some(sql::ast::From::Table {
         name: db_table,
         alias: current_table.reference.clone(),

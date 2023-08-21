@@ -23,8 +23,7 @@ FROM
               (
                 (1 = 1)
                 AND ([Track].[AlbumId] = [Album].[AlbumId])
-              ) FOR JSON PATH,
-              INCLUDE_NULL_VALUES
+              )
           ) AS [Album]
           OUTER APPLY (
             SELECT
@@ -35,11 +34,9 @@ FROM
               (
                 (1 = 1)
                 AND ([Album].[ArtistId] = [Artist].[ArtistId])
-              ) FOR JSON PATH,
-              INCLUDE_NULL_VALUES
-          ) AS [Artist] FOR JSON PATH,
-          INCLUDE_NULL_VALUES
-      ) AS [%ORDER_0_FOR_Track]([json])
+              )
+          ) AS [Artist]
+      ) AS [%ORDER_0_FOR_Track]
     ORDER BY
       [%ORDER_0_FOR_Track].[Name] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
       INCLUDE_NULL_VALUES

@@ -22,8 +22,7 @@ FROM
               AND ([artist].[Name] = @P1)
             )
             AND ([album].[ArtistId] = [artist].[ArtistId])
-          ) FOR JSON PATH,
-          INCLUDE_NULL_VALUES
+          )
       ) FOR JSON PATH,
       INCLUDE_NULL_VALUES
   ) AS [rows]([row_json]) FOR JSON PATH,

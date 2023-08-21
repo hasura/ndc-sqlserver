@@ -6,6 +6,12 @@ expression: result
   {
     "rows": [
       {
+        "Name": "Fanfare for the Common Man"
+      },
+      {
+        "Name": "OAM's Blues"
+      },
+      {
         "Name": "Bad Boy Boogie"
       },
       {
@@ -13,12 +19,6 @@ expression: result
       },
       {
         "Name": "C.O.D."
-      },
-      {
-        "Name": "Dog Eat Dog"
-      },
-      {
-        "Name": "Evil Walks"
       }
     ]
   }

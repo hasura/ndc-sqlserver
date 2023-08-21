@@ -14,6 +14,7 @@ Things we have:
 - basic ordering
 - relationships
 - variables
+- sorting
 
 Things we definitely don't have:
 
