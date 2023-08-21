@@ -78,6 +78,7 @@ impl SelectList {
 impl ForJson {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
+            ForJson::NoJson => {}
             ForJson::ForJsonPath => sql.append_syntax(" FOR JSON PATH, INCLUDE_NULL_VALUES "),
             ForJson::ForJsonPathWithoutArrayWrapper => {
                 sql.append_syntax(" FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER")

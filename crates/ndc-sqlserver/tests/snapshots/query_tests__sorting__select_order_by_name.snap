@@ -6,6 +6,9 @@ expression: result
   {
     "rows": [
       {
+        "Title": "A Copland Celebration, Vol. I"
+      },
+      {
         "Title": "A Matter of Life and Death"
       },
       {
@@ -16,9 +19,6 @@ expression: result
       },
       {
         "Title": "A Soprano Inspired"
-      },
-      {
-        "Title": "A TempestadeTempestade Ou O Livro Dos Dias"
       }
     ]
   }

@@ -93,16 +93,11 @@ pub fn translate_order_by(
                                         &root_and_current_tables.current_table.name,
                                     );
 
-                                    let whole_column_alias =
-                                        sql::helpers::make_column_alias("json".to_string());
-
                                     // Build a join and push it to the accumulated joins.
                                     let new_join = sql::ast::OuterApply {
                                         select: Box::new(select),
                                         alias: table_alias.clone(),
-                                        alias_path: sql::ast::AliasPath {
-                                            elements: vec![whole_column_alias],
-                                        },
+                                        alias_path: sql::helpers::empty_alias_path(),
                                     };
 
                                     joins.push(sql::ast::Join::OuterApply(new_join));
@@ -137,16 +132,11 @@ pub fn translate_order_by(
                                 index, root_and_current_tables.current_table.name
                             ));
 
-                            let whole_column_alias =
-                                sql::helpers::make_column_alias("json".to_string());
-
                             // Build a join ...
                             let new_join = sql::ast::OuterApply {
                                 select: Box::new(select),
                                 alias: table_alias.clone(),
-                                alias_path: sql::ast::AliasPath {
-                                    elements: vec![whole_column_alias],
-                                },
+                                alias_path: sql::helpers::empty_alias_path(),
                             };
 
                             // ... push it to the accumulated joins.
@@ -228,6 +218,8 @@ fn translate_order_by_star_count_aggregate(
 
             // build a select query from this table where join condition.
             let mut select = sql::helpers::simple_select(select_cols);
+
+            select.for_json = sql::ast::ForJson::NoJson;
 
             // generate a condition for this join.
             let join_condition = relationships::translate_column_mapping(
@@ -423,7 +415,9 @@ fn translate_order_by_target_for_column(
             let inner_join = joins
                 .pop()
                 .expect("last_table was Some, so joins should also be Some.");
+
             let inner_select = inner_join.select;
+
             let inner_alias = inner_join.alias;
 
             joins.reverse();

@@ -120,7 +120,7 @@ pub fn simple_select(select_list: Vec<(ColumnAlias, Expression)>) -> Select {
         group_by: empty_group_by(),
         order_by: empty_order_by(),
         limit: None,
-        for_json: ForJson::ForJsonPath,
+        for_json: ForJson::NoJson,
     }
 }
 

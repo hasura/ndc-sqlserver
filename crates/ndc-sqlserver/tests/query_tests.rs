@@ -117,17 +117,15 @@ mod predicates {
     */
 }
 
-/*
 mod sorting {
     use super::common::run_query;
-        #[tokio::test]
-        // off by one error
-        async fn select_order_by_name() {
-            let result = run_query("select_order_by_name").await;
-            insta::assert_json_snapshot!(result);
-        }
 
-    // syntax error, probably lateral joins
+    #[tokio::test]
+    async fn select_order_by_name() {
+        let result = run_query("select_order_by_name").await;
+        insta::assert_json_snapshot!(result);
+    }
+
     #[tokio::test]
     async fn select_order_by_artist_name() {
         let result = run_query("select_order_by_artist_name").await;
@@ -158,7 +156,6 @@ mod sorting {
         insta::assert_json_snapshot!(result);
     }
 }
-    */
 
 mod aggregation {
     use super::common::run_query;

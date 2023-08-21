@@ -39,8 +39,7 @@ FROM
           (
             ([album].[Title] LIKE @P1)
             AND ([artist].[ArtistId] = [album].[ArtistId])
-          ) FOR JSON PATH,
-          INCLUDE_NULL_VALUES
+          )
       ) FOR JSON PATH,
       INCLUDE_NULL_VALUES
   ) AS [rows]([row_json]) FOR JSON PATH,
