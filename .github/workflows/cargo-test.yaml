@@ -6,17 +6,21 @@ jobs:
   build_and_test:
     name: Test SQLServer NDC
     runs-on: ubuntu-latest
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      RUSTFLAGS: "-D warnings" # fail on warnings
+
     steps:
-      - name: Install Protoc
+      - uses: actions/checkout@v3
+
+      - name: install protoc
         uses: arduino/setup-protoc@v2
         with:
           version: "23.3"
 
-      - uses: actions/checkout@v3
-
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
+      - name: install tools
+        run: |
+          rustup show
 
       - uses: Swatinem/rust-cache@v2
 
@@ -30,13 +34,12 @@ jobs:
       - name: Load Chinook data
         run: sqlcmd -S localhost,64003 -U SA -P "Password!" -i "./static/chinook-sqlserver.sql"
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
+      - name: run tests
+        run: |
+          cargo test --release --workspace
         env:
           POSTGRESQL_CONNECTION_STRING: sqlserverql://sqlserver:password@localhost:64002
           RUST_LOG: INFO
-          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
 
       # scream into Slack if something goes wrong
       - name: Report Status
