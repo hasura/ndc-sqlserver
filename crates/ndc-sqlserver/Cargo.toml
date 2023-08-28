@@ -24,7 +24,7 @@ bb8-tiberius = "0.15.0"
 anyhow = "1.0.75"
 async-trait = "0.1.73"
 clap = { version = "4.3.23", features = ["derive"] }
-schemars = { version = "0.8.12", features = ["smol_str"] }
+schemars = { version = "0.8.13", features = ["smol_str"] }
 serde = "1.0.185"
 serde_derive = "^1.0"
 serde_json = { version = "1.0.105", features = ["raw_value"] }
