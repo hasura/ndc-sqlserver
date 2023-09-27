@@ -23,7 +23,7 @@ bb8 = "0.8.1"
 bb8-tiberius = "0.15.0"
 anyhow = "1.0.75"
 async-trait = "0.1.73"
-clap = { version = "4.4.4", features = ["derive"] }
+clap = { version = "4.4.5", features = ["derive"] }
 schemars = { version = "0.8.15", features = ["smol_str"] }
 serde = "1.0.188"
 serde_derive = "^1.0"
