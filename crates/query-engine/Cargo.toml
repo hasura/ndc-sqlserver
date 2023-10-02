@@ -18,4 +18,4 @@ sqlformat = "0.2.2"
 tracing = "0.1.37"
 
 [dev-dependencies]
-insta = { version = "1.31.0", features = ["json"] }
+insta = { version = "1.33.0", features = ["json"] }
