@@ -1,16 +1,27 @@
-name: SQLServer NDC build and deploy with Nix
+name: multi-architecture docker build
 
 on:
   push:
     branches:
       - main
+      - djh/multi-arch-build
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
-  binary:
-    name: deploy::binary
+  build_and_deploy:
+    name: build and deploy
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        connector:
+          - ndc-sqlserver
+      fail-fast: false
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
@@ -21,47 +32,20 @@ jobs:
       - name: Run the Magic Nix Cache 🔌
         uses: DeterminateSystems/magic-nix-cache-action@v2
 
-      - name: Login to GitHub Container Registry 📦
-        uses: docker/login-action@v3
+      - id: gcloud-auth
+        name: Authenticate to Google Cloud 🔑
+        uses: google-github-actions/auth@v1
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          token_format: access_token
+          service_account: "hasura-ci-docker-writer@hasura-ddn.iam.gserviceaccount.com"
+          workload_identity_provider: "projects/1025009031284/locations/global/workloadIdentityPools/hasura-ddn/providers/github"
 
-      - name: build the crate using nix 🔨
-        run: nix build --print-build-logs
-
-      - name: Create release 🚀
-        uses: actions/upload-artifact@v3
+      - name: Login to Google Container Registry 📦
+        uses: "docker/login-action@v3"
         with:
-          name: hasura-sqlserver-agent-rs
-          path: result/bin/ndc-sqlserver
-
-      # scream into Slack if something goes wrong
-      - name: Report Status
-        if: always()
-        uses: ravsamhq/notify-slack-action@v2
-        with:
-          status: ${{ job.status }}
-          notify_when: failure
-          notification_title: '😧 Error on <{repo_url}|{repo}>'
-          message_format: '🐴 *{workflow}* {status_message} for <{repo_url}|{repo}>'
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.BROKEN_BUILD_SLACK_WEBHOOK_URL }}
-
-  docker:
-    name: deploy::docker
-    needs: binary
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
-
-      - name: Install Nix ❄
-        uses: DeterminateSystems/nix-installer-action@v6
-
-      - name: Run the Magic Nix Cache 🔌
-        uses: DeterminateSystems/magic-nix-cache-action@v2
+          registry: "us-docker.pkg.dev"
+          username: "oauth2accesstoken"
+          password: "${{ steps.gcloud-auth.outputs.access_token }}"
 
       - name: Login to GitHub Container Registry 📦
         uses: docker/login-action@v3
@@ -70,8 +54,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy 🚀
-        run: nix run .#publish-docker-image ${{ github.ref }}
+      - name: Build and deploy Docker images to Google Container Registry 🚀
+        run: nix run .#publish-docker-image '${{ github.ref }}' '${{ matrix.connector }}' 'us-docker.pkg.dev/hasura-ddn/ddn/${{ matrix.connector }}'
+
+      - name: Build and deploy Docker images to GitHub Packages 🚀
+        run: nix run .#publish-docker-image '${{ github.ref }}' '${{ matrix.connector }}' 'ghcr.io/hasura/${{ matrix.connector }}'
 
       # scream into Slack if something goes wrong
       - name: Report Status
@@ -80,7 +67,7 @@ jobs:
         with:
           status: ${{ job.status }}
           notify_when: failure
-          notification_title: '😧 Error on <{repo_url}|{repo}>'
-          message_format: '🐴 *{workflow}* {status_message} for <{repo_url}|{repo}>'
+          notification_title: "😧 Error on <{repo_url}|{repo}>"
+          message_format: "🐴 *{workflow}* {status_message} for <{repo_url}|{repo}>"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.BROKEN_BUILD_SLACK_WEBHOOK_URL }}
