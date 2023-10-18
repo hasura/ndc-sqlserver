@@ -1,0 +1,33 @@
+name: Postgres NDC nix check
+
+on:
+  push:
+
+jobs:
+  nix-flake-check:
+    name: nix flake check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@v6
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
+
+      - name: nix flake check
+        run: |
+          nix flake check --print-build-logs
+
+  nix-develop:
+    name: nix develop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@v6
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v2
+
+      - name: nix develop --command true
+        run: |
+          nix develop --print-build-logs --command true
