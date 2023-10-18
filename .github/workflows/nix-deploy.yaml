@@ -32,7 +32,9 @@ jobs:
       - name: Run the Magic Nix Cache 🔌
         uses: DeterminateSystems/magic-nix-cache-action@v2
 
+      # skip until GCP credentials sorted
       - id: gcloud-auth
+        if: never()
         name: Authenticate to Google Cloud 🔑
         uses: google-github-actions/auth@v1
         with:
@@ -40,7 +42,9 @@ jobs:
           service_account: "hasura-ci-docker-writer@hasura-ddn.iam.gserviceaccount.com"
           workload_identity_provider: "projects/1025009031284/locations/global/workloadIdentityPools/hasura-ddn/providers/github"
 
+      # skip until GCP credentials sorted
       - name: Login to Google Container Registry 📦
+        if: never()
         uses: "docker/login-action@v3"
         with:
           registry: "us-docker.pkg.dev"
@@ -54,7 +58,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # skip until GCP credentials sorted
       - name: Build and deploy Docker images to Google Container Registry 🚀
+        if: never()
         run: nix run .#publish-docker-image '${{ github.ref }}' '${{ matrix.connector }}' 'us-docker.pkg.dev/hasura-ddn/ddn/${{ matrix.connector }}'
 
       - name: Build and deploy Docker images to GitHub Packages 🚀
