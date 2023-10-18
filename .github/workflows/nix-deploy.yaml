@@ -34,7 +34,7 @@ jobs:
 
       # skip until GCP credentials sorted
       - id: gcloud-auth
-        if: never()
+        if: false
         name: Authenticate to Google Cloud 🔑
         uses: google-github-actions/auth@v1
         with:
@@ -44,7 +44,7 @@ jobs:
 
       # skip until GCP credentials sorted
       - name: Login to Google Container Registry 📦
-        if: never()
+        if: false
         uses: "docker/login-action@v3"
         with:
           registry: "us-docker.pkg.dev"
@@ -60,7 +60,7 @@ jobs:
 
       # skip until GCP credentials sorted
       - name: Build and deploy Docker images to Google Container Registry 🚀
-        if: never()
+        if: false
         run: nix run .#publish-docker-image '${{ github.ref }}' '${{ matrix.connector }}' 'us-docker.pkg.dev/hasura-ddn/ddn/${{ matrix.connector }}'
 
       - name: Build and deploy Docker images to GitHub Packages 🚀
