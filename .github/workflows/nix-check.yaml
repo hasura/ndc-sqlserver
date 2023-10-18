@@ -1,4 +1,4 @@
-name: Postgres NDC nix check
+name: nix check
 
 on:
   push:
