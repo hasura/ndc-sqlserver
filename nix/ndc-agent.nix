@@ -1,4 +1,4 @@
-# Dependencies and build configuration for the sqlserver-agent crate.
+# Dependencies and build configuration for an ndc-agent crate.
 #
 # To add runtime library dependencies, add packge names to the argument set
 # here, and add the same name to the `buildInputs` list below.
@@ -20,6 +20,7 @@
 , protobuf
 , stdenv
 , pkgsStatic
+, binary-name
 }:
 
 let
@@ -37,7 +38,7 @@ let
   buildArgs = {
     inherit src;
 
-    pname = "sqlserver-ndc";
+    pname = binary-name;
 
     buildInputs = [
       openssl
@@ -69,6 +70,7 @@ let
     (buildArgs // {
       inherit cargoArtifacts;
       doCheck = false;
+      cargoExtraArgs = "--locked --bin ${binary-name}";
     });
 in
 crate.overrideAttrs (prev: {
