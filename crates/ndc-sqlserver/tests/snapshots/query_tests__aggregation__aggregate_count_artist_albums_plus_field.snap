@@ -6,10 +6,8 @@ expression: result
   {
     "rows": [
       {
+        "Name": "Accept",
         "Albums": {
-          "aggregates": {
-            "how_many_albums": 2
-          },
           "rows": [
             {
               "Title": "Balls to the Wall"
@@ -17,54 +15,54 @@ expression: result
             {
               "Title": "Restless and Wild"
             }
-          ]
-        },
-        "Name": "Accept"
+          ],
+          "aggregates": {
+            "how_many_albums": 2
+          }
+        }
       },
       {
+        "Name": "Aerosmith",
         "Albums": {
-          "aggregates": {
-            "how_many_albums": 1
-          },
           "rows": [
             {
               "Title": "Big Ones"
             }
-          ]
-        },
-        "Name": "Aerosmith"
-      },
-      {
-        "Albums": {
+          ],
           "aggregates": {
             "how_many_albums": 1
-          },
+          }
+        }
+      },
+      {
+        "Name": "Alanis Morissette",
+        "Albums": {
           "rows": [
             {
               "Title": "Jagged Little Pill"
             }
-          ]
-        },
-        "Name": "Alanis Morissette"
-      },
-      {
-        "Albums": {
+          ],
           "aggregates": {
             "how_many_albums": 1
-          },
+          }
+        }
+      },
+      {
+        "Name": "Alice In Chains",
+        "Albums": {
           "rows": [
             {
               "Title": "Facelift"
             }
-          ]
-        },
-        "Name": "Alice In Chains"
+          ],
+          "aggregates": {
+            "how_many_albums": 1
+          }
+        }
       },
       {
+        "Name": "Antônio Carlos Jobim",
         "Albums": {
-          "aggregates": {
-            "how_many_albums": 2
-          },
           "rows": [
             {
               "Title": "Warner 25 Anos"
@@ -72,9 +70,11 @@ expression: result
             {
               "Title": "Chill: Brazil (Disc 2)"
             }
-          ]
-        },
-        "Name": "Antônio Carlos Jobim"
+          ],
+          "aggregates": {
+            "how_many_albums": 2
+          }
+        }
       }
     ]
   }

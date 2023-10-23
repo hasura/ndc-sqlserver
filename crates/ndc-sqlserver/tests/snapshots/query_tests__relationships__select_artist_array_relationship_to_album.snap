@@ -6,26 +6,27 @@ expression: result
   {
     "rows": [
       {
+        "Name": "Alanis Morissette",
         "Albums": {
           "rows": [
             {
               "Title": "Jagged Little Pill"
             }
           ]
-        },
-        "Name": "Alanis Morissette"
+        }
       },
       {
+        "Name": "Alice In Chains",
         "Albums": {
           "rows": [
             {
               "Title": "Facelift"
             }
           ]
-        },
-        "Name": "Alice In Chains"
+        }
       },
       {
+        "Name": "Antônio Carlos Jobim",
         "Albums": {
           "rows": [
             {
@@ -35,20 +36,20 @@ expression: result
               "Title": "Chill: Brazil (Disc 2)"
             }
           ]
-        },
-        "Name": "Antônio Carlos Jobim"
+        }
       },
       {
+        "Name": "Apocalyptica",
         "Albums": {
           "rows": [
             {
               "Title": "Plays Metallica By Four Cellos"
             }
           ]
-        },
-        "Name": "Apocalyptica"
+        }
       },
       {
+        "Name": "Audioslave",
         "Albums": {
           "rows": [
             {
@@ -61,8 +62,7 @@ expression: result
               "Title": "Revelations"
             }
           ]
-        },
-        "Name": "Audioslave"
+        }
       }
     ]
   }

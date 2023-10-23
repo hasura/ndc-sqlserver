@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-use ndc_hub::models;
+use ndc_sdk::models;
 
 use super::error::Error;
 use super::helpers::{RootAndCurrentTables, TableNameAndReference};
@@ -67,17 +67,17 @@ pub fn translate_expression(
                 tables_info,
                 relationships,
                 root_and_current_tables,
-                *column,
+                column,
             )?;
             let right = translate_comparison_value(
                 tables_info,
                 relationships,
                 root_and_current_tables,
-                *value,
+                value,
             )?;
             Ok(sql::ast::Expression::BinaryOperator {
                 left: Box::new(left),
-                operator: match *operator {
+                operator: match operator {
                     models::BinaryComparisonOperator::Equal => sql::ast::BinaryOperator::Equals,
                     models::BinaryComparisonOperator::Other { name } =>
                     // the strings we're matching against here (ie 'like') are best guesses for now, will
@@ -114,7 +114,7 @@ pub fn translate_expression(
                 tables_info,
                 relationships,
                 root_and_current_tables,
-                *column,
+                column,
             )?;
             let right = values
                 .iter()
@@ -129,7 +129,7 @@ pub fn translate_expression(
                 .collect::<Result<Vec<sql::ast::Expression>, Error>>()?;
             Ok(sql::ast::Expression::BinaryArrayOperator {
                 left: Box::new(left),
-                operator: match *operator {
+                operator: match operator {
                     models::BinaryArrayComparisonOperator::In => sql::ast::BinaryArrayOperator::In,
                 },
                 right,
@@ -144,17 +144,17 @@ pub fn translate_expression(
             tables_info,
             relationships,
             root_and_current_tables,
-            *in_collection,
+            in_collection,
             *predicate,
         ),
         // dummy
-        models::Expression::UnaryComparisonOperator { column, operator } => match *operator {
+        models::Expression::UnaryComparisonOperator { column, operator } => match operator {
             models::UnaryComparisonOperator::IsNull => {
                 let value = translate_comparison_target(
                     tables_info,
                     relationships,
                     root_and_current_tables,
-                    *column,
+                    column,
                 )?;
 
                 Ok(sql::ast::Expression::UnaryOperator {
@@ -236,12 +236,9 @@ fn translate_comparison_value(
     value: models::ComparisonValue,
 ) -> Result<sql::ast::Expression, Error> {
     match value {
-        models::ComparisonValue::Column { column } => translate_comparison_target(
-            tables_info,
-            relationships,
-            root_and_current_tables,
-            *column,
-        ),
+        models::ComparisonValue::Column { column } => {
+            translate_comparison_target(tables_info, relationships, root_and_current_tables, column)
+        }
         models::ComparisonValue::Scalar { value: json_value } => Ok(sql::ast::Expression::Value(
             translate_json_value(&json_value),
         )),

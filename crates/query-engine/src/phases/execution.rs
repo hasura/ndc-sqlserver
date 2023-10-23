@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 
 use serde_json;
 
-use ndc_hub::models;
+use ndc_sdk::models;
 
 use super::translation::sql;
 

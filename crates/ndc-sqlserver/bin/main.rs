@@ -1,4 +1,4 @@
-use ndc_hub::default_main::default_main;
+use ndc_sdk::default_main::default_main;
 use ndc_sqlserver::connector::SQLServer;
 
 #[tokio::main]

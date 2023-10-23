@@ -1,15 +1,16 @@
 [package]
 name = "query-engine"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
-ndc-hub = { git = "https://github.com/hasura/ndc-hub.git", tag = "v0.1.0-rc.1", package = "ndc-sdk" }
+ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "098b1c2", package = "ndc-sdk" }
 
 tiberius = { version = "0.12.2", default-features = false, features = ["rustls"] }
 bb8 = "0.8.1"
 bb8-tiberius = "0.15.0"
 
+bytes = "1.5.0" # only included to sort deps conflict
 indexmap = "1"
 schemars = { version = "0.8.15", features = ["smol_str"] }
 serde = { version = "1.0.188", features = ["derive"] }

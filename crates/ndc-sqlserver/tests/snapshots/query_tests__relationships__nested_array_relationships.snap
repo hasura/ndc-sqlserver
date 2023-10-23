@@ -6,9 +6,11 @@ expression: result
   {
     "rows": [
       {
+        "artist": "Queen",
         "Albums": {
           "rows": [
             {
+              "album": "Greatest Hits II",
               "Tracks": {
                 "rows": [
                   {
@@ -24,10 +26,10 @@ expression: result
                     "track": "I Want It All"
                   }
                 ]
-              },
-              "album": "Greatest Hits II"
+              }
             },
             {
+              "album": "Greatest Hits I",
               "Tracks": {
                 "rows": [
                   {
@@ -43,10 +45,10 @@ expression: result
                     "track": "Fat Bottomed Girls"
                   }
                 ]
-              },
-              "album": "Greatest Hits I"
+              }
             },
             {
+              "album": "News Of The World",
               "Tracks": {
                 "rows": [
                   {
@@ -62,17 +64,17 @@ expression: result
                     "track": "All Dead, All Dead"
                   }
                 ]
-              },
-              "album": "News Of The World"
+              }
             }
           ]
-        },
-        "artist": "Queen"
+        }
       },
       {
+        "artist": "Kiss",
         "Albums": {
           "rows": [
             {
+              "album": "Greatest Kiss",
               "Tracks": {
                 "rows": [
                   {
@@ -88,10 +90,10 @@ expression: result
                     "track": "Sure Know Something"
                   }
                 ]
-              },
-              "album": "Greatest Kiss"
+              }
             },
             {
+              "album": "Unplugged [Live]",
               "Tracks": {
                 "rows": [
                   {
@@ -107,12 +109,10 @@ expression: result
                     "track": "Do You Love Me"
                   }
                 ]
-              },
-              "album": "Unplugged [Live]"
+              }
             }
           ]
-        },
-        "artist": "Kiss"
+        }
       }
     ]
   }

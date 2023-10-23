@@ -1,7 +1,7 @@
 //! Metrics setup and update for our connector.
 
 use super::configuration::InitializationError;
-use ndc_hub::connector;
+use ndc_sdk::connector;
 use prometheus::core::{AtomicU64, GenericCounter};
 
 #[derive(Debug, Clone)]

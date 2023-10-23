@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
 
-use ndc_hub::models;
+use ndc_sdk::models;
 
 use super::aggregates;
 use super::error::Error;

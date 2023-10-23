@@ -10,7 +10,7 @@ pub mod sorting;
 
 use std::collections::BTreeMap;
 
-use ndc_hub::models;
+use ndc_sdk::models;
 
 use crate::metadata;
 use crate::phases::translation::sql;

@@ -6,44 +6,44 @@ expression: result
   {
     "rows": [
       {
+        "Name": "Accept",
         "Albums": {
           "aggregates": {
             "how_many_albums": 2
           }
-        },
-        "Name": "Accept"
+        }
       },
       {
+        "Name": "Aerosmith",
         "Albums": {
           "aggregates": {
             "how_many_albums": 1
           }
-        },
-        "Name": "Aerosmith"
+        }
       },
       {
+        "Name": "Alanis Morissette",
         "Albums": {
           "aggregates": {
             "how_many_albums": 1
           }
-        },
-        "Name": "Alanis Morissette"
+        }
       },
       {
+        "Name": "Alice In Chains",
         "Albums": {
           "aggregates": {
             "how_many_albums": 1
           }
-        },
-        "Name": "Alice In Chains"
+        }
       },
       {
+        "Name": "Antônio Carlos Jobim",
         "Albums": {
           "aggregates": {
             "how_many_albums": 2
           }
-        },
-        "Name": "Antônio Carlos Jobim"
+        }
       }
     ]
   }
