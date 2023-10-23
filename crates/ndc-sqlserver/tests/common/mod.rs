@@ -35,7 +35,7 @@ pub async fn run_explain(testname: &str) -> ExactExplainResponse {
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
-pub async fn get_schema() -> ndc_hub::models::SchemaResponse {
+pub async fn get_schema() -> ndc_sdk::models::SchemaResponse {
     make_request(|client| client.get("/schema")).await
 }
 
@@ -71,13 +71,13 @@ async fn make_request<Response: for<'a> serde::Deserialize<'a>>(
     let test_deployment_file = get_deployment_file();
 
     // initialise server state with the static configuration.
-    let state = ndc_hub::default_main::init_server_state::<connector::SQLServer>(
+    let state = ndc_sdk::default_main::init_server_state::<connector::SQLServer>(
         test_deployment_file.display().to_string(),
     )
     .await;
 
     // create a fresh client
-    let router = ndc_hub::default_main::create_router(state);
+    let router = ndc_sdk::default_main::create_router(state, None);
     let client = TestClient::new(router);
 
     // make the request

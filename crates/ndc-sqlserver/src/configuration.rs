@@ -1,7 +1,7 @@
 //! Configuration and state for our connector.
 use super::metrics;
 
-use ndc_hub::connector;
+use ndc_sdk::connector;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;

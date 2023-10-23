@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-use ndc_hub::models;
+use ndc_sdk::models;
 
 use super::error::Error;
 use super::helpers::{RootAndCurrentTables, TableNameAndReference};

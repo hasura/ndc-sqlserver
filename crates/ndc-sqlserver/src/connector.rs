@@ -8,8 +8,9 @@
 use tiberius::Query;
 
 use async_trait::async_trait;
-use ndc_hub::connector;
-use ndc_hub::models;
+use ndc_sdk::connector;
+use ndc_sdk::json_response::JsonResponse;
+use ndc_sdk::models;
 
 use query_engine::phases;
 
@@ -33,17 +34,17 @@ impl connector::Connector for SQLServer {
 
     /// Configure a configuration maybe?
     async fn update_configuration(
-        args: &Self::RawConfiguration,
+        args: Self::RawConfiguration,
     ) -> Result<configuration::DeploymentConfiguration, connector::UpdateConfigurationError> {
-        configuration::configure(args).await
+        configuration::configure(&args).await
     }
 
     /// Validate the raw configuration provided by the user,
     /// returning a configuration error or a validated [`Connector::Configuration`].
     async fn validate_raw_configuration(
-        configuration: &Self::RawConfiguration,
+        configuration: Self::RawConfiguration,
     ) -> Result<Self::Configuration, connector::ValidateError> {
-        configuration::validate_raw_configuration(configuration).await
+        configuration::validate_raw_configuration(&configuration).await
     }
 
     /// Initialize the connector's in-memory state.
@@ -93,9 +94,9 @@ impl connector::Connector for SQLServer {
     ///
     /// This function implements the [capabilities endpoint](https://hasura.github.io/ndc-spec/specification/capabilities.html)
     /// from the NDC specification.
-    async fn get_capabilities() -> models::CapabilitiesResponse {
+    async fn get_capabilities() -> JsonResponse<models::CapabilitiesResponse> {
         let empty = serde_json::to_value(()).unwrap();
-        models::CapabilitiesResponse {
+        JsonResponse::Value(models::CapabilitiesResponse {
             versions: "^0.0.0".into(),
             capabilities: models::Capabilities {
                 explain: Some(empty.clone()),
@@ -107,7 +108,7 @@ impl connector::Connector for SQLServer {
                 relationships: Some(empty),
                 mutations: None,
             },
-        }
+        })
     }
 
     /// Get the connector's schema.
@@ -116,7 +117,7 @@ impl connector::Connector for SQLServer {
     /// from the NDC specification.
     async fn get_schema(
         _configuration: &Self::Configuration,
-    ) -> Result<models::SchemaResponse, connector::SchemaError> {
+    ) -> Result<JsonResponse<models::SchemaResponse>, connector::SchemaError> {
         todo!("get_schema")
     }
 
@@ -128,7 +129,7 @@ impl connector::Connector for SQLServer {
         _configuration: &Self::Configuration,
         _state: &Self::State,
         _query_request: models::QueryRequest,
-    ) -> Result<models::ExplainResponse, connector::ExplainError> {
+    ) -> Result<JsonResponse<models::ExplainResponse>, connector::ExplainError> {
         todo!("explain!")
     }
 
@@ -140,7 +141,7 @@ impl connector::Connector for SQLServer {
         _configuration: &Self::Configuration,
         _state: &Self::State,
         _request: models::MutationRequest,
-    ) -> Result<models::MutationResponse, connector::MutationError> {
+    ) -> Result<JsonResponse<models::MutationResponse>, connector::MutationError> {
         todo!("mutations are currently not implemented")
     }
 
@@ -152,7 +153,7 @@ impl connector::Connector for SQLServer {
         configuration: &Self::Configuration,
         state: &Self::State,
         query_request: models::QueryRequest,
-    ) -> Result<models::QueryResponse, connector::QueryError> {
+    ) -> Result<JsonResponse<models::QueryResponse>, connector::QueryError> {
         tracing::info!("{}", serde_json::to_string(&query_request).unwrap());
         tracing::info!("{:?}", query_request);
 
@@ -184,7 +185,8 @@ impl connector::Connector for SQLServer {
         // assuming query succeeded, increment counter
         state.metrics.query_total.inc();
 
-        Ok(result)
+        // TODO: return raw JSON
+        Ok(JsonResponse::Value(result))
     }
 }
 

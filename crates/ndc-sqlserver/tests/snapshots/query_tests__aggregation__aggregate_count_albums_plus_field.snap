@@ -5,12 +5,12 @@ expression: result
 [
   {
     "aggregates": {
-      "avg_artist_id": 121,
       "how_many_albums": 347,
       "how_many_artist_ids": 347,
       "how_many_distinct_artist_ids": 204,
+      "min_artist_id": 1,
       "max_artist_id": 275,
-      "min_artist_id": 1
+      "avg_artist_id": 121
     },
     "rows": [
       {

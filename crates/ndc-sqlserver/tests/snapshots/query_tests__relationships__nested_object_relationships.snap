@@ -6,89 +6,89 @@ expression: result
   {
     "rows": [
       {
+        "track": "Grito De Alerta",
         "Album": {
           "rows": [
             {
+              "album": "Meus Momentos",
               "Artist": {
                 "rows": [
                   {
                     "artist": "Gonzaguinha"
                   }
                 ]
-              },
-              "album": "Meus Momentos"
+              }
             }
           ]
-        },
-        "track": "Grito De Alerta"
+        }
       },
       {
+        "track": "Não Dá Mais Pra Segurar (Explode Coração)",
         "Album": {
           "rows": [
             {
+              "album": "Meus Momentos",
               "Artist": {
                 "rows": [
                   {
                     "artist": "Gonzaguinha"
                   }
                 ]
-              },
-              "album": "Meus Momentos"
+              }
             }
           ]
-        },
-        "track": "Não Dá Mais Pra Segurar (Explode Coração)"
+        }
       },
       {
+        "track": "Começaria Tudo Outra Vez",
         "Album": {
           "rows": [
             {
+              "album": "Meus Momentos",
               "Artist": {
                 "rows": [
                   {
                     "artist": "Gonzaguinha"
                   }
                 ]
-              },
-              "album": "Meus Momentos"
+              }
             }
           ]
-        },
-        "track": "Começaria Tudo Outra Vez"
+        }
       },
       {
+        "track": "O Que É O Que É ?",
         "Album": {
           "rows": [
             {
+              "album": "Meus Momentos",
               "Artist": {
                 "rows": [
                   {
                     "artist": "Gonzaguinha"
                   }
                 ]
-              },
-              "album": "Meus Momentos"
+              }
             }
           ]
-        },
-        "track": "O Que É O Que É ?"
+        }
       },
       {
+        "track": "Sangrando",
         "Album": {
           "rows": [
             {
+              "album": "Meus Momentos",
               "Artist": {
                 "rows": [
                   {
                     "artist": "Gonzaguinha"
                   }
                 ]
-              },
-              "album": "Meus Momentos"
+              }
             }
           ]
-        },
-        "track": "Sangrando"
+        }
       }
     ]
   }
