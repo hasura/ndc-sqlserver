@@ -3,6 +3,9 @@ name = "query-engine"
 version.workspace = true
 edition.workspace = true
 
+[package.metadata.cargo-machete]
+ignored = ["bytes"]
+
 [dependencies]
 ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "098b1c2", package = "ndc-sdk" }
 

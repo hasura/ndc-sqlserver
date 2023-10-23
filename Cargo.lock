@@ -1295,13 +1295,11 @@ dependencies = [
 name = "ndc-sqlserver"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "async-trait",
  "axum",
  "axum-test-helper",
  "bb8",
  "bb8-tiberius",
- "clap",
  "env_logger",
  "insta",
  "ndc-sdk",
@@ -1315,7 +1313,6 @@ dependencies = [
  "thiserror",
  "tiberius",
  "tokio",
- "tokio-util",
  "tracing",
 ]
 
