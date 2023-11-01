@@ -363,9 +363,8 @@ impl BinaryArrayOperator {
 impl Function {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
-            Function::Coalesce => sql.append_syntax("coalesce"),
-            Function::JsonAgg => sql.append_syntax("json_agg"),
-            Function::IsNull => sql.append_syntax("isnull"),
+            Function::JsonAgg => sql.append_syntax("JSON_AGG"),
+            Function::IsNull => sql.append_syntax("ISNULL"),
             Function::Unknown(name) => sql.append_syntax(name),
         }
     }

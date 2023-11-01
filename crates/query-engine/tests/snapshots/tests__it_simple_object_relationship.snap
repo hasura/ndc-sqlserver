@@ -3,7 +3,7 @@ source: crates/query-engine/tests/tests.rs
 expression: result
 ---
 SELECT
-  isnull([rows].[row_json], '[]') AS [rows]
+  ISNULL([rows].[row_json], '[]') AS [rows]
 FROM
   (
     SELECT
@@ -12,7 +12,7 @@ FROM
       [public].[Album] AS [Album]
       OUTER APPLY (
         SELECT
-          isnull([rows].[row_json], '[]') AS [rows]
+          ISNULL([rows].[row_json], '[]') AS [rows]
         FROM
           (
             SELECT
