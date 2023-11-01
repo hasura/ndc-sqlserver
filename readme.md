@@ -21,7 +21,6 @@ Things we definitely don't have:
 - database introspection
 - explain queries
 - reinstate benchmarks
-- CI job for testing config server
 
 The best view of progress is probably `/crates/ndc-sqlserver/tests/`, and look
 at which tests are still commented out. If you'd to contribute, a very good
@@ -33,16 +32,16 @@ start would be to uncomment one and try to fix any query errors.
 
 1. Install [rustup](https://www.rust-lang.org/tools/install).
 2. Install additional tools:
-    - `cargo install cargo-watch cargo-insta`
-    - `rustup component add rust-analyzer`
-    - `rustup component add clippy`
-    - `rustup component add rustfmt`
+   - `cargo install cargo-watch cargo-insta`
+   - `rustup component add rust-analyzer`
+   - `rustup component add clippy`
+   - `rustup component add rustfmt`
 3. Install [just](https://github.com/casey/just)
 4. Install [Docker](https://www.docker.com/)
 5. Install protoc. Here are a few options:
-    - `brew install protobuf`
-    - `apt-get install protobuf-compiler`
-    - `dnf install protobuf-compiler`
+   - `brew install protobuf`
+   - `apt-get install protobuf-compiler`
+   - `dnf install protobuf-compiler`
 6. Clone [v3-engine](https://github.com/hasura/v3-engine) in a directory near this one:
    ```
    (cd .. && git clone git@github.com:hasura/v3-engine.git)
@@ -69,8 +68,8 @@ just run
    ```
    curl -H "Content-Type: application/json" \
      --data "@crates/ndc-sqlserver/tests/goldenfiles/select_where_variable.json" \
-	 http://localhost:8100/query \
-	 | jq
+    http://localhost:8100/query \
+    | jq
    ```
 
 Among the docker containers is a Jaeger instance for tracing/debugging, accessible at http://127.0.0.1:4002.
@@ -106,6 +105,7 @@ See [architecture.md](./architecture.md).
      }
    }
    ```
+
    (or `just test-integrated`)
 
 ## Write a database execution test

@@ -146,15 +146,14 @@ run-engine: start-dependencies
 
 # pasting multiline SQL into `sqlcmd` is a bad time, so here is a script to
 # smash a file in for rapid fire application development business value
-run-temp-sql: start-dependencies
+run-temp-sql:
+  docker compose up --wait sqlserver
   sqlcmd -S localhost,64003 -U SA -P "Password!" -d "Chinook" -i "./temp.sql"
 
 ## repl-sqlserver: start a sqlserver docker image and connect to it using sqlcmd
 repl-sqlserver:
   #!/usr/bin/env bash
-  docker compose up -d sqlserver
-  # need a proper health check here instead ... but yolo
-  sleep 2
+  docker compose up -wait sqlserver
   sqlcmd -S localhost,64003 -U SA -P "Password!" -d "Chinook"
 
 # run `clippy` linter

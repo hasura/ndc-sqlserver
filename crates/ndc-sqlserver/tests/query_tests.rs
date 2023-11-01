@@ -36,14 +36,12 @@ mod predicates {
         insta::assert_json_snapshot!(result);
     }
 
-    /*
-    // this fails because empty responses don't return `{ rows: [] }` and instead return `{}`
     #[tokio::test]
     async fn select_where_album_id_less_than() {
         let result = run_query("select_where_album_id_less_than").await;
         insta::assert_json_snapshot!(result);
     }
-    */
+
     #[tokio::test]
     async fn select_where_album_id_less_than_or_equal_to() {
         let result = run_query("select_where_album_id_less_than_or_equal_to").await;
@@ -86,14 +84,12 @@ mod predicates {
         insta::assert_json_snapshot!(result);
     }
 
-    // need to run query for each set of variables
     #[tokio::test]
     async fn select_where_variable() {
         let result = run_query("select_where_variable").await;
         insta::assert_json_snapshot!(result);
     }
 
-    // need to run query for each set of variables
     #[tokio::test]
     async fn select_where_variable_int() {
         let result = run_query("select_where_variable_int").await;
