@@ -124,7 +124,9 @@ generate-chinook-configuration: build
 # run sqlserver
 start-dependencies:
   # start sqlserver
-  docker compose up -d sqlserver
+  docker compose down -v sqlserver
+  docker compose up --wait sqlserver
+  sqlcmd -S localhost,64003 -U SA -P "Password!" -i "./static/chinook-sqlserver.sql"
 
 # run prometheus + grafana
 start-metrics:
@@ -141,10 +143,6 @@ run-engine: start-dependencies
     --manifest-path ../v3-engine/Cargo.toml \
     --bin engine -- \
     --metadata-path ./static/chinook-metadata.json
-
-import-chinook-dataset: start-dependencies
-  sqlcmd -S localhost,64003 -U SA -P "Password!" -i "./static/chinook-sqlserver.sql"
-  echo "chinook achieved"
 
 # pasting multiline SQL into `sqlcmd` is a bad time, so here is a script to
 # smash a file in for rapid fire application development business value
