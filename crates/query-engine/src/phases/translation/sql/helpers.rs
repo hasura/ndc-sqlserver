@@ -141,8 +141,8 @@ pub fn star_select(from: From) -> Select {
 
 /// given a set of rows and aggregate queries, combine them into
 /// one Select
-/// SELECT JSON_VALUE([aggregates].[json], "$.aggregates") as [aggregates],
-///  JSON_QUERY([rows].[json], "$.json") AS [rows]
+/// SELECT JSON_VALUE([aggregates].[aggregates_json], "$.aggregates_json") as [aggregates],
+///  JSON_QUERY(isnull([rows].[row_json],'[]'), "$.row_json") AS [rows]
 /// FROM (
 ///     SELECT *
 ///     FROM (
@@ -177,10 +177,16 @@ pub fn select_rowset(
         SelectSet::Rows(row_select) => {
             let rows_row = vec![(
                 make_column_alias("rows".to_string()),
-                Expression::ColumnName(ColumnName::AliasedColumn {
-                    name: row_column_alias.clone(),
-                    table: TableName::AliasedTable(row_table_alias.clone()),
-                }),
+                Expression::FunctionCall {
+                    function: Function::IsNull,
+                    args: vec![
+                        Expression::ColumnName(ColumnName::AliasedColumn {
+                            name: row_column_alias.clone(),
+                            table: TableName::AliasedTable(row_table_alias.clone()),
+                        }),
+                        Expression::Value(Value::EmptyJsonArray),
+                    ],
+                },
             )];
 
             let mut final_row_select = simple_select(rows_row);
@@ -227,10 +233,16 @@ pub fn select_rowset(
                 (
                     make_column_alias("rows".to_string()),
                     Expression::JsonQuery(
-                        Box::new(Expression::ColumnName(ColumnName::AliasedColumn {
-                            name: row_column_alias.clone(),
-                            table: TableName::AliasedTable(row_table_alias.clone()),
-                        })),
+                        Box::new(Expression::FunctionCall {
+                            function: Function::IsNull,
+                            args: vec![
+                                Expression::ColumnName(ColumnName::AliasedColumn {
+                                    name: row_column_alias.clone(),
+                                    table: TableName::AliasedTable(row_table_alias.clone()),
+                                }),
+                                Expression::Value(Value::EmptyJsonArray),
+                            ],
+                        }),
                         JsonPath {
                             elements: vec![row_column_alias.clone()],
                         },

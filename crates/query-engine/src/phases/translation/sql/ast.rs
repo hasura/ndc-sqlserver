@@ -200,7 +200,7 @@ pub enum BinaryArrayOperator {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Function {
-    Coalesce,
+    IsNull,
     JsonAgg,
     Unknown(String),
 }

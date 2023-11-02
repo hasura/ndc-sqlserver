@@ -363,8 +363,8 @@ impl BinaryArrayOperator {
 impl Function {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
-            Function::Coalesce => sql.append_syntax("coalesce"),
-            Function::JsonAgg => sql.append_syntax("json_agg"),
+            Function::JsonAgg => sql.append_syntax("JSON_AGG"),
+            Function::IsNull => sql.append_syntax("ISNULL"),
             Function::Unknown(name) => sql.append_syntax(name),
         }
     }
@@ -386,7 +386,7 @@ impl CountType {
 impl Value {
     pub fn to_sql(&self, sql: &mut SQL) {
         match &self {
-            Value::EmptyJsonArray => sql.append_syntax("JSON_VALUE('[]','$')"),
+            Value::EmptyJsonArray => sql.append_syntax("'[]'"),
             Value::Int4(i) => sql.append_syntax(format!("{}", i).as_str()),
             Value::String(s) => sql.append_param(Param::String(s.clone())),
             Value::Variable(v) => sql.append_param(Param::Variable(v.clone())),
