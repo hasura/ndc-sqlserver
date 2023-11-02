@@ -1,0 +1,23 @@
+{
+  "nativeQueries": {
+    "artist_by_id": {
+      "sql": "SELECT * FROM public.\"Artist\" WHERE \"ArtistId\" = {{id}}",
+      "columns": {
+        "ArtistId": {
+          "name": "ArtistId",
+          "type": "int4"
+        },
+        "Name": {
+          "name": "Name",
+          "type": "varchar"
+        }
+      },
+      "arguments": {
+        "id": {
+          "name": "id",
+          "type": "int4"
+        }
+      }
+    }
+  }
+}

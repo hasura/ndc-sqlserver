@@ -1,0 +1,14 @@
+{
+  "tables": {
+    "Album": {
+      "schemaName": "public",
+      "tableName": "Album",
+      "columns": {
+        "Title": {
+          "name": "Title",
+          "type": "varchar"
+        }
+      }
+    }
+  }
+}

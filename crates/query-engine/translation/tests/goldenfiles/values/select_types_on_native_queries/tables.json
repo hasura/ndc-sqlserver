@@ -1,0 +1,51 @@
+{
+  "nativeQueries": {
+    "types": {
+      "sql": "SELECT {{date}} as date, {{time}} as time, {{timetz}} as timetz, {{timestamp}} as timestamp, {{timestamptz}} as timestamptz",
+      "columns": {
+        "date": {
+          "name": "date",
+          "type": "date"
+        },
+        "time": {
+          "name": "time",
+          "type": "time"
+        },
+        "timetz": {
+          "name": "timetz",
+          "type": "timetz"
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp"
+        },
+        "timestamptz": {
+          "name": "timestamptz",
+          "type": "timestamptz"
+        }
+      },
+      "arguments": {
+        "date": {
+          "name": "date",
+          "type": "date"
+        },
+        "time": {
+          "name": "time",
+          "type": "time"
+        },
+        "timetz": {
+          "name": "timetz",
+          "type": "timetz"
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp"
+        },
+        "timestamptz": {
+          "name": "timestamptz",
+          "type": "timestamptz"
+        }
+      }
+    }
+  }
+}

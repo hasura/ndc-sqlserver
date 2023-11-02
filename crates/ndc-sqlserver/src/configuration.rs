@@ -9,12 +9,11 @@ use thiserror::Error;
 const CURRENT_VERSION: u32 = 1;
 
 /// User configuration.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, JsonSchema)]
 pub struct DeploymentConfiguration {
     pub version: u32,
     pub mssql_connection_string: String,
-    pub tables: query_engine::metadata::TablesInfo,
-    pub aggregate_functions: query_engine::metadata::AggregateFunctions,
+    pub metadata: query_engine_metadata::metadata::Metadata,
 }
 
 impl DeploymentConfiguration {
@@ -22,10 +21,16 @@ impl DeploymentConfiguration {
         Self {
             version: CURRENT_VERSION,
             mssql_connection_string: "".into(),
-            tables: query_engine::metadata::TablesInfo::default(),
-            aggregate_functions: query_engine::metadata::AggregateFunctions::default(),
+            metadata: query_engine_metadata::metadata::Metadata::default(),
         }
     }
+}
+
+/// User configuration, elaborated from a 'RawConfiguration'.
+#[derive(Debug, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct Configuration {
+    pub config: DeploymentConfiguration,
 }
 
 /// State for our connector.
@@ -37,32 +42,34 @@ pub struct State {
 
 /// Validate the user configuration.
 pub async fn validate_raw_configuration(
-    configuration: &DeploymentConfiguration,
-) -> Result<DeploymentConfiguration, connector::ValidateError> {
-    if configuration.version != 1 {
+    config: DeploymentConfiguration,
+) -> Result<Configuration, connector::ValidateError> {
+    if config.version != 1 {
         return Err(connector::ValidateError::ValidateError(vec![
             connector::InvalidRange {
                 path: vec![connector::KeyOrIndex::Key("version".into())],
                 message: format!(
                     "invalid configuration version, expected 1, got {0}",
-                    configuration.version
+                    config.version
                 ),
             },
         ]));
     }
-    Ok(configuration.clone())
+    Ok(Configuration { config })
 }
 
 /// Create a connection pool and wrap it inside a connector State.
 pub async fn create_state(
-    configuration: &DeploymentConfiguration,
+    configuration: &Configuration,
     metrics_registry: &mut prometheus::Registry,
 ) -> Result<State, connector::InitializationError> {
-    let mssql_pool = create_mssql_pool(configuration).await.map_err(|e| {
-        connector::InitializationError::Other(
-            InitializationError::UnableToCreateMSSQLPool(e).into(),
-        )
-    })?;
+    let mssql_pool = create_mssql_pool(&configuration.config)
+        .await
+        .map_err(|e| {
+            connector::InitializationError::Other(
+                InitializationError::UnableToCreateMSSQLPool(e).into(),
+            )
+        })?;
     let metrics = metrics::initialise_metrics(metrics_registry).await?;
     Ok(State {
         mssql_pool,
@@ -94,8 +101,7 @@ pub async fn configure(
     Ok(DeploymentConfiguration {
         version: 1,
         mssql_connection_string: args.mssql_connection_string.clone(),
-        tables: query_engine::metadata::TablesInfo::default(),
-        aggregate_functions: query_engine::metadata::AggregateFunctions::default(),
+        metadata: query_engine_metadata::metadata::Metadata::default(),
     })
 }
 

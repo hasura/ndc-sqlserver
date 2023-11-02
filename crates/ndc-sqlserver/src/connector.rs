@@ -11,8 +11,9 @@ use async_trait::async_trait;
 use ndc_sdk::connector;
 use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
-
-use query_engine::phases;
+use query_engine_execution::execution;
+use query_engine_translation::translation;
+use std::sync::Arc;
 
 use super::configuration;
 
@@ -24,7 +25,7 @@ impl connector::Connector for SQLServer {
     /// RawConfiguration is what the user specifies as JSON
     type RawConfiguration = configuration::DeploymentConfiguration;
     /// The type of validated configuration
-    type Configuration = configuration::DeploymentConfiguration;
+    type Configuration = Arc<configuration::Configuration>;
     /// The type of unserializable state
     type State = configuration::State;
 
@@ -44,7 +45,9 @@ impl connector::Connector for SQLServer {
     async fn validate_raw_configuration(
         configuration: Self::RawConfiguration,
     ) -> Result<Self::Configuration, connector::ValidateError> {
-        configuration::validate_raw_configuration(&configuration).await
+        configuration::validate_raw_configuration(configuration)
+            .await
+            .map(Arc::new)
     }
 
     /// Initialize the connector's in-memory state.
@@ -69,7 +72,7 @@ impl connector::Connector for SQLServer {
     /// the number of idle connections in a connection pool
     /// can be polled but not updated directly.
     fn fetch_metrics(
-        _configuration: &configuration::DeploymentConfiguration,
+        _configuration: &Arc<configuration::Configuration>,
         _state: &configuration::State,
     ) -> Result<(), connector::FetchMetricsError> {
         // We'd call something `update_pool_metrics` here ideally, see SQLServer NDC
@@ -158,25 +161,25 @@ impl connector::Connector for SQLServer {
         tracing::info!("{:?}", query_request);
 
         // Compile the query.
-        let plan = match phases::translation::query::translate(&configuration.tables, query_request)
-        {
-            Ok(plan) => Ok(plan),
-            Err(err) => {
-                tracing::error!("{}", err);
-                match err {
-                    phases::translation::query::error::Error::NotSupported(_) => {
-                        Err(connector::QueryError::UnsupportedOperation(err.to_string()))
+        let plan =
+            match translation::query::translate(&configuration.config.metadata, query_request) {
+                Ok(plan) => Ok(plan),
+                Err(err) => {
+                    tracing::error!("{}", err);
+                    match err {
+                        translation::query::error::Error::NotSupported(_) => {
+                            Err(connector::QueryError::UnsupportedOperation(err.to_string()))
+                        }
+                        _ => Err(connector::QueryError::InvalidRequest(err.to_string())),
                     }
-                    _ => Err(connector::QueryError::InvalidRequest(err.to_string())),
                 }
-            }
-        }?;
+            }?;
 
         // Execute the query.
-        let result = phases::execution::mssql_execute(&state.mssql_pool, plan)
+        let result = execution::mssql_execute(&state.mssql_pool, plan)
             .await
             .map_err(|err| match err {
-                phases::execution::Error::Query(err) => {
+                execution::Error::Query(err) => {
                     tracing::error!("{}", err);
                     connector::QueryError::Other(err.into())
                 }
