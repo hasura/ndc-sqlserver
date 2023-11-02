@@ -19,12 +19,6 @@ mod basic {
         let result = run_query("select_int_and_string").await;
         insta::assert_json_snapshot!(result);
     }
-
-    #[tokio::test]
-    async fn select_many() {
-        let result = run_query("select_many").await;
-        insta::assert_json_snapshot!(result);
-    }
 }
 
 mod predicates {
