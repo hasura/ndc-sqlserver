@@ -1,12 +1,11 @@
 //! Execute an execution plan against the database.
 
-use std::collections::BTreeMap;
-
-use serde_json;
-
-use ndc_sdk::models;
-
 use super::translation::sql;
+use ndc_sdk::models;
+use serde_json;
+use std::collections::BTreeMap;
+use tiberius::QueryItem;
+use tokio_stream::StreamExt;
 
 /// Execute a query against sqlserver.
 pub async fn mssql_execute(
@@ -114,14 +113,28 @@ async fn execute_mssql_query(
     }
 
     // go!
-    let stream = mssql_query.query(&mut connection).await.unwrap();
+    let mut stream = mssql_query.query(&mut connection).await.unwrap();
 
-    // Nothing is fetched, the first result set starts.
-    let rows = stream.into_row().await.unwrap().unwrap();
+    // collect big lump of json here
+    let mut result_str = String::new();
 
-    let single_item: &str = rows.get(0).unwrap();
+    // stream it out and collect it here:
+    while let Some(item) = stream.try_next().await.unwrap() {
+        match item {
+            // ignore these
+            QueryItem::Metadata(_meta) => {
+                // .. handling
+            }
+            // ...concatenate these
+            QueryItem::Row(row) => {
+                let item = row.get(0).unwrap();
+                result_str.push_str(item)
+            }
+        }
+    }
 
-    let json_value = serde_json::from_str(single_item).unwrap();
+    // once we're happy this is stable, we should stream the JSON string straight out
+    let json_value = serde_json::from_str(&result_str).unwrap();
 
     Ok(json_value)
 }

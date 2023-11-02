@@ -1,0 +1,14 @@
+{
+  "collection": "Album",
+  "query": {
+    "fields": {
+      "ArtistId": { "type": "column", "column": "ArtistId" },
+      "Title": {
+        "type": "column",
+        "column": "Title"
+      }
+    }
+  },
+  "arguments": {},
+  "collection_relationships": {}
+}
