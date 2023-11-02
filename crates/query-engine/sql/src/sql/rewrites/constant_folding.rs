@@ -25,9 +25,14 @@ pub fn normalize_select(mut select: Select) -> Select {
 
     // from
     select.from = match select.from {
-        Some(From::Select { select, alias }) => Some(From::Select {
+        Some(From::Select {
+            select,
+            alias,
+            alias_path,
+        }) => Some(From::Select {
             alias,
             select: Box::new(normalize_select(*select)),
+            alias_path,
         }),
         from => from,
     };
@@ -65,9 +70,14 @@ pub fn normalize_join(join: Join) -> Join {
                 alias,
             })
         }
-        Join::CrossJoin(CrossJoin { select, alias }) => Join::CrossJoin(CrossJoin {
+        Join::CrossJoin(CrossJoin {
+            select,
+            alias,
+            alias_path,
+        }) => Join::CrossJoin(CrossJoin {
             select: Box::new(normalize_select(*select)),
             alias,
+            alias_path,
         }),
     }
 }

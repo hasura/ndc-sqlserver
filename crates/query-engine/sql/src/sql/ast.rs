@@ -48,6 +48,19 @@ pub struct Select {
     pub group_by: GroupBy,
     pub order_by: OrderBy,
     pub limit: Limit,
+    pub for_json: ForJson,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AliasPath {
+    pub elements: Vec<ColumnAlias>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ForJson {
+    NoJson,
+    ForJsonPath,
+    ForJsonPathWithoutArrayWrapper,
 }
 
 /// A select list
@@ -69,6 +82,7 @@ pub enum From {
     Select {
         select: Box<Select>,
         alias: TableAlias,
+        alias_path: AliasPath,
     },
 }
 
@@ -88,6 +102,7 @@ pub enum Join {
 pub struct CrossJoin {
     pub select: Box<Select>,
     pub alias: TableAlias,
+    pub alias_path: AliasPath,
 }
 
 /// A LEFT OUTER JOIN LATERAL clause
