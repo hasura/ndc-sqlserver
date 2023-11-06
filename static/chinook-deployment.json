@@ -4,7 +4,7 @@
   "metadata": {
     "tables": {
       "Album": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "Album",
         "columns": {
           "AlbumId": {
@@ -40,7 +40,7 @@
         "description": "The record of all albums"
       },
       "Artist": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "Artist",
         "columns": {
           "ArtistId": {
@@ -63,7 +63,7 @@
         "description": "The record of all artists"
       },
       "Customer": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "Customer",
         "columns": {
           "Address": {
@@ -159,7 +159,7 @@
         "description": "The record of all customers"
       },
       "Employee": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "Employee",
         "columns": {
           "Address": {
@@ -267,7 +267,7 @@
         "description": null
       },
       "Genre": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "Genre",
         "columns": {
           "GenreId": {
@@ -290,7 +290,7 @@
         "description": null
       },
       "Invoice": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "Invoice",
         "columns": {
           "BillingAddress": {
@@ -362,7 +362,7 @@
         "description": null
       },
       "InvoiceLine": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "InvoiceLine",
         "columns": {
           "InvoiceId": {
@@ -416,7 +416,7 @@
         "description": null
       },
       "MediaType": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "MediaType",
         "columns": {
           "MediaTypeId": {
@@ -439,7 +439,7 @@
         "description": null
       },
       "Playlist": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "Playlist",
         "columns": {
           "Name": {
@@ -462,7 +462,7 @@
         "description": null
       },
       "PlaylistTrack": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "PlaylistTrack",
         "columns": {
           "PlaylistId": {
@@ -498,7 +498,7 @@
         "description": null
       },
       "Track": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "Track",
         "columns": {
           "AlbumId": {
@@ -582,7 +582,7 @@
         "description": null
       },
       "geography_columns": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "geography_columns",
         "columns": {
           "coord_dimension": {
@@ -633,7 +633,7 @@
         "description": null
       },
       "geometry_columns": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "geometry_columns",
         "columns": {
           "coord_dimension": {
@@ -755,7 +755,7 @@
         "description": null
       },
       "spatial_ref_sys": {
-        "schemaName": "public",
+        "schemaName": "dbo",
         "tableName": "spatial_ref_sys",
         "columns": {
           "auth_name": {
@@ -840,7 +840,7 @@
     },
     "nativeQueries": {
       "album_by_title": {
-        "sql": "SELECT * FROM public.\"Album\" WHERE \"Title\" LIKE {{title}} AND \"AlbumId\" < {{id}}",
+        "sql": "SELECT * FROM dbo.\"Album\" WHERE \"Title\" LIKE {{title}} AND \"AlbumId\" < {{id}}",
         "columns": {
           "AlbumId": {
             "name": "AlbumId",
@@ -878,7 +878,7 @@
         "description": null
       },
       "artist": {
-        "sql": "SELECT * FROM public.\"Artist\"",
+        "sql": "SELECT * FROM dbo.\"Artist\"",
         "columns": {
           "ArtistId": {
             "name": "ArtistId",
@@ -897,7 +897,7 @@
         "description": null
       },
       "artist_below_id": {
-        "sql": "SELECT * FROM public.\"Artist\" WHERE \"ArtistId\" < {{id}}",
+        "sql": "SELECT * FROM dbo.\"Artist\" WHERE \"ArtistId\" < {{id}}",
         "columns": {
           "ArtistId": {
             "name": "ArtistId",

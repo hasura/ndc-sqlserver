@@ -115,13 +115,18 @@ pub fn translate_rows_query(
     select.from = Some(from_clause.clone());
 
     // if query has limit or offset, and no order_by, then create a default
-    let _has_limit_or_offset: bool =
-        Option::is_some(&query.limit) || Option::is_some(&query.offset);
-    /*
-        if has_limit_or_offset && select.order_by.elements.is_empty() {
-            select.order_by = sorting::default_order_by(table_info, current_table_alias_name)?;
+    let has_limit_or_offset: bool = Option::is_some(&query.limit) || Option::is_some(&query.offset);
+
+    if has_limit_or_offset && select.order_by.elements.is_empty() {
+        match collection_info {
+            CollectionInfo::Table { info, .. } => {
+                select.order_by = sorting::default_order_by(info, current_table.reference.clone())?;
+            }
+            CollectionInfo::NativeQuery { .. } => {
+                todo!("default order by for native queries not implemented yet")
+            }
         }
-    */
+    }
 
     // Add the limit.
     select.limit = match (query.limit, query.offset) {
