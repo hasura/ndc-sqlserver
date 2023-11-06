@@ -2107,12 +2107,10 @@ version = "0.1.0"
 dependencies = [
  "bb8",
  "bb8-tiberius",
- "bytes",
  "ndc-sdk 0.1.0 (git+https://github.com/hasura/ndc-hub.git?rev=098b1c2)",
  "prometheus",
  "query-engine-sql",
  "serde_json",
- "sqlformat",
  "sqlx",
  "tiberius",
  "tokio-stream",

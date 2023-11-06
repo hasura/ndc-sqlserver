@@ -14,6 +14,5 @@ bb8-tiberius = "0.15.0"
 
 prometheus = "0.13.3"
 serde_json = "1.0.107"
-sqlx = { version = "0.7.2", features = [ "json", "postgres", "runtime-tokio-rustls", "uuid" ] }
 tokio-stream = "0.1.14"
 tracing = "0.1.40"

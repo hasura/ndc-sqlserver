@@ -1,8 +1,6 @@
 //! Metrics setup and update for our connector.
 
-use std::time::Duration;
-
-use prometheus::{Gauge, Histogram, HistogramTimer, IntCounter, IntGauge, Registry};
+use prometheus::{Histogram, HistogramTimer, IntCounter, Registry};
 
 /// The collection of all metrics exposed through the `/metrics` endpoint.
 #[derive(Debug, Clone)]
@@ -13,14 +11,6 @@ pub struct Metrics {
     query_plan_time: Histogram,
     query_execution_time: Histogram,
     connection_acquisition_wait_time: Histogram,
-    pool_size: IntGauge,
-    pool_idle_count: IntGauge,
-    pool_active_count: IntGauge,
-    pool_max_connections: IntGauge,
-    pool_min_connections: IntGauge,
-    pool_acquire_timeout: Gauge,
-    pool_max_lifetime: Gauge,
-    pool_idle_timeout: Gauge,
     pub error_metrics: ErrorMetrics,
 }
 
@@ -63,54 +53,6 @@ impl Metrics {
             "Time taken to acquire a connection.",
         )?;
 
-        let pool_size = add_int_gauge_metric(
-            metrics_registry,
-            "ndc_sqlserver_pool_size",
-            "The number of connections currently active. This includes idle connections.",
-        )?;
-
-        let pool_idle_count = add_int_gauge_metric(
-            metrics_registry,
-            "ndc_sqlserver_pool_idle",
-            "The number of connections active and idle (not in use).",
-        )?;
-
-        let pool_active_count = add_int_gauge_metric(
-            metrics_registry,
-            "ndc_sqlserver_pool_active",
-            "The number of connections current active. This does not include idle connections.",
-        )?;
-
-        let pool_max_connections = add_int_gauge_metric(
-            metrics_registry,
-            "ndc_sqlserver_pool_max_connections",
-            "The maximum number of connections that this pool should maintain.",
-        )?;
-
-        let pool_min_connections = add_int_gauge_metric(
-            metrics_registry,
-            "ndc_sqlserver_pool_min_connections",
-            "The minimum number of connections that this pool should maintain.",
-        )?;
-
-        let pool_acquire_timeout = add_gauge_metric(
-            metrics_registry,
-            "ndc_sqlserver_pool_acquire_timeout",
-            "Get the maximum amount of time to spend waiting for a connection, in seconds.",
-        )?;
-
-        let pool_idle_timeout = add_gauge_metric(
-            metrics_registry,
-            "ndc_sqlserver_pool_idle_timeout",
-            "Get the maximum idle duration for individual connections, in seconds.",
-        )?;
-
-        let pool_max_lifetime = add_gauge_metric(
-            metrics_registry,
-            "ndc_sqlserver_pool_max_lifetime",
-            "Get the maximum lifetime of individual connections, in seconds.",
-        )?;
-
         let error_metrics = ErrorMetrics::initialize(metrics_registry)?;
 
         Ok(Self {
@@ -120,14 +62,6 @@ impl Metrics {
             query_plan_time,
             query_execution_time,
             connection_acquisition_wait_time,
-            pool_size,
-            pool_idle_count,
-            pool_active_count,
-            pool_max_connections,
-            pool_min_connections,
-            pool_acquire_timeout,
-            pool_idle_timeout,
-            pool_max_lifetime,
             error_metrics,
         })
     }
@@ -155,46 +89,6 @@ impl Metrics {
     pub fn time_connection_acquisition_wait(&self) -> Timer {
         Timer(self.connection_acquisition_wait_time.start_timer())
     }
-
-    // Set the metrics populated from the pool options.
-    //
-    // This only needs to be called once, as the options don't change.
-    pub fn set_pool_options_metrics(&self, pool_options: &sqlx::pool::PoolOptions<sqlx::Postgres>) {
-        let max_connections: i64 = pool_options.get_max_connections().into();
-        self.pool_max_connections.set(max_connections);
-
-        let min_connections: i64 = pool_options.get_min_connections().into();
-        self.pool_min_connections.set(min_connections);
-
-        let acquire_timeout: f64 = pool_options.get_acquire_timeout().as_secs_f64();
-        self.pool_acquire_timeout.set(acquire_timeout);
-
-        // if nothing is set, return 0
-        let idle_timeout: f64 = pool_options
-            .get_idle_timeout()
-            .unwrap_or(Duration::ZERO)
-            .as_secs_f64();
-        self.pool_idle_timeout.set(idle_timeout);
-
-        // if nothing is set, return 0
-        let max_lifetime: f64 = pool_options
-            .get_max_lifetime()
-            .unwrap_or(Duration::ZERO)
-            .as_secs_f64();
-        self.pool_max_lifetime.set(max_lifetime);
-    }
-
-    // Update all metrics fed from the database pool.
-    pub fn update_pool_metrics(&self, pool: &sqlx::PgPool) {
-        let pool_size: i64 = pool.size().into();
-        self.pool_size.set(pool_size);
-
-        let pool_idle: i64 = pool.num_idle().try_into().unwrap();
-        self.pool_idle_count.set(pool_idle);
-
-        let pool_active: i64 = pool_size - pool_idle;
-        self.pool_active_count.set(pool_active);
-    }
 }
 
 /// Create a new int counter metric and register it with the provided Prometheus Registry
@@ -206,28 +100,6 @@ fn add_int_counter_metric(
     let int_counter = IntCounter::with_opts(prometheus::Opts::new(metric_name, metric_description))
         .map_err(Error)?;
     register_collector(metrics_registry, int_counter)
-}
-
-/// Create a new int gauge metric and register it with the provided Prometheus Registry
-fn add_int_gauge_metric(
-    metrics_registry: &mut Registry,
-    metric_name: &str,
-    metric_description: &str,
-) -> Result<IntGauge, Error> {
-    let int_gauge = IntGauge::with_opts(prometheus::Opts::new(metric_name, metric_description))
-        .map_err(Error)?;
-    register_collector(metrics_registry, int_gauge)
-}
-
-/// Create a new gauge metric and register it with the provided Prometheus Registry
-fn add_gauge_metric(
-    metrics_registry: &mut Registry,
-    metric_name: &str,
-    metric_description: &str,
-) -> Result<Gauge, Error> {
-    let gauge =
-        Gauge::with_opts(prometheus::Opts::new(metric_name, metric_description)).map_err(Error)?;
-    register_collector(metrics_registry, gauge)
 }
 
 /// Create a new histogram metric using the default buckets, and register it with the provided
