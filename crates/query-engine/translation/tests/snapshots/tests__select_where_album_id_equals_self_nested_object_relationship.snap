@@ -3,124 +3,101 @@ source: crates/query-engine/translation/tests/tests.rs
 expression: result
 ---
 SELECT
-  row_to_json("%12_universe") AS "universe"
+  ISNULL([13_rows].[rows], '[]') AS [rows]
 FROM
   (
     SELECT
-      *
+      [0_Track].[Name] AS [track],
+      [0_Track].[AlbumId] AS [AlbumId],
+      JSON_QUERY([1_RELATIONSHIP_Album].[json], '$') AS [Album]
     FROM
-      (
+      [public].[Track] AS [0_Track]
+      OUTER APPLY (
         SELECT
-          coalesce(json_agg(row_to_json("%13_rows")), '[]') AS "rows"
+          ISNULL([7_rows].[row_json], '[]') AS [rows]
         FROM
           (
             SELECT
-              "%0_Track"."Name" AS "track",
-              "%0_Track"."AlbumId" AS "AlbumId",
-              "%1_RELATIONSHIP_Album"."Album" AS "Album"
+              [2_Album].[Title] AS [album],
+              JSON_QUERY([3_RELATIONSHIP_Artist].[json], '$') AS [Artist]
             FROM
-              "public"."Track" AS "%0_Track"
-              LEFT OUTER JOIN LATERAL (
+              [public].[Album] AS [2_Album]
+              OUTER APPLY (
                 SELECT
-                  row_to_json("%1_RELATIONSHIP_Album") AS "Album"
+                  ISNULL([5_rows].[row_json], '[]') AS [rows]
                 FROM
                   (
                     SELECT
-                      *
+                      [4_Artist].[Name] AS [artist],
+                      [4_Artist].[ArtistId] AS [ArtistId]
                     FROM
-                      (
-                        SELECT
-                          coalesce(json_agg(row_to_json("%7_rows")), '[]') AS "rows"
-                        FROM
-                          (
-                            SELECT
-                              "%2_Album"."Title" AS "album",
-                              "%3_RELATIONSHIP_Artist"."Artist" AS "Artist"
-                            FROM
-                              "public"."Album" AS "%2_Album"
-                              LEFT OUTER JOIN LATERAL (
-                                SELECT
-                                  row_to_json("%3_RELATIONSHIP_Artist") AS "Artist"
-                                FROM
-                                  (
-                                    SELECT
-                                      *
-                                    FROM
-                                      (
-                                        SELECT
-                                          coalesce(json_agg(row_to_json("%5_rows")), '[]') AS "rows"
-                                        FROM
-                                          (
-                                            SELECT
-                                              "%4_Artist"."Name" AS "artist",
-                                              "%4_Artist"."ArtistId" AS "ArtistId"
-                                            FROM
-                                              "public"."Artist" AS "%4_Artist"
-                                            WHERE
-                                              ("%2_Album"."ArtistId" = "%4_Artist"."ArtistId")
-                                          ) AS "%5_rows"
-                                      ) AS "%5_rows"
-                                  ) AS "%3_RELATIONSHIP_Artist"
-                              ) AS "%3_RELATIONSHIP_Artist" ON ('true')
-                            WHERE
-                              ("%0_Track"."AlbumId" = "%2_Album"."AlbumId")
-                          ) AS "%7_rows"
-                      ) AS "%7_rows"
-                  ) AS "%1_RELATIONSHIP_Album"
-              ) AS "%1_RELATIONSHIP_Album" ON ('true')
-              INNER JOIN LATERAL (
-                SELECT
-                  *
-                FROM
-                  "public"."Album" AS "%9_BOOLEXP_Album"
-                WHERE
-                  (
-                    ("%9_BOOLEXP_Album"."Title" = cast($1 as varchar))
-                    AND (
-                      "%0_Track"."AlbumId" = "%9_BOOLEXP_Album"."AlbumId"
-                    )
-                  )
-              ) AS "%9_BOOLEXP_Album" ON ('true')
-              INNER JOIN LATERAL (
-                SELECT
-                  *
-                FROM
-                  "public"."Album" AS "%10_BOOLEXP_Album"
-                WHERE
-                  (
-                    (
-                      "%10_BOOLEXP_Album"."Title" = cast($2 as varchar)
-                    )
-                    AND (
-                      "%0_Track"."AlbumId" = "%10_BOOLEXP_Album"."AlbumId"
-                    )
-                  )
-              ) AS "%10_BOOLEXP_Album" ON ('true')
-              INNER JOIN LATERAL (
-                SELECT
-                  *
-                FROM
-                  "public"."Artist" AS "%11_BOOLEXP_Artist"
-                WHERE
-                  (
-                    (
-                      "%11_BOOLEXP_Artist"."Name" = cast($3 as varchar)
-                    )
-                    AND (
-                      "%10_BOOLEXP_Album"."ArtistId" = "%11_BOOLEXP_Artist"."ArtistId"
-                    )
-                  )
-              ) AS "%11_BOOLEXP_Artist" ON ('true')
+                      [public].[Artist] AS [4_Artist]
+                    WHERE
+                      ([2_Album].[ArtistId] = [4_Artist].[ArtistId]) FOR JSON PATH,
+                      INCLUDE_NULL_VALUES
+                  ) AS [5_rows]([row_json]) FOR JSON PATH,
+                  INCLUDE_NULL_VALUES,
+                  WITHOUT_ARRAY_WRAPPER
+              ) AS [3_RELATIONSHIP_Artist]([json])
             WHERE
-              (
-                "%9_BOOLEXP_Album"."AlbumId" > "%11_BOOLEXP_Artist"."ArtistId"
-              )
-            ORDER BY
-              "%0_Track"."TrackId" ASC
-            LIMIT
-              5
-          ) AS "%13_rows"
-      ) AS "%13_rows"
-  ) AS "%12_universe"
+              ([0_Track].[AlbumId] = [2_Album].[AlbumId]) FOR JSON PATH,
+              INCLUDE_NULL_VALUES
+          ) AS [7_rows]([row_json]) FOR JSON PATH,
+          INCLUDE_NULL_VALUES,
+          WITHOUT_ARRAY_WRAPPER
+      ) AS [1_RELATIONSHIP_Album]([json])
+      INNER JOIN (
+        SELECT
+          *
+        FROM
+          [public].[Album] AS [9_BOOLEXP_Album]
+        WHERE
+          (
+            ([9_BOOLEXP_Album].[Title] = cast(@P1 as varchar))
+            AND (
+              [0_Track].[AlbumId] = [9_BOOLEXP_Album].[AlbumId]
+            )
+          )
+      ) AS [9_BOOLEXP_Album] ON ('true')
+      INNER JOIN (
+        SELECT
+          *
+        FROM
+          [public].[Album] AS [10_BOOLEXP_Album]
+        WHERE
+          (
+            (
+              [10_BOOLEXP_Album].[Title] = cast(@P2 as varchar)
+            )
+            AND (
+              [0_Track].[AlbumId] = [10_BOOLEXP_Album].[AlbumId]
+            )
+          )
+      ) AS [10_BOOLEXP_Album] ON ('true')
+      INNER JOIN (
+        SELECT
+          *
+        FROM
+          [public].[Artist] AS [11_BOOLEXP_Artist]
+        WHERE
+          (
+            (
+              [11_BOOLEXP_Artist].[Name] = cast(@P3 as varchar)
+            )
+            AND (
+              [10_BOOLEXP_Album].[ArtistId] = [11_BOOLEXP_Artist].[ArtistId]
+            )
+          )
+      ) AS [11_BOOLEXP_Artist] ON ('true')
+    WHERE
+      (
+        [9_BOOLEXP_Album].[AlbumId] > [11_BOOLEXP_Artist].[ArtistId]
+      )
+    ORDER BY
+      [0_Track].[TrackId] ASC OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [13_rows]([rows]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
 
 [(1, String("The album title (1)")), (2, String("The album title (2)")), (3, String("The Artist name"))]

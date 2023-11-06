@@ -3,69 +3,48 @@ source: crates/query-engine/translation/tests/tests.rs
 expression: result
 ---
 SELECT
-  row_to_json("%9_universe") AS "universe"
+  ISNULL([10_rows].[rows], '[]') AS [rows]
 FROM
   (
     SELECT
-      *
+      JSON_QUERY([1_RELATIONSHIP_Albums].[json], '$') AS [Albums]
     FROM
-      (
+      [public].[Artist] AS [0_Artist]
+      OUTER APPLY (
         SELECT
-          coalesce(json_agg(row_to_json("%10_rows")), '[]') AS "rows"
+          ISNULL([7_rows].[row_json], '[]') AS [rows]
         FROM
           (
             SELECT
-              "%1_RELATIONSHIP_Albums"."Albums" AS "Albums"
+              JSON_QUERY([3_RELATIONSHIP_Artist].[json], '$') AS [Artist]
             FROM
-              "public"."Artist" AS "%0_Artist"
-              LEFT OUTER JOIN LATERAL (
+              [public].[Album] AS [2_Album]
+              OUTER APPLY (
                 SELECT
-                  row_to_json("%1_RELATIONSHIP_Albums") AS "Albums"
+                  ISNULL([5_rows].[row_json], '[]') AS [rows]
                 FROM
                   (
                     SELECT
-                      *
+                      [4_Artist].[Name] AS [name]
                     FROM
-                      (
-                        SELECT
-                          coalesce(json_agg(row_to_json("%7_rows")), '[]') AS "rows"
-                        FROM
-                          (
-                            SELECT
-                              "%3_RELATIONSHIP_Artist"."Artist" AS "Artist"
-                            FROM
-                              "public"."Album" AS "%2_Album"
-                              LEFT OUTER JOIN LATERAL (
-                                SELECT
-                                  row_to_json("%3_RELATIONSHIP_Artist") AS "Artist"
-                                FROM
-                                  (
-                                    SELECT
-                                      *
-                                    FROM
-                                      (
-                                        SELECT
-                                          coalesce(json_agg(row_to_json("%5_rows")), '[]') AS "rows"
-                                        FROM
-                                          (
-                                            SELECT
-                                              "%4_Artist"."Name" AS "name"
-                                            FROM
-                                              "public"."Artist" AS "%4_Artist"
-                                            WHERE
-                                              ("%2_Album"."ArtistId" = "%4_Artist"."ArtistId")
-                                          ) AS "%5_rows"
-                                      ) AS "%5_rows"
-                                  ) AS "%3_RELATIONSHIP_Artist"
-                              ) AS "%3_RELATIONSHIP_Artist" ON ('true')
-                            WHERE
-                              ("%0_Artist"."ArtistId" = "%2_Album"."ArtistId")
-                          ) AS "%7_rows"
-                      ) AS "%7_rows"
-                  ) AS "%1_RELATIONSHIP_Albums"
-              ) AS "%1_RELATIONSHIP_Albums" ON ('true')
-          ) AS "%10_rows"
-      ) AS "%10_rows"
-  ) AS "%9_universe"
+                      [public].[Artist] AS [4_Artist]
+                    WHERE
+                      ([2_Album].[ArtistId] = [4_Artist].[ArtistId]) FOR JSON PATH,
+                      INCLUDE_NULL_VALUES
+                  ) AS [5_rows]([row_json]) FOR JSON PATH,
+                  INCLUDE_NULL_VALUES,
+                  WITHOUT_ARRAY_WRAPPER
+              ) AS [3_RELATIONSHIP_Artist]([json])
+            WHERE
+              ([0_Artist].[ArtistId] = [2_Album].[ArtistId]) FOR JSON PATH,
+              INCLUDE_NULL_VALUES
+          ) AS [7_rows]([row_json]) FOR JSON PATH,
+          INCLUDE_NULL_VALUES,
+          WITHOUT_ARRAY_WRAPPER
+      ) AS [1_RELATIONSHIP_Albums]([json]) FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [10_rows]([rows]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
 
 []

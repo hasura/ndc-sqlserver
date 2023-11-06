@@ -9,13 +9,13 @@
         "columns": {
           "AlbumId": {
             "name": "AlbumId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": "The identifier of an album"
           },
           "ArtistId": {
             "name": "ArtistId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": "The id of the artist that authored the album"
           },
@@ -45,7 +45,7 @@
         "columns": {
           "ArtistId": {
             "name": "ArtistId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": "The identifier of an artist"
           },
@@ -92,7 +92,7 @@
           },
           "CustomerId": {
             "name": "CustomerId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": "The identifier of customer"
           },
@@ -140,7 +140,7 @@
           },
           "SupportRepId": {
             "name": "SupportRepId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           }
@@ -194,7 +194,7 @@
           },
           "EmployeeId": {
             "name": "EmployeeId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -236,7 +236,7 @@
           },
           "ReportsTo": {
             "name": "ReportsTo",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -272,7 +272,7 @@
         "columns": {
           "GenreId": {
             "name": "GenreId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -325,7 +325,7 @@
           },
           "CustomerId": {
             "name": "CustomerId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -337,7 +337,7 @@
           },
           "InvoiceId": {
             "name": "InvoiceId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -367,25 +367,25 @@
         "columns": {
           "InvoiceId": {
             "name": "InvoiceId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
           "InvoiceLineId": {
             "name": "InvoiceLineId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
           "Quantity": {
             "name": "Quantity",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
           "TrackId": {
             "name": "TrackId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -421,7 +421,7 @@
         "columns": {
           "MediaTypeId": {
             "name": "MediaTypeId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -450,7 +450,7 @@
           },
           "PlaylistId": {
             "name": "PlaylistId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           }
@@ -467,13 +467,13 @@
         "columns": {
           "PlaylistId": {
             "name": "PlaylistId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
           "TrackId": {
             "name": "TrackId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           }
@@ -503,13 +503,13 @@
         "columns": {
           "AlbumId": {
             "name": "AlbumId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
           "Bytes": {
             "name": "Bytes",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -521,19 +521,19 @@
           },
           "GenreId": {
             "name": "GenreId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
           "MediaTypeId": {
             "name": "MediaTypeId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
           "Milliseconds": {
             "name": "Milliseconds",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -545,7 +545,7 @@
           },
           "TrackId": {
             "name": "TrackId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -587,7 +587,7 @@
         "columns": {
           "coord_dimension": {
             "name": "coord_dimension",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -617,7 +617,7 @@
           },
           "srid": {
             "name": "srid",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -638,7 +638,7 @@
         "columns": {
           "coord_dimension": {
             "name": "coord_dimension",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -668,7 +668,7 @@
           },
           "srid": {
             "name": "srid",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -689,7 +689,7 @@
         "columns": {
           "child_id": {
             "name": "child_id",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -701,19 +701,19 @@
           },
           "feature_type": {
             "name": "feature_type",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
           "layer_id": {
             "name": "layer_id",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
           "level": {
             "name": "level",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -731,7 +731,7 @@
           },
           "topology_id": {
             "name": "topology_id",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           }
@@ -766,7 +766,7 @@
           },
           "auth_srid": {
             "name": "auth_srid",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -778,7 +778,7 @@
           },
           "srid": {
             "name": "srid",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -807,7 +807,7 @@
           },
           "id": {
             "name": "id",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
@@ -825,7 +825,7 @@
           },
           "srid": {
             "name": "srid",
-            "type": "int4",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           }
@@ -844,13 +844,13 @@
         "columns": {
           "AlbumId": {
             "name": "AlbumId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
           "ArtistId": {
             "name": "ArtistId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -864,7 +864,7 @@
         "arguments": {
           "id": {
             "name": "id",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -882,7 +882,7 @@
         "columns": {
           "ArtistId": {
             "name": "ArtistId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -901,7 +901,7 @@
         "columns": {
           "ArtistId": {
             "name": "ArtistId",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -915,7 +915,7 @@
         "arguments": {
           "id": {
             "name": "id",
-            "type": "int4",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           }
@@ -923,7 +923,7 @@
         "description": null
       },
       "value_types": {
-        "sql": "SELECT {{bool}} as bool, {{int4}} as int4, {{int2}} as int2, {{int8}} as int8, {{float4}} as float4, {{float8}} as \"float8\", {{numeric}} as numeric, {{char}} as char, {{varchar}} as \"varchar\", {{text}} as text, {{date}} as date, {{time}} as time, {{timetz}} as timetz, {{timestamp}} as timestamp, {{timestamptz}} as timestamptz, {{uuid}} as uuid",
+        "sql": "SELECT {{bool}} as bool, {{int}} as int, {{int2}} as int2, {{int8}} as int8, {{float4}} as float4, {{float8}} as \"float8\", {{numeric}} as numeric, {{char}} as char, {{varchar}} as \"varchar\", {{text}} as text, {{date}} as date, {{time}} as time, {{timetz}} as timetz, {{timestamp}} as timestamp, {{timestamptz}} as timestamptz, {{uuid}} as uuid",
         "columns": {
           "bool": {
             "name": "bool",
@@ -961,9 +961,9 @@
             "nullable": "nullable",
             "description": null
           },
-          "int4": {
-            "name": "int4",
-            "type": "int4",
+          "int": {
+            "name": "int",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -1059,9 +1059,9 @@
             "nullable": "nullable",
             "description": null
           },
-          "int4": {
-            "name": "int4",
-            "type": "int4",
+          "int": {
+            "name": "int",
+            "type": "int",
             "nullable": "nullable",
             "description": null
           },
@@ -1248,24 +1248,24 @@
           "returnType": "numeric"
         }
       },
-      "int4": {
+      "int": {
         "avg": {
           "returnType": "numeric"
         },
         "bit_and": {
-          "returnType": "int4"
+          "returnType": "int"
         },
         "bit_or": {
-          "returnType": "int4"
+          "returnType": "int"
         },
         "bit_xor": {
-          "returnType": "int4"
+          "returnType": "int"
         },
         "max": {
-          "returnType": "int4"
+          "returnType": "int"
         },
         "min": {
-          "returnType": "int4"
+          "returnType": "int"
         },
         "stddev": {
           "returnType": "numeric"
@@ -1452,7 +1452,7 @@
           "argumentType": "char"
         },
         "_like": {
-          "operatorName": "~~",
+          "operatorName": "LIKE",
           "argumentType": "char"
         },
         "_lt": {
@@ -1592,30 +1592,30 @@
           "argumentType": "int2"
         }
       },
-      "int4": {
+      "int": {
         "_eq": {
           "operatorName": "=",
-          "argumentType": "int4"
+          "argumentType": "int"
         },
         "_gt": {
           "operatorName": ">",
-          "argumentType": "int4"
+          "argumentType": "int"
         },
         "_gte": {
           "operatorName": ">=",
-          "argumentType": "int4"
+          "argumentType": "int"
         },
         "_lt": {
           "operatorName": "<",
-          "argumentType": "int4"
+          "argumentType": "int"
         },
         "_lte": {
           "operatorName": "<=",
-          "argumentType": "int4"
+          "argumentType": "int"
         },
         "_neq": {
           "operatorName": "<>",
-          "argumentType": "int4"
+          "argumentType": "int"
         }
       },
       "int8": {
@@ -1666,7 +1666,7 @@
           "argumentType": "name"
         },
         "_like": {
-          "operatorName": "~~",
+          "operatorName": "LIKE",
           "argumentType": "name"
         },
         "_lt": {
@@ -1750,7 +1750,7 @@
           "argumentType": "text"
         },
         "_like": {
-          "operatorName": "~~",
+          "operatorName": "LIKE",
           "argumentType": "text"
         },
         "_lt": {
@@ -1938,7 +1938,7 @@
           "argumentType": "varchar"
         },
         "_like": {
-          "operatorName": "~~",
+          "operatorName": "LIKE",
           "argumentType": "varchar"
         },
         "_lt": {
@@ -2039,7 +2039,7 @@
         "exposedName": "_neq"
       },
       {
-        "operatorName": "~~",
+        "operatorName": "LIKE",
         "exposedName": "_like"
       },
       {

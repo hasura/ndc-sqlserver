@@ -3,35 +3,26 @@ source: crates/query-engine/translation/tests/tests.rs
 expression: result
 ---
 SELECT
-  row_to_json("%3_universe") AS "universe"
+  ISNULL([4_rows].[rows], '[]') AS [rows]
 FROM
   (
     SELECT
-      *
+      [0_Artist].[Name] AS [Name]
     FROM
-      (
+      [public].[Artist] AS [0_Artist]
+      OUTER APPLY (
         SELECT
-          coalesce(json_agg(row_to_json("%4_rows")), '[]') AS "rows"
+          COUNT(*) AS [count]
         FROM
-          (
-            SELECT
-              "%0_Artist"."Name" AS "Name"
-            FROM
-              "public"."Artist" AS "%0_Artist"
-              LEFT OUTER JOIN LATERAL (
-                SELECT
-                  COUNT(*) AS "count"
-                FROM
-                  "public"."Album" AS "%1_Album"
-                WHERE
-                  ("%0_Artist"."ArtistId" = "%1_Album"."ArtistId")
-              ) AS "%2_ORDER_COUNT_FOR_Artist" ON ('true')
-            ORDER BY
-              "%2_ORDER_COUNT_FOR_Artist"."count" DESC
-            LIMIT
-              5
-          ) AS "%4_rows"
-      ) AS "%4_rows"
-  ) AS "%3_universe"
+          [public].[Album] AS [1_Album]
+        WHERE
+          ([0_Artist].[ArtistId] = [1_Album].[ArtistId])
+      ) AS [2_ORDER_COUNT_FOR_Artist]
+    ORDER BY
+      [2_ORDER_COUNT_FOR_Artist].[count] DESC OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [4_rows]([rows]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
 
 []

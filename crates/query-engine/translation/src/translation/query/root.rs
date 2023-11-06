@@ -38,9 +38,13 @@ pub fn translate_aggregate_query(
     // We don't add the limit afterwards.
     let mut select =
         translate_query_part(env, state, current_table, query, aggregate_columns, vec![])?;
+
     // we remove the order by part though because it is only relevant for group by clauses,
     // which we don't support at the moment.
     select.order_by = sql::helpers::empty_order_by();
+
+    // turn these into a single JSON result
+    select.for_json = sql::ast::ForJson::ForJsonPathWithoutArrayWrapper;
 
     select.from = Some(from_clause.clone());
 
@@ -89,9 +93,10 @@ pub fn translate_rows_query(
             } => {
                 let table_alias = state.make_relationship_table_alias(&alias);
                 let column_alias = sql::helpers::make_column_alias(alias);
+                let json_column_alias = sql::helpers::make_json_column_alias();
                 let column_name = sql::ast::ColumnReference::AliasedColumn {
                     table: sql::ast::TableReference::AliasedTable(table_alias.clone()),
-                    column: column_alias.clone(),
+                    column: json_column_alias.clone(),
                 };
                 join_fields.push(relationships::JoinFieldInfo {
                     table_alias,
@@ -102,8 +107,29 @@ pub fn translate_rows_query(
                 });
                 Ok((
                     column_alias,
-                    sql::ast::Expression::ColumnReference(column_name),
+                    sql::ast::Expression::JsonQuery(
+                        Box::new(sql::ast::Expression::ColumnReference(column_name)),
+                        sql::helpers::empty_json_path(),
+                    ),
                 ))
+                /*
+                let table_alias = state.make_relationship_table_alias(&alias);
+                             let column_alias = sql::helpers::make_column_alias(alias);
+                             let column_name = sql::ast::ColumnReference::AliasedColumn {
+                                 table: sql::ast::TableReference::AliasedTable(table_alias.clone()),
+                                 column: column_alias.clone(),
+                             };
+                             join_fields.push(relationships::JoinFieldInfo {
+                                 table_alias,
+                                 column_alias: column_alias.clone(),
+                                 relationship_name: relationship,
+                                 arguments,
+                                 query: *query,
+                             });
+                             Ok((
+                                 column_alias,
+                                 sql::ast::Expression::ColumnReference(column_name),
+                             ))*/
             }
         })
         .collect::<Result<Vec<_>, Error>>()?;
@@ -111,6 +137,9 @@ pub fn translate_rows_query(
     // create the select clause and the joins, order by, where clauses.
     // We'll add the limit afterwards.
     let mut select = translate_query_part(env, state, current_table, query, columns, join_fields)?;
+
+    // turn these into an array of JSON results
+    select.for_json = sql::ast::ForJson::ForJsonPath;
 
     select.from = Some(from_clause.clone());
 

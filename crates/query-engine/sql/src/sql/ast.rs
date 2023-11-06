@@ -90,10 +90,8 @@ pub enum From {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Join {
     OuterApply(OuterApply),
-    /// LEFT OUTER JOIN LATERAL
-    LeftOuterJoinLateral(LeftOuterJoinLateral),
-    /// INNER JOIN LATERAL
-    InnerJoinLateral(InnerJoinLateral),
+    /// INNER JOIN
+    InnerJoin(InnerJoin),
     /// CROSS JOIN
     CrossJoin(CrossJoin),
 }
@@ -113,16 +111,9 @@ pub struct OuterApply {
     pub alias_path: AliasPath,
 }
 
-/// A LEFT OUTER JOIN LATERAL clause
+/// An INNER JOIN clause
 #[derive(Debug, Clone, PartialEq)]
-pub struct LeftOuterJoinLateral {
-    pub select: Box<Select>,
-    pub alias: TableAlias,
-}
-
-/// An INNER JOIN LATERAL clause
-#[derive(Debug, Clone, PartialEq)]
-pub struct InnerJoinLateral {
+pub struct InnerJoin {
     pub select: Box<Select>,
     pub alias: TableAlias,
 }

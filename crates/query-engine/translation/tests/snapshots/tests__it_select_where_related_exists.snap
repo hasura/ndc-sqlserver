@@ -3,59 +3,45 @@ source: crates/query-engine/translation/tests/tests.rs
 expression: result
 ---
 SELECT
-  row_to_json("%6_universe") AS "universe"
+  ISNULL([7_rows].[rows], '[]') AS [rows]
 FROM
   (
     SELECT
-      *
+      [0_artist].[Name] AS [title],
+      JSON_QUERY([1_RELATIONSHIP_albums].[json], '$') AS [albums]
     FROM
-      (
+      [public].[Artist] AS [0_artist]
+      OUTER APPLY (
         SELECT
-          coalesce(json_agg(row_to_json("%7_rows")), '[]') AS "rows"
+          ISNULL([3_rows].[row_json], '[]') AS [rows]
         FROM
           (
             SELECT
-              "%0_artist"."Name" AS "title",
-              "%1_RELATIONSHIP_albums"."albums" AS "albums"
+              [2_album].[Title] AS [title]
             FROM
-              "public"."Artist" AS "%0_artist"
-              LEFT OUTER JOIN LATERAL (
-                SELECT
-                  row_to_json("%1_RELATIONSHIP_albums") AS "albums"
-                FROM
-                  (
-                    SELECT
-                      *
-                    FROM
-                      (
-                        SELECT
-                          coalesce(json_agg(row_to_json("%3_rows")), '[]') AS "rows"
-                        FROM
-                          (
-                            SELECT
-                              "%2_album"."Title" AS "title"
-                            FROM
-                              "public"."Album" AS "%2_album"
-                            WHERE
-                              ("%0_artist"."ArtistId" = "%2_album"."ArtistId")
-                          ) AS "%3_rows"
-                      ) AS "%3_rows"
-                  ) AS "%1_RELATIONSHIP_albums"
-              ) AS "%1_RELATIONSHIP_albums" ON ('true')
+              [public].[Album] AS [2_album]
             WHERE
-              EXISTS (
-                SELECT
-                  1 AS "one"
-                FROM
-                  "public"."Album" AS "%5_album"
-                WHERE
-                  (
-                    ("%5_album"."Title" LIKE cast($1 as varchar))
-                    AND ("%0_artist"."ArtistId" = "%5_album"."ArtistId")
-                  )
-              )
-          ) AS "%7_rows"
-      ) AS "%7_rows"
-  ) AS "%6_universe"
+              ([0_artist].[ArtistId] = [2_album].[ArtistId]) FOR JSON PATH,
+              INCLUDE_NULL_VALUES
+          ) AS [3_rows]([row_json]) FOR JSON PATH,
+          INCLUDE_NULL_VALUES,
+          WITHOUT_ARRAY_WRAPPER
+      ) AS [1_RELATIONSHIP_albums]([json])
+    WHERE
+      EXISTS (
+        SELECT
+          1 AS [one]
+        FROM
+          [public].[Album] AS [5_album]
+        WHERE
+          (
+            ([5_album].[Title] LIKE cast(@P1 as varchar))
+            AND ([0_artist].[ArtistId] = [5_album].[ArtistId])
+          )
+      ) FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [7_rows]([rows]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
 
 [(1, String("Supernatural"))]

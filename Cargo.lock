@@ -2116,6 +2116,7 @@ dependencies = [
  "sqlformat",
  "sqlx",
  "tiberius",
+ "tokio-stream",
  "tracing",
 ]
 

@@ -68,6 +68,14 @@ pub fn make_json_column_alias() -> ColumnAlias {
     }
 }
 
+pub fn empty_json_path() -> JsonPath {
+    JsonPath { elements: vec![] }
+}
+
+pub fn empty_alias_path() -> AliasPath {
+    AliasPath { elements: vec![] }
+}
+
 // SELECTs //
 
 /// Build a simple select with a select list and the rest are empty.

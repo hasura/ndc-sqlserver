@@ -184,17 +184,8 @@ impl AliasPath {
 impl Join {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
-            Join::LeftOuterJoinLateral(join) => {
-                sql.append_syntax(" LEFT OUTER JOIN LATERAL ");
-                sql.append_syntax("(");
-                join.select.to_sql(sql);
-                sql.append_syntax(")");
-                sql.append_syntax(" AS ");
-                join.alias.to_sql(sql);
-                sql.append_syntax(" ON ('true') ");
-            }
-            Join::InnerJoinLateral(join) => {
-                sql.append_syntax(" INNER JOIN LATERAL ");
+            Join::InnerJoin(join) => {
+                sql.append_syntax(" INNER JOIN ");
                 sql.append_syntax("(");
                 join.select.to_sql(sql);
                 sql.append_syntax(")");

@@ -58,18 +58,10 @@ pub fn normalize_select(mut select: Select) -> Select {
 /// Normalize the select in the join.
 pub fn normalize_join(join: Join) -> Join {
     match join {
-        Join::LeftOuterJoinLateral(LeftOuterJoinLateral { select, alias }) => {
-            Join::LeftOuterJoinLateral(LeftOuterJoinLateral {
-                select: Box::new(normalize_select(*select)),
-                alias,
-            })
-        }
-        Join::InnerJoinLateral(InnerJoinLateral { select, alias }) => {
-            Join::InnerJoinLateral(InnerJoinLateral {
-                select: Box::new(normalize_select(*select)),
-                alias,
-            })
-        }
+        Join::InnerJoin(InnerJoin { select, alias }) => Join::InnerJoin(InnerJoin {
+            select: Box::new(normalize_select(*select)),
+            alias,
+        }),
         Join::CrossJoin(CrossJoin {
             select,
             alias,
