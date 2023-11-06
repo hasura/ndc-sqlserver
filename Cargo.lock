@@ -1621,7 +1621,6 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "similar-asserts",
- "sqlserver-query-engine",
  "thiserror",
  "tiberius",
  "tokio",
@@ -2863,25 +2862,6 @@ dependencies = [
  "itertools 0.11.0",
  "nom",
  "unicode_categories",
-]
-
-[[package]]
-name = "sqlserver-query-engine"
-version = "0.1.0"
-dependencies = [
- "bb8",
- "bb8-tiberius",
- "bytes",
- "indexmap 1.9.3",
- "insta",
- "ndc-sdk 0.1.0 (git+https://github.com/hasura/ndc-hub.git?rev=098b1c2)",
- "schemars",
- "serde",
- "serde_json",
- "sqlformat",
- "tiberius",
- "tokio-stream",
- "tracing",
 ]
 
 [[package]]
