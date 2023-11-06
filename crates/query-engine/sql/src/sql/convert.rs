@@ -130,12 +130,35 @@ impl From {
                 sql.append_syntax(" AS ");
                 alias.to_sql(sql);
             }
-            From::Select { select, alias } => {
+            From::Select {
+                select,
+                alias,
+                alias_path,
+            } => {
                 sql.append_syntax("(");
                 select.to_sql(sql);
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 alias.to_sql(sql);
+                alias_path.to_sql(sql)
+            }
+        }
+    }
+}
+
+impl AliasPath {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        match self.elements.is_empty() {
+            true => {}
+            false => {
+                sql.append_syntax("(");
+                for (i, path_item) in self.elements.iter().enumerate() {
+                    path_item.to_sql(sql);
+                    if i < self.elements.len() - 1 {
+                        sql.append_syntax(",");
+                    }
+                }
+                sql.append_syntax(")");
             }
         }
     }
@@ -303,7 +326,37 @@ impl Expression {
                 count_type.to_sql(sql);
                 sql.append_syntax(")")
             }
+            Expression::JsonQuery(target, path) => {
+                sql.append_syntax("JSON_QUERY");
+                sql.append_syntax("(");
+                target.to_sql(sql);
+                sql.append_syntax(", ");
+                path.to_sql(sql);
+                sql.append_syntax(")")
+            }
+            Expression::JsonValue(target, path) => {
+                sql.append_syntax("JSON_VALUE");
+                sql.append_syntax("(");
+                target.to_sql(sql);
+                sql.append_syntax(", ");
+                path.to_sql(sql);
+                sql.append_syntax(")")
+            }
         }
+    }
+}
+
+impl JsonPath {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        sql.append_syntax("'$");
+        for ColumnAlias {
+            name: path_item, ..
+        } in self.elements.iter()
+        {
+            sql.append_syntax(".");
+            sql.append_syntax(path_item);
+        }
+        sql.append_syntax("'");
     }
 }
 
@@ -334,8 +387,9 @@ impl BinaryArrayOperator {
 impl Function {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
-            Function::Coalesce => sql.append_syntax("coalesce"),
-            Function::JsonAgg => sql.append_syntax("json_agg"),
+            Function::Coalesce => sql.append_syntax("COALESCe"),
+            Function::IsNull => sql.append_syntax("ISNULL"),
+            Function::JsonAgg => sql.append_syntax("JSON_AGG"),
             Function::Unknown(name) => sql.append_syntax(name),
         }
     }

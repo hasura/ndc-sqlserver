@@ -330,6 +330,7 @@ fn translate_order_by_target_for_column(
         select.from = Some(sql::ast::From::Select {
             select: inner_select,
             alias: inner_alias,
+            alias_path: sql::ast::AliasPath { elements: vec![] },
         });
 
         // and add the joins

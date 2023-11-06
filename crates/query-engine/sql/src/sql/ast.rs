@@ -193,7 +193,9 @@ pub enum Expression {
         args: Vec<Expression>,
     },
     /// An EXISTS clause
-    Exists { select: Box<Select> },
+    Exists {
+        select: Box<Select>,
+    },
     /// A json_build_object function call
     JsonBuildObject(BTreeMap<String, Box<Expression>>),
     // SELECT queries can appear in a select list if they return
@@ -211,6 +213,15 @@ pub enum Expression {
     },
     /// A COUNT clause
     Count(CountType),
+    JsonQuery(Box<Expression>, JsonPath), // JSON_QUERY([album].[json], '$.title') for multiple
+    // values
+    JsonValue(Box<Expression>, JsonPath), // JSON_VALUE([album].[json], '$.title') for single values
+}
+
+// JSON selector path for expressing '$.user.name'
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct JsonPath {
+    pub elements: Vec<ColumnAlias>,
 }
 
 /// An unary operator
@@ -233,6 +244,7 @@ pub enum BinaryArrayOperator {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Function {
     Coalesce,
+    IsNull,
     JsonAgg,
     Unknown(String),
 }
