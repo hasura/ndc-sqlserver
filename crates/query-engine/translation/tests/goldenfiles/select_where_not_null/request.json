@@ -10,6 +10,19 @@
     },
     "limit": 5,
     "offset": 100,
+
+    "order_by": {
+      "elements": [
+        {
+          "order_direction": "asc",
+          "target": {
+            "type": "column",
+            "name": "Id",
+            "path": []
+          }
+        }
+      ]
+    },
     "where": {
       "type": "not",
       "expression": {

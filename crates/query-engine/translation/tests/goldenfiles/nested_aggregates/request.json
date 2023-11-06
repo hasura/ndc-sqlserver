@@ -28,7 +28,19 @@
       }
     },
     "limit": 5,
-    "offset": 1
+    "offset": 1,
+    "order_by": {
+      "elements": [
+        {
+          "order_direction": "asc",
+          "target": {
+            "type": "column",
+            "name": "ArtistId",
+            "path": []
+          }
+        }
+      ]
+    }
   },
   "arguments": {},
   "collection_relationships": {

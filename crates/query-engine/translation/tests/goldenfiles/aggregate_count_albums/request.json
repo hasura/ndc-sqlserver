@@ -9,6 +9,18 @@
       }
     },
     "limit": 5,
+    "order_by": {
+      "elements": [
+        {
+          "order_direction": "asc",
+          "target": {
+            "type": "column",
+            "name": "AlbumId",
+            "path": []
+          }
+        }
+      ]
+    },
     "offset": 3,
     "aggregates": {
       "how_many_albums": {
