@@ -47,7 +47,7 @@ pub struct Select {
     pub where_: Where,
     pub group_by: GroupBy,
     pub order_by: OrderBy,
-    pub limit: Limit,
+    pub limit: Option<Limit>,
     pub for_json: ForJson,
 }
 
@@ -89,6 +89,7 @@ pub enum From {
 /// A JOIN clause
 #[derive(Debug, Clone, PartialEq)]
 pub enum Join {
+    OuterApply(OuterApply),
     /// LEFT OUTER JOIN LATERAL
     LeftOuterJoinLateral(LeftOuterJoinLateral),
     /// INNER JOIN LATERAL
@@ -100,6 +101,13 @@ pub enum Join {
 /// A CROSS JOIN clause
 #[derive(Debug, Clone, PartialEq)]
 pub struct CrossJoin {
+    pub select: Box<Select>,
+    pub alias: TableAlias,
+    pub alias_path: AliasPath,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct OuterApply {
     pub select: Box<Select>,
     pub alias: TableAlias,
     pub alias_path: AliasPath,
@@ -152,7 +160,7 @@ pub enum OrderByDirection {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Limit {
     pub limit: Option<u32>,
-    pub offset: Option<u32>,
+    pub offset: u32,
 }
 
 /// A scalar expression

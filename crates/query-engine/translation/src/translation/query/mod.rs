@@ -45,7 +45,6 @@ pub fn translate(
     // form a single JSON item shaped `{ rows: [], aggregates: {} }`
     // that matches the models::RowSet type
     let mut json_select = sql::helpers::select_rowset(
-        sql::helpers::make_column_alias("universe".to_string()),
         state.make_table_alias("universe".to_string()),
         state.make_table_alias("rows".to_string()),
         sql::helpers::make_column_alias("rows".to_string()),

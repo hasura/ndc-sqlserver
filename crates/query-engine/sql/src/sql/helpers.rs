@@ -33,14 +33,6 @@ pub fn empty_order_by() -> OrderBy {
     OrderBy { elements: vec![] }
 }
 
-/// Empty `LIMIT` and `OFFSET` clauses.
-pub fn empty_limit() -> Limit {
-    Limit {
-        limit: None,
-        offset: None,
-    }
-}
-
 /// A `true` expression.
 pub fn true_expr() -> Expression {
     Expression::Value(Value::Bool(true))
@@ -69,6 +61,13 @@ pub fn make_column_alias(name: String) -> ColumnAlias {
     ColumnAlias { name }
 }
 
+/// we need this in a bunch of places
+pub fn make_json_column_alias() -> ColumnAlias {
+    ColumnAlias {
+        name: "json".to_string(),
+    }
+}
+
 // SELECTs //
 
 /// Build a simple select with a select list and the rest are empty.
@@ -81,7 +80,7 @@ pub fn simple_select(select_list: Vec<(ColumnAlias, Expression)>) -> Select {
         where_: Where(empty_where()),
         group_by: empty_group_by(),
         order_by: empty_order_by(),
-        limit: empty_limit(),
+        limit: None,
         for_json: ForJson::NoJson,
     }
 }
@@ -96,7 +95,7 @@ pub fn star_select(from: From) -> Select {
         where_: Where(empty_where()),
         group_by: empty_group_by(),
         order_by: empty_order_by(),
-        limit: empty_limit(),
+        limit: None,
         for_json: ForJson::ForJsonPath,
     }
 }
@@ -127,7 +126,7 @@ pub fn star_select(from: From) -> Select {
 ///  WITHOUT_ARRAY_WRAPPER
 ///
 /// The `row_select` and `aggregate_set` will not be included if they are not relevant
-pub fn select_sqlserver_rowset(
+pub fn select_rowset(
     output_table_alias: TableAlias,
     row_table_alias: TableAlias,
     row_column_alias: ColumnAlias,
@@ -276,99 +275,6 @@ pub fn select_sqlserver_rowset(
             final_select
         }
     }
-}
-/// given a set of rows and aggregate queries, combine them into
-/// one Select
-///
-/// ```sql
-/// SELECT row_to_json(<output_table_alias>) AS <output_column_alias>
-/// FROM (
-///   SELECT *
-///     FROM (
-///       SELECT coalesce(json_agg(row_to_json(<row_column_alias>)), '[]') AS "rows"
-///         FROM (<row_select>) AS <row_table_alias>
-///       ) AS <row_column_alias>
-///         CROSS JOIN (
-///           SELECT coalesce(row_to_json(<aggregate_column_alias>), '[]') AS "aggregates"
-///             FROM (<aggregate_select>) AS <aggregate_table_alias>
-///           ) AS <aggregate_column_alias>
-///        ) AS <output_column_alias>
-/// ```
-///
-/// The `row_select` and `aggregate_set` will not be included if they are not relevant
-pub fn select_rowset(
-    output_column_alias: ColumnAlias,
-    output_table_alias: TableAlias,
-    row_table_alias: TableAlias,
-    row_column_alias: ColumnAlias,
-    aggregate_table_alias: TableAlias,
-    aggregate_column_alias: ColumnAlias,
-    select_set: SelectSet,
-) -> Select {
-    let row = vec![(
-        output_column_alias,
-        (Expression::RowToJson(TableReference::AliasedTable(output_table_alias.clone()))),
-    )];
-
-    let mut final_select = simple_select(row);
-
-    let wrap_row =
-        |row_sel| select_rows_as_json(row_sel, row_column_alias, row_table_alias.clone());
-
-    let wrap_aggregate = |aggregate_sel| {
-        select_row_as_json_with_default(
-            aggregate_sel,
-            aggregate_column_alias,
-            aggregate_table_alias.clone(),
-        )
-    };
-
-    match select_set {
-        SelectSet::Rows(row_select) => {
-            let select_star = star_select(From::Select {
-                alias: row_table_alias.clone(),
-                select: Box::new(wrap_row(row_select)),
-                alias_path: AliasPath { elements: vec![] },
-            });
-            final_select.from = Some(From::Select {
-                alias: output_table_alias,
-                select: Box::new(select_star),
-                alias_path: AliasPath { elements: vec![] },
-            })
-        }
-        SelectSet::Aggregates(aggregate_select) => {
-            let select_star = star_select(From::Select {
-                alias: aggregate_table_alias.clone(),
-                select: Box::new(wrap_aggregate(aggregate_select)),
-                alias_path: AliasPath { elements: vec![] },
-            });
-            final_select.from = Some(From::Select {
-                alias: output_table_alias,
-                select: Box::new(select_star),
-                alias_path: AliasPath { elements: vec![] },
-            })
-        }
-        SelectSet::RowsAndAggregates(row_select, aggregate_select) => {
-            let mut select_star = star_select(From::Select {
-                alias: row_table_alias.clone(),
-                select: Box::new(wrap_row(row_select)),
-                alias_path: AliasPath { elements: vec![] },
-            });
-
-            select_star.joins = vec![Join::CrossJoin(CrossJoin {
-                select: Box::new(wrap_aggregate(aggregate_select)),
-                alias: aggregate_table_alias.clone(),
-                alias_path: AliasPath { elements: vec![] },
-            })];
-
-            final_select.from = Some(From::Select {
-                alias: output_table_alias,
-                select: Box::new(select_star),
-                alias_path: AliasPath { elements: vec![] },
-            })
-        }
-    }
-    final_select
 }
 
 /// Wrap an query that returns multiple rows in

@@ -119,21 +119,23 @@ pub fn translate_joins(
             // form a single JSON item shaped `{ rows: [], aggregates: {} }`
             // that matches the models::RowSet type
             let json_select = sql::helpers::select_rowset(
-                join_field.column_alias.clone(),
                 join_field.table_alias.clone(),
                 state.make_table_alias("rows".to_string()),
-                sql::helpers::make_column_alias("rows".to_string()),
+                sql::helpers::make_column_alias("row_json".to_string()),
                 state.make_table_alias("aggregates".to_string()),
-                sql::helpers::make_column_alias("aggregates".to_string()),
+                sql::helpers::make_column_alias("agg_json".to_string()),
                 final_select_set,
             );
 
-            Ok(sql::ast::Join::LeftOuterJoinLateral(
-                sql::ast::LeftOuterJoinLateral {
-                    select: Box::new(json_select),
-                    alias: join_field.table_alias,
+            let json_column_alias = sql::helpers::make_json_column_alias();
+
+            Ok(sql::ast::Join::OuterApply(sql::ast::OuterApply {
+                select: Box::new(json_select),
+                alias: join_field.table_alias,
+                alias_path: sql::ast::AliasPath {
+                    elements: vec![json_column_alias],
                 },
-            ))
+            }))
         })
         .collect::<Result<Vec<sql::ast::Join>, Error>>()
 }

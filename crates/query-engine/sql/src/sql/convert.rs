@@ -117,7 +117,24 @@ impl Select {
 
         self.order_by.to_sql(sql);
 
-        self.limit.to_sql(sql);
+        match &self.limit {
+            Some(limit) => limit.to_sql(sql),
+            None => (),
+        }
+
+        self.for_json.to_sql(sql);
+    }
+}
+
+impl ForJson {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        match self {
+            ForJson::NoJson => {}
+            ForJson::ForJsonPath => sql.append_syntax(" FOR JSON PATH, INCLUDE_NULL_VALUES "),
+            ForJson::ForJsonPathWithoutArrayWrapper => {
+                sql.append_syntax(" FOR JSON PATH, INCLUDE_NULL_VALUES, WITHOUT_ARRAY_WRAPPER")
+            }
+        }
     }
 }
 
@@ -192,6 +209,16 @@ impl Join {
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 join.alias.to_sql(sql);
+                join.alias_path.to_sql(sql)
+            }
+            Join::OuterApply(join) => {
+                sql.append_syntax(" OUTER APPLY ");
+                sql.append_syntax("(");
+                join.select.to_sql(sql);
+                sql.append_syntax(")");
+                sql.append_syntax(" AS ");
+                join.alias.to_sql(sql);
+                join.alias_path.to_sql(sql)
             }
         }
     }
@@ -442,18 +469,15 @@ impl ScalarType {
 
 impl Limit {
     pub fn to_sql(&self, sql: &mut SQL) {
+        sql.append_syntax(" OFFSET ");
+        sql.append_syntax(format!("{}", self.offset).as_str());
+        sql.append_syntax(" ROWS ");
         match self.limit {
             None => (),
             Some(limit) => {
-                sql.append_syntax(" LIMIT ");
+                sql.append_syntax(" FETCH NEXT ");
                 sql.append_syntax(format!("{}", limit).as_str());
-            }
-        };
-        match self.offset {
-            None => (),
-            Some(offset) => {
-                sql.append_syntax(" OFFSET ");
-                sql.append_syntax(format!("{}", offset).as_str());
+                sql.append_syntax(" ROWS ONLY");
             }
         };
     }
@@ -475,7 +499,7 @@ impl TableReference {
 
 impl TableAlias {
     pub fn to_sql(&self, sql: &mut SQL) {
-        let name = format!("%{}_{}", self.unique_index, self.name);
+        let name = format!("{}_{}", self.unique_index, self.name);
         sql.append_identifier(&name);
     }
 }

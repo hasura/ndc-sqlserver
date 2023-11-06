@@ -5,7 +5,38 @@ use super::filtering;
 use super::helpers::{Env, RootAndCurrentTables, State, TableNameAndReference};
 use super::relationships;
 use super::root;
+use query_engine_metadata::metadata;
 use query_engine_sql::sql;
+
+// if we are using limit / offset then we MUST have an ordering too, so this orders by the first
+// unique column we see
+pub fn default_order_by(
+    table_info: metadata::TableInfo,
+    table_reference: sql::ast::TableReference,
+) -> Result<sql::ast::OrderBy, Error> {
+    match &table_info.uniqueness_constraints {
+        metadata::UniquenessConstraints(uniques_map) => match uniques_map.clone().pop_first() {
+            Some((_, metadata::UniquenessConstraint(constraint))) => {
+                let order_by_element = sql::ast::OrderByElement {
+                    direction: sql::ast::OrderByDirection::Asc,
+                    target: sql::ast::Expression::ColumnReference(
+                        sql::ast::ColumnReference::AliasedColumn {
+                            table: table_reference,
+                            column: sql::helpers::make_column_alias(
+                                constraint.first().unwrap().to_string(),
+                            ),
+                        },
+                    ),
+                };
+
+                Ok(sql::ast::OrderBy {
+                    elements: vec![order_by_element],
+                })
+            }
+            None => Err(Error::NoConstraintsForOrdering),
+        },
+    }
+}
 
 /// Convert the order by fields from a QueryRequest to a SQL ORDER BY clause and potentially
 /// JOINs when we order by relationship fields.

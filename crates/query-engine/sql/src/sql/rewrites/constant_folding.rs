@@ -79,6 +79,15 @@ pub fn normalize_join(join: Join) -> Join {
             alias,
             alias_path,
         }),
+        Join::OuterApply(OuterApply {
+            select,
+            alias,
+            alias_path,
+        }) => Join::OuterApply(OuterApply {
+            select: Box::new(normalize_select(*select)),
+            alias,
+            alias_path,
+        }),
     }
 }
 

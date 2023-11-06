@@ -114,11 +114,22 @@ pub fn translate_rows_query(
 
     select.from = Some(from_clause.clone());
 
+    // if query has limit or offset, and no order_by, then create a default
+    let _has_limit_or_offset: bool =
+        Option::is_some(&query.limit) || Option::is_some(&query.offset);
+    /*
+        if has_limit_or_offset && select.order_by.elements.is_empty() {
+            select.order_by = sorting::default_order_by(table_info, current_table_alias_name)?;
+        }
+    */
+
     // Add the limit.
-    select.limit = sql::ast::Limit {
-        limit: query.limit,
-        offset: query.offset,
+    select.limit = match (query.limit, query.offset) {
+        (None, None) => None,
+        (limit, Some(offset)) => Some(sql::ast::Limit { limit, offset }),
+        (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
     };
+
     Ok(select)
 }
 
