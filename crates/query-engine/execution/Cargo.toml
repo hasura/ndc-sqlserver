@@ -1,0 +1,18 @@
+[package]
+name = "query-engine-execution"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+query-engine-sql = { path = "../sql" }
+
+ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "f2a2a75", package = "ndc-sdk" }
+
+tiberius = { version = "0.12.2", default-features = false, features = ["rustls"] }
+bb8 = "0.8.1"
+bb8-tiberius = "0.15.0"
+
+prometheus = "0.13.3"
+serde_json = "1.0.107"
+tokio-stream = "0.1.14"
+tracing = "0.1.40"

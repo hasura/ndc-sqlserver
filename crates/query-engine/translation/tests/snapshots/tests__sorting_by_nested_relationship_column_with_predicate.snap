@@ -1,0 +1,50 @@
+---
+source: crates/query-engine/translation/tests/tests.rs
+expression: result
+---
+SELECT
+  ISNULL([5_rows].[rows], '[]') AS [rows]
+FROM
+  (
+    SELECT
+      [0_track].[Name] AS [Name]
+    FROM
+      [public].[Track] AS [0_track]
+      OUTER APPLY (
+        SELECT
+          [2_ORDER_PART_artist].[Name] AS [name]
+        FROM
+          (
+            SELECT
+              [1_ORDER_PART_album].[ArtistId] AS [ArtistId]
+            FROM
+              [public].[Album] AS [1_ORDER_PART_album]
+            WHERE
+              (
+                (
+                  [0_track].[AlbumId] = [1_ORDER_PART_album].[AlbumId]
+                )
+                AND (
+                  [1_ORDER_PART_album].[Title] = cast(@P1 as varchar)
+                )
+              )
+          ) AS [1_ORDER_PART_album]
+          OUTER APPLY (
+            SELECT
+              [2_ORDER_PART_artist].[Name] AS [Name]
+            FROM
+              [public].[Artist] AS [2_ORDER_PART_artist]
+            WHERE
+              (
+                [1_ORDER_PART_album].[ArtistId] = [2_ORDER_PART_artist].[ArtistId]
+              )
+          ) AS [2_ORDER_PART_artist]
+      ) AS [3_ORDER_FOR_track]
+    ORDER BY
+      [3_ORDER_FOR_track].[name] ASC OFFSET 0 ROWS FETCH NEXT 3 ROWS ONLY FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [5_rows]([rows]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
+
+[(1, String("Blizzard of Ozz"))]

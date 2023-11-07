@@ -1,0 +1,35 @@
+---
+source: crates/query-engine/translation/tests/tests.rs
+expression: result
+---
+SELECT
+  ISNULL([4_rows].[rows], '[]') AS [rows]
+FROM
+  (
+    SELECT
+      [0_Album].[Title] AS [Name]
+    FROM
+      [public].[Album] AS [0_Album]
+      OUTER APPLY (
+        SELECT
+          [1_ORDER_PART_Artist].[Name] AS [Name]
+        FROM
+          (
+            SELECT
+              [1_ORDER_PART_Artist].[Name] AS [Name]
+            FROM
+              [public].[Artist] AS [1_ORDER_PART_Artist]
+            WHERE
+              (
+                [0_Album].[ArtistId] = [1_ORDER_PART_Artist].[ArtistId]
+              )
+          ) AS [1_ORDER_PART_Artist]
+      ) AS [2_ORDER_FOR_Album]
+    ORDER BY
+      [2_ORDER_FOR_Album].[Name] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [4_rows]([rows]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
+
+[]

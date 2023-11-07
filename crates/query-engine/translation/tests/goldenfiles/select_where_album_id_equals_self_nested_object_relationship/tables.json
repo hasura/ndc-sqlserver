@@ -1,0 +1,118 @@
+{
+  "tables": {
+    "Album": {
+      "schemaName": "public",
+      "tableName": "Album",
+      "columns": {
+        "AlbumId": {
+          "name": "AlbumId",
+          "type": "int4"
+        },
+        "ArtistId": {
+          "name": "ArtistId",
+          "type": "int4"
+        },
+        "Title": {
+          "name": "Title",
+          "type": "varchar"
+        }
+      },
+      "uniquenessConstraints": {
+        "PK_Album": ["AlbumId"]
+      },
+      "foreignRelations": {
+        "FK_AlbumArtistId": {
+          "foreignTable": "Album",
+          "columnMapping": {
+            "ArtistId": "ArtistId"
+          }
+        }
+      }
+    },
+    "Artist": {
+      "schemaName": "public",
+      "tableName": "Artist",
+      "columns": {
+        "ArtistId": {
+          "name": "ArtistId",
+          "type": "int4"
+        },
+        "Name": {
+          "name": "Name",
+          "type": "varchar"
+        }
+      },
+      "uniquenessConstraints": {
+        "PK_Artist": ["ArtistId"]
+      },
+      "foreignRelations": {}
+    },
+    "Track": {
+      "schemaName": "public",
+      "tableName": "Track",
+      "columns": {
+        "AlbumId": {
+          "name": "AlbumId",
+          "type": "varchar"
+        },
+        "Bytes": {
+          "name": "Bytes",
+          "type": "varchar"
+        },
+        "Composer": {
+          "name": "Composer",
+          "type": "varchar"
+        },
+        "GenreId": {
+          "name": "GenreId",
+          "type": "int4"
+        },
+        "MediaTypeId": {
+          "name": "MediaTypeId",
+          "type": "int4"
+        },
+        "Milliseconds": {
+          "name": "Milliseconds",
+          "type": "int4"
+        },
+        "Name": {
+          "name": "Name",
+          "type": "varchar"
+        },
+        "TrackId": {
+          "name": "TrackId",
+          "type": "int4"
+        },
+        "UnitPrice": {
+          "name": "UnitPrice",
+          "type": "float4"
+        }
+      },
+      "uniquenessConstraints": {
+        "PK_Track": ["TrackId"]
+      },
+      "foreignRelations": {
+        "FK_TrackAlbumId": {
+          "foreignTable": "Track",
+          "columnMapping": {
+            "AlbumId": "AlbumId"
+          }
+        }
+      }
+    }
+  },
+  "comparisonOperators": {
+    "int4": {
+      "_gt": {
+        "operatorName": ">",
+        "argumentType": "int4"
+      }
+    },
+    "varchar": {
+      "_eq": {
+        "operatorName": "=",
+        "argumentType": "varchar"
+      }
+    }
+  }
+}

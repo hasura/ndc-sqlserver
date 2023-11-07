@@ -1,0 +1,17 @@
+{
+  "nativeQueries": {
+    "artist": {
+      "sql": "SELECT * FROM public.\"Artist\"",
+      "columns": {
+        "ArtistId": {
+          "name": "ArtistId",
+          "type": "int4"
+        },
+        "Name": {
+          "name": "Name",
+          "type": "varchar"
+        }
+      }
+    }
+  }
+}

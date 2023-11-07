@@ -1,0 +1,46 @@
+---
+source: crates/query-engine/translation/tests/tests.rs
+expression: result
+---
+SELECT
+  JSON_QUERY(ISNULL([2_rows].[rows], '[]'), '$.rows') AS [rows],
+  JSON_QUERY(
+    JSON_VALUE([3_aggregates].[aggregates], '$.aggregates'),
+    '$'
+  ) AS [aggregates]
+FROM
+  (
+    SELECT
+      *
+    FROM
+      (
+        SELECT
+          [0_Album].[Title] AS [Title]
+        FROM
+          [public].[Album] AS [0_Album]
+        ORDER BY
+          [0_Album].[AlbumId] ASC OFFSET 3 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
+          INCLUDE_NULL_VALUES
+      ) AS [1_universe]([rows]) FOR JSON PATH,
+      INCLUDE_NULL_VALUES,
+      WITHOUT_ARRAY_WRAPPER
+  ) AS [2_rows]([rows])
+  CROSS JOIN (
+    SELECT
+      *
+    FROM
+      (
+        SELECT
+          COUNT(*) AS [how_many_albums]
+        FROM
+          [public].[Album] AS [0_Album] FOR JSON PATH,
+          INCLUDE_NULL_VALUES,
+          WITHOUT_ARRAY_WRAPPER
+      ) AS [3_aggregates]([aggregates]) FOR JSON PATH,
+      INCLUDE_NULL_VALUES,
+      WITHOUT_ARRAY_WRAPPER
+  ) AS [3_aggregates]([aggregates]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
+
+[]

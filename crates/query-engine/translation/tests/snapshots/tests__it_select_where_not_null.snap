@@ -1,0 +1,22 @@
+---
+source: crates/query-engine/translation/tests/tests.rs
+expression: result
+---
+SELECT
+  ISNULL([2_rows].[rows], '[]') AS [rows]
+FROM
+  (
+    SELECT
+      [0_Album].[Title] AS [Title]
+    FROM
+      [public].[Album] AS [0_Album]
+    WHERE
+      NOT ([0_Album].[AlbumId] IS NULL)
+    ORDER BY
+      [0_Album].[AlbumId] ASC OFFSET 100 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [2_rows]([rows]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
+
+[]

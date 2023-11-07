@@ -1,0 +1,56 @@
+---
+source: crates/query-engine/translation/tests/tests.rs
+expression: result
+---
+WITH [1_NATIVE_QUERY_artist] AS (
+  SELECT
+    *
+  FROM
+    public."Artist"
+),
+[4_NATIVE_QUERY_album_by_title] AS (
+  SELECT
+    *
+  FROM
+    public."Album"
+  WHERE
+    "Title" LIKE cast(@P1 as varchar)
+    AND "AlbumId" < 300
+)
+SELECT
+  ISNULL([8_rows].[rows], '[]') AS [rows]
+FROM
+  (
+    SELECT
+      [0_artist].[Name] AS [Name],
+      JSON_QUERY([2_RELATIONSHIP_Albums].[json], '$') AS [Albums]
+    FROM
+      [1_NATIVE_QUERY_artist] AS [0_artist]
+      OUTER APPLY (
+        SELECT
+          ISNULL([5_rows].[row_json], '[]') AS [rows]
+        FROM
+          (
+            SELECT
+              [3_album_by_title].[Title] AS [title]
+            FROM
+              [4_NATIVE_QUERY_album_by_title] AS [3_album_by_title]
+            WHERE
+              (
+                [0_artist].[ArtistId] = [3_album_by_title].[ArtistId]
+              )
+            ORDER BY
+              [3_album_by_title].[AlbumId] ASC FOR JSON PATH,
+              INCLUDE_NULL_VALUES
+          ) AS [5_rows]([row_json]) FOR JSON PATH,
+          INCLUDE_NULL_VALUES,
+          WITHOUT_ARRAY_WRAPPER
+      ) AS [2_RELATIONSHIP_Albums]([json])
+    ORDER BY
+      [0_artist].[ArtistId] ASC OFFSET 0 ROWS FETCH NEXT 5 ROWS ONLY FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [8_rows]([rows]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER
+
+[(1, String("%Rock%"))]
