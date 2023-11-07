@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use axum::http::StatusCode;
 use axum_test_helper::TestClient;
-use serde_derive::Deserialize;
+use serde::Deserialize;
 
 use ndc_sqlserver::connector;
 

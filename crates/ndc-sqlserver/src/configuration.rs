@@ -9,14 +9,14 @@ use thiserror::Error;
 const CURRENT_VERSION: u32 = 1;
 
 /// User configuration.
-#[derive(Debug, Deserialize, Serialize, JsonSchema)]
-pub struct DeploymentConfiguration {
+#[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
+pub struct RawConfiguration {
     pub version: u32,
     pub mssql_connection_string: String,
     pub metadata: query_engine_metadata::metadata::Metadata,
 }
 
-impl DeploymentConfiguration {
+impl RawConfiguration {
     pub fn empty() -> Self {
         Self {
             version: CURRENT_VERSION,
@@ -27,10 +27,10 @@ impl DeploymentConfiguration {
 }
 
 /// User configuration, elaborated from a 'RawConfiguration'.
-#[derive(Debug, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Configuration {
-    pub config: DeploymentConfiguration,
+    pub config: RawConfiguration,
 }
 
 /// State for our connector.
@@ -42,7 +42,7 @@ pub struct State {
 
 /// Validate the user configuration.
 pub async fn validate_raw_configuration(
-    config: DeploymentConfiguration,
+    config: RawConfiguration,
 ) -> Result<Configuration, connector::ValidateError> {
     if config.version != 1 {
         return Err(connector::ValidateError::ValidateError(vec![
@@ -79,7 +79,7 @@ pub async fn create_state(
 
 /// Create a connection pool with default settings.
 async fn create_mssql_pool(
-    configuration: &DeploymentConfiguration,
+    configuration: &RawConfiguration,
 ) -> Result<bb8::Pool<bb8_tiberius::ConnectionManager>, bb8_tiberius::Error> {
     let mut config = tiberius::Config::from_ado_string(&configuration.mssql_connection_string)?;
 
@@ -94,11 +94,11 @@ async fn create_mssql_pool(
 
 /// Construct the deployment configuration by introspecting the database.
 pub async fn configure(
-    args: &DeploymentConfiguration,
-) -> Result<DeploymentConfiguration, connector::UpdateConfigurationError> {
+    args: &RawConfiguration,
+) -> Result<RawConfiguration, connector::UpdateConfigurationError> {
     // YOU WILL NOTICE NOTHING HAPPENS HERE, WE NEED TO INSPECT THE DATABASE PLEASE
 
-    Ok(DeploymentConfiguration {
+    Ok(RawConfiguration {
         version: 1,
         mssql_connection_string: args.mssql_connection_string.clone(),
         metadata: query_engine_metadata::metadata::Metadata::default(),

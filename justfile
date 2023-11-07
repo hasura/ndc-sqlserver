@@ -6,6 +6,11 @@ CONNECTOR_IMAGE := CONNECTOR_IMAGE_NAME + ":" + CONNECTOR_IMAGE_TAG
 POSTGRESQL_CONNECTION_STRING := "sqlserverql://sqlserver:password@localhost:64002"
 CHINOOK_DEPLOYMENT := "static/chinook-deployment.json"
 
+
+# check everything
+check: format-check find-unused-dependencies build lint test
+
+
 # Notes:
 # * Building Docker images will not work on macOS.
 #   You can use `main` instead, by running:
@@ -170,6 +175,9 @@ format:
 # is everything formatted?
 format-check:
   cargo fmt --all -- --check
+
+find-unused-dependencies:
+  cargo machete
 
 # check the nix build works
 build-with-nix:
