@@ -3,9 +3,8 @@ set shell := ["bash", "-c"]
 CONNECTOR_IMAGE_NAME := "ghcr.io/hasura/sqlserver-agent-rs"
 CONNECTOR_IMAGE_TAG := "dev"
 CONNECTOR_IMAGE := CONNECTOR_IMAGE_NAME + ":" + CONNECTOR_IMAGE_TAG
-POSTGRESQL_CONNECTION_STRING := "sqlserverql://sqlserver:password@localhost:64002"
 CHINOOK_DEPLOYMENT := "static/chinook-deployment.json"
-
+SQLSERVER_CONNECTION_STRING := "DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!"
 
 # check everything
 check: format-check find-unused-dependencies build lint test
@@ -21,47 +20,6 @@ run: start-dependencies
   RUST_LOG=INFO \
     cargo run --release -- serve --configuration {{CHINOOK_DEPLOYMENT}}
 
-# run the connector inside a Docker image
-run-in-docker: build-docker-with-nix start-dependencies
-  #!/usr/bin/env bash
-  set -e -u -o pipefail
-
-  configuration_file="$(mktemp)"
-  trap 'rm -f "$configuration_file"' EXIT
-
-  echo '> Generating the configuration...'
-  docker run \
-    --name=sqlserver-ndc-configuration \
-    --rm \
-    --detach \
-    --platform=linux/amd64 \
-    --net='sqlserver-ndc_default' \
-    --publish='9100:9100' \
-    {{CONNECTOR_IMAGE}} \
-    configuration serve
-  trap 'docker stop sqlserver-ndc-configuration' EXIT
-  CONFIGURATION_SERVER_URL='http://localhost:9100/'
-  ./scripts/wait-until --timeout=30 --report -- nc -z localhost 9100
-  curl -fsS "$CONFIGURATION_SERVER_URL" \
-    | jq --arg sqlserver_database_url 'sqlserverql://sqlserver:password@sqlserver' '. + {"sqlserver_database_url": $sqlserver_database_url}' \
-    | curl -fsS "$CONFIGURATION_SERVER_URL" -H 'Content-Type: application/json' -d @- \
-    > "$configuration_file"
-
-  echo '> Starting the server...'
-  docker run \
-    --name=sqlserver-ndc \
-    --rm \
-    --interactive \
-    --tty \
-    --platform=linux/amd64 \
-    --net='sqlserver-ndc_default' \
-    --publish='8100:8100' \
-    --env=RUST_LOG='INFO' \
-    --mount="type=bind,source=${configuration_file},target=/deployment.json,readonly=true" \
-    {{CONNECTOR_IMAGE}} \
-    serve \
-    --configuration='/deployment.json'
-
 # watch the code, then test and re-run on changes
 dev: start-dependencies
   RUST_LOG=INFO \
@@ -70,6 +28,23 @@ dev: start-dependencies
     -x test \
     -x clippy \
     -x 'run -- serve --configuration {{CHINOOK_DEPLOYMENT}}'
+
+# watch the code, then test and re-run config server ron changes
+dev-config: start-dependencies
+  RUST_LOG=DEBUG \
+    cargo watch -i "tests/snapshots/*" \
+    -c \
+    -x test \
+    -x clippy \
+    -x 'run -- configuration serve'
+
+test-introspection:
+  #!/bin/bash
+
+  CONFIGURATION_SERVER_URL='http://localhost:9100/'
+  curl -fsS "$CONFIGURATION_SERVER_URL" \
+    | jq --arg sqlserver_database_url '{{ SQLSERVER_CONNECTION_STRING }}' '. + {"mssql_connection_string": $sqlserver_database_url}' \
+    | curl -fsS "$CONFIGURATION_SERVER_URL" -H 'Content-Type: application/json' -d @- \
 
 # watch the code, and re-run on changes
 watch-run: start-dependencies
@@ -106,25 +81,6 @@ test-integrated:
     -H 'Content-Type: application/json' \
     http://localhost:3000/graphql \
     -d '{ "query": "query { AlbumByID(AlbumId: 1) { Title } } " }'
-
-# re-generate the deployment configuration file
-generate-chinook-configuration: build
-  #!/usr/bin/env bash
-  set -e -u
-
-  cargo run --quiet -- configuration serve &
-  CONFIGURATION_SERVER_PID=$!
-  trap "kill $CONFIGURATION_SERVER_PID" EXIT
-  ./scripts/wait-until --timeout=30 --report -- nc -z localhost 9100
-  if ! kill -0 "$CONFIGURATION_SERVER_PID"; then
-    echo >&2 'The server stopped abruptly.'
-    exit 1
-  fi
-  curl -fsS http://localhost:9100 \
-    | jq --arg sqlserver_database_url '{{POSTGRESQL_CONNECTION_STRING}}' '. + {"sqlserver_database_url": $sqlserver_database_url}' \
-    | curl -fsS http://localhost:9100 -H 'Content-Type: application/json' -d @- \
-    | jq . \
-    > '{{CHINOOK_DEPLOYMENT}}'
 
 # run sqlserver
 start-dependencies:

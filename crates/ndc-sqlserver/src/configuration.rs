@@ -5,6 +5,9 @@ use ndc_sdk::connector;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use tiberius::Query;
+
+const TABLE_CONFIGURATION_QUERY: &str = include_str!("table_configuration.sql");
 
 const CURRENT_VERSION: u32 = 1;
 
@@ -94,15 +97,69 @@ async fn create_mssql_pool(
 
 /// Construct the deployment configuration by introspecting the database.
 pub async fn configure(
-    args: &RawConfiguration,
+    configuration: &RawConfiguration,
 ) -> Result<RawConfiguration, connector::UpdateConfigurationError> {
-    // YOU WILL NOTICE NOTHING HAPPENS HERE, WE NEED TO INSPECT THE DATABASE PLEASE
+    let mssql_pool = create_mssql_pool(configuration).await.unwrap();
+
+    let mut connection = mssql_pool.get().await.unwrap();
+
+    // let's do a query to check everything is ok
+    let select = Query::new(TABLE_CONFIGURATION_QUERY);
+
+    // go!
+    let stream = select.query(&mut connection).await.unwrap();
+
+    // Nothing is fetched, the first result set starts.
+    let row = stream.into_row().await.unwrap().unwrap();
+
+    let inner_result: Vec<&str> = vec![row.get(0).unwrap()];
+    println!();
+
+    println!("{:?}", inner_result);
+    println!();
 
     Ok(RawConfiguration {
         version: 1,
-        mssql_connection_string: args.mssql_connection_string.clone(),
+        mssql_connection_string: configuration.mssql_connection_string.clone(),
         metadata: query_engine_metadata::metadata::Metadata::default(),
     })
+}
+
+struct IntrospectionTable {
+    name: String,
+    schema_id: i32,
+    type_desc: String,
+    joined_sys_schema: IntrospectionSchema,
+    joined_sys_column: Vec<IntrospectionColumn>,
+    joined_sys_primary_key: IntrospectionPrimaryKey,
+}
+
+struct IntrospectionColumn {
+    name: String,
+    column_id: i32,
+    is_nullable: bool,
+    is_identity: bool,
+    is_computed: bool,
+    user_type_id: i32,
+    joined_sys_type: IntrospectionType,
+    joined_foreign_key_columns: Vec<IntrospectionForeignKeyColumn>,
+}
+
+struct IntrospectionForeignKeyColumn {
+    constraint_object_id: i32,
+    constraint_column_id: i32,
+    parent_object_id: i32,
+    parent_column_id: i32,
+    referenced_object_id: i32,
+    referenced_column_id: i32,
+    joined_referenced_table_name: String,
+    joined_referenced_column_name: String,
+    joined_referenced_sys_schema: IntrospectionSchema,
+}
+
+struct IntrospectionSchema {
+    name: String,
+    schema_id: i32,
 }
 
 /// State initialization error.

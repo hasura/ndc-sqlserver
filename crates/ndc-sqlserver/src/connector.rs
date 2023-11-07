@@ -118,7 +118,13 @@ impl connector::Connector for SQLServer {
     async fn get_schema(
         _configuration: &Self::Configuration,
     ) -> Result<JsonResponse<models::SchemaResponse>, connector::SchemaError> {
-        todo!("get_schema")
+        Ok(JsonResponse::Value(models::SchemaResponse {
+            scalar_types: Default::default(),
+            collections: Default::default(),
+            functions: Default::default(),
+            object_types: Default::default(),
+            procedures: Default::default(),
+        }))
     }
 
     /// Explain a query by creating an execution plan
