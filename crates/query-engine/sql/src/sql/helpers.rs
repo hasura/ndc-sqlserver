@@ -285,7 +285,7 @@ pub fn select_rowset(
     }
 }
 
-/// Wrap an query that returns multiple rows in
+/// Wrap a query that returns multiple rows in
 ///
 /// ```sql
 /// SELECT
