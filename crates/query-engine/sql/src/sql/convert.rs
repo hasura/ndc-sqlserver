@@ -314,30 +314,6 @@ impl Expression {
                 select.to_sql(sql);
                 sql.append_syntax(")");
             }
-            Expression::JsonBuildObject(map) => {
-                sql.append_syntax("json_build_object");
-                sql.append_syntax("(");
-
-                for (index, (label, item)) in map.iter().enumerate() {
-                    sql.append_syntax("'");
-                    sql.append_syntax(label);
-                    sql.append_syntax("'");
-                    sql.append_syntax(", ");
-                    item.to_sql(sql);
-
-                    if index < (map.len() - 1) {
-                        sql.append_syntax(", ")
-                    }
-                }
-
-                sql.append_syntax(")");
-            }
-            Expression::RowToJson(select) => {
-                sql.append_syntax("row_to_json");
-                sql.append_syntax("(");
-                select.to_sql(sql);
-                sql.append_syntax(")");
-            }
             Expression::Count(count_type) => {
                 sql.append_syntax("COUNT");
                 sql.append_syntax("(");
