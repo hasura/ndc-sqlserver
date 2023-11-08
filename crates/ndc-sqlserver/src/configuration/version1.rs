@@ -1,6 +1,7 @@
 //! Configuration and state for our connector.
-use super::metrics;
+use crate::metrics;
 
+use crate::configuration::introspection;
 use ndc_sdk::connector;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -112,10 +113,12 @@ pub async fn configure(
     // Nothing is fetched, the first result set starts.
     let row = stream.into_row().await.unwrap().unwrap();
 
-    let inner_result: Vec<&str> = vec![row.get(0).unwrap()];
+    let inner_result = row.get(0).unwrap();
     println!();
+    let decoded: Vec<introspection::IntrospectionTable> =
+        serde_json::from_str(inner_result).unwrap();
 
-    println!("{:?}", inner_result);
+    println!("{:?}", decoded);
     println!();
 
     Ok(RawConfiguration {
@@ -123,43 +126,6 @@ pub async fn configure(
         mssql_connection_string: configuration.mssql_connection_string.clone(),
         metadata: query_engine_metadata::metadata::Metadata::default(),
     })
-}
-
-struct IntrospectionTable {
-    name: String,
-    schema_id: i32,
-    type_desc: String,
-    joined_sys_schema: IntrospectionSchema,
-    joined_sys_column: Vec<IntrospectionColumn>,
-    joined_sys_primary_key: IntrospectionPrimaryKey,
-}
-
-struct IntrospectionColumn {
-    name: String,
-    column_id: i32,
-    is_nullable: bool,
-    is_identity: bool,
-    is_computed: bool,
-    user_type_id: i32,
-    joined_sys_type: IntrospectionType,
-    joined_foreign_key_columns: Vec<IntrospectionForeignKeyColumn>,
-}
-
-struct IntrospectionForeignKeyColumn {
-    constraint_object_id: i32,
-    constraint_column_id: i32,
-    parent_object_id: i32,
-    parent_column_id: i32,
-    referenced_object_id: i32,
-    referenced_column_id: i32,
-    joined_referenced_table_name: String,
-    joined_referenced_column_name: String,
-    joined_referenced_sys_schema: IntrospectionSchema,
-}
-
-struct IntrospectionSchema {
-    name: String,
-    schema_id: i32,
 }
 
 /// State initialization error.
