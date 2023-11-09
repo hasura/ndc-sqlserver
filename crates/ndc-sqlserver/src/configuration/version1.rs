@@ -116,13 +116,13 @@ pub async fn configure(
     // Nothing is fetched, the first result set starts.
     let row = stream.into_row().await.unwrap().unwrap();
 
-    let inner_result = row.get(0).unwrap();
     let decoded: Vec<introspection::IntrospectionTable> =
-        serde_json::from_str(inner_result).unwrap();
+        serde_json::from_str(row.get(0).unwrap()).unwrap();
 
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
 
     metadata.tables = get_tables_info(decoded);
+
     metadata.native_queries = configuration.metadata.native_queries.clone();
 
     Ok(RawConfiguration {
