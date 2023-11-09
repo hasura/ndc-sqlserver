@@ -3,8 +3,11 @@ use crate::metrics;
 
 use crate::configuration::introspection;
 use ndc_sdk::connector;
+use query_engine_metadata::metadata::{database, Nullable};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use thiserror::Error;
 use tiberius::Query;
 
@@ -114,18 +117,90 @@ pub async fn configure(
     let row = stream.into_row().await.unwrap().unwrap();
 
     let inner_result = row.get(0).unwrap();
-    println!();
     let decoded: Vec<introspection::IntrospectionTable> =
         serde_json::from_str(inner_result).unwrap();
 
     println!("{:?}", decoded);
-    println!();
+
+    let mut metadata = query_engine_metadata::metadata::Metadata::default();
+
+    metadata.tables = get_tables_info(decoded);
 
     Ok(RawConfiguration {
         version: 1,
         mssql_connection_string: configuration.mssql_connection_string.clone(),
-        metadata: query_engine_metadata::metadata::Metadata::default(),
+        metadata,
     })
+}
+
+fn get_tables_info(
+    introspection_tables: Vec<introspection::IntrospectionTable>,
+) -> database::TablesInfo {
+    let mut tables = BTreeMap::new();
+
+    for introspection_table in introspection_tables {
+        let table_name = introspection_table.name;
+
+        let mut columns = BTreeMap::new();
+
+        for introspection_column in introspection_table.joined_sys_column {
+            let column_name = introspection_column.name.clone();
+            columns.insert(column_name, get_column_info(introspection_column));
+        }
+
+        let table_info = database::TableInfo {
+            columns,
+            description: None,
+            foreign_relations: Default::default(),
+            table_name: table_name.clone(),
+            schema_name: introspection_table.joined_sys_schema.name,
+            uniqueness_constraints: get_uniqueness_constraints(
+                introspection_table.joined_sys_primary_key,
+            ),
+        };
+
+        tables.insert(table_name, table_info);
+    }
+
+    database::TablesInfo(tables)
+}
+
+fn get_uniqueness_constraints(
+    opt_primary_key: Option<introspection::IntrospectionPrimaryKey>,
+) -> database::UniquenessConstraints {
+    let mut uniqueness_constraints_inner = BTreeMap::new();
+
+    if let Some(primary_key) = opt_primary_key {
+        let constraint_name = primary_key.name;
+
+        let keys_set = primary_key
+            .columns
+            .iter()
+            .fold(BTreeSet::new(), |mut set, part| {
+                set.insert(part.name.clone());
+                set
+            });
+
+        uniqueness_constraints_inner
+            .insert(constraint_name, database::UniquenessConstraint(keys_set));
+    }
+
+    database::UniquenessConstraints(uniqueness_constraints_inner)
+}
+
+fn get_column_info(
+    introspection_column: introspection::IntrospectionColumn,
+) -> database::ColumnInfo {
+    database::ColumnInfo {
+        description: None,
+        name: introspection_column.name,
+        nullable: if introspection_column.is_nullable {
+            Nullable::Nullable
+        } else {
+            Nullable::NonNullable
+        },
+        r#type: database::ScalarType(introspection_column.joined_sys_type.name),
+    }
 }
 
 /// State initialization error.

@@ -1,46 +1,45 @@
 //! Configuration and state for our connector.
-
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct IntrospectionTable {
-    name: String,
+    pub name: String,
     schema_id: i32,
-    type_desc: String,
-    joined_sys_schema: IntrospectionSchema,
-    joined_sys_column: Vec<IntrospectionColumn>,
-    joined_sys_primary_key: IntrospectionPrimaryKey,
+    pub type_desc: String,
+    pub joined_sys_schema: IntrospectionSchema,
+    pub joined_sys_column: Vec<IntrospectionColumn>,
+    pub joined_sys_primary_key: Option<IntrospectionPrimaryKey>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct IntrospectionColumn {
-    name: String,
+    pub name: String,
     column_id: i32,
-    is_nullable: bool,
+    pub is_nullable: bool,
     is_identity: bool,
     is_computed: bool,
     user_type_id: i32,
-    joined_sys_type: IntrospectionType,
+    pub joined_sys_type: IntrospectionType,
     joined_foreign_key_columns: Vec<IntrospectionForeignKeyColumn>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct IntrospectionType {
-    name: String,
+    pub name: String,
     schema_id: i32,
     user_type_id: i32,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct IntrospectionPrimaryKey {
-    name: String,
+    pub name: String,
     index_id: i32,
-    columns: Vec<IntrospectionPrimaryKeyColumn>,
+    pub columns: Vec<IntrospectionPrimaryKeyColumn>,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct IntrospectionPrimaryKeyColumn {
-    name: String,
+    pub name: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -58,6 +57,6 @@ pub struct IntrospectionForeignKeyColumn {
 
 #[derive(Deserialize, Debug)]
 pub struct IntrospectionSchema {
-    name: String,
+    pub name: String,
     schema_id: i32,
 }
