@@ -3,6 +3,7 @@ use crate::metrics;
 
 use crate::configuration::introspection;
 use ndc_sdk::connector;
+use query_engine_metadata::metadata;
 use query_engine_metadata::metadata::{database, Nullable};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -242,4 +243,31 @@ pub enum InitializationError {
     UnableToCreateMSSQLPool(bb8_tiberius::Error),
     #[error("error initializing Prometheus metrics: {0}")]
     PrometheusError(prometheus::Error),
+}
+
+/// Collect all the types that can occur in the metadata. This is a bit circumstantial. A better
+/// approach is likely to record scalar type names directly in the metadata via configuration.sql.
+pub fn occurring_scalar_types(
+    tables: &metadata::TablesInfo,
+    native_queries: &metadata::NativeQueries,
+) -> BTreeSet<metadata::ScalarType> {
+    let tables_column_types = tables
+        .0
+        .values()
+        .flat_map(|v| v.columns.values().map(|c| c.r#type.clone()));
+
+    let native_queries_column_types = native_queries
+        .0
+        .values()
+        .flat_map(|v| v.columns.values().map(|c| c.r#type.clone()));
+
+    let native_queries_arguments_types = native_queries
+        .0
+        .values()
+        .flat_map(|v| v.arguments.values().map(|c| c.r#type.clone()));
+
+    tables_column_types
+        .chain(native_queries_column_types)
+        .chain(native_queries_arguments_types)
+        .collect::<BTreeSet<metadata::ScalarType>>()
 }
