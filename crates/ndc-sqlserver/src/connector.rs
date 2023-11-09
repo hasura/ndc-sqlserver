@@ -15,6 +15,7 @@ use query_engine_execution::execution;
 use query_engine_translation::translation;
 
 use super::configuration;
+use super::schema;
 
 #[derive(Clone, Default)]
 pub struct SQLServer {}
@@ -116,9 +117,9 @@ impl connector::Connector for SQLServer {
     /// This function implements the [schema endpoint](https://hasura.github.io/ndc-spec/specification/schema/index.html)
     /// from the NDC specification.
     async fn get_schema(
-        _configuration: &Self::Configuration,
+        configuration: &Self::Configuration,
     ) -> Result<JsonResponse<models::SchemaResponse>, connector::SchemaError> {
-        todo!("get_schema")
+        schema::get_schema(configuration).await.map(Into::into)
     }
 
     /// Explain a query by creating an execution plan
