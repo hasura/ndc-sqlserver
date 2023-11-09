@@ -131,7 +131,7 @@ start-dependencies:
   # start sqlserver
   docker compose down -v sqlserver
   docker compose up --wait sqlserver
-  sqlcmd -S localhost,64003 -U SA -P "Password!" -i "./static/chinook-sqlserver.sql"
+  docker exec -it ndc-sqlserver-sqlserver-1 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U SA -P "Password!" -i "/static/chinook-sqlserver.sql"
 
 # run prometheus + grafana
 start-metrics:
@@ -153,13 +153,13 @@ run-engine: start-dependencies
 # smash a file in for rapid fire application development business value
 run-temp-sql:
   docker compose up --wait sqlserver
-  sqlcmd -S localhost,64003 -U SA -P "Password!" -d "Chinook" -i "./temp.sql"
+  docker exec -it ndc-sqlserver-sqlserver-1 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U SA -P "Password!" -d "Chinook" -i "/static/temp.sql"
 
 ## repl-sqlserver: start a sqlserver docker image and connect to it using sqlcmd
 repl-sqlserver:
   #!/usr/bin/env bash
-  docker compose up -wait sqlserver
-  sqlcmd -S localhost,64003 -U SA -P "Password!" -d "Chinook"
+  docker compose up --wait sqlserver
+  docker exec -it ndc-sqlserver-sqlserver-1 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U SA -P "Password!" -d "Chinook"
 
 # run `clippy` linter
 lint *FLAGS:
