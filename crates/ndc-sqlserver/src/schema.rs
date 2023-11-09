@@ -207,4 +207,3 @@ fn column_to_type(column: &metadata::ColumnInfo) -> models::Type {
         },
     }
 }
-
