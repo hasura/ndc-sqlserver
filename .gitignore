@@ -24,4 +24,4 @@ generated/
 result
 
 # temporary sql file used in justfile
-temp.sql
+static/temp.sql

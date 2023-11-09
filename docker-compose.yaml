@@ -13,6 +13,9 @@ services:
       SA_PASSWORD: "Password!"
     volumes:
       - /var/opt/mssql
+      - type: bind
+        source: ./static
+        target: /static
     healthcheck:
       test:
         - CMD-SHELL
