@@ -120,11 +120,10 @@ pub async fn configure(
     let decoded: Vec<introspection::IntrospectionTable> =
         serde_json::from_str(inner_result).unwrap();
 
-    println!("{:?}", decoded);
-
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
 
     metadata.tables = get_tables_info(decoded);
+    metadata.native_queries = configuration.metadata.native_queries.clone();
 
     Ok(RawConfiguration {
         version: 1,
@@ -142,16 +141,19 @@ fn get_tables_info(
         let table_name = introspection_table.name;
 
         let mut columns = BTreeMap::new();
+        let mut foreign_relations_inner = BTreeMap::new();
 
         for introspection_column in introspection_table.joined_sys_column {
             let column_name = introspection_column.name.clone();
-            columns.insert(column_name, get_column_info(introspection_column));
+            let (column, new_foreign_relations) = get_column_info(introspection_column);
+            columns.insert(column_name, column);
+            foreign_relations_inner.extend(new_foreign_relations);
         }
 
         let table_info = database::TableInfo {
             columns,
             description: None,
-            foreign_relations: Default::default(),
+            foreign_relations: database::ForeignRelations(foreign_relations_inner),
             table_name: table_name.clone(),
             schema_name: introspection_table.joined_sys_schema.name,
             uniqueness_constraints: get_uniqueness_constraints(
@@ -163,6 +165,19 @@ fn get_tables_info(
     }
 
     database::TablesInfo(tables)
+}
+
+fn get_foreign_relation(
+    local_column: String,
+    foreign_key: introspection::IntrospectionForeignKeyColumn,
+) -> database::ForeignRelation {
+    let mut column_mapping = BTreeMap::new();
+    column_mapping.insert(local_column, foreign_key.joined_referenced_column_name);
+
+    database::ForeignRelation {
+        foreign_table: foreign_key.joined_referenced_table_name,
+        column_mapping,
+    }
 }
 
 fn get_uniqueness_constraints(
@@ -190,8 +205,24 @@ fn get_uniqueness_constraints(
 
 fn get_column_info(
     introspection_column: introspection::IntrospectionColumn,
-) -> database::ColumnInfo {
-    database::ColumnInfo {
+) -> (
+    database::ColumnInfo,
+    BTreeMap<String, database::ForeignRelation>,
+) {
+    let mut foreign_relations = BTreeMap::new();
+    introspection_column
+        .joined_foreign_key_columns
+        .into_iter()
+        .enumerate()
+        .for_each(|(index, foreign_key)| {
+            let fancy_key = format!("FK_{}{}", introspection_column.name, index);
+            foreign_relations.insert(
+                fancy_key,
+                get_foreign_relation(introspection_column.name.clone(), foreign_key),
+            );
+        });
+
+    let column_info = database::ColumnInfo {
         description: None,
         name: introspection_column.name,
         nullable: if introspection_column.is_nullable {
@@ -200,7 +231,8 @@ fn get_column_info(
             Nullable::NonNullable
         },
         r#type: database::ScalarType(introspection_column.joined_sys_type.name),
-    }
+    };
+    (column_info, foreign_relations)
 }
 
 /// State initialization error.

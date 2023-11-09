@@ -20,7 +20,7 @@ pub struct IntrospectionColumn {
     is_computed: bool,
     user_type_id: i32,
     pub joined_sys_type: IntrospectionType,
-    joined_foreign_key_columns: Vec<IntrospectionForeignKeyColumn>,
+    pub joined_foreign_key_columns: Vec<IntrospectionForeignKeyColumn>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -50,8 +50,8 @@ pub struct IntrospectionForeignKeyColumn {
     parent_column_id: i32,
     referenced_object_id: i32,
     referenced_column_id: i32,
-    joined_referenced_table_name: String,
-    joined_referenced_column_name: String,
+    pub joined_referenced_table_name: String,
+    pub joined_referenced_column_name: String,
     joined_referenced_sys_schema: IntrospectionSchema,
 }
 
