@@ -34,9 +34,13 @@ dev-config: start-dependencies
   RUST_LOG=DEBUG \
     cargo watch -i "tests/snapshots/*" \
     -c \
-    -x test \
     -x clippy \
     -x 'run -- configuration serve'
+
+# re-generate the deployment configuration file
+generate-chinook-configuration: build start-dependencies
+  ./scripts/archive-old-deployment.sh '{{CHINOOK_DEPLOYMENT}}'
+  ./scripts/generate-chinook-configuration.sh 'ndc-sqlserver' '{{SQLSERVER_CONNECTION_STRING}}' '{{CHINOOK_DEPLOYMENT}}'
 
 test-introspection:
   #!/bin/bash

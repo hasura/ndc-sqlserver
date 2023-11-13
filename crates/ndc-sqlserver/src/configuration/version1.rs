@@ -14,6 +14,8 @@ use tiberius::Query;
 
 const TABLE_CONFIGURATION_QUERY: &str = include_str!("table_configuration.sql");
 
+const TYPES_QUERY: &str = "SELECT name FROM sys.types FOR JSON PATH";
+
 const CURRENT_VERSION: u32 = 1;
 
 /// User configuration.
@@ -100,27 +102,36 @@ async fn create_mssql_pool(
     bb8::Pool::builder().max_size(2).build(mgr).await
 }
 
+async fn select_first_row(
+    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+    query: &str,
+) -> tiberius::Row {
+    let mut connection = mssql_pool.get().await.unwrap();
+
+    // let's do a query to check everything is ok
+    let select = Query::new(query);
+
+    // go!
+    let stream = select.query(&mut connection).await.unwrap();
+
+    // Nothing is fetched, the first result set starts.
+    stream.into_row().await.unwrap().unwrap()
+}
+
 /// Construct the deployment configuration by introspecting the database.
 pub async fn configure(
     configuration: &RawConfiguration,
 ) -> Result<RawConfiguration, connector::UpdateConfigurationError> {
     let mssql_pool = create_mssql_pool(configuration).await.unwrap();
 
-    let mut connection = mssql_pool.get().await.unwrap();
-
-    // let's do a query to check everything is ok
-    let select = Query::new(TABLE_CONFIGURATION_QUERY);
-
-    // go!
-    let stream = select.query(&mut connection).await.unwrap();
-
-    // Nothing is fetched, the first result set starts.
-    let row = stream.into_row().await.unwrap().unwrap();
+    let tables_row = select_first_row(&mssql_pool, TABLE_CONFIGURATION_QUERY).await;
 
     let decoded: Vec<introspection::IntrospectionTable> =
-        serde_json::from_str(row.get(0).unwrap()).unwrap();
+        serde_json::from_str(tables_row.get(0).unwrap()).unwrap();
 
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
+
+    metadata.comparison_operators = get_comparison_operators(&mssql_pool).await;
 
     metadata.tables = get_tables_info(decoded);
 
@@ -131,6 +142,115 @@ pub async fn configure(
         mssql_connection_string: configuration.mssql_connection_string.clone(),
         metadata,
     })
+}
+
+#[derive(Deserialize, Debug)]
+struct TypeItem {
+    name: database::ScalarType,
+}
+
+// we lookup all types in sys.types, then use our hardcoded ideas about each one to attach
+// comparison operators
+async fn get_comparison_operators(
+    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+) -> database::ComparisonOperators {
+    let types_row = select_first_row(mssql_pool, TYPES_QUERY).await;
+
+    let decoded: Vec<TypeItem> = serde_json::from_str(types_row.get(0).unwrap()).unwrap();
+
+    let mut comparison_operators = BTreeMap::new();
+
+    for type_name in decoded {
+        comparison_operators.insert(
+            type_name.name.clone(),
+            get_comparison_operators_for_type(type_name.name),
+        );
+    }
+    database::ComparisonOperators(comparison_operators)
+}
+
+const CHARACTER_STRINGS: [&str; 3] = ["char", "text", "varchar"];
+const UNICODE_CHARACTER_STRINGS: [&str; 3] = ["nchar", "ntext", "nvarchar"];
+const CANNOT_COMPARE: [&str; 3] = ["text", "ntext", "image"];
+
+// we hard code these, essentially
+// we look up available types in `sys.types` but hard code their behaviour by looking them up below
+// categories taken from https://learn.microsoft.com/en-us/sql/t-sql/data-types/data-types-transact-sql
+fn get_comparison_operators_for_type(
+    type_name: database::ScalarType,
+) -> BTreeMap<String, database::ComparisonOperator> {
+    let mut comparison_operators = BTreeMap::new();
+
+    // in ndc-spec, all things can be `==`
+    comparison_operators.insert(
+        "_eq".to_string(),
+        database::ComparisonOperator {
+            operator_name: "=".to_string(),
+            argument_type: type_name.clone(),
+        },
+    );
+
+    // include LIKE and NOT LIKE for string-ish types
+    if CHARACTER_STRINGS.contains(&type_name.0.as_str())
+        || UNICODE_CHARACTER_STRINGS.contains(&type_name.0.as_str())
+    {
+        comparison_operators.insert(
+            "_like".to_string(),
+            database::ComparisonOperator {
+                operator_name: "LIKE".to_string(),
+                argument_type: type_name.clone(),
+            },
+        );
+        comparison_operators.insert(
+            "_nlike".to_string(),
+            database::ComparisonOperator {
+                operator_name: "NOT LIKE".to_string(),
+                argument_type: type_name.clone(),
+            },
+        );
+    }
+
+    // include comparison operators for types that are comparable, according to
+    // https://learn.microsoft.com/en-us/sql/t-sql/language-elements/comparison-operators-transact-sql?view=sql-server-ver16
+    if !CANNOT_COMPARE.contains(&type_name.0.as_str()) {
+        comparison_operators.insert(
+            "_neq".to_string(),
+            database::ComparisonOperator {
+                operator_name: "!=".to_string(),
+                argument_type: type_name.clone(),
+            },
+        );
+        comparison_operators.insert(
+            "_lt".to_string(),
+            database::ComparisonOperator {
+                operator_name: "<".to_string(),
+                argument_type: type_name.clone(),
+            },
+        );
+        comparison_operators.insert(
+            "_gt".to_string(),
+            database::ComparisonOperator {
+                operator_name: ">".to_string(),
+                argument_type: type_name.clone(),
+            },
+        );
+
+        comparison_operators.insert(
+            "_gte".to_string(),
+            database::ComparisonOperator {
+                operator_name: ">=".to_string(),
+                argument_type: type_name.clone(),
+            },
+        );
+        comparison_operators.insert(
+            "_lte".to_string(),
+            database::ComparisonOperator {
+                operator_name: "<=".to_string(),
+                argument_type: type_name,
+            },
+        );
+    }
+    comparison_operators
 }
 
 fn get_tables_info(
