@@ -34,7 +34,6 @@ dev-config: start-dependencies
   RUST_LOG=DEBUG \
     cargo watch -i "tests/snapshots/*" \
     -c \
-    -x test \
     -x clippy \
     -x 'run -- configuration serve'
 

@@ -868,6 +868,879 @@
       }
     },
     "aggregateFunctions": {},
-    "comparisonOperators": {}
+    "comparisonOperators": {
+      "bigint": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "bigint"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "bigint"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "bigint"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "bigint"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "bigint"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "bigint"
+        }
+      },
+      "binary": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "binary"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "binary"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "binary"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "binary"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "binary"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "binary"
+        }
+      },
+      "bit": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "bit"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "bit"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "bit"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "bit"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "bit"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "bit"
+        }
+      },
+      "char": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "char"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "char"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "char"
+        },
+        "_like": {
+          "operatorName": "LIKE",
+          "argumentType": "char"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "char"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "char"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "char"
+        },
+        "_nlike": {
+          "operatorName": "NOT LIKE",
+          "argumentType": "char"
+        }
+      },
+      "date": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "date"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "date"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "date"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "date"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "date"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "date"
+        }
+      },
+      "datetime": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "datetime"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "datetime"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "datetime"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "datetime"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "datetime"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "datetime"
+        }
+      },
+      "datetime2": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "datetime2"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "datetime2"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "datetime2"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "datetime2"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "datetime2"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "datetime2"
+        }
+      },
+      "datetimeoffset": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "datetimeoffset"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "datetimeoffset"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "datetimeoffset"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "datetimeoffset"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "datetimeoffset"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "datetimeoffset"
+        }
+      },
+      "decimal": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "decimal"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "decimal"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "decimal"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "decimal"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "decimal"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "decimal"
+        }
+      },
+      "float": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "float"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "float"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "float"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "float"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "float"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "float"
+        }
+      },
+      "geography": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "geography"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "geography"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "geography"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "geography"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "geography"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "geography"
+        }
+      },
+      "geometry": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "geometry"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "geometry"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "geometry"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "geometry"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "geometry"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "geometry"
+        }
+      },
+      "hierarchyid": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "hierarchyid"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "hierarchyid"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "hierarchyid"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "hierarchyid"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "hierarchyid"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "hierarchyid"
+        }
+      },
+      "image": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "image"
+        }
+      },
+      "int": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "int"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "int"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "int"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "int"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "int"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "int"
+        }
+      },
+      "money": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "money"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "money"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "money"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "money"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "money"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "money"
+        }
+      },
+      "nchar": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "nchar"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "nchar"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "nchar"
+        },
+        "_like": {
+          "operatorName": "LIKE",
+          "argumentType": "nchar"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "nchar"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "nchar"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "nchar"
+        },
+        "_nlike": {
+          "operatorName": "NOT LIKE",
+          "argumentType": "nchar"
+        }
+      },
+      "ntext": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "ntext"
+        },
+        "_like": {
+          "operatorName": "LIKE",
+          "argumentType": "ntext"
+        },
+        "_nlike": {
+          "operatorName": "NOT LIKE",
+          "argumentType": "ntext"
+        }
+      },
+      "numeric": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "numeric"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "numeric"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "numeric"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "numeric"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "numeric"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "numeric"
+        }
+      },
+      "nvarchar": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "nvarchar"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "nvarchar"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "nvarchar"
+        },
+        "_like": {
+          "operatorName": "LIKE",
+          "argumentType": "nvarchar"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "nvarchar"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "nvarchar"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "nvarchar"
+        },
+        "_nlike": {
+          "operatorName": "NOT LIKE",
+          "argumentType": "nvarchar"
+        }
+      },
+      "real": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "real"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "real"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "real"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "real"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "real"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "real"
+        }
+      },
+      "smalldatetime": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "smalldatetime"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "smalldatetime"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "smalldatetime"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "smalldatetime"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "smalldatetime"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "smalldatetime"
+        }
+      },
+      "smallint": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "smallint"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "smallint"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "smallint"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "smallint"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "smallint"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "smallint"
+        }
+      },
+      "smallmoney": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "smallmoney"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "smallmoney"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "smallmoney"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "smallmoney"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "smallmoney"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "smallmoney"
+        }
+      },
+      "sql_variant": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "sql_variant"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "sql_variant"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "sql_variant"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "sql_variant"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "sql_variant"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "sql_variant"
+        }
+      },
+      "sysname": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "sysname"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "sysname"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "sysname"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "sysname"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "sysname"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "sysname"
+        }
+      },
+      "text": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "text"
+        },
+        "_like": {
+          "operatorName": "LIKE",
+          "argumentType": "text"
+        },
+        "_nlike": {
+          "operatorName": "NOT LIKE",
+          "argumentType": "text"
+        }
+      },
+      "time": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "time"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "time"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "time"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "time"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "time"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "time"
+        }
+      },
+      "timestamp": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "timestamp"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "timestamp"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "timestamp"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "timestamp"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "timestamp"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "timestamp"
+        }
+      },
+      "tinyint": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "tinyint"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "tinyint"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "tinyint"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "tinyint"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "tinyint"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "tinyint"
+        }
+      },
+      "uniqueidentifier": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "uniqueidentifier"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "uniqueidentifier"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "uniqueidentifier"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "uniqueidentifier"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "uniqueidentifier"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "uniqueidentifier"
+        }
+      },
+      "varbinary": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "varbinary"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "varbinary"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "varbinary"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "varbinary"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "varbinary"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "varbinary"
+        }
+      },
+      "varchar": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "varchar"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "varchar"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "varchar"
+        },
+        "_like": {
+          "operatorName": "LIKE",
+          "argumentType": "varchar"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "varchar"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "varchar"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "varchar"
+        },
+        "_nlike": {
+          "operatorName": "NOT LIKE",
+          "argumentType": "varchar"
+        }
+      },
+      "xml": {
+        "_eq": {
+          "operatorName": "=",
+          "argumentType": "xml"
+        },
+        "_gt": {
+          "operatorName": ">",
+          "argumentType": "xml"
+        },
+        "_gte": {
+          "operatorName": ">=",
+          "argumentType": "xml"
+        },
+        "_lt": {
+          "operatorName": "<",
+          "argumentType": "xml"
+        },
+        "_lte": {
+          "operatorName": "<=",
+          "argumentType": "xml"
+        },
+        "_neq": {
+          "operatorName": "!=",
+          "argumentType": "xml"
+        }
+      }
+    }
   }
 }
