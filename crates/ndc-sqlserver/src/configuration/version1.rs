@@ -210,7 +210,7 @@ fn get_comparison_operators_for_type(
         );
     }
 
-    // some things cannot be compared
+    // include comparison operators for types that are comparable, according to
     // https://learn.microsoft.com/en-us/sql/t-sql/language-elements/comparison-operators-transact-sql?view=sql-server-ver16
     if !CANNOT_COMPARE.contains(&type_name.0.as_str()) {
         comparison_operators.insert(
