@@ -133,6 +133,59 @@ pub async fn configure(
     })
 }
 
+// we hard code these, essentially
+// we look up available types in `sys.types` but hard code their behaviour by looking them up below
+// categories taken from https://learn.microsoft.com/en-us/sql/t-sql/data-types/data-types-transact-sql
+fn get_comparison_operators_for_type(
+    type_name: database::ScalarType,
+) -> BTreeMap<String, database::ComparisonOperator> {
+    let _exact_numerics = vec![
+        "bigint",
+        "bit",
+        "decimal",
+        "int",
+        "money",
+        "numeric",
+        "smallint",
+        "smallmoney",
+        "tinyint",
+    ];
+    let _approx_numerics = vec!["float", "real"];
+    let _date_and_time = vec![
+        "date",
+        "datetime2",
+        "datetime",
+        "datetimeoffset",
+        "smalldatetime",
+        "time",
+    ];
+    let _character_strings = vec!["char", "text", "varchar"];
+    let _unicode_character_strings = vec!["nchar", "ntext", "nvarchar"];
+    let _binary_strings = vec!["binary", "image", "varbinary"];
+    let cannot_compare = vec!["text", "ntext", "image"]; // https://learn.microsoft.com/en-us/sql/t-sql/language-elements/comparison-operators-transact-sql?view=sql-server-ver16
+
+    let mut comparison_operators = BTreeMap::new();
+
+    // some things cannot be compared
+    if !cannot_compare.contains(&type_name.0.as_str()) {
+        comparison_operators.insert(
+            "_eq".to_string(),
+            database::ComparisonOperator {
+                operator_name: "=".to_string(),
+                argument_type: type_name.clone(),
+            },
+        );
+        comparison_operators.insert(
+            "_neq".to_string(),
+            database::ComparisonOperator {
+                operator_name: "!=".to_string(),
+                argument_type: type_name,
+            },
+        );
+    }
+    comparison_operators
+}
+
 fn get_tables_info(
     introspection_tables: Vec<introspection::IntrospectionTable>,
 ) -> database::TablesInfo {
