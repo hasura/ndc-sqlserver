@@ -115,9 +115,7 @@ async fn select_first_row(
     let stream = select.query(&mut connection).await.unwrap();
 
     // Nothing is fetched, the first result set starts.
-    let row = stream.into_row().await.unwrap().unwrap();
-
-    row
+    stream.into_row().await.unwrap().unwrap()
 }
 
 /// Construct the deployment configuration by introspecting the database.
@@ -171,37 +169,16 @@ async fn get_comparison_operators(
     database::ComparisonOperators(comparison_operators)
 }
 
+const CHARACTER_STRINGS: [&str; 3] = ["char", "text", "varchar"];
+const UNICODE_CHARACTER_STRINGS: [&str; 3] = ["nchar", "ntext", "nvarchar"];
+const CANNOT_COMPARE: [&str; 3] = ["text", "ntext", "image"];
+
 // we hard code these, essentially
 // we look up available types in `sys.types` but hard code their behaviour by looking them up below
 // categories taken from https://learn.microsoft.com/en-us/sql/t-sql/data-types/data-types-transact-sql
 fn get_comparison_operators_for_type(
     type_name: database::ScalarType,
 ) -> BTreeMap<String, database::ComparisonOperator> {
-    let _exact_numerics = vec![
-        "bigint",
-        "bit",
-        "decimal",
-        "int",
-        "money",
-        "numeric",
-        "smallint",
-        "smallmoney",
-        "tinyint",
-    ];
-    let _approx_numerics = vec!["float", "real"];
-    let _date_and_time = vec![
-        "date",
-        "datetime2",
-        "datetime",
-        "datetimeoffset",
-        "smalldatetime",
-        "time",
-    ];
-    let character_strings = vec!["char", "text", "varchar"];
-    let unicode_character_strings = vec!["nchar", "ntext", "nvarchar"];
-    let _binary_strings = vec!["binary", "image", "varbinary"];
-    let cannot_compare = vec!["text", "ntext", "image"]; // https://learn.microsoft.com/en-us/sql/t-sql/language-elements/comparison-operators-transact-sql?view=sql-server-ver16
-
     let mut comparison_operators = BTreeMap::new();
 
     // in ndc-spec, all things can be `==`
@@ -214,8 +191,8 @@ fn get_comparison_operators_for_type(
     );
 
     // include LIKE and NOT LIKE for string-ish types
-    if character_strings.contains(&type_name.0.as_str())
-        || unicode_character_strings.contains(&type_name.0.as_str())
+    if CHARACTER_STRINGS.contains(&type_name.0.as_str())
+        || UNICODE_CHARACTER_STRINGS.contains(&type_name.0.as_str())
     {
         comparison_operators.insert(
             "_like".to_string(),
@@ -234,7 +211,8 @@ fn get_comparison_operators_for_type(
     }
 
     // some things cannot be compared
-    if !cannot_compare.contains(&type_name.0.as_str()) {
+    // https://learn.microsoft.com/en-us/sql/t-sql/language-elements/comparison-operators-transact-sql?view=sql-server-ver16
+    if !CANNOT_COMPARE.contains(&type_name.0.as_str()) {
         comparison_operators.insert(
             "_neq".to_string(),
             database::ComparisonOperator {
