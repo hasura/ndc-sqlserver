@@ -58,7 +58,7 @@ FROM
               [0_Track].[AlbumId] = [9_BOOLEXP_Album].[AlbumId]
             )
           )
-      ) AS [9_BOOLEXP_Album] ON ('true')
+      ) AS [9_BOOLEXP_Album] ON (1 = 1)
       INNER JOIN (
         SELECT
           *
@@ -73,7 +73,7 @@ FROM
               [0_Track].[AlbumId] = [10_BOOLEXP_Album].[AlbumId]
             )
           )
-      ) AS [10_BOOLEXP_Album] ON ('true')
+      ) AS [10_BOOLEXP_Album] ON (1 = 1)
       INNER JOIN (
         SELECT
           *
@@ -88,7 +88,7 @@ FROM
               [10_BOOLEXP_Album].[ArtistId] = [11_BOOLEXP_Artist].[ArtistId]
             )
           )
-      ) AS [11_BOOLEXP_Artist] ON ('true')
+      ) AS [11_BOOLEXP_Artist] ON (1 = 1)
     WHERE
       (
         [9_BOOLEXP_Album].[AlbumId] > [11_BOOLEXP_Artist].[ArtistId]

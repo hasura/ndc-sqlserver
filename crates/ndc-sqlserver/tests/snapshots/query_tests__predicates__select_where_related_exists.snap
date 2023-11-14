@@ -6,6 +6,7 @@ expression: result
   {
     "rows": [
       {
+        "title": "Santana",
         "albums": {
           "rows": [
             {
@@ -18,8 +19,7 @@ expression: result
               "title": "Santana Live"
             }
           ]
-        },
-        "title": "Santana"
+        }
       }
     ]
   }
