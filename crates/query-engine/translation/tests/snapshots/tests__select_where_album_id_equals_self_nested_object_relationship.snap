@@ -51,44 +51,44 @@ FROM
           *
         FROM
           [public].[Album] AS [9_BOOLEXP_Album]
-        WHERE
-          (
-            ([9_BOOLEXP_Album].[Title] = cast(@P1 as varchar))
-            AND (
-              [0_Track].[AlbumId] = [9_BOOLEXP_Album].[AlbumId]
-            )
+      ) AS [9_BOOLEXP_Album] ON (
+        (
+          ([9_BOOLEXP_Album].[Title] = cast(@P1 as varchar))
+          AND (
+            [0_Track].[AlbumId] = [9_BOOLEXP_Album].[AlbumId]
           )
-      ) AS [9_BOOLEXP_Album] ON (1 = 1)
+        )
+      )
       INNER JOIN (
         SELECT
           *
         FROM
           [public].[Album] AS [10_BOOLEXP_Album]
-        WHERE
+      ) AS [10_BOOLEXP_Album] ON (
+        (
           (
-            (
-              [10_BOOLEXP_Album].[Title] = cast(@P2 as varchar)
-            )
-            AND (
-              [0_Track].[AlbumId] = [10_BOOLEXP_Album].[AlbumId]
-            )
+            [10_BOOLEXP_Album].[Title] = cast(@P2 as varchar)
           )
-      ) AS [10_BOOLEXP_Album] ON (1 = 1)
+          AND (
+            [0_Track].[AlbumId] = [10_BOOLEXP_Album].[AlbumId]
+          )
+        )
+      )
       INNER JOIN (
         SELECT
           *
         FROM
           [public].[Artist] AS [11_BOOLEXP_Artist]
-        WHERE
+      ) AS [11_BOOLEXP_Artist] ON (
+        (
           (
-            (
-              [11_BOOLEXP_Artist].[Name] = cast(@P3 as varchar)
-            )
-            AND (
-              [10_BOOLEXP_Album].[ArtistId] = [11_BOOLEXP_Artist].[ArtistId]
-            )
+            [11_BOOLEXP_Artist].[Name] = cast(@P3 as varchar)
           )
-      ) AS [11_BOOLEXP_Artist] ON (1 = 1)
+          AND (
+            [10_BOOLEXP_Album].[ArtistId] = [11_BOOLEXP_Artist].[ArtistId]
+          )
+        )
+      )
     WHERE
       (
         [9_BOOLEXP_Album].[AlbumId] > [11_BOOLEXP_Artist].[ArtistId]

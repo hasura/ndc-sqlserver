@@ -34,11 +34,11 @@ FROM
           *
         FROM
           [public].[Album] AS [5_BOOLEXP_Album]
-        WHERE
-          (
-            [0_Artist].[ArtistId] = [5_BOOLEXP_Album].[ArtistId]
-          )
-      ) AS [5_BOOLEXP_Album] ON (1 = 1)
+      ) AS [5_BOOLEXP_Album] ON (
+        (
+          [0_Artist].[ArtistId] = [5_BOOLEXP_Album].[ArtistId]
+        )
+      )
     WHERE
       (
         [5_BOOLEXP_Album].[Title] LIKE cast(@P1 as varchar)
