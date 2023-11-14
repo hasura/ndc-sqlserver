@@ -31,6 +31,12 @@ mod predicates {
     }
 
     #[tokio::test]
+    async fn select_where_name_nlike() {
+        let result = run_query("select_where_name_nlike").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
     async fn select_where_name_not_like() {
         let result = run_query("select_where_name_not_like").await;
         insta::assert_json_snapshot!(result);
