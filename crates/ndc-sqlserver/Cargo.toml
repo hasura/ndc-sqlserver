@@ -36,5 +36,5 @@ thiserror = "1.0"
 axum = "0.6.19"
 axum-test-helper = "0.3.0"
 insta = { version = "1.34.0", features = ["json"] }
-env_logger = "0.10.0"
+env_logger = "0.10.1"
 similar-asserts = "1.5.0"
