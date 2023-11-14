@@ -96,17 +96,45 @@ mod predicates {
         insta::assert_json_snapshot!(result);
     }
 
-    // fix exists implementation
     #[tokio::test]
     async fn select_where_unrelated_exists() {
         let result = run_query("select_where_unrelated_exists").await;
         insta::assert_json_snapshot!(result);
     }
 
-    // fix exists implementation
     #[tokio::test]
     async fn select_where_related_exists() {
         let result = run_query("select_where_related_exists").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn select_where_name_eq() {
+        let result = run_query("select_where_name_eq").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn select_where_name_neq() {
+        let result = run_query("select_where_name_neq").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn select_where_or() {
+        let result = run_query("select_where_or").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn select_where_and() {
+        let result = run_query("select_where_and").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn select_where_array_relationship() {
+        let result = run_query("select_where_array_relationship").await;
         insta::assert_json_snapshot!(result);
     }
 }
