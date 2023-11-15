@@ -6,6 +6,7 @@ services:
     platform: linux/amd64
     ports:
       - 64003:1433
+    command: bash -c "/docker/entrypoint.sh"
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Developer"
@@ -14,8 +15,13 @@ services:
     volumes:
       - /var/opt/mssql
       - type: bind
+        read_only: true
         source: ./static
         target: /static
+      - type: bind
+        read_only: true
+        source: ./docker
+        target: /docker
     healthcheck:
       test:
         - CMD-SHELL
