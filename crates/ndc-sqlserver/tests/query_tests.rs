@@ -96,7 +96,6 @@ mod predicates {
         insta::assert_json_snapshot!(result);
     }
 
-    /*
     // fix exists implementation
     #[tokio::test]
     async fn select_where_unrelated_exists() {
@@ -110,7 +109,6 @@ mod predicates {
         let result = run_query("select_where_related_exists").await;
         insta::assert_json_snapshot!(result);
     }
-    */
 }
 
 mod sorting {

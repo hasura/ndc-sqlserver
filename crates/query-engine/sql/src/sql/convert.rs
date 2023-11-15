@@ -191,7 +191,7 @@ impl Join {
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 join.alias.to_sql(sql);
-                sql.append_syntax(" ON ('true') ");
+                sql.append_syntax(" ON (1 = 1) ");
             }
             Join::CrossJoin(join) => {
                 sql.append_syntax(" CROSS JOIN ");
@@ -411,8 +411,8 @@ impl Value {
             Value::Character(s) => sql.append_param(Param::String(s.clone())),
             Value::String(s) => sql.append_param(Param::String(s.clone())),
             Value::Variable(v) => sql.append_param(Param::Variable(v.clone())),
-            Value::Bool(true) => sql.append_syntax("true"),
-            Value::Bool(false) => sql.append_syntax("false"),
+            Value::Bool(true) => sql.append_syntax("1 = 1"),
+            Value::Bool(false) => sql.append_syntax("1 = 0"),
             Value::Null => sql.append_syntax("null"),
             Value::Array(items) => {
                 sql.append_syntax("ARRAY [");
