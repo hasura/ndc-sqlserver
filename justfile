@@ -88,10 +88,7 @@ test-integrated:
 
 # run sqlserver
 start-dependencies:
-  # start sqlserver
-  docker compose down -v sqlserver
   docker compose up --wait sqlserver
-  docker exec -it ndc-sqlserver-sqlserver-1 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U SA -P "Password!" -i "/static/chinook-sqlserver.sql"
 
 # run prometheus + grafana
 start-metrics:

@@ -36,9 +36,6 @@ jobs:
           services: |
             sqlserver
 
-      - name: Load Chinook data
-        run: sqlcmd -S localhost,64003 -U SA -P "Password!" -i "./static/chinook-sqlserver.sql"
-
       - name: run tests
         run: |
           cargo test --release --workspace
