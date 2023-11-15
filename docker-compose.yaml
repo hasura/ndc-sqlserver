@@ -66,5 +66,11 @@ services:
         source: ./metrics/grafana-data
         target: /var/lib/grafana
 
+  auth-hook:
+    build: ../v3-engine/hasura-authn-webhook/dev-auth-webhook
+    init: true
+    ports:
+      - 3050:3050
+
 volumes:
   prom_data:
