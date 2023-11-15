@@ -23,8 +23,12 @@ pub async fn mssql_execute(
         &plan.variables,
     );
 
+    let acquisition_timer = metrics.time_connection_acquisition_wait();
+    let connection_result = mssql_pool.get().await.map_err(Error::ConnectionPool);
+    let mut connection = acquisition_timer.complete_with(connection_result)?;
+
     let query_timer = metrics.time_query_execution();
-    let rows_result = execute_query(mssql_pool, plan).await;
+    let rows_result = execute_query(&mut connection, plan).await;
     let rows = query_timer.complete_with(rows_result)?;
 
     tracing::info!("Database rows result: {:?}", rows);
@@ -41,22 +45,23 @@ pub async fn mssql_execute(
 }
 
 async fn execute_query(
-    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+    connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
     plan: sql::execution_plan::ExecutionPlan,
 ) -> Result<Vec<serde_json::Value>, Error> {
     let query = plan.query();
+
     // run the query on each set of variables. The result is a vector of rows each
     // element in the vector is the result of running the query on one set of variables.
     let rows: Vec<serde_json::Value> = match plan.variables {
         None => {
             let empty_map = BTreeMap::new();
-            let rows = execute_mssql_query(mssql_pool, &query, &empty_map).await?;
+            let rows = execute_mssql_query(connection, &query, &empty_map).await?;
             vec![rows]
         }
         Some(variable_sets) => {
             let mut sets_of_rows = vec![];
             for vars in &variable_sets {
-                let rows = execute_mssql_query(mssql_pool, &query, vars).await?;
+                let rows = execute_mssql_query(connection, &query, vars).await?;
                 sets_of_rows.push(rows);
             }
             sets_of_rows
@@ -77,12 +82,10 @@ fn rows_to_response(results: Vec<serde_json::Value>) -> models::QueryResponse {
 
 /// Execute the query on one set of variables.
 async fn execute_mssql_query(
-    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+    connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
     query: &sql::string::SQL,
     variables: &BTreeMap<String, serde_json::Value>,
 ) -> Result<serde_json::Value, Error> {
-    let mut connection = mssql_pool.get().await.unwrap();
-
     // let's do a query to check everything is ok
     let query_text = query.sql.as_str();
 
@@ -126,7 +129,7 @@ async fn execute_mssql_query(
     }
 
     // go!
-    let mut stream = mssql_query.query(&mut connection).await.unwrap();
+    let mut stream = mssql_query.query(connection).await.unwrap();
 
     // collect big lump of json here
     let mut result_str = String::new();
@@ -154,4 +157,5 @@ async fn execute_mssql_query(
 
 pub enum Error {
     Query(String),
+    ConnectionPool(bb8::RunError<bb8_tiberius::Error>),
 }
