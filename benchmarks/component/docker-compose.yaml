@@ -1,6 +1,6 @@
 version: "3.6"
 
-name: ndc-postgres-component-benchmarks
+name: ndc-sqlserver-component-benchmarks
 
 services:
   benchmark:
@@ -47,29 +47,11 @@ services:
         target: /home/k6/output
 
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
-    platform: linux/amd64
+    extends:
+      file: ../../docker-compose.yaml
+      service: sqlserver
     ports:
       - 1433
-    environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: "Developer"
-      MSSQL_SA_PASSWORD: "Password!"
-      SA_PASSWORD: "Password!"
-    volumes:
-      - /var/opt/mssql
-      - type: bind
-        source: ../../static
-        target: /static
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - |
-          /opt/mssql-tools/bin/sqlcmd -U SA -P "$$SA_PASSWORD"
-      start_period: 5s
-      interval: 5s
-      timeout: 10s
-      retries: 20
 
   agent:
     image: ghcr.io/hasura/ndc-sqlserver:dev
@@ -82,6 +64,7 @@ services:
       CONFIGURATION_FILE: "/deployment.json"
       # we don't care about traces right now, and the benchmarks flood the batch buffer
       OTEL_TRACES_SAMPLER: "always_off"
+      PORT: 8100
     volumes:
       - type: bind
         source: ./generated/deployment.json
@@ -96,55 +79,31 @@ services:
       timeout: 1s
       retries: 30
     depends_on:
-      postgres:
+      sqlserver:
         condition: service_started
 
   agent-configuration:
-    image: ghcr.io/hasura/ndc-postgres:dev
+    image: ghcr.io/hasura/ndc-sqlserver:dev
     command:
       - configuration
       - serve
     init: true
     ports:
       - 9100
+    environment:
+      PORT: 9100
     healthcheck:
       test:
         - CMD
-        - ndc-postgres
+        - ndc-sqlserver
         - check-health
         - --port=9100
       interval: 1s
       timeout: 1s
       retries: 30
     depends_on:
-      postgres:
+      sqlserver:
         condition: service_started
-
-  postgres:
-    image: postgis/postgis:${POSTGRESQL_VERSION:-16}-3.4
-    platform: linux/amd64
-    command:
-      - -F # turn fsync off for speed
-      - -N 1000 # increase max connections from 100 so we can run more HGEs
-    ports:
-      - 5432
-    environment:
-      POSTGRES_PASSWORD: "password"
-    volumes:
-      - type: tmpfs
-        target: /var/lib/postgresql/data
-      - type: bind
-        source: ../../static/chinook-postgres.sql
-        target: /docker-entrypoint-initdb.d/chinook-postgres.sql
-        read_only: true
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - psql -U "$${POSTGRES_USER:-postgres}" < /dev/null && sleep 5 && psql -U "$${POSTGRES_USER:-postgres}" < /dev/null
-      start_period: 5s
-      interval: 5s
-      timeout: 10s
-      retries: 20
 
   # k6 will push statistics to Prometheus
   prometheus:

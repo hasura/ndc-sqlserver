@@ -41,7 +41,7 @@ SQLSERVER_CONNECTION_STRING="DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0
 
 echo "${SQLSERVER_CONNECTION_STRING}"
 
-../../scripts/new-configuration.sh localhost:9100 "${SQLSERVER_CONNECTION_STRING}"
+../../scripts/new-configuration.sh localhost:9100 "${SQLSERVER_CONNECTION_STRING}" \
   > ./generated/deployment.json
 kill "$AGENT_PID" && wait "$AGENT_PID" || :
 rm -f ./agent.pid
