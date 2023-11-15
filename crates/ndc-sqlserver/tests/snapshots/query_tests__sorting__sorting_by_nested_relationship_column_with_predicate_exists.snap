@@ -1,0 +1,25 @@
+---
+source: crates/ndc-sqlserver/tests/query_tests.rs
+expression: result
+---
+[
+  {
+    "rows": [
+      {
+        "Name": "\"?\""
+      },
+      {
+        "Name": "\"40\""
+      },
+      {
+        "Name": "\"Eine Kleine Nachtmusik\" Serenade In G, K. 525: I. Allegro"
+      },
+      {
+        "Name": "#1 Zero"
+      },
+      {
+        "Name": "#9 Dream"
+      }
+    ]
+  }
+]

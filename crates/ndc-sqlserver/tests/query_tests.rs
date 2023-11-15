@@ -183,6 +183,30 @@ mod sorting {
         let result = run_query("select_order_by_artist_album_count").await;
         insta::assert_json_snapshot!(result);
     }
+
+    #[tokio::test]
+    async fn select_order_by_artist_album_count_agg() {
+        let result = run_query("select_order_by_artist_album_count_agg").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn sorting_by_nested_relationship_column_with_predicate() {
+        let result = run_query("sorting_by_nested_relationship_column_with_predicate").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn sorting_by_nested_relationship_column_with_predicate_exists() {
+        let result = run_query("sorting_by_nested_relationship_column_with_predicate_exists").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn sorting_by_relationship_count_with_predicate() {
+        let result = run_query("sorting_by_relationship_count_with_predicate").await;
+        insta::assert_json_snapshot!(result);
+    }
 }
 
 mod aggregation {
