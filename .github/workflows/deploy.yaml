@@ -15,7 +15,7 @@ jobs:
     # and only on the `main` branch or version tags
     if: |
       github.event.workflow_run.conclusion == 'success'
-      #        && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
