@@ -1,5 +1,6 @@
 //! Execute an execution plan against the database.
 
+use crate::metrics;
 use ndc_sdk::models;
 use query_engine_sql::sql;
 use serde_json;
@@ -10,6 +11,7 @@ use tokio_stream::StreamExt;
 /// Execute a query against sqlserver.
 pub async fn mssql_execute(
     mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+    metrics: &metrics::Metrics,
     plan: sql::execution_plan::ExecutionPlan,
 ) -> Result<models::QueryResponse, Error> {
     let query = plan.query();
@@ -21,6 +23,28 @@ pub async fn mssql_execute(
         &plan.variables,
     );
 
+    let query_timer = metrics.time_query_execution();
+    let rows_result = execute_query(mssql_pool, plan).await;
+    let rows = query_timer.complete_with(rows_result)?;
+
+    tracing::info!("Database rows result: {:?}", rows);
+
+    // Hack a response from the query results. See the 'response_hack' for more details.
+    let response = rows_to_response(rows);
+
+    // tracing::info!(
+    //     "Query response: {}",
+    //     serde_json::to_string(&response).unwrap()
+    // );
+
+    Ok(response)
+}
+
+async fn execute_query(
+    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+    plan: sql::execution_plan::ExecutionPlan,
+) -> Result<Vec<serde_json::Value>, Error> {
+    let query = plan.query();
     // run the query on each set of variables. The result is a vector of rows each
     // element in the vector is the result of running the query on one set of variables.
     let rows: Vec<serde_json::Value> = match plan.variables {
@@ -38,18 +62,7 @@ pub async fn mssql_execute(
             sets_of_rows
         }
     };
-
-    tracing::info!("Database rows result: {:?}", rows);
-
-    // Hack a response from the query results. See the 'response_hack' for more details.
-    let response = rows_to_response(rows);
-
-    // tracing::info!(
-    //     "Query response: {}",
-    //     serde_json::to_string(&response).unwrap()
-    // );
-
-    Ok(response)
+    Ok(rows)
 }
 
 /// Take the sqlserver results and return them as a QueryResponse.

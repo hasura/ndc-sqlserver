@@ -1,8 +1,8 @@
 //! Configuration and state for our connector.
-use crate::metrics;
 
 use crate::configuration::introspection;
 use ndc_sdk::connector;
+use query_engine_execution::metrics;
 use query_engine_metadata::metadata;
 use query_engine_metadata::metadata::{database, Nullable};
 use schemars::JsonSchema;
@@ -47,7 +47,7 @@ pub struct Configuration {
 #[derive(Debug, Clone)]
 pub struct State {
     pub mssql_pool: bb8::Pool<bb8_tiberius::ConnectionManager>,
-    pub metrics: metrics::Metrics,
+    pub metrics: query_engine_execution::metrics::Metrics,
 }
 
 /// Validate the user configuration.
@@ -72,15 +72,12 @@ pub async fn validate_raw_configuration(
 pub async fn create_state(
     configuration: &Configuration,
     metrics_registry: &mut prometheus::Registry,
-) -> Result<State, connector::InitializationError> {
+) -> Result<State, InitializationError> {
     let mssql_pool = create_mssql_pool(&configuration.config)
         .await
-        .map_err(|e| {
-            connector::InitializationError::Other(
-                InitializationError::UnableToCreateMSSQLPool(e).into(),
-            )
-        })?;
-    let metrics = metrics::initialise_metrics(metrics_registry).await?;
+        .map_err(InitializationError::UnableToCreateMSSQLPool)?;
+    let metrics = query_engine_execution::metrics::Metrics::initialize(metrics_registry)
+        .map_err(InitializationError::MetricsError)?;
     Ok(State {
         mssql_pool,
         metrics,
@@ -361,8 +358,8 @@ fn get_column_info(
 pub enum InitializationError {
     #[error("unable to initialize mssql connection pool: {0}")]
     UnableToCreateMSSQLPool(bb8_tiberius::Error),
-    #[error("error initializing Prometheus metrics: {0}")]
-    PrometheusError(prometheus::Error),
+    #[error("error initializing metrics: {0}")]
+    MetricsError(metrics::Error),
 }
 
 /// Collect all the types that can occur in the metadata. This is a bit circumstantial. A better

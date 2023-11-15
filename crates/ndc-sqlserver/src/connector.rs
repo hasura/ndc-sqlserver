@@ -59,7 +59,9 @@ impl connector::Connector for SQLServer {
         configuration: &Self::Configuration,
         metrics: &mut prometheus::Registry,
     ) -> Result<Self::State, connector::InitializationError> {
-        configuration::create_state(configuration, metrics).await
+        configuration::create_state(configuration, metrics)
+            .await
+            .map_err(|err| connector::InitializationError::Other(err.into()))
     }
 
     /// Update any metrics from the state
@@ -174,7 +176,7 @@ impl connector::Connector for SQLServer {
             }?;
 
         // Execute the query.
-        let result = execution::mssql_execute(&state.mssql_pool, plan)
+        let result = execution::mssql_execute(&state.mssql_pool, &state.metrics, plan)
             .await
             .map_err(|err| match err {
                 execution::Error::Query(err) => {
@@ -184,7 +186,7 @@ impl connector::Connector for SQLServer {
             })?;
 
         // assuming query succeeded, increment counter
-        state.metrics.query_total.inc();
+        state.metrics.record_successful_query();
 
         // TODO: return raw JSON
         Ok(JsonResponse::Value(result))
