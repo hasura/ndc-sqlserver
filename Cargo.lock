@@ -1314,6 +1314,7 @@ dependencies = [
  "prometheus",
  "query-engine-execution",
  "query-engine-metadata",
+ "query-engine-sql",
  "query-engine-translation",
  "schemars",
  "serde",

@@ -7,6 +7,7 @@ use serde_json;
 use std::collections::BTreeMap;
 use tiberius::QueryItem;
 use tokio_stream::StreamExt;
+use tracing::{info_span, Instrument};
 
 /// Execute a query against sqlserver.
 pub async fn mssql_execute(
@@ -24,11 +25,17 @@ pub async fn mssql_execute(
     );
 
     let acquisition_timer = metrics.time_connection_acquisition_wait();
-    let connection_result = mssql_pool.get().await.map_err(Error::ConnectionPool);
+    let connection_result = mssql_pool
+        .get()
+        .instrument(info_span!("Acquire connection"))
+        .await
+        .map_err(Error::ConnectionPool);
     let mut connection = acquisition_timer.complete_with(connection_result)?;
 
     let query_timer = metrics.time_query_execution();
-    let rows_result = execute_query(&mut connection, plan).await;
+    let rows_result = execute_query(&mut connection, plan)
+        .instrument(info_span!("Database request"))
+        .await;
     let rows = query_timer.complete_with(rows_result)?;
 
     tracing::info!("Database rows result: {:?}", rows);
