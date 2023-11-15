@@ -18,11 +18,15 @@ check: format-check find-unused-dependencies build lint test
 # run the connector
 run: start-dependencies
   RUST_LOG=INFO \
+    OTLP_ENDPOINT=http://localhost:4317 \
+    OTEL_SERVICE_NAME=ndc-sqlserver \
     cargo run --release -- serve --configuration {{CHINOOK_DEPLOYMENT}}
 
 # watch the code, then test and re-run on changes
 dev: start-dependencies
   RUST_LOG=INFO \
+    OTLP_ENDPOINT=http://localhost:4317 \
+    OTEL_SERVICE_NAME=ndc-sqlserver \
     cargo watch -i "tests/snapshots/*" \
     -c \
     -x test \
@@ -32,6 +36,8 @@ dev: start-dependencies
 # watch the code, then test and re-run config server ron changes
 dev-config: start-dependencies
   RUST_LOG=DEBUG \
+    OTLP_ENDPOINT=http://localhost:4317 \
+    OTEL_SERVICE_NAME=ndc-sqlserver \
     cargo watch -i "tests/snapshots/*" \
     -c \
     -x clippy \
@@ -88,7 +94,7 @@ test-integrated:
 
 # run sqlserver
 start-dependencies:
-  docker compose up --wait sqlserver
+  docker compose up --wait sqlserver jaeger
 
 # run prometheus + grafana
 start-metrics:
@@ -102,11 +108,14 @@ run-engine: start-dependencies
   docker compose up --wait auth-hook
   # Run graphql-engine using static Chinook metadata
   # we expect the `v3-engine` repo to live next door to this one
-  RUST_LOG=DEBUG cargo run --release \
+  RUST_LOG=DEBUG \
+    OTLP_ENDPOINT=http://localhost:4317 \
+    cargo run --release \
     --manifest-path ../v3-engine/Cargo.toml \
     --bin engine -- \
     --metadata-path ./static/chinook-metadata.json \
     --authn-config-path ./static/auth_config.json
+
 # pasting multiline SQL into `sqlcmd` is a bad time, so here is a script to
 # smash a file in for rapid fire application development business value
 run-temp-sql:
