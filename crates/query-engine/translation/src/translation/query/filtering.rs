@@ -276,13 +276,12 @@ fn translate_comparison_pathelements(
                 relationship,
             )?;
 
-            select.where_ = sql::ast::Where(cond);
-
             select.joins = rel_joins;
 
             joins.push(sql::ast::Join::InnerJoin(sql::ast::InnerJoin {
                 select: Box::new(select),
                 alias: target_table_alias,
+                on: cond,
             }));
             Ok(new_root_and_current_tables.current_table)
         },

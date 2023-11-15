@@ -114,6 +114,7 @@ pub struct OuterApply {
 pub struct InnerJoin {
     pub select: Box<Select>,
     pub alias: TableAlias,
+    pub on: Expression,
 }
 
 /// A WHERE clause
