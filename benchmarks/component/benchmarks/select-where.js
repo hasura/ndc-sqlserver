@@ -22,7 +22,7 @@ const data = {
       },
       operator: {
         type: "other",
-        name: "_ilike",
+        name: "_like",
       },
       value: {
         type: "scalar",
