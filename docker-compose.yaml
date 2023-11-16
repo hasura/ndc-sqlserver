@@ -63,7 +63,13 @@ services:
         target: /etc/grafana/provisioning/datasources
         read_only: true
       - type: bind
-        source: ./metrics/grafana-data
+        source: ./metrics/grafana/dashboard.yaml
+        target: /etc/grafana/provisioning/dashboards/main.yaml
+      - type: bind
+        source: ./metrics/grafana/dashboards
+        target: /var/lib/grafana/dashboards
+      - type: volume
+        source: grafana_data
         target: /var/lib/grafana
 
   auth-hook:
@@ -72,5 +78,25 @@ services:
     ports:
       - 3050:3050
 
+  jaeger:
+    image: jaegertracing/all-in-one:1.37
+    restart: always
+    ports:
+      - 5775:5775/udp
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 4002:16686
+      - 14250:14250
+      - 14268:14268
+      - 14269:14269
+      - 4317:4317 # OTLP gRPC
+      - 4318:4318 # OTLP HTTP
+      - 9411:9411
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+      COLLECTOR_ZIPKIN_HOST_PORT: "9411"
+
 volumes:
   prom_data:
+  grafana_data:

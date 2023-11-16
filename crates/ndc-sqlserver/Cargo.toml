@@ -17,8 +17,9 @@ path = "bin/main.rs"
 ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "f2a2a75", package = "ndc-sdk" }
 
 query-engine-execution = { path = "../query-engine/execution" }
-query-engine-translation = { path = "../query-engine/translation" }
 query-engine-metadata = {path = "../query-engine/metadata"}
+query-engine-sql = { path = "../query-engine/sql" }
+query-engine-translation = { path = "../query-engine/translation" }
 
 tiberius = { version = "0.12.2", default-features = false, features = ["rustls"] }
 bb8 = "0.8.1"
