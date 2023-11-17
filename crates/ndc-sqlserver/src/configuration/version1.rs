@@ -18,6 +18,22 @@ const TYPES_QUERY: &str = "SELECT name FROM sys.types FOR JSON PATH";
 
 const CURRENT_VERSION: u32 = 1;
 
+const CHARACTER_STRINGS: [&str; 3] = ["char", "text", "varchar"];
+const UNICODE_CHARACTER_STRINGS: [&str; 3] = ["nchar", "ntext", "nvarchar"];
+const CANNOT_COMPARE: [&str; 3] = ["text", "ntext", "image"];
+const EXACT_NUMERICS: [&str; 9] = [
+    "bigint",
+    "bit",
+    "decimal",
+    "int",
+    "money",
+    "numeric",
+    "smallint",
+    "smallmoney",
+    "tinyint",
+];
+const APPROX_NUMERICS: [&str; 2] = ["float", "real"];
+
 /// User configuration.
 #[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
 pub struct RawConfiguration {
@@ -323,22 +339,6 @@ async fn get_comparison_operators(type_names: &Vec<TypeItem>) -> database::Compa
 
     database::ComparisonOperators(comparison_operators)
 }
-
-const CHARACTER_STRINGS: [&str; 3] = ["char", "text", "varchar"];
-const UNICODE_CHARACTER_STRINGS: [&str; 3] = ["nchar", "ntext", "nvarchar"];
-const CANNOT_COMPARE: [&str; 3] = ["text", "ntext", "image"];
-const EXACT_NUMERICS: [&str; 9] = [
-    "bigint",
-    "bit",
-    "decimal",
-    "int",
-    "money",
-    "numeric",
-    "smallint",
-    "smallmoney",
-    "tinyint",
-];
-const APPROX_NUMERICS: [&str; 2] = ["float", "real"];
 
 // we hard code these, essentially
 // we look up available types in `sys.types` but hard code their behaviour by looking them up below
