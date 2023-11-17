@@ -287,7 +287,7 @@ fn get_aggregate_functions_for_type(
             },
         );
         aggregate_functions.insert(
-            "AVG".to_string(),
+            "SUM".to_string(),
             database::AggregateFunction {
                 return_type: metadata::ScalarType(precise_return_type.to_string()),
             },
