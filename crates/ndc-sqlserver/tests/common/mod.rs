@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use axum::http::StatusCode;
 use axum_test_helper::TestClient;
 use serde::Deserialize;
+use std::sync::Arc;
 
 use ndc_sqlserver::connector;
 
@@ -61,10 +62,7 @@ async fn run_against_server<Response: for<'a> serde::Deserialize<'a>>(
     .await
 }
 
-/// Make a single request against the server, and get the response.
-async fn make_request<Response: for<'a> serde::Deserialize<'a>>(
-    request: impl FnOnce(axum_test_helper::TestClient) -> axum_test_helper::RequestBuilder,
-) -> Response {
+async fn create_router() -> axum::Router {
     let _ = env_logger::builder().is_test(true).try_init();
 
     // work out where the deployment configs live
@@ -77,7 +75,15 @@ async fn make_request<Response: for<'a> serde::Deserialize<'a>>(
     .await;
 
     // create a fresh client
-    let router = ndc_sdk::default_main::create_router(state, None);
+    ndc_sdk::default_main::create_router(state, None)
+}
+
+/// Make a single request against the server, and get the response.
+async fn make_request<Response: for<'a> serde::Deserialize<'a>>(
+    request: impl FnOnce(axum_test_helper::TestClient) -> axum_test_helper::RequestBuilder,
+) -> Response {
+    // create a fresh client
+    let router = create_router().await;
     let client = TestClient::new(router);
 
     // make the request
