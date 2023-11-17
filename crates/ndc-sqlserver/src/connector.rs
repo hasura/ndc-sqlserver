@@ -15,6 +15,7 @@ use ndc_sdk::models;
 use super::configuration;
 use super::query;
 use super::schema;
+use std::sync::Arc;
 
 #[derive(Clone, Default)]
 pub struct SQLServer {}
@@ -24,9 +25,9 @@ impl connector::Connector for SQLServer {
     /// RawConfiguration is what the user specifies as JSON
     type RawConfiguration = configuration::RawConfiguration;
     /// The type of validated configuration
-    type Configuration = configuration::Configuration;
+    type Configuration = Arc<configuration::Configuration>;
     /// The type of unserializable state
-    type State = configuration::State;
+    type State = Arc<configuration::State>;
 
     fn make_empty_configuration() -> Self::RawConfiguration {
         configuration::RawConfiguration::empty()
@@ -35,7 +36,7 @@ impl connector::Connector for SQLServer {
     /// Configure a configuration maybe?
     async fn update_configuration(
         args: Self::RawConfiguration,
-    ) -> Result<configuration::RawConfiguration, connector::UpdateConfigurationError> {
+    ) -> Result<Self::RawConfiguration, connector::UpdateConfigurationError> {
         configuration::configure(&args).await
     }
 
@@ -44,7 +45,9 @@ impl connector::Connector for SQLServer {
     async fn validate_raw_configuration(
         configuration: Self::RawConfiguration,
     ) -> Result<Self::Configuration, connector::ValidateError> {
-        configuration::validate_raw_configuration(configuration).await
+        configuration::validate_raw_configuration(configuration)
+            .await
+            .map(Arc::new)
     }
 
     /// Initialize the connector's in-memory state.
@@ -60,6 +63,7 @@ impl connector::Connector for SQLServer {
     ) -> Result<Self::State, connector::InitializationError> {
         configuration::create_state(configuration, metrics)
             .await
+            .map(Arc::new)
             .map_err(|err| connector::InitializationError::Other(err.into()))
     }
 
@@ -71,8 +75,8 @@ impl connector::Connector for SQLServer {
     /// the number of idle connections in a connection pool
     /// can be polled but not updated directly.
     fn fetch_metrics(
-        _configuration: &configuration::Configuration,
-        _state: &configuration::State,
+        _configuration: &Self::Configuration,
+        _state: &Self::State,
     ) -> Result<(), connector::FetchMetricsError> {
         // We'd call something `update_pool_metrics` here ideally, see SQLServer NDC
 

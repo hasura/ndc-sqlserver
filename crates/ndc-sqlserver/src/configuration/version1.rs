@@ -37,7 +37,7 @@ const NOT_COUNTABLE: [&str; 3] = ["image", "ntext", "text"];
 const NOT_APPROX_COUNTABLE: [&str; 4] = ["image", "sql_variant", "ntext", "text"];
 
 /// User configuration.
-#[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
+#[derive(Debug, Deserialize, Serialize, JsonSchema)]
 pub struct RawConfiguration {
     pub version: u32,
     pub mssql_connection_string: String,
@@ -55,14 +55,14 @@ impl RawConfiguration {
 }
 
 /// User configuration, elaborated from a 'RawConfiguration'.
-#[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
+#[derive(Debug, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct Configuration {
     pub config: RawConfiguration,
 }
 
 /// State for our connector.
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct State {
     pub mssql_pool: bb8::Pool<bb8_tiberius::ConnectionManager>,
     pub metrics: query_engine_execution::metrics::Metrics,
