@@ -867,7 +867,904 @@
         "description": null
       }
     },
-    "aggregateFunctions": {},
+    "aggregateFunctions": {
+      "bigint": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "AVG": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "bigint"
+        },
+        "MIN": {
+          "returnType": "bigint"
+        },
+        "STDEV": {
+          "returnType": "float"
+        },
+        "STDEVP": {
+          "returnType": "float"
+        },
+        "VAR": {
+          "returnType": "float"
+        },
+        "VARP": {
+          "returnType": "float"
+        }
+      },
+      "binary": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "bit": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "char": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "char"
+        },
+        "MIN": {
+          "returnType": "char"
+        }
+      },
+      "date": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "datetime": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "datetime"
+        },
+        "MIN": {
+          "returnType": "datetime"
+        }
+      },
+      "datetime2": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "datetimeoffset": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "decimal": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "AVG": {
+          "returnType": "decimal"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "decimal"
+        },
+        "MIN": {
+          "returnType": "decimal"
+        },
+        "STDEV": {
+          "returnType": "float"
+        },
+        "STDEVP": {
+          "returnType": "float"
+        },
+        "VAR": {
+          "returnType": "float"
+        },
+        "VARP": {
+          "returnType": "float"
+        }
+      },
+      "float": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "AVG": {
+          "returnType": "float"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "float"
+        },
+        "MIN": {
+          "returnType": "float"
+        },
+        "STDEV": {
+          "returnType": "float"
+        },
+        "STDEVP": {
+          "returnType": "float"
+        },
+        "VAR": {
+          "returnType": "float"
+        },
+        "VARP": {
+          "returnType": "float"
+        }
+      },
+      "geography": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "geometry": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "hierarchyid": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "image": {
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "int": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "AVG": {
+          "returnType": "int"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "int"
+        },
+        "MIN": {
+          "returnType": "int"
+        },
+        "STDEV": {
+          "returnType": "float"
+        },
+        "STDEVP": {
+          "returnType": "float"
+        },
+        "VAR": {
+          "returnType": "float"
+        },
+        "VARP": {
+          "returnType": "float"
+        }
+      },
+      "money": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "AVG": {
+          "returnType": "money"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "money"
+        },
+        "MIN": {
+          "returnType": "money"
+        },
+        "STDEV": {
+          "returnType": "float"
+        },
+        "STDEVP": {
+          "returnType": "float"
+        },
+        "VAR": {
+          "returnType": "float"
+        },
+        "VARP": {
+          "returnType": "float"
+        }
+      },
+      "nchar": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "ntext": {
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "numeric": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "numeric"
+        },
+        "MIN": {
+          "returnType": "numeric"
+        },
+        "STDEV": {
+          "returnType": "float"
+        },
+        "STDEVP": {
+          "returnType": "float"
+        },
+        "VAR": {
+          "returnType": "float"
+        },
+        "VARP": {
+          "returnType": "float"
+        }
+      },
+      "nvarchar": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "real": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "AVG": {
+          "returnType": "float"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "real"
+        },
+        "MIN": {
+          "returnType": "real"
+        },
+        "STDEV": {
+          "returnType": "float"
+        },
+        "STDEVP": {
+          "returnType": "float"
+        },
+        "VAR": {
+          "returnType": "float"
+        },
+        "VARP": {
+          "returnType": "float"
+        }
+      },
+      "smalldatetime": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "smallint": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "AVG": {
+          "returnType": "int"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "smallint"
+        },
+        "MIN": {
+          "returnType": "smallint"
+        },
+        "STDEV": {
+          "returnType": "float"
+        },
+        "STDEVP": {
+          "returnType": "float"
+        },
+        "VAR": {
+          "returnType": "float"
+        },
+        "VARP": {
+          "returnType": "float"
+        }
+      },
+      "smallmoney": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "AVG": {
+          "returnType": "money"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "smallmoney"
+        },
+        "MIN": {
+          "returnType": "smallmoney"
+        },
+        "STDEV": {
+          "returnType": "float"
+        },
+        "STDEVP": {
+          "returnType": "float"
+        },
+        "VAR": {
+          "returnType": "float"
+        },
+        "VARP": {
+          "returnType": "float"
+        }
+      },
+      "sql_variant": {
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "sysname": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "text": {
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "text"
+        },
+        "MIN": {
+          "returnType": "text"
+        }
+      },
+      "time": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "timestamp": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "tinyint": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "AVG": {
+          "returnType": "int"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "tinyint"
+        },
+        "MIN": {
+          "returnType": "tinyint"
+        },
+        "STDEV": {
+          "returnType": "float"
+        },
+        "STDEVP": {
+          "returnType": "float"
+        },
+        "VAR": {
+          "returnType": "float"
+        },
+        "VARP": {
+          "returnType": "float"
+        }
+      },
+      "uniqueidentifier": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "uniqueidentifier"
+        },
+        "MIN": {
+          "returnType": "uniqueidentifier"
+        }
+      },
+      "varbinary": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      },
+      "varchar": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        },
+        "MAX": {
+          "returnType": "varchar"
+        },
+        "MIN": {
+          "returnType": "varchar"
+        }
+      },
+      "xml": {
+        "APPROX_COUNT_DISTINCT": {
+          "returnType": "bigint"
+        },
+        "CHECKSUM_AGG": {
+          "returnType": "int"
+        },
+        "COUNT": {
+          "returnType": "int"
+        },
+        "COUNT_BIG": {
+          "returnType": "bigint"
+        },
+        "GROUPING": {
+          "returnType": "tinyint"
+        },
+        "GROUPING_ID": {
+          "returnType": "int"
+        }
+      }
+    },
     "comparisonOperators": {
       "bigint": {
         "_eq": {
