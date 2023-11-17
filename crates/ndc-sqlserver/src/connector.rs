@@ -97,18 +97,18 @@ impl connector::Connector for SQLServer {
     /// This function implements the [capabilities endpoint](https://hasura.github.io/ndc-spec/specification/capabilities.html)
     /// from the NDC specification.
     async fn get_capabilities() -> JsonResponse<models::CapabilitiesResponse> {
-        let empty = serde_json::to_value(()).unwrap();
         JsonResponse::Value(models::CapabilitiesResponse {
             versions: "^0.0.0".into(),
             capabilities: models::Capabilities {
-                explain: Some(empty.clone()),
-                query: Some(models::QueryCapabilities {
-                    foreach: Some(empty.clone()),
-                    order_by_aggregate: None,
-                    relation_comparisons: None,
+                explain: Some(models::LeafCapability {}),
+                query: models::QueryCapabilities {
+                    aggregates: Some(models::LeafCapability {}),
+                    variables: Some(models::LeafCapability {}),
+                },
+                relationships: Some(models::RelationshipCapabilities {
+                    relation_comparisons: Some(models::LeafCapability {}),
+                    order_by_aggregate: Some(models::LeafCapability {}),
                 }),
-                relationships: Some(empty),
-                mutations: None,
             },
         })
     }

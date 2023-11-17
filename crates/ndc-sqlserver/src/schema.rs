@@ -60,7 +60,6 @@ pub async fn get_schema(
                                 )
                             })
                             .collect(),
-                        update_operators: BTreeMap::new(),
                     },
                 )
             })
@@ -75,9 +74,6 @@ pub async fn get_schema(
             description: table.description.clone(),
             arguments: BTreeMap::new(),
             collection_type: table_name.clone(),
-            insertable_columns: None,
-            updatable_columns: None,
-            deletable: false,
             uniqueness_constraints: table
                 .uniqueness_constraints
                 .0
@@ -139,9 +135,6 @@ pub async fn get_schema(
                 })
                 .collect(),
             collection_type: name.clone(),
-            insertable_columns: None,
-            updatable_columns: None,
-            deletable: false,
             uniqueness_constraints: BTreeMap::new(),
             foreign_keys: BTreeMap::new(),
         })

@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 query-engine-sql = { path = "../sql" }
 
-ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "f2a2a75", package = "ndc-sdk" }
+ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "fb03873", package = "ndc-sdk" }
 
 tiberius = { version = "0.12.2", default-features = false, features = ["rustls"] }
 bb8 = "0.8.1"
