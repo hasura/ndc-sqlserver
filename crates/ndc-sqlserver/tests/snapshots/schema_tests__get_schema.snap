@@ -6,8 +6,7 @@ expression: result
   "scalar_types": {
     "bool": {
       "aggregate_functions": {},
-      "comparison_operators": {},
-      "update_operators": {}
+      "comparison_operators": {}
     },
     "char": {
       "aggregate_functions": {},
@@ -60,8 +59,7 @@ expression: result
             "name": "char"
           }
         }
-      },
-      "update_operators": {}
+      }
     },
     "date": {
       "aggregate_functions": {},
@@ -102,8 +100,7 @@ expression: result
             "name": "date"
           }
         }
-      },
-      "update_operators": {}
+      }
     },
     "datetime": {
       "aggregate_functions": {},
@@ -144,18 +141,15 @@ expression: result
             "name": "datetime"
           }
         }
-      },
-      "update_operators": {}
+      }
     },
     "float4": {
       "aggregate_functions": {},
-      "comparison_operators": {},
-      "update_operators": {}
+      "comparison_operators": {}
     },
     "float8": {
       "aggregate_functions": {},
-      "comparison_operators": {},
-      "update_operators": {}
+      "comparison_operators": {}
     },
     "int": {
       "aggregate_functions": {},
@@ -196,18 +190,15 @@ expression: result
             "name": "int"
           }
         }
-      },
-      "update_operators": {}
+      }
     },
     "int2": {
       "aggregate_functions": {},
-      "comparison_operators": {},
-      "update_operators": {}
+      "comparison_operators": {}
     },
     "int8": {
       "aggregate_functions": {},
-      "comparison_operators": {},
-      "update_operators": {}
+      "comparison_operators": {}
     },
     "numeric": {
       "aggregate_functions": {},
@@ -248,8 +239,7 @@ expression: result
             "name": "numeric"
           }
         }
-      },
-      "update_operators": {}
+      }
     },
     "nvarchar": {
       "aggregate_functions": {},
@@ -302,8 +292,7 @@ expression: result
             "name": "nvarchar"
           }
         }
-      },
-      "update_operators": {}
+      }
     },
     "text": {
       "aggregate_functions": {},
@@ -326,8 +315,7 @@ expression: result
             "name": "text"
           }
         }
-      },
-      "update_operators": {}
+      }
     },
     "time": {
       "aggregate_functions": {},
@@ -368,8 +356,7 @@ expression: result
             "name": "time"
           }
         }
-      },
-      "update_operators": {}
+      }
     },
     "timestamp": {
       "aggregate_functions": {},
@@ -410,23 +397,19 @@ expression: result
             "name": "timestamp"
           }
         }
-      },
-      "update_operators": {}
+      }
     },
     "timestamptz": {
       "aggregate_functions": {},
-      "comparison_operators": {},
-      "update_operators": {}
+      "comparison_operators": {}
     },
     "timetz": {
       "aggregate_functions": {},
-      "comparison_operators": {},
-      "update_operators": {}
+      "comparison_operators": {}
     },
     "uuid": {
       "aggregate_functions": {},
-      "comparison_operators": {},
-      "update_operators": {}
+      "comparison_operators": {}
     },
     "varchar": {
       "aggregate_functions": {},
@@ -479,8 +462,7 @@ expression: result
             "name": "varchar"
           }
         }
-      },
-      "update_operators": {}
+      }
     }
   },
   "object_types": {
@@ -1243,7 +1225,6 @@ expression: result
       "name": "Album",
       "arguments": {},
       "type": "Album",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_Album": {
           "unique_columns": [
@@ -1264,7 +1245,6 @@ expression: result
       "name": "Artist",
       "arguments": {},
       "type": "Artist",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_Artist": {
           "unique_columns": [
@@ -1278,7 +1258,6 @@ expression: result
       "name": "Customer",
       "arguments": {},
       "type": "Customer",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_Customer": {
           "unique_columns": [
@@ -1299,7 +1278,6 @@ expression: result
       "name": "Employee",
       "arguments": {},
       "type": "Employee",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_Employee": {
           "unique_columns": [
@@ -1320,7 +1298,6 @@ expression: result
       "name": "Genre",
       "arguments": {},
       "type": "Genre",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_Genre": {
           "unique_columns": [
@@ -1334,7 +1311,6 @@ expression: result
       "name": "Invoice",
       "arguments": {},
       "type": "Invoice",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_Invoice": {
           "unique_columns": [
@@ -1355,7 +1331,6 @@ expression: result
       "name": "InvoiceLine",
       "arguments": {},
       "type": "InvoiceLine",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_InvoiceLine": {
           "unique_columns": [
@@ -1382,7 +1357,6 @@ expression: result
       "name": "MediaType",
       "arguments": {},
       "type": "MediaType",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_MediaType": {
           "unique_columns": [
@@ -1396,7 +1370,6 @@ expression: result
       "name": "Playlist",
       "arguments": {},
       "type": "Playlist",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_Playlist": {
           "unique_columns": [
@@ -1410,7 +1383,6 @@ expression: result
       "name": "PlaylistTrack",
       "arguments": {},
       "type": "PlaylistTrack",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_PlaylistTrack": {
           "unique_columns": [
@@ -1438,7 +1410,6 @@ expression: result
       "name": "Track",
       "arguments": {},
       "type": "Track",
-      "deletable": false,
       "uniqueness_constraints": {
         "PK_Track": {
           "unique_columns": [
@@ -1490,7 +1461,6 @@ expression: result
         }
       },
       "type": "album_by_title",
-      "deletable": false,
       "uniqueness_constraints": {},
       "foreign_keys": {}
     },
@@ -1498,7 +1468,6 @@ expression: result
       "name": "artist",
       "arguments": {},
       "type": "artist",
-      "deletable": false,
       "uniqueness_constraints": {},
       "foreign_keys": {}
     },
@@ -1516,7 +1485,6 @@ expression: result
         }
       },
       "type": "artist_below_id",
-      "deletable": false,
       "uniqueness_constraints": {},
       "foreign_keys": {}
     },
@@ -1669,7 +1637,6 @@ expression: result
         }
       },
       "type": "value_types",
-      "deletable": false,
       "uniqueness_constraints": {},
       "foreign_keys": {}
     }

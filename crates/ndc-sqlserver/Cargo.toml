@@ -14,7 +14,7 @@ name = "ndc-sqlserver"
 path = "bin/main.rs"
 
 [dependencies]
-ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "f2a2a75", package = "ndc-sdk" }
+ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "fb03873", package = "ndc-sdk" }
 
 query-engine-execution = { path = "../query-engine/execution" }
 query-engine-metadata = {path = "../query-engine/metadata"}

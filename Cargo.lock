@@ -805,9 +805,9 @@ dependencies = [
 [[package]]
 name = "gdc_rust_types"
 version = "1.0.2"
-source = "git+https://github.com/hasura/gdc_rust_types?rev=bc57c40#bc57c406e530ffff2345c6a02f7b784959a600b5"
+source = "git+https://github.com/hasura/gdc_rust_types.git?rev=3273434#3273434068400f836cf12ea08c514505446821cb"
 dependencies = [
- "indexmap 1.9.3",
+ "indexmap 2.1.0",
  "openapiv3",
  "serde",
  "serde-enum-str",
@@ -1039,9 +1039,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.0.2"
+version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8adf3ddd720272c6ea8bf59463c04e0f93d0bbf7c5439b691bca2987e0270897"
+checksum = "d530e1a18b1cb4c484e6e34556a0d948706958449fca0cab753d649f2bce3d1f"
 dependencies = [
  "equivalent",
  "hashbrown 0.14.2",
@@ -1248,10 +1248,10 @@ dependencies = [
 [[package]]
 name = "ndc-client"
 version = "0.1.0"
-source = "git+https://github.com/hasura//ndc-spec.git?rev=3778605#3778605e9428d46e1f21ae02b077414afd0d0a68"
+source = "git+http://github.com/hasura/ndc-spec.git?tag=v0.1.0-rc.11#3ef71ffecbba088ebb5f452114b2dc662f1b9d3f"
 dependencies = [
  "async-trait",
- "indexmap 1.9.3",
+ "indexmap 2.1.0",
  "opentelemetry",
  "reqwest",
  "schemars",
@@ -1265,7 +1265,7 @@ dependencies = [
 [[package]]
 name = "ndc-sdk"
 version = "0.1.0"
-source = "git+https://github.com/hasura/ndc-hub.git?rev=f2a2a75#f2a2a75aacb31fd9f214bbe9845cdbfe0d7815ac"
+source = "git+https://github.com/hasura/ndc-hub.git?rev=fb03873#fb03873bd29a7e927c83fbc28923b376dfeaa638"
 dependencies = [
  "async-trait",
  "axum",
@@ -1275,7 +1275,7 @@ dependencies = [
  "clap",
  "gdc_rust_types",
  "http",
- "indexmap 1.9.3",
+ "indexmap 2.1.0",
  "mime",
  "ndc-client",
  "ndc-test",
@@ -1329,12 +1329,12 @@ dependencies = [
 [[package]]
 name = "ndc-test"
 version = "0.1.0"
-source = "git+https://github.com/hasura//ndc-spec.git?rev=3778605#3778605e9428d46e1f21ae02b077414afd0d0a68"
+source = "git+http://github.com/hasura/ndc-spec.git?tag=v0.1.0-rc.11#3ef71ffecbba088ebb5f452114b2dc662f1b9d3f"
 dependencies = [
  "async-trait",
  "clap",
  "colored",
- "indexmap 1.9.3",
+ "indexmap 2.1.0",
  "ndc-client",
  "proptest",
  "reqwest",
@@ -1406,7 +1406,7 @@ version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75e56d5c441965b6425165b7e3223cc933ca469834f4a8b4786817a1f9dc4f13"
 dependencies = [
- "indexmap 2.0.2",
+ "indexmap 1.9.3",
  "serde",
  "serde_json",
 ]
@@ -1760,7 +1760,7 @@ dependencies = [
 name = "query-engine-translation"
 version = "0.1.0"
 dependencies = [
- "indexmap 1.9.3",
+ "indexmap 2.1.0",
  "insta",
  "ndc-sdk",
  "query-engine-metadata",
@@ -2066,6 +2066,7 @@ checksum = "45a28f4c49489add4ce10783f7911893516f15afe45d015608d41faca6bc4d29"
 dependencies = [
  "dyn-clone",
  "indexmap 1.9.3",
+ "indexmap 2.1.0",
  "schemars_derive",
  "serde",
  "serde_json",
@@ -2196,7 +2197,7 @@ version = "1.0.108"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d1c7e3eac408d115102c4c24ad393e0821bb3a5df4d506a80f85f7a742a526b"
 dependencies = [
- "indexmap 2.0.2",
+ "indexmap 2.1.0",
  "itoa",
  "ryu",
  "serde",
@@ -2250,7 +2251,7 @@ dependencies = [
  "chrono",
  "hex",
  "indexmap 1.9.3",
- "indexmap 2.0.2",
+ "indexmap 2.1.0",
  "serde",
  "serde_json",
  "serde_with_macros 3.4.0",
@@ -2784,14 +2785,12 @@ dependencies = [
 
 [[package]]
 name = "tracing-opentelemetry"
-version = "0.21.0"
+version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75327c6b667828ddc28f5e3f169036cb793c3f588d83bf0f262a7f062ffed3c8"
+checksum = "fc09e402904a5261e42cf27aea09ccb7d5318c6717a9eec3d8e2e65c56b18f19"
 dependencies = [
  "once_cell",
  "opentelemetry",
- "opentelemetry_sdk",
- "smallvec",
  "tracing",
  "tracing-core",
  "tracing-log",
