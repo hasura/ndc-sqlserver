@@ -18,6 +18,24 @@ const TYPES_QUERY: &str = "SELECT name FROM sys.types FOR JSON PATH";
 
 const CURRENT_VERSION: u32 = 1;
 
+const CHARACTER_STRINGS: [&str; 3] = ["char", "text", "varchar"];
+const UNICODE_CHARACTER_STRINGS: [&str; 3] = ["nchar", "ntext", "nvarchar"];
+const CANNOT_COMPARE: [&str; 3] = ["text", "ntext", "image"];
+const EXACT_NUMERICS: [&str; 9] = [
+    "bigint",
+    "bit",
+    "decimal",
+    "int",
+    "money",
+    "numeric",
+    "smallint",
+    "smallmoney",
+    "tinyint",
+];
+const APPROX_NUMERICS: [&str; 2] = ["float", "real"];
+const NOT_COUNTABLE: [&str; 3] = ["image", "ntext", "text"];
+const NOT_APPROX_COUNTABLE: [&str; 4] = ["image", "sql_variant", "ntext", "text"];
+
 /// User configuration.
 #[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
 pub struct RawConfiguration {
@@ -121,18 +139,24 @@ pub async fn configure(
 ) -> Result<RawConfiguration, connector::UpdateConfigurationError> {
     let mssql_pool = create_mssql_pool(configuration).await.unwrap();
 
-    let tables_row = select_first_row(&mssql_pool, TABLE_CONFIGURATION_QUERY).await;
-
-    let decoded: Vec<introspection::IntrospectionTable> =
-        serde_json::from_str(tables_row.get(0).unwrap()).unwrap();
-
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
 
-    metadata.comparison_operators = get_comparison_operators(&mssql_pool).await;
-
-    metadata.tables = get_tables_info(decoded);
-
     metadata.native_queries = configuration.metadata.native_queries.clone();
+
+    let tables_row = select_first_row(&mssql_pool, TABLE_CONFIGURATION_QUERY).await;
+
+    let tables: Vec<introspection::IntrospectionTable> =
+        serde_json::from_str(tables_row.get(0).unwrap()).unwrap();
+
+    metadata.tables = get_tables_info(tables);
+
+    let types_row = select_first_row(&mssql_pool, TYPES_QUERY).await;
+
+    let type_names: Vec<TypeItem> = serde_json::from_str(types_row.get(0).unwrap()).unwrap();
+
+    metadata.comparison_operators = get_comparison_operators(&type_names).await;
+
+    metadata.aggregate_functions = get_aggregate_functions(&type_names).await;
 
     Ok(RawConfiguration {
         version: 1,
@@ -147,34 +171,173 @@ struct TypeItem {
 }
 
 // we lookup all types in sys.types, then use our hardcoded ideas about each one to attach
-// comparison operators
-async fn get_comparison_operators(
-    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
-) -> database::ComparisonOperators {
-    let types_row = select_first_row(mssql_pool, TYPES_QUERY).await;
+// aggregate functions
+async fn get_aggregate_functions(type_names: &Vec<TypeItem>) -> database::AggregateFunctions {
+    let mut aggregate_functions = BTreeMap::new();
 
-    let decoded: Vec<TypeItem> = serde_json::from_str(types_row.get(0).unwrap()).unwrap();
-
-    let mut comparison_operators = BTreeMap::new();
-
-    for type_name in decoded {
-        comparison_operators.insert(
+    for type_name in type_names {
+        aggregate_functions.insert(
             type_name.name.clone(),
-            get_comparison_operators_for_type(type_name.name),
+            get_aggregate_functions_for_type(&type_name.name),
         );
     }
-    database::ComparisonOperators(comparison_operators)
+    database::AggregateFunctions(aggregate_functions)
 }
 
-const CHARACTER_STRINGS: [&str; 3] = ["char", "text", "varchar"];
-const UNICODE_CHARACTER_STRINGS: [&str; 3] = ["nchar", "ntext", "nvarchar"];
-const CANNOT_COMPARE: [&str; 3] = ["text", "ntext", "image"];
+// we hard code these, essentially
+// we look up available types in `sys.types` but hard code their behaviour by looking them up below
+// taken from https://learn.microsoft.com/en-us/sql/t-sql/functions/aggregate-functions-transact-sql?view=sql-server-ver16
+fn get_aggregate_functions_for_type(
+    type_name: &database::ScalarType,
+) -> BTreeMap<String, database::AggregateFunction> {
+    let mut aggregate_functions = BTreeMap::new();
+
+    if !NOT_APPROX_COUNTABLE.contains(&type_name.0.as_str()) {
+        aggregate_functions.insert(
+            "APPROX_COUNT_DISTINCT".to_string(),
+            database::AggregateFunction {
+                return_type: metadata::ScalarType("bigint".to_string()),
+            },
+        );
+    }
+
+    if !NOT_COUNTABLE.contains(&type_name.0.as_str()) {
+        aggregate_functions.insert(
+            "COUNT".to_string(),
+            database::AggregateFunction {
+                return_type: metadata::ScalarType("int".to_string()),
+            },
+        );
+    }
+
+    if type_name.0.as_str() != "bit"
+        && (EXACT_NUMERICS.contains(&type_name.0.as_str())
+            || APPROX_NUMERICS.contains(&type_name.0.as_str())
+            || CHARACTER_STRINGS.contains(&type_name.0.as_str())
+            || type_name.0.as_str() == "datetime"
+            || type_name.0.as_str() == "uniqueidentifier")
+    {
+        aggregate_functions.insert(
+            "MIN".to_string(),
+            database::AggregateFunction {
+                return_type: type_name.clone(),
+            },
+        );
+        aggregate_functions.insert(
+            "MAX".to_string(),
+            database::AggregateFunction {
+                return_type: type_name.clone(),
+            },
+        );
+    }
+
+    if type_name.0.as_str() != "bit"
+        && (EXACT_NUMERICS.contains(&type_name.0.as_str())
+            || APPROX_NUMERICS.contains(&type_name.0.as_str()))
+    {
+        aggregate_functions.insert(
+            "STDEV".to_string(),
+            database::AggregateFunction {
+                return_type: database::ScalarType("float".to_string()),
+            },
+        );
+        aggregate_functions.insert(
+            "STDEVP".to_string(),
+            database::AggregateFunction {
+                return_type: database::ScalarType("float".to_string()),
+            },
+        );
+        aggregate_functions.insert(
+            "VAR".to_string(),
+            database::AggregateFunction {
+                return_type: database::ScalarType("float".to_string()),
+            },
+        );
+        aggregate_functions.insert(
+            "VARP".to_string(),
+            database::AggregateFunction {
+                return_type: database::ScalarType("float".to_string()),
+            },
+        );
+    }
+
+    if let Some(precise_return_type) = match type_name.0.as_str() {
+        "tinyint" => Some("int"),
+        "smallint" => Some("int"),
+        "int" => Some("int"),
+        "bigint" => Some("bigint"),
+        "decimal" => Some("decimal"),
+        "money" => Some("money"),
+        "smallmoney" => Some("money"),
+        "float" => Some("float"),
+        "real" => Some("float"),
+        _ => None,
+    } {
+        aggregate_functions.insert(
+            "AVG".to_string(),
+            database::AggregateFunction {
+                return_type: metadata::ScalarType(precise_return_type.to_string()),
+            },
+        );
+        aggregate_functions.insert(
+            "SUM".to_string(),
+            database::AggregateFunction {
+                return_type: metadata::ScalarType(precise_return_type.to_string()),
+            },
+        );
+    };
+
+    aggregate_functions.insert(
+        "CHECKSUM_AGG".to_string(),
+        database::AggregateFunction {
+            return_type: metadata::ScalarType("int".to_string()),
+        },
+    );
+
+    aggregate_functions.insert(
+        "COUNT_BIG".to_string(),
+        database::AggregateFunction {
+            return_type: metadata::ScalarType("bigint".to_string()),
+        },
+    );
+
+    aggregate_functions.insert(
+        "GROUPING".to_string(),
+        database::AggregateFunction {
+            return_type: metadata::ScalarType("tinyint".to_string()),
+        },
+    );
+
+    aggregate_functions.insert(
+        "GROUPING_ID".to_string(),
+        database::AggregateFunction {
+            return_type: metadata::ScalarType("int".to_string()),
+        },
+    );
+
+    aggregate_functions
+}
+
+// we lookup all types in sys.types, then use our hardcoded ideas about each one to attach
+// comparison operators
+async fn get_comparison_operators(type_names: &Vec<TypeItem>) -> database::ComparisonOperators {
+    let mut comparison_operators = BTreeMap::new();
+
+    for type_name in type_names {
+        comparison_operators.insert(
+            type_name.name.clone(),
+            get_comparison_operators_for_type(&type_name.name),
+        );
+    }
+
+    database::ComparisonOperators(comparison_operators)
+}
 
 // we hard code these, essentially
 // we look up available types in `sys.types` but hard code their behaviour by looking them up below
 // categories taken from https://learn.microsoft.com/en-us/sql/t-sql/data-types/data-types-transact-sql
 fn get_comparison_operators_for_type(
-    type_name: database::ScalarType,
+    type_name: &database::ScalarType,
 ) -> BTreeMap<String, database::ComparisonOperator> {
     let mut comparison_operators = BTreeMap::new();
 
@@ -243,7 +406,7 @@ fn get_comparison_operators_for_type(
             "_lte".to_string(),
             database::ComparisonOperator {
                 operator_name: "<=".to_string(),
-                argument_type: type_name,
+                argument_type: type_name.clone(),
             },
         );
     }

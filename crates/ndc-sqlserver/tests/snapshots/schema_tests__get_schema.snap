@@ -9,7 +9,56 @@ expression: result
       "comparison_operators": {}
     },
     "char": {
-      "aggregate_functions": {},
+      "aggregate_functions": {
+        "APPROX_COUNT_DISTINCT": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "CHECKSUM_AGG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT_BIG": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "GROUPING": {
+          "result_type": {
+            "type": "named",
+            "name": "tinyint"
+          }
+        },
+        "GROUPING_ID": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "MAX": {
+          "result_type": {
+            "type": "named",
+            "name": "char"
+          }
+        },
+        "MIN": {
+          "result_type": {
+            "type": "named",
+            "name": "char"
+          }
+        }
+      },
       "comparison_operators": {
         "_eq": {
           "argument_type": {
@@ -62,7 +111,44 @@ expression: result
       }
     },
     "date": {
-      "aggregate_functions": {},
+      "aggregate_functions": {
+        "APPROX_COUNT_DISTINCT": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "CHECKSUM_AGG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT_BIG": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "GROUPING": {
+          "result_type": {
+            "type": "named",
+            "name": "tinyint"
+          }
+        },
+        "GROUPING_ID": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        }
+      },
       "comparison_operators": {
         "_eq": {
           "argument_type": {
@@ -103,7 +189,56 @@ expression: result
       }
     },
     "datetime": {
-      "aggregate_functions": {},
+      "aggregate_functions": {
+        "APPROX_COUNT_DISTINCT": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "CHECKSUM_AGG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT_BIG": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "GROUPING": {
+          "result_type": {
+            "type": "named",
+            "name": "tinyint"
+          }
+        },
+        "GROUPING_ID": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "MAX": {
+          "result_type": {
+            "type": "named",
+            "name": "datetime"
+          }
+        },
+        "MIN": {
+          "result_type": {
+            "type": "named",
+            "name": "datetime"
+          }
+        }
+      },
       "comparison_operators": {
         "_eq": {
           "argument_type": {
@@ -152,7 +287,92 @@ expression: result
       "comparison_operators": {}
     },
     "int": {
-      "aggregate_functions": {},
+      "aggregate_functions": {
+        "APPROX_COUNT_DISTINCT": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "AVG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "CHECKSUM_AGG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT_BIG": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "GROUPING": {
+          "result_type": {
+            "type": "named",
+            "name": "tinyint"
+          }
+        },
+        "GROUPING_ID": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "MAX": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "MIN": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "STDEV": {
+          "result_type": {
+            "type": "named",
+            "name": "float"
+          }
+        },
+        "STDEVP": {
+          "result_type": {
+            "type": "named",
+            "name": "float"
+          }
+        },
+        "SUM": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "VAR": {
+          "result_type": {
+            "type": "named",
+            "name": "float"
+          }
+        },
+        "VARP": {
+          "result_type": {
+            "type": "named",
+            "name": "float"
+          }
+        }
+      },
       "comparison_operators": {
         "_eq": {
           "argument_type": {
@@ -201,7 +421,80 @@ expression: result
       "comparison_operators": {}
     },
     "numeric": {
-      "aggregate_functions": {},
+      "aggregate_functions": {
+        "APPROX_COUNT_DISTINCT": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "CHECKSUM_AGG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT_BIG": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "GROUPING": {
+          "result_type": {
+            "type": "named",
+            "name": "tinyint"
+          }
+        },
+        "GROUPING_ID": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "MAX": {
+          "result_type": {
+            "type": "named",
+            "name": "numeric"
+          }
+        },
+        "MIN": {
+          "result_type": {
+            "type": "named",
+            "name": "numeric"
+          }
+        },
+        "STDEV": {
+          "result_type": {
+            "type": "named",
+            "name": "float"
+          }
+        },
+        "STDEVP": {
+          "result_type": {
+            "type": "named",
+            "name": "float"
+          }
+        },
+        "VAR": {
+          "result_type": {
+            "type": "named",
+            "name": "float"
+          }
+        },
+        "VARP": {
+          "result_type": {
+            "type": "named",
+            "name": "float"
+          }
+        }
+      },
       "comparison_operators": {
         "_eq": {
           "argument_type": {
@@ -242,7 +535,44 @@ expression: result
       }
     },
     "nvarchar": {
-      "aggregate_functions": {},
+      "aggregate_functions": {
+        "APPROX_COUNT_DISTINCT": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "CHECKSUM_AGG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT_BIG": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "GROUPING": {
+          "result_type": {
+            "type": "named",
+            "name": "tinyint"
+          }
+        },
+        "GROUPING_ID": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        }
+      },
       "comparison_operators": {
         "_eq": {
           "argument_type": {
@@ -295,7 +625,44 @@ expression: result
       }
     },
     "text": {
-      "aggregate_functions": {},
+      "aggregate_functions": {
+        "CHECKSUM_AGG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT_BIG": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "GROUPING": {
+          "result_type": {
+            "type": "named",
+            "name": "tinyint"
+          }
+        },
+        "GROUPING_ID": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "MAX": {
+          "result_type": {
+            "type": "named",
+            "name": "text"
+          }
+        },
+        "MIN": {
+          "result_type": {
+            "type": "named",
+            "name": "text"
+          }
+        }
+      },
       "comparison_operators": {
         "_eq": {
           "argument_type": {
@@ -318,7 +685,44 @@ expression: result
       }
     },
     "time": {
-      "aggregate_functions": {},
+      "aggregate_functions": {
+        "APPROX_COUNT_DISTINCT": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "CHECKSUM_AGG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT_BIG": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "GROUPING": {
+          "result_type": {
+            "type": "named",
+            "name": "tinyint"
+          }
+        },
+        "GROUPING_ID": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        }
+      },
       "comparison_operators": {
         "_eq": {
           "argument_type": {
@@ -359,7 +763,44 @@ expression: result
       }
     },
     "timestamp": {
-      "aggregate_functions": {},
+      "aggregate_functions": {
+        "APPROX_COUNT_DISTINCT": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "CHECKSUM_AGG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT_BIG": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "GROUPING": {
+          "result_type": {
+            "type": "named",
+            "name": "tinyint"
+          }
+        },
+        "GROUPING_ID": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        }
+      },
       "comparison_operators": {
         "_eq": {
           "argument_type": {
@@ -412,7 +853,56 @@ expression: result
       "comparison_operators": {}
     },
     "varchar": {
-      "aggregate_functions": {},
+      "aggregate_functions": {
+        "APPROX_COUNT_DISTINCT": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "CHECKSUM_AGG": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "COUNT_BIG": {
+          "result_type": {
+            "type": "named",
+            "name": "bigint"
+          }
+        },
+        "GROUPING": {
+          "result_type": {
+            "type": "named",
+            "name": "tinyint"
+          }
+        },
+        "GROUPING_ID": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "MAX": {
+          "result_type": {
+            "type": "named",
+            "name": "varchar"
+          }
+        },
+        "MIN": {
+          "result_type": {
+            "type": "named",
+            "name": "varchar"
+          }
+        }
+      },
       "comparison_operators": {
         "_eq": {
           "argument_type": {
