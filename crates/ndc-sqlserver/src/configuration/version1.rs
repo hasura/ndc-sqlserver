@@ -33,6 +33,8 @@ const EXACT_NUMERICS: [&str; 9] = [
     "tinyint",
 ];
 const APPROX_NUMERICS: [&str; 2] = ["float", "real"];
+const NOT_COUNTABLE: [&str; 3] = ["image", "ntext", "text"];
+const NOT_APPROX_COUNTABLE: [&str; 4] = ["image", "sql_variant", "ntext", "text"];
 
 /// User configuration.
 #[derive(Debug, Deserialize, Serialize, JsonSchema, Clone)]
@@ -190,7 +192,7 @@ fn get_aggregate_functions_for_type(
 ) -> BTreeMap<String, database::AggregateFunction> {
     let mut aggregate_functions = BTreeMap::new();
 
-    if !["image", "sql_variant", "ntext", "text"].contains(&type_name.0.as_str()) {
+    if !NOT_APPROX_COUNTABLE.contains(&type_name.0.as_str()) {
         aggregate_functions.insert(
             "APPROX_COUNT_DISTINCT".to_string(),
             database::AggregateFunction {
@@ -199,16 +201,7 @@ fn get_aggregate_functions_for_type(
         );
     }
 
-    if !["image", "ntext", "text"].contains(&type_name.0.as_str()) {
-        aggregate_functions.insert(
-            "COUNT".to_string(),
-            database::AggregateFunction {
-                return_type: metadata::ScalarType("int".to_string()),
-            },
-        );
-    }
-
-    if !["image", "ntext", "text"].contains(&type_name.0.as_str()) {
+    if !NOT_COUNTABLE.contains(&type_name.0.as_str()) {
         aggregate_functions.insert(
             "COUNT".to_string(),
             database::AggregateFunction {
