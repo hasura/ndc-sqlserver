@@ -268,4 +268,10 @@ mod relationships {
         let result = run_query("dup_array_relationship").await;
         insta::assert_json_snapshot!(result);
     }
+
+    #[tokio::test]
+    async fn very_nested_recursive_relationship() {
+        let result = run_query("very_nested_recursive_relationship").await;
+        insta::assert_json_snapshot!(result);
+    }
 }
