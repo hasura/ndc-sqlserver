@@ -354,6 +354,12 @@ expression: result
             "name": "float"
           }
         },
+        "SUM": {
+          "result_type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
         "VAR": {
           "result_type": {
             "type": "named",

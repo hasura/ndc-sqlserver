@@ -902,9 +902,6 @@
         "STDEVP": {
           "returnType": "float"
         },
-        "SUM": {
-          "returnType": "bigint"
-        },
         "VAR": {
           "returnType": "float"
         },
@@ -1098,9 +1095,6 @@
         "STDEVP": {
           "returnType": "float"
         },
-        "SUM": {
-          "returnType": "decimal"
-        },
         "VAR": {
           "returnType": "float"
         },
@@ -1140,9 +1134,6 @@
           "returnType": "float"
         },
         "STDEVP": {
-          "returnType": "float"
-        },
-        "SUM": {
           "returnType": "float"
         },
         "VAR": {
@@ -1260,9 +1251,6 @@
         "STDEVP": {
           "returnType": "float"
         },
-        "SUM": {
-          "returnType": "int"
-        },
         "VAR": {
           "returnType": "float"
         },
@@ -1303,9 +1291,6 @@
         },
         "STDEVP": {
           "returnType": "float"
-        },
-        "SUM": {
-          "returnType": "money"
         },
         "VAR": {
           "returnType": "float"
@@ -1440,9 +1425,6 @@
         "STDEVP": {
           "returnType": "float"
         },
-        "SUM": {
-          "returnType": "float"
-        },
         "VAR": {
           "returnType": "float"
         },
@@ -1504,9 +1486,6 @@
         "STDEVP": {
           "returnType": "float"
         },
-        "SUM": {
-          "returnType": "int"
-        },
         "VAR": {
           "returnType": "float"
         },
@@ -1547,9 +1526,6 @@
         },
         "STDEVP": {
           "returnType": "float"
-        },
-        "SUM": {
-          "returnType": "money"
         },
         "VAR": {
           "returnType": "float"
@@ -1688,9 +1664,6 @@
         },
         "STDEVP": {
           "returnType": "float"
-        },
-        "SUM": {
-          "returnType": "int"
         },
         "VAR": {
           "returnType": "float"
