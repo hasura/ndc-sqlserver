@@ -15,16 +15,14 @@ FROM
         (
           (
             (
-              ([0_types].[date] = cast(@P1 as date))
-              AND ([0_types].[time] = cast(@P2 as time))
+              ([0_types].[date] = @P1)
+              AND ([0_types].[time] = @P2)
             )
-            AND ([0_types].[timetz] = cast(@P3 as timetz))
+            AND ([0_types].[timetz] = @P3)
           )
-          AND ([0_types].[timestamp] = cast(@P4 as timestamp))
+          AND ([0_types].[timestamp] = @P4)
         )
-        AND (
-          [0_types].[timestamptz] = cast(@P5 as timestamptz)
-        )
+        AND ([0_types].[timestamptz] = @P5)
       ) FOR JSON PATH,
       INCLUDE_NULL_VALUES
   ) AS [2_rows]([rows]) FOR JSON PATH,

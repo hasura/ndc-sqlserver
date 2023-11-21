@@ -102,7 +102,7 @@ impl connector::Connector for SQLServer {
     /// from the NDC specification.
     async fn get_capabilities() -> JsonResponse<models::CapabilitiesResponse> {
         JsonResponse::Value(models::CapabilitiesResponse {
-            versions: "^0.0.0".into(),
+            versions: "^0.1.0".into(),
             capabilities: models::Capabilities {
                 explain: Some(models::LeafCapability {}),
                 query: models::QueryCapabilities {

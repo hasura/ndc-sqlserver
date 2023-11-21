@@ -24,9 +24,7 @@ FROM
                 (
                   [0_track].[AlbumId] = [1_ORDER_PART_album].[AlbumId]
                 )
-                AND (
-                  [1_ORDER_PART_album].[Title] = cast(@P1 as varchar)
-                )
+                AND ([1_ORDER_PART_album].[Title] = @P1)
               )
           ) AS [1_ORDER_PART_album]
           OUTER APPLY (

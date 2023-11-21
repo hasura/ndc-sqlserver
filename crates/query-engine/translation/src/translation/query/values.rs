@@ -20,7 +20,9 @@ pub fn translate_json_value(
             )))?;
             Ok((Expression::Value(Value::Float8(lit)), false))
         }
-        serde_json::Value::String(str) => Ok((Expression::Value(Value::String(str.clone())), true)),
+        serde_json::Value::String(str) => {
+            Ok((Expression::Value(Value::String(str.clone())), false))
+        }
         serde_json::Value::Array(_) => Err(Error::NotSupported("array literals".to_string())),
         serde_json::Value::Object(_) => Err(Error::NotSupported("object literals".to_string())),
     }?;

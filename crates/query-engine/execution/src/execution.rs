@@ -38,8 +38,6 @@ pub async fn mssql_execute(
         .await;
     let rows = query_timer.complete_with(rows_result)?;
 
-    tracing::info!("Database rows result: {:?}", rows);
-
     // Hack a response from the query results. See the 'response_hack' for more details.
     let response = rows_to_response(rows);
 

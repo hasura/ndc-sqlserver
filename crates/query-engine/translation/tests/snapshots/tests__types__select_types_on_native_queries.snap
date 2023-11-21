@@ -4,11 +4,11 @@ expression: result
 ---
 WITH [1_NATIVE_QUERY_types] AS (
   SELECT
-    cast(@P1 as date) as date,
-    cast(@P2 as time) as time,
-    cast(@P3 as timetz) as timetz,
-    cast(@P4 as timestamp) as timestamp,
-    cast(@P5 as timestamptz) as timestamptz
+    @P1 as date,
+    @P2 as time,
+    @P3 as timetz,
+    @P4 as timestamp,
+    @P5 as timestamptz
 )
 SELECT
   ISNULL([3_rows].[rows], '[]') AS [rows]

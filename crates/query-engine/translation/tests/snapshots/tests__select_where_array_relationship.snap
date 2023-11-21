@@ -40,9 +40,7 @@ FROM
         )
       )
     WHERE
-      (
-        [5_BOOLEXP_Album].[Title] LIKE cast(@P1 as varchar)
-      )
+      ([5_BOOLEXP_Album].[Title] LIKE @P1)
     ORDER BY
       [0_Artist].[ArtistId] ASC FOR JSON PATH,
       INCLUDE_NULL_VALUES
