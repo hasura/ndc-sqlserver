@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1700490660839,
+  "lastUpdate": 1700563696420,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -743,6 +743,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 2.5052950822925912,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "danieljamesharvey@gmail.com",
+            "name": "Daniel Harvey",
+            "username": "danieljharvey"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f52423ef23e2ad1a0017f50a0235172146377d65",
+          "message": "Merge pull request #81 from hasura/djh/NDAT-1045/add-ndc-test\n\nadd `ndc-test`",
+          "timestamp": "2023-11-21T10:25:02Z",
+          "tree_id": "18eefc2199c8d17ed2e35f3a79c3ce3384f8a6f6",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/f52423ef23e2ad1a0017f50a0235172146377d65"
+        },
+        "date": 1700563694522,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 60.492371,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 77.214733,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 59.683960299240084,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 1.9354298683999502,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.19321748182345733,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 359.358839,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 468.925617,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 366.5529708374161,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 1.3294297828504114,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.17235129658551968,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 236.25259699999998,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 345.239429,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 236.06857084355434,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 2.8039673507962277,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.30721321607870933,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 247.85403200000002,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 285.79151405,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 243.21186896633705,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 2.430415972028868,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.34884719108791984,
             "unit": "ms"
           }
         ]
