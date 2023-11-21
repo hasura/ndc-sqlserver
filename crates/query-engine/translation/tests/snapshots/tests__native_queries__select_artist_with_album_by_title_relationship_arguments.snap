@@ -14,7 +14,7 @@ WITH [1_NATIVE_QUERY_artist] AS (
   FROM
     public."Album"
   WHERE
-    "Title" LIKE cast(@P1 as varchar)
+    "Title" LIKE @P1
     AND "AlbumId" < 300
 )
 SELECT

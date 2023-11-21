@@ -25,7 +25,7 @@ FROM
                 [public].[Track] AS [2_track]
               WHERE
                 (
-                  ([2_track].[Name] LIKE cast(@P1 as varchar))
+                  ([2_track].[Name] LIKE @P1)
                   AND ([1_Album].[AlbumId] = [2_track].[AlbumId])
                 )
             )

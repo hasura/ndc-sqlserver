@@ -35,7 +35,7 @@ FROM
           [public].[Album] AS [5_album]
         WHERE
           (
-            ([5_album].[Title] LIKE cast(@P1 as varchar))
+            ([5_album].[Title] LIKE @P1)
             AND ([0_artist].[ArtistId] = [5_album].[ArtistId])
           )
       ) FOR JSON PATH,

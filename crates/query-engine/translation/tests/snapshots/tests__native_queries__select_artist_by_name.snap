@@ -8,7 +8,7 @@ WITH [1_NATIVE_QUERY_artist_by_name] AS (
   FROM
     public."Artist"
   WHERE
-    "Name" = cast(@P1 as varchar)
+    "Name" = @P1
 )
 SELECT
   ISNULL([3_rows].[rows], '[]') AS [rows]

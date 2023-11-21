@@ -53,7 +53,7 @@ FROM
           [public].[Album] AS [9_BOOLEXP_Album]
       ) AS [9_BOOLEXP_Album] ON (
         (
-          ([9_BOOLEXP_Album].[Title] = cast(@P1 as varchar))
+          ([9_BOOLEXP_Album].[Title] = @P1)
           AND (
             [0_Track].[AlbumId] = [9_BOOLEXP_Album].[AlbumId]
           )
@@ -66,9 +66,7 @@ FROM
           [public].[Album] AS [10_BOOLEXP_Album]
       ) AS [10_BOOLEXP_Album] ON (
         (
-          (
-            [10_BOOLEXP_Album].[Title] = cast(@P2 as varchar)
-          )
+          ([10_BOOLEXP_Album].[Title] = @P2)
           AND (
             [0_Track].[AlbumId] = [10_BOOLEXP_Album].[AlbumId]
           )
@@ -81,9 +79,7 @@ FROM
           [public].[Artist] AS [11_BOOLEXP_Artist]
       ) AS [11_BOOLEXP_Artist] ON (
         (
-          (
-            [11_BOOLEXP_Artist].[Name] = cast(@P3 as varchar)
-          )
+          ([11_BOOLEXP_Artist].[Name] = @P3)
           AND (
             [10_BOOLEXP_Album].[ArtistId] = [11_BOOLEXP_Artist].[ArtistId]
           )

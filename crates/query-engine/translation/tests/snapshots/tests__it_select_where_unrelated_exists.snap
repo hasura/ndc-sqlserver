@@ -20,7 +20,7 @@ FROM
           (
             (
               1 = 1
-              AND ([1_artist].[Name] = cast(@P1 as varchar))
+              AND ([1_artist].[Name] = @P1)
             )
             AND ([0_album].[ArtistId] = [1_artist].[ArtistId])
           )
