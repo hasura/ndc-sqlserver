@@ -1733,7 +1733,6 @@ dependencies = [
  "bb8",
  "bb8-tiberius",
  "bytes",
- "ndc-sdk",
  "prometheus",
  "query-engine-sql",
  "serde_json",
