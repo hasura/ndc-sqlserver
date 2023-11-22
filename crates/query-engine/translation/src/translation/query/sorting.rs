@@ -63,31 +63,8 @@ pub fn default_native_query_order_by(
                 elements: vec![order_by_element],
             })
         }
-        None => panic!("No columns! Can't sort!"),
+        None => Err(Error::NoColumnsForOrdering),
     }
-    /*
-    match &table_info.uniqueness_constraints {
-        metadata::UniquenessConstraints(uniques_map) => match uniques_map.clone().pop_first() {
-            Some((_, metadata::UniquenessConstraint(constraint))) => {
-                let order_by_element = sql::ast::OrderByElement {
-                    direction: sql::ast::OrderByDirection::Asc,
-                    target: sql::ast::Expression::ColumnReference(
-                        sql::ast::ColumnReference::AliasedColumn {
-                            table: table_reference,
-                            column: sql::helpers::make_column_alias(
-                                constraint.first().unwrap().to_string(),
-                            ),
-                        },
-                    ),
-                };
-
-                Ok(sql::ast::OrderBy {
-                    elements: vec![order_by_element],
-                })
-            }
-            None => Err(Error::NoConstraintsForOrdering),
-        },
-    }*/
 }
 
 /// Convert the order by fields from a QueryRequest to a SQL ORDER BY clause and potentially
