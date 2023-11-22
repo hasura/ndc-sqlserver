@@ -38,7 +38,6 @@ pub async fn query(
         // assuming query succeeded, increment counter
         state.metrics.record_successful_query();
 
-        // TODO: return raw JSON
         Ok(result)
     }
     .instrument(info_span!("Execute query"))
@@ -73,13 +72,17 @@ async fn execute_query(
 ) -> Result<JsonResponse<models::QueryResponse>, connector::QueryError> {
     execution::mssql_execute(&state.mssql_pool, &state.metrics, plan)
         .await
-        .map(JsonResponse::Value)
+        .map(JsonResponse::Serialized)
         .map_err(|err| match err {
             execution::Error::Query(err) => {
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }
             execution::Error::ConnectionPool(err) => {
+                tracing::error!("{}", err);
+                connector::QueryError::Other(err.into())
+            }
+            execution::Error::TiberiusError(err) => {
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }

@@ -1,7 +1,7 @@
 //! Execute an execution plan against the database.
 
 use crate::metrics;
-use ndc_sdk::models;
+use bytes::{BufMut, Bytes, BytesMut};
 use query_engine_sql::sql;
 use serde_json;
 use std::collections::BTreeMap;
@@ -14,7 +14,7 @@ pub async fn mssql_execute(
     mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
     metrics: &metrics::Metrics,
     plan: sql::execution_plan::ExecutionPlan,
-) -> Result<models::QueryResponse, Error> {
+) -> Result<Bytes, Error> {
     let query = plan.query();
 
     tracing::info!(
@@ -33,64 +33,48 @@ pub async fn mssql_execute(
     let mut connection = acquisition_timer.complete_with(connection_result)?;
 
     let query_timer = metrics.time_query_execution();
-    let rows_result = execute_query(&mut connection, plan)
+    let bytes_result = execute_queries(&mut connection, plan)
         .instrument(info_span!("Database request"))
         .await;
-    let rows = query_timer.complete_with(rows_result)?;
-
-    // Hack a response from the query results. See the 'response_hack' for more details.
-    let response = rows_to_response(rows);
-
-    // tracing::info!(
-    //     "Query response: {}",
-    //     serde_json::to_string(&response).unwrap()
-    // );
-
-    Ok(response)
+    query_timer.complete_with(bytes_result)
 }
 
-async fn execute_query(
+async fn execute_queries(
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
     plan: sql::execution_plan::ExecutionPlan,
-) -> Result<Vec<serde_json::Value>, Error> {
+) -> Result<Bytes, Error> {
     let query = plan.query();
 
-    // run the query on each set of variables. The result is a vector of rows each
-    // element in the vector is the result of running the query on one set of variables.
-    let rows: Vec<serde_json::Value> = match plan.variables {
+    // this buffer represents the JSON response
+    let mut buffer = BytesMut::new();
+    buffer.put(&[b'['][..]); // we start by opening the array
+    match plan.variables {
         None => {
             let empty_map = BTreeMap::new();
-            let rows = execute_mssql_query(connection, &query, &empty_map).await?;
-            vec![rows]
+            execute_query(connection, &query, &empty_map, &mut buffer).await?;
         }
         Some(variable_sets) => {
-            let mut sets_of_rows = vec![];
-            for vars in &variable_sets {
-                let rows = execute_mssql_query(connection, &query, vars).await?;
-                sets_of_rows.push(rows);
+            let mut i = variable_sets.iter();
+            if let Some(first) = i.next() {
+                execute_query(connection, &query, first, &mut buffer).await?;
+                for vars in i {
+                    buffer.put(&[b','][..]); // each result, except the first, is prefixed by a ','
+                    execute_query(connection, &query, vars, &mut buffer).await?;
+                }
             }
-            sets_of_rows
         }
-    };
-    Ok(rows)
-}
-
-/// Take the sqlserver results and return them as a QueryResponse.
-fn rows_to_response(results: Vec<serde_json::Value>) -> models::QueryResponse {
-    let rowsets = results
-        .into_iter()
-        .map(|raw_rowset| serde_json::from_value(raw_rowset).unwrap())
-        .collect();
-
-    models::QueryResponse(rowsets)
+    }
+    buffer.put(&[b']'][..]); // we end by closing the array
+    Ok(buffer.freeze())
 }
 
 /// Execute the query on one set of variables.
-async fn execute_mssql_query(
+async fn execute_query(
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
     query: &sql::string::SQL,
     variables: &BTreeMap<String, serde_json::Value>,
-) -> Result<serde_json::Value, Error> {
+    buffer: &mut (impl BufMut + Send),
+) -> Result<(), Error> {
     // let's do a query to check everything is ok
     let query_text = query.sql.as_str();
 
@@ -136,9 +120,6 @@ async fn execute_mssql_query(
     // go!
     let mut stream = mssql_query.query(connection).await.unwrap();
 
-    // collect big lump of json here
-    let mut result_str = String::new();
-
     // stream it out and collect it here:
     while let Some(item) = stream.try_next().await.unwrap() {
         match item {
@@ -148,19 +129,20 @@ async fn execute_mssql_query(
             }
             // ...concatenate these
             QueryItem::Row(row) => {
-                let item = row.get(0).unwrap();
-                result_str.push_str(item)
+                let item: &[u8] = row
+                    .try_get(0)
+                    .map_err(Error::TiberiusError)
+                    .map(|item: Option<&str>| item.unwrap().as_bytes())?;
+                buffer.put(item);
             }
         }
     }
 
-    // once we're happy this is stable, we should stream the JSON string straight out
-    let json_value = serde_json::from_str(&result_str).unwrap();
-
-    Ok(json_value)
+    Ok(())
 }
 
 pub enum Error {
     Query(String),
     ConnectionPool(bb8::RunError<bb8_tiberius::Error>),
+    TiberiusError(tiberius::error::Error),
 }
