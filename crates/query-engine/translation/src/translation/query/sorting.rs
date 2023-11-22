@@ -9,8 +9,9 @@ use query_engine_metadata::metadata;
 use query_engine_sql::sql;
 
 // if we are using limit / offset then we MUST have an ordering too, so this orders by the first
-// unique column we see
-pub fn default_order_by(
+// unique column we see (which usually, hopefully, corresponds to the primary key, a sensible
+// default)
+pub fn default_table_order_by(
     table_info: metadata::TableInfo,
     table_reference: sql::ast::TableReference,
 ) -> Result<sql::ast::OrderBy, Error> {
@@ -36,6 +37,57 @@ pub fn default_order_by(
             None => Err(Error::NoConstraintsForOrdering),
         },
     }
+}
+
+// if we are using limit / offset then we MUST have an ordering too, so this orders by the first
+// column specified in the native query. Currently pretty random, using whatever the BTreeMap says
+// the 'first' item is. We should change the type of `columns` to an array so we can least default
+// to the first item reliably.
+pub fn default_native_query_order_by(
+    mut native_query_info: metadata::NativeQueryInfo,
+    table_reference: sql::ast::TableReference,
+) -> Result<sql::ast::OrderBy, Error> {
+    match &native_query_info.columns.first_entry() {
+        Some(column) => {
+            let order_by_element = sql::ast::OrderByElement {
+                direction: sql::ast::OrderByDirection::Asc,
+                target: sql::ast::Expression::ColumnReference(
+                    sql::ast::ColumnReference::AliasedColumn {
+                        table: table_reference,
+                        column: sql::helpers::make_column_alias(column.key().to_string()),
+                    },
+                ),
+            };
+
+            Ok(sql::ast::OrderBy {
+                elements: vec![order_by_element],
+            })
+        }
+        None => panic!("No columns! Can't sort!"),
+    }
+    /*
+    match &table_info.uniqueness_constraints {
+        metadata::UniquenessConstraints(uniques_map) => match uniques_map.clone().pop_first() {
+            Some((_, metadata::UniquenessConstraint(constraint))) => {
+                let order_by_element = sql::ast::OrderByElement {
+                    direction: sql::ast::OrderByDirection::Asc,
+                    target: sql::ast::Expression::ColumnReference(
+                        sql::ast::ColumnReference::AliasedColumn {
+                            table: table_reference,
+                            column: sql::helpers::make_column_alias(
+                                constraint.first().unwrap().to_string(),
+                            ),
+                        },
+                    ),
+                };
+
+                Ok(sql::ast::OrderBy {
+                    elements: vec![order_by_element],
+                })
+            }
+            None => Err(Error::NoConstraintsForOrdering),
+        },
+    }*/
 }
 
 /// Convert the order by fields from a QueryRequest to a SQL ORDER BY clause and potentially

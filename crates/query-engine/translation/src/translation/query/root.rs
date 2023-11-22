@@ -112,24 +112,6 @@ pub fn translate_rows_query(
                         sql::helpers::empty_json_path(),
                     ),
                 ))
-                /*
-                let table_alias = state.make_relationship_table_alias(&alias);
-                             let column_alias = sql::helpers::make_column_alias(alias);
-                             let column_name = sql::ast::ColumnReference::AliasedColumn {
-                                 table: sql::ast::TableReference::AliasedTable(table_alias.clone()),
-                                 column: column_alias.clone(),
-                             };
-                             join_fields.push(relationships::JoinFieldInfo {
-                                 table_alias,
-                                 column_alias: column_alias.clone(),
-                                 relationship_name: relationship,
-                                 arguments,
-                                 query: *query,
-                             });
-                             Ok((
-                                 column_alias,
-                                 sql::ast::Expression::ColumnReference(column_name),
-                             ))*/
             }
         })
         .collect::<Result<Vec<_>, Error>>()?;
@@ -149,10 +131,12 @@ pub fn translate_rows_query(
     if has_limit_or_offset && select.order_by.elements.is_empty() {
         match collection_info {
             CollectionInfo::Table { info, .. } => {
-                select.order_by = sorting::default_order_by(info, current_table.reference.clone())?;
+                select.order_by =
+                    sorting::default_table_order_by(info, current_table.reference.clone())?;
             }
-            CollectionInfo::NativeQuery { .. } => {
-                todo!("default order by for native queries not implemented yet")
+            CollectionInfo::NativeQuery { info, .. } => {
+                select.order_by =
+                    sorting::default_native_query_order_by(info, current_table.reference.clone())?;
             }
         }
     }

@@ -1,0 +1,21 @@
+---
+source: crates/ndc-sqlserver/tests/query_tests.rs
+expression: result
+---
+[
+  {
+    "rows": [
+      {
+        "bigint": 1,
+        "int": 245,
+        "float": 24.555,
+        "numeric": 24.555,
+        "char": "s",
+        "text": "textual text",
+        "date": "2021-12-21",
+        "time": "02:35:59",
+        "timestamp": "2013-11-03 02:35:59"
+      }
+    ]
+  }
+]
