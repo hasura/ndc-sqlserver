@@ -275,3 +275,57 @@ mod relationships {
         insta::assert_json_snapshot!(result);
     }
 }
+
+#[cfg(test)]
+mod native_queries {
+    use super::common::run_query;
+
+    #[tokio::test]
+    async fn select_artist() {
+        let result = run_query("native_queries/select_artist").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn select_artists_below_id() {
+        let result = run_query("native_queries/select_artists_below_id").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn select_artist_with_album_by_title_relationship_arguments() {
+        let result =
+            run_query("native_queries/select_artist_with_album_by_title_relationship_arguments")
+                .await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn select_where_relationship() {
+        let result = run_query("native_queries/select_where_relationship").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn select_sort_relationship() {
+        let result = run_query("native_queries/select_sort_relationship").await;
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test]
+    async fn select_order_by_artist_album_count() {
+        let result = run_query("native_queries/select_order_by_artist_album_count").await;
+        insta::assert_json_snapshot!(result);
+    }
+}
+
+#[cfg(test)]
+mod types {
+    use super::common::run_query;
+
+    #[tokio::test]
+    async fn select_value_types() {
+        let result = run_query("value_types").await;
+        insta::assert_json_snapshot!(result);
+    }
+}

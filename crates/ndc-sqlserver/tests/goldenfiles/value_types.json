@@ -1,0 +1,231 @@
+{
+  "collection": "value_types",
+  "query": {
+    "fields": {
+      "bigint": {
+        "type": "column",
+        "column": "bigint",
+        "arguments": {}
+      },
+      "int": {
+        "type": "column",
+        "column": "int",
+        "arguments": {}
+      },
+      "float": {
+        "type": "column",
+        "column": "float",
+        "arguments": {}
+      },
+      "numeric": {
+        "type": "column",
+        "column": "numeric",
+        "arguments": {}
+      },
+      "char": {
+        "type": "column",
+        "column": "char",
+        "arguments": {}
+      },
+      "text": {
+        "type": "column",
+        "column": "text",
+        "arguments": {}
+      },
+      "date": {
+        "type": "column",
+        "column": "date",
+        "arguments": {}
+      },
+      "time": {
+        "type": "column",
+        "column": "time",
+        "arguments": {}
+      },
+      "timestamp": {
+        "type": "column",
+        "column": "timestamp",
+        "arguments": {}
+      }
+    },
+    "where": {
+      "type": "and",
+      "expressions": [
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "bigint",
+            "path": []
+          },
+          "operator": {
+            "type": "equal"
+          },
+          "value": {
+            "type": "scalar",
+            "value": 1
+          }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "int",
+            "path": []
+          },
+          "operator": {
+            "type": "equal"
+          },
+          "value": {
+            "type": "scalar",
+            "value": 245
+          }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "float",
+            "path": []
+          },
+          "operator": {
+            "type": "equal"
+          },
+          "value": {
+            "type": "scalar",
+            "value": 24.555
+          }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "numeric",
+            "path": []
+          },
+          "operator": {
+            "type": "equal"
+          },
+          "value": {
+            "type": "scalar",
+            "value": "24.555"
+          }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "char",
+            "path": []
+          },
+          "operator": {
+            "type": "equal"
+          },
+          "value": {
+            "type": "scalar",
+            "value": "s"
+          }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "text",
+            "path": []
+          },
+          "operator": {
+            "type": "equal"
+          },
+          "value": {
+            "type": "scalar",
+            "value": "textual text"
+          }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "date",
+            "path": []
+          },
+          "operator": {
+            "type": "equal"
+          },
+          "value": {
+            "type": "scalar",
+            "value": "2021-12-21"
+          }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "time",
+            "path": []
+          },
+          "operator": {
+            "type": "equal"
+          },
+          "value": {
+            "type": "scalar",
+            "value": "02:35:59"
+          }
+        },
+        {
+          "type": "binary_comparison_operator",
+          "column": {
+            "type": "column",
+            "name": "timestamp",
+            "path": []
+          },
+          "operator": {
+            "type": "equal"
+          },
+          "value": {
+            "type": "scalar",
+            "value": "2013-11-03 02:35:59"
+          }
+        }
+      ]
+    }
+  },
+  "arguments": {
+    "bigint": {
+      "type": "literal",
+      "value": 1
+    },
+    "int": {
+      "type": "literal",
+      "value": 245
+    },
+    "float": {
+      "type": "literal",
+      "value": 24.555
+    },
+    "numeric": {
+      "type": "literal",
+      "value": 24.555
+    },
+    "char": {
+      "type": "literal",
+      "value": "s"
+    },
+    "text": {
+      "type": "literal",
+      "value": "textual text"
+    },
+    "date": {
+      "type": "literal",
+      "value": "2021-12-21"
+    },
+    "time": {
+      "type": "literal",
+      "value": "02:35:59"
+    },
+    "timestamp": {
+      "type": "literal",
+      "value": "2013-11-03 02:35:59"
+    }
+  },
+  "collection_relationships": {}
+}

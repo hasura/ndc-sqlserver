@@ -19,6 +19,7 @@ pub enum Error {
     TypeMismatch(serde_json::Value, database::ScalarType),
     CapabilityNotSupported(UnsupportedCapabilities),
     NoConstraintsForOrdering,
+    NoColumnsForOrdering,
     NotSupported(String),
 }
 
@@ -46,6 +47,9 @@ impl std::fmt::Display for Error {
             ),
             Error::NoConstraintsForOrdering => {
                 write!(f, "No constraints found for ordering")
+            }
+            Error::NoColumnsForOrdering => {
+                write!(f, "No columns found for ordering")
             }
 
             Error::RelationshipNotFound(relationship_name) => {
