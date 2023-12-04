@@ -1252,6 +1252,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "ndc-client"
+version = "0.1.0"
+source = "git+https://github.com/hasura/ndc-spec.git?tag=v0.1.0-rc.12#0e84462f98fdf77e1f25ab905e33918aaef4cee9"
+dependencies = [
+ "async-trait",
+ "indexmap 2.1.0",
+ "opentelemetry",
+ "reqwest",
+ "schemars",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "serde_with 2.3.3",
+ "url",
+]
+
+[[package]]
 name = "ndc-sdk"
 version = "0.1.0"
 source = "git+https://github.com/hasura/ndc-hub.git?rev=fb03873#fb03873bd29a7e927c83fbc28923b376dfeaa638"
@@ -1266,7 +1283,7 @@ dependencies = [
  "http",
  "indexmap 2.1.0",
  "mime",
- "ndc-client",
+ "ndc-client 0.1.0 (git+https://github.com/hasura/ndc-spec.git?tag=v0.1.0-rc.11)",
  "ndc-test",
  "opentelemetry",
  "opentelemetry-http",
@@ -1300,7 +1317,7 @@ dependencies = [
  "env_logger",
  "hyper",
  "insta",
- "ndc-client",
+ "ndc-client 0.1.0 (git+https://github.com/hasura/ndc-spec.git?tag=v0.1.0-rc.12)",
  "ndc-sdk",
  "ndc-test",
  "prometheus",
@@ -1329,7 +1346,7 @@ dependencies = [
  "clap",
  "colored",
  "indexmap 2.1.0",
- "ndc-client",
+ "ndc-client 0.1.0 (git+https://github.com/hasura/ndc-spec.git?tag=v0.1.0-rc.11)",
  "proptest",
  "reqwest",
  "semver",
