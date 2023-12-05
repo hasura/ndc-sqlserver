@@ -15,7 +15,9 @@ mod ndc_tests {
         ))
         .serve(router.into_make_service());
 
-        let base_path = format!("http://{}", server.local_addr());
+        let base_path =
+            reqwest::Url::parse(format!("http://{}", server.local_addr()).as_str()).unwrap();
+
         eprintln!("Starting the server on {}", base_path);
 
         tokio::task::spawn(async {
