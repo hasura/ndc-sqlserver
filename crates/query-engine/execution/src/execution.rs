@@ -192,16 +192,19 @@ pub async fn explain(
 
     let mut connection = mssql_pool.get().await.unwrap();
 
-    let _ = connection.simple_query("SET SHOWPLAN_TEXT ON").await;
+    let maybe_results: Result<Vec<String>, Error> = {
+        let _ = connection.simple_query("SET SHOWPLAN_TEXT ON").await;
 
-    let results = {
         let mut results: Vec<String> = vec![];
 
         // go!
-        let mut stream = connection.simple_query(query_text).await.unwrap();
+        let mut stream = connection
+            .simple_query(query_text)
+            .await
+            .map_err(Error::TiberiusError)?;
 
         // stream it out and collect it here:
-        while let Some(item) = stream.try_next().await.unwrap() {
+        while let Some(item) = stream.try_next().await.map_err(Error::TiberiusError)? {
             match item {
                 // ignore these
                 QueryItem::Metadata(_meta) => {
@@ -213,15 +216,21 @@ pub async fn explain(
                         .try_get(0)
                         .map_err(Error::TiberiusError)
                         .map(|item: Option<&str>| item.unwrap())?;
-                    println!("{:?}", item);
                     results.push(item.to_string());
                 }
             }
         }
-        results
+        Ok(results)
     };
 
-    let _ = connection.simple_query("SET SHOWPLAN_TEXT OFF").await;
+    // if we fail, make sure we turn off explain mode before giving up
+    let results = match maybe_results {
+        Ok(results) => Ok(results),
+        Err(e) => {
+            let _ = connection.simple_query("SET SHOWPLAN_TEXT OFF").await;
+            Err(e)
+        }
+    }?;
 
     let pretty = sqlformat::format(
         &query.sql,
