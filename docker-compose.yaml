@@ -99,6 +99,19 @@ services:
       COLLECTOR_OTLP_ENABLED: "true"
       COLLECTOR_ZIPKIN_HOST_PORT: "9411"
 
+  # useful for testing the Dockerfile in the root of this repo
+  sqlserver-local:
+    build: .
+    command: serve
+    ports:
+      - 8100:8100
+    volumes:
+      - type: bind
+        source: ./static/chinook-deployment.json
+        target: /deployment.json
+    environment:
+      CONFIGURATION_FILE: /deployment.json
+
 volumes:
   prom_data:
   grafana_data:
