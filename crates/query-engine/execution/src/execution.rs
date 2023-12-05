@@ -190,7 +190,6 @@ pub async fn explain(
 
     let query_text = format!("{} {}", declarations, query.sql.as_str());
 
-    tracing::info!("{:?}", query_text);
     let mut connection = mssql_pool.get().await.unwrap();
 
     let _ = connection.simple_query("SET SHOWPLAN_TEXT ON").await;
