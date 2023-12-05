@@ -13,7 +13,9 @@ services:
       MSSQL_SA_PASSWORD: "Password!"
       SA_PASSWORD: "Password!"
     volumes:
-      - /var/opt/mssql
+      - type: volume
+        target: /var/opt/mssql/data
+        source: mssql_data
       - type: bind
         read_only: true
         source: ./static
@@ -100,3 +102,4 @@ services:
 volumes:
   prom_data:
   grafana_data:
+  mssql_data:
