@@ -75,7 +75,6 @@ async fn execute_query(
     variables: &BTreeMap<String, serde_json::Value>,
     buffer: &mut (impl BufMut + Send),
 ) -> Result<(), Error> {
-    // let's do a query to check everything is ok
     let query_text = query.sql.as_str();
 
     let mut mssql_query = tiberius::Query::new(query_text);
@@ -139,6 +138,99 @@ async fn execute_query(
     }
 
     Ok(())
+}
+
+/// Convert a query to an EXPLAIN query and execute it against postgres.
+pub async fn explain(
+    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+    plan: sql::execution_plan::ExecutionPlan,
+) -> Result<(String, String), Error> {
+    let query = plan.query();
+
+    tracing::info!(
+        generated_sql = query.sql,
+        params = ?&query.params,
+        variables = ?&plan.variables,
+    );
+
+    let empty_map = BTreeMap::new();
+    let variable_sets = plan.variables.unwrap_or(vec![]);
+    let variables = variable_sets.get(0).unwrap_or(&empty_map);
+
+    let declarations =
+        query
+            .params
+            .into_iter()
+            .enumerate()
+            .try_fold(String::new(), |str, (i, param)| {
+                let type_name: String = match param {
+                    sql::string::Param::String(_string) => Ok("VARCHAR(MAX)".to_string()),
+                    sql::string::Param::Variable(var) => match &variables.get(&var) {
+                        Some(value) => match value {
+                            serde_json::Value::String(_s) => Ok("VARCHAR(MAX)".to_string()),
+                            serde_json::Value::Number(_n) => Ok("NUMERIC".to_string()),
+                            serde_json::Value::Bool(_b) => Ok("TINYINT".to_string()),
+                            // this is a problem - we don't know the type of the value!
+                            serde_json::Value::Null => Err(Error::Query(
+                                "null variable not currently supported".to_string(),
+                            )),
+                            serde_json::Value::Array(_array) => Err(Error::Query(
+                                "array variable not currently supported".to_string(),
+                            )),
+                            serde_json::Value::Object(_object) => Err(Error::Query(
+                                "object variable not currently supported".to_string(),
+                            )),
+                        },
+                        None => Err(Error::Query(format!("Variable not found '{}'", var))),
+                    },
+                }?;
+
+                Ok(format!("{} DECLARE @P{} {}; ", str, i + 1, type_name))
+            })?;
+
+    let query_text = format!("{} {}", declarations, query.sql.as_str());
+
+    tracing::info!("{:?}", query_text);
+    let mut connection = mssql_pool.get().await.unwrap();
+
+    let _ = connection.simple_query("SET SHOWPLAN_TEXT ON").await;
+
+    let results = {
+        let mut results: Vec<String> = vec![];
+
+        // go!
+        let mut stream = connection.simple_query(query_text).await.unwrap();
+
+        // stream it out and collect it here:
+        while let Some(item) = stream.try_next().await.unwrap() {
+            match item {
+                // ignore these
+                QueryItem::Metadata(_meta) => {
+                    // .. handling
+                }
+                // ...concatenate these
+                QueryItem::Row(row) => {
+                    let item: &str = row
+                        .try_get(0)
+                        .map_err(Error::TiberiusError)
+                        .map(|item: Option<&str>| item.unwrap())?;
+                    println!("{:?}", item);
+                    results.push(item.to_string());
+                }
+            }
+        }
+        results
+    };
+
+    let _ = connection.simple_query("SET SHOWPLAN_TEXT OFF").await;
+
+    let pretty = sqlformat::format(
+        &query.sql,
+        &sqlformat::QueryParams::None,
+        sqlformat::FormatOptions::default(),
+    );
+
+    Ok((pretty, results.join("\n")))
 }
 
 pub enum Error {

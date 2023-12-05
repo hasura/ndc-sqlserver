@@ -22,9 +22,6 @@ impl ExecutionPlan {
     pub fn query(&self) -> sql::string::SQL {
         select_to_sql(&self.query)
     }
-    pub fn explain_query(&self) -> sql::string::SQL {
-        explain_to_sql(&sql::ast::Explain::Select(&self.query))
-    }
 }
 
 pub fn select_to_sql(select: &sql::ast::Select) -> sql::string::SQL {
