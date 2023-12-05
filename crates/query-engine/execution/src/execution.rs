@@ -154,7 +154,7 @@ pub async fn explain(
     );
 
     let empty_map = BTreeMap::new();
-    let variable_sets = plan.variables.unwrap_or(vec![]);
+    let variable_sets = plan.variables.unwrap_or_default();
     let variables = variable_sets.get(0).unwrap_or(&empty_map);
 
     let declarations =
