@@ -140,3 +140,4 @@ volumes:
   benchmark_output:
   metrics_output:
   prometheus:
+  mssql_data:
