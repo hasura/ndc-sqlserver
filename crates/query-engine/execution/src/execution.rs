@@ -3,7 +3,7 @@
 use crate::metrics;
 use bytes::{BufMut, Bytes, BytesMut};
 use query_engine_sql::sql;
-use serde_json;
+use serde_json::Value;
 use std::collections::BTreeMap;
 use tiberius::QueryItem;
 use tokio_stream::StreamExt;
@@ -153,19 +153,48 @@ pub async fn explain(
         variables = ?&plan.variables,
     );
 
+    let query_text = get_query_text(&query, plan.variables)?;
+
+    let mut connection = mssql_pool.get().await.map_err(Error::ConnectionPool)?;
+
+    let maybe_results: Result<Vec<String>, Error> =
+        execute_explain(&mut connection, &query_text).await;
+
+    // if we fail, make sure we turn off explain mode before giving up
+    let results = match maybe_results {
+        Ok(results) => Ok(results),
+        Err(e) => {
+            let _ = connection.simple_query("SET SHOWPLAN_TEXT OFF").await;
+            Err(e)
+        }
+    }?;
+
+    let pretty = sqlformat::format(
+        &query.sql,
+        &sqlformat::QueryParams::None,
+        sqlformat::FormatOptions::default(),
+    );
+
+    Ok((pretty, results.join("\n")))
+}
+
+fn get_query_text(
+    query: &sql::string::SQL,
+    variables: Option<Vec<BTreeMap<String, Value>>>,
+) -> Result<String, Error> {
     let empty_map = BTreeMap::new();
-    let variable_sets = plan.variables.unwrap_or_default();
+    let variable_sets = variables.unwrap_or_default();
     let variables = variable_sets.get(0).unwrap_or(&empty_map);
 
     let declarations =
         query
             .params
-            .into_iter()
+            .iter()
             .enumerate()
             .try_fold(String::new(), |str, (i, param)| {
                 let type_name: String = match param {
                     sql::string::Param::String(_string) => Ok("VARCHAR(MAX)".to_string()),
-                    sql::string::Param::Variable(var) => match &variables.get(&var) {
+                    sql::string::Param::Variable(var) => match &variables.get(var) {
                         Some(value) => match value {
                             serde_json::Value::String(_s) => Ok("VARCHAR(MAX)".to_string()),
                             serde_json::Value::Number(_n) => Ok("NUMERIC".to_string()),
@@ -188,57 +217,42 @@ pub async fn explain(
                 Ok(format!("{} DECLARE @P{} {}; ", str, i + 1, type_name))
             })?;
 
-    let query_text = format!("{} {}", declarations, query.sql.as_str());
+    Ok(format!("{} {}", declarations, query.sql.as_str()))
+}
 
-    let mut connection = mssql_pool.get().await.unwrap();
+// this is separated so we know where any ?s fall through to
+async fn execute_explain(
+    connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
+    query_text: &str,
+) -> Result<Vec<String>, Error> {
+    let mut results: Vec<String> = vec![];
 
-    let maybe_results: Result<Vec<String>, Error> = {
-        let _ = connection.simple_query("SET SHOWPLAN_TEXT ON").await;
+    let _ = connection.simple_query("SET SHOWPLAN_TEXT ON").await;
 
-        let mut results: Vec<String> = vec![];
+    // go!
+    let mut stream = connection
+        .simple_query(query_text)
+        .await
+        .map_err(Error::TiberiusError)?;
 
-        // go!
-        let mut stream = connection
-            .simple_query(query_text)
-            .await
-            .map_err(Error::TiberiusError)?;
-
-        // stream it out and collect it here:
-        while let Some(item) = stream.try_next().await.map_err(Error::TiberiusError)? {
-            match item {
-                // ignore these
-                QueryItem::Metadata(_meta) => {
-                    // .. handling
-                }
-                // ...concatenate these
-                QueryItem::Row(row) => {
-                    let item: &str = row
-                        .try_get(0)
-                        .map_err(Error::TiberiusError)
-                        .map(|item: Option<&str>| item.unwrap())?;
-                    results.push(item.to_string());
-                }
+    // stream it out and collect it here:
+    while let Some(item) = stream.try_next().await.map_err(Error::TiberiusError)? {
+        match item {
+            // ignore these
+            QueryItem::Metadata(_meta) => {
+                // .. handling
+            }
+            // ...concatenate these
+            QueryItem::Row(row) => {
+                let item: &str = row
+                    .try_get(0)
+                    .map_err(Error::TiberiusError)
+                    .map(|item: Option<&str>| item.unwrap())?;
+                results.push(item.to_string());
             }
         }
-        Ok(results)
-    };
-
-    // if we fail, make sure we turn off explain mode before giving up
-    let results = match maybe_results {
-        Ok(results) => Ok(results),
-        Err(e) => {
-            let _ = connection.simple_query("SET SHOWPLAN_TEXT OFF").await;
-            Err(e)
-        }
-    }?;
-
-    let pretty = sqlformat::format(
-        &query.sql,
-        &sqlformat::QueryParams::None,
-        sqlformat::FormatOptions::default(),
-    );
-
-    Ok((pretty, results.join("\n")))
+    }
+    Ok(results)
 }
 
 pub enum Error {
