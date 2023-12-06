@@ -225,33 +225,39 @@ async fn execute_explain(
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
     query_text: &str,
 ) -> Result<Vec<String>, Error> {
-    let mut results: Vec<String> = vec![];
-
     let _ = connection.simple_query("SET SHOWPLAN_TEXT ON").await;
 
-    // go!
-    let mut stream = connection
-        .simple_query(query_text)
-        .await
-        .map_err(Error::TiberiusError)?;
+    let results = {
+        let mut results: Vec<String> = vec![];
 
-    // stream it out and collect it here:
-    while let Some(item) = stream.try_next().await.map_err(Error::TiberiusError)? {
-        match item {
-            // ignore these
-            QueryItem::Metadata(_meta) => {
-                // .. handling
-            }
-            // ...concatenate these
-            QueryItem::Row(row) => {
-                let item: &str = row
-                    .try_get(0)
-                    .map_err(Error::TiberiusError)
-                    .map(|item: Option<&str>| item.unwrap())?;
-                results.push(item.to_string());
+        // go!
+        let mut stream = connection
+            .simple_query(query_text)
+            .await
+            .map_err(Error::TiberiusError)?;
+
+        // stream it out and collect it here:
+        while let Some(item) = stream.try_next().await.map_err(Error::TiberiusError)? {
+            match item {
+                // ignore these
+                QueryItem::Metadata(_meta) => {
+                    // .. handling
+                }
+                // ...concatenate these
+                QueryItem::Row(row) => {
+                    let item: &str = row
+                        .try_get(0)
+                        .map_err(Error::TiberiusError)
+                        .map(|item: Option<&str>| item.unwrap())?;
+                    results.push(item.to_string());
+                }
             }
         }
-    }
+        results
+    };
+
+    let _ = connection.simple_query("SET SHOWPLAN_TEXT OFF").await;
+
     Ok(results)
 }
 
