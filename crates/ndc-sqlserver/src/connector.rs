@@ -13,6 +13,7 @@ use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
 
 use super::configuration;
+use super::explain;
 use super::query;
 use super::schema;
 use std::sync::Arc;
@@ -132,11 +133,13 @@ impl connector::Connector for SQLServer {
     /// This function implements the [explain endpoint](https://hasura.github.io/ndc-spec/specification/explain.html)
     /// from the NDC specification.
     async fn explain(
-        _configuration: &Self::Configuration,
-        _state: &Self::State,
-        _query_request: models::QueryRequest,
+        configuration: &Self::Configuration,
+        state: &Self::State,
+        query_request: models::QueryRequest,
     ) -> Result<JsonResponse<models::ExplainResponse>, connector::ExplainError> {
-        todo!("explain!")
+        explain::explain(configuration, state, query_request)
+            .await
+            .map(JsonResponse::Value)
     }
 
     /// Execute a mutation

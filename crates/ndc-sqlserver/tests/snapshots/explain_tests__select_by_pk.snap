@@ -2,28 +2,17 @@
 source: crates/ndc-sqlserver/tests/explain_tests.rs
 expression: result.details.query
 ---
-EXPLAIN
 SELECT
-  row_to_json("universe") AS "universe"
+  ISNULL([2_rows].[rows], '[]') AS [rows]
 FROM
   (
     SELECT
-      *
+      [0_Album].[Title] AS [Title]
     FROM
-      (
-        SELECT
-          coalesce(json_agg(row_to_json("rows")), '[]') AS "rows"
-        FROM
-          (
-            SELECT
-              "Album"."Title" AS "Title"
-            FROM
-              "public"."Album" AS "Album"
-            WHERE
-              (
-                true
-                AND ("Album"."AlbumId" = 35)
-              )
-          ) AS "rows"
-      ) AS "rows"
-  ) AS "universe"
+      [dbo].[Album] AS [0_Album]
+    WHERE
+      ([0_Album].[AlbumId] = 35) FOR JSON PATH,
+      INCLUDE_NULL_VALUES
+  ) AS [2_rows]([rows]) FOR JSON PATH,
+  INCLUDE_NULL_VALUES,
+  WITHOUT_ARRAY_WRAPPER

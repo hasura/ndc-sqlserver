@@ -1772,6 +1772,7 @@ dependencies = [
  "prometheus",
  "query-engine-sql",
  "serde_json",
+ "sqlformat",
  "tiberius",
  "tokio-stream",
  "tracing",

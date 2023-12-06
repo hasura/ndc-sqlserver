@@ -3,7 +3,7 @@
 use crate::metrics;
 use bytes::{BufMut, Bytes, BytesMut};
 use query_engine_sql::sql;
-use serde_json;
+use serde_json::Value;
 use std::collections::BTreeMap;
 use tiberius::QueryItem;
 use tokio_stream::StreamExt;
@@ -75,7 +75,6 @@ async fn execute_query(
     variables: &BTreeMap<String, serde_json::Value>,
     buffer: &mut (impl BufMut + Send),
 ) -> Result<(), Error> {
-    // let's do a query to check everything is ok
     let query_text = query.sql.as_str();
 
     let mut mssql_query = tiberius::Query::new(query_text);
@@ -139,6 +138,127 @@ async fn execute_query(
     }
 
     Ok(())
+}
+
+/// Convert a query to an EXPLAIN query and execute it against postgres.
+pub async fn explain(
+    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+    plan: sql::execution_plan::ExecutionPlan,
+) -> Result<(String, String), Error> {
+    let query = plan.query();
+
+    tracing::info!(
+        generated_sql = query.sql,
+        params = ?&query.params,
+        variables = ?&plan.variables,
+    );
+
+    let query_text = get_query_text(&query, plan.variables)?;
+
+    let mut connection = mssql_pool.get().await.map_err(Error::ConnectionPool)?;
+
+    let maybe_results: Result<Vec<String>, Error> =
+        execute_explain(&mut connection, &query_text).await;
+
+    // if we fail, make sure we turn off explain mode before giving up
+    let results = match maybe_results {
+        Ok(results) => Ok(results),
+        Err(e) => {
+            let _ = connection.simple_query("SET SHOWPLAN_TEXT OFF").await;
+            Err(e)
+        }
+    }?;
+
+    let pretty = sqlformat::format(
+        &query.sql,
+        &sqlformat::QueryParams::None,
+        sqlformat::FormatOptions::default(),
+    );
+
+    Ok((pretty, results.join("\n")))
+}
+
+fn get_query_text(
+    query: &sql::string::SQL,
+    variables: Option<Vec<BTreeMap<String, Value>>>,
+) -> Result<String, Error> {
+    let empty_map = BTreeMap::new();
+    let variable_sets = variables.unwrap_or_default();
+    let variables = variable_sets.get(0).unwrap_or(&empty_map);
+
+    let declarations =
+        query
+            .params
+            .iter()
+            .enumerate()
+            .try_fold(String::new(), |str, (i, param)| {
+                let type_name: String = match param {
+                    sql::string::Param::String(_string) => Ok("VARCHAR(MAX)".to_string()),
+                    sql::string::Param::Variable(var) => match &variables.get(var) {
+                        Some(value) => match value {
+                            serde_json::Value::String(_s) => Ok("VARCHAR(MAX)".to_string()),
+                            serde_json::Value::Number(_n) => Ok("NUMERIC".to_string()),
+                            serde_json::Value::Bool(_b) => Ok("TINYINT".to_string()),
+                            // this is a problem - we don't know the type of the value!
+                            serde_json::Value::Null => Err(Error::Query(
+                                "null variable not currently supported".to_string(),
+                            )),
+                            serde_json::Value::Array(_array) => Err(Error::Query(
+                                "array variable not currently supported".to_string(),
+                            )),
+                            serde_json::Value::Object(_object) => Err(Error::Query(
+                                "object variable not currently supported".to_string(),
+                            )),
+                        },
+                        None => Err(Error::Query(format!("Variable not found '{}'", var))),
+                    },
+                }?;
+
+                Ok(format!("{} DECLARE @P{} {}; ", str, i + 1, type_name))
+            })?;
+
+    Ok(format!("{} {}", declarations, query.sql.as_str()))
+}
+
+// this is separated so we know where any ?s fall through to
+async fn execute_explain(
+    connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
+    query_text: &str,
+) -> Result<Vec<String>, Error> {
+    let _ = connection.simple_query("SET SHOWPLAN_TEXT ON").await;
+
+    let results = {
+        let mut results: Vec<String> = vec![];
+
+        // go!
+        let mut stream = connection
+            .simple_query(query_text)
+            .await
+            .map_err(Error::TiberiusError)?;
+
+        // stream it out and collect it here:
+        while let Some(item) = stream.try_next().await.map_err(Error::TiberiusError)? {
+            match item {
+                // ignore these
+                QueryItem::Metadata(_meta) => {
+                    // .. handling
+                }
+                // ...concatenate these
+                QueryItem::Row(row) => {
+                    let item: &str = row
+                        .try_get(0)
+                        .map_err(Error::TiberiusError)
+                        .map(|item: Option<&str>| item.unwrap())?;
+                    results.push(item.to_string());
+                }
+            }
+        }
+        results
+    };
+
+    let _ = connection.simple_query("SET SHOWPLAN_TEXT OFF").await;
+
+    Ok(results)
 }
 
 pub enum Error {
