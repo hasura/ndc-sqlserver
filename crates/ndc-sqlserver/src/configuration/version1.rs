@@ -9,6 +9,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
+use std::path::PathBuf;
 use thiserror::Error;
 use tiberius::Query;
 
@@ -71,17 +72,18 @@ pub struct State {
 /// Validate the user configuration.
 pub async fn validate_raw_configuration(
     config: RawConfiguration,
-) -> Result<Configuration, connector::ValidateError> {
+) -> Result<Configuration, connector::ParseError> {
     if config.version != 1 {
-        return Err(connector::ValidateError::ValidateError(vec![
-            connector::InvalidRange {
-                path: vec![connector::KeyOrIndex::Key("version".into())],
+        return Err(connector::ParseError::ValidateError(connector::InvalidNodes(vec![
+            connector::InvalidNode {
+                file_path: PathBuf::from("file_path"), // TODO(PY): find the path for the config
+                node_path: vec![connector::KeyOrIndex::Key("version".into())], //tODO(PY)
                 message: format!(
                     "invalid configuration version, expected 1, got {0}",
                     config.version
                 ),
             },
-        ]));
+        ])));
     }
     Ok(Configuration { config })
 }
@@ -106,6 +108,7 @@ pub async fn create_state(
 async fn create_mssql_pool(
     configuration: &RawConfiguration,
 ) -> Result<bb8::Pool<bb8_tiberius::ConnectionManager>, bb8_tiberius::Error> {
+    dbg!(configuration.mssql_connection_string.clone());
     let config = tiberius::Config::from_ado_string(&configuration.mssql_connection_string)?;
 
     let mgr = bb8_tiberius::ConnectionManager::new(config);
@@ -132,7 +135,7 @@ async fn select_first_row(
 /// Construct the deployment configuration by introspecting the database.
 pub async fn configure(
     configuration: &RawConfiguration,
-) -> Result<RawConfiguration, connector::UpdateConfigurationError> {
+) -> Result<RawConfiguration, connector::ParseError> {
     let mssql_pool = create_mssql_pool(configuration).await.unwrap();
 
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
@@ -343,6 +346,7 @@ fn get_comparison_operators_for_type(
         database::ComparisonOperator {
             operator_name: "=".to_string(),
             argument_type: type_name.clone(),
+            operator_kind: database::OperatorKind::Equal,
         },
     );
 
@@ -355,6 +359,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: "LIKE".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
         comparison_operators.insert(
@@ -362,6 +367,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: "NOT LIKE".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
     }
@@ -374,6 +380,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: "!=".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
         comparison_operators.insert(
@@ -381,6 +388,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: "<".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
         comparison_operators.insert(
@@ -388,6 +396,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: ">".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
 
@@ -396,6 +405,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: ">=".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
         comparison_operators.insert(
@@ -403,6 +413,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: "<=".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
     }

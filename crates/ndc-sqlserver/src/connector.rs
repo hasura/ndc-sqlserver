@@ -5,6 +5,8 @@
 //! The relevant types for configuration and state are defined in
 //! `super::configuration`.
 
+// use hyper::client::connect::Connect;
+// use ndc_client::apis::configuration::Configuration;
 use tiberius::Query;
 
 use async_trait::async_trait;
@@ -16,39 +18,48 @@ use super::configuration;
 use super::explain;
 use super::query;
 use super::schema;
+use std::path::Path;
 use std::sync::Arc;
 
 #[derive(Clone, Default)]
 pub struct SQLServer {}
 
 #[async_trait]
-impl connector::Connector for SQLServer {
+impl connector::ConnectorSetup for SQLServer {
+    // type Connector = connector::Connector<Configuration = <Connector as connector::Connector>::Configuration, State = connector::Connector::State>;
+    // type Connector = dyn connector::Connector<Configuration = Arc<configuration::Configuration>, State = Arc<configuration::State>>;
+    type Connector = SQLServer;
     /// RawConfiguration is what the user specifies as JSON
-    type RawConfiguration = configuration::RawConfiguration;
-    /// The type of validated configuration
-    type Configuration = Arc<configuration::Configuration>;
-    /// The type of unserializable state
-    type State = Arc<configuration::State>;
+    // type RawConfiguration = configuration::version1::RawConfiguration;
+    // /// The type of validated configuration
+    // type Configuration = Arc<configuration::Configuration>;
+    // /// The type of unserializable state
+    // type State = Arc<configuration::State>;
 
-    fn make_empty_configuration() -> Self::RawConfiguration {
-        configuration::RawConfiguration::empty()
-    }
+    // fn make_empty_configuration() -> configuration::version1::RawConfiguration {
+    //     configuration::version1::RawConfiguration::empty()
+    // }
 
-    /// Configure a configuration maybe?
-    async fn update_configuration(
-        args: Self::RawConfiguration,
-    ) -> Result<Self::RawConfiguration, connector::UpdateConfigurationError> {
-        configuration::configure(&args).await
-    }
+    // /// Configure a configuration maybe?
+    // async fn update_configuration(
+    //     args: Self::RawConfiguration,
+    // ) -> Result<Self::RawConfiguration, connector::UpdateConfigurationError> {
+    //     configuration::configure(&args).await
+    // }
 
     /// Validate the raw configuration provided by the user,
     /// returning a configuration error or a validated [`Connector::Configuration`].
-    async fn validate_raw_configuration(
-        configuration: Self::RawConfiguration,
-    ) -> Result<Self::Configuration, connector::ValidateError> {
-        configuration::validate_raw_configuration(configuration)
-            .await
-            .map(Arc::new)
+    async fn parse_configuration(
+        //TODO(PY): Fix it while adding the configuration directory
+        &self,
+        _configuration_dir: impl AsRef<Path> + Send,
+    ) -> Result<<Self::Connector as connector::Connector>::Configuration, connector::ParseError> {
+    // ) -> Result<<Self::Connector as connector::Connector>::Configuration, connector::ParseError> {
+        // configuration::validate_raw_configuration(configuration_dir)
+        //     .await
+        //     .map(Arc::new)
+        // TODO(PY): Implement parse_configuration as part of config directory CLI
+            todo!("parse_configuration is currently not implemented");
     }
 
     /// Initialize the connector's in-memory state.
@@ -59,15 +70,24 @@ impl connector::Connector for SQLServer {
     /// In addition, this function should register any
     /// connector-specific metrics with the metrics registry.
     async fn try_init_state(
-        configuration: &Self::Configuration,
+        &self,
+        configuration: &<Self::Connector as connector::Connector>::Configuration,
         metrics: &mut prometheus::Registry,
-    ) -> Result<Self::State, connector::InitializationError> {
+    ) -> Result<<Self::Connector as connector::Connector>::State, connector::InitializationError> {
         configuration::create_state(configuration, metrics)
             .await
             .map(Arc::new)
             .map_err(|err| connector::InitializationError::Other(err.into()))
     }
+}
 
+#[async_trait]
+impl connector::Connector for SQLServer {
+
+    /// The type of validated configuration
+    type Configuration = Arc<configuration::Configuration>;
+    /// The type of unserializable state
+    type State = Arc<configuration::State>;
     /// Update any metrics from the state
     ///
     /// Note: some metrics can be updated directly, and do not
@@ -103,12 +123,16 @@ impl connector::Connector for SQLServer {
     /// from the NDC specification.
     async fn get_capabilities() -> JsonResponse<models::CapabilitiesResponse> {
         JsonResponse::Value(models::CapabilitiesResponse {
-            versions: "^0.1.0".into(),
+            version: "^0.1.0".into(),
             capabilities: models::Capabilities {
-                explain: Some(models::LeafCapability {}),
                 query: models::QueryCapabilities {
                     aggregates: Some(models::LeafCapability {}),
                     variables: Some(models::LeafCapability {}),
+                    explain: Some(models::LeafCapability {}),
+                },
+                mutation: models::MutationCapabilities {
+                    transactional: Some(models::LeafCapability {}),
+                    explain: Some(models::LeafCapability {}),
                 },
                 relationships: Some(models::RelationshipCapabilities {
                     relation_comparisons: Some(models::LeafCapability {}),
@@ -132,7 +156,7 @@ impl connector::Connector for SQLServer {
     ///
     /// This function implements the [explain endpoint](https://hasura.github.io/ndc-spec/specification/explain.html)
     /// from the NDC specification.
-    async fn explain(
+    async fn query_explain(
         configuration: &Self::Configuration,
         state: &Self::State,
         query_request: models::QueryRequest,
@@ -140,6 +164,15 @@ impl connector::Connector for SQLServer {
         explain::explain(configuration, state, query_request)
             .await
             .map(JsonResponse::Value)
+    }
+
+    async fn mutation_explain(
+        _configuration: &Self::Configuration,
+        _state: &Self::State,
+        _mutation_request: models::MutationRequest,
+    ) -> Result<JsonResponse<models::ExplainResponse>, connector::ExplainError> {
+        //TODO(PY): Implement mutation explain
+        todo!("mutation explain is currently not implemented")
     }
 
     /// Execute a mutation

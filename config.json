@@ -1,0 +1,2409 @@
+{
+    "version": 1,
+    "mssql_connection_string": "Driver={ODBC Driver 17 for SQL Server};Server=127.0.0.1,64003;Database=Chinook;Uid=sa;Pwd=Password!;TrustServerCertificate=True",
+    "metadata": {
+        "tables": {
+            "Album": {
+                "schemaName": "dbo",
+                "tableName": "Album",
+                "columns": {
+                    "AlbumId": {
+                        "name": "AlbumId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "ArtistId": {
+                        "name": "ArtistId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Title": {
+                        "name": "Title",
+                        "type": "nvarchar",
+                        "nullable": "nonNullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_Album": [
+                        "AlbumId"
+                    ]
+                },
+                "foreignRelations": {
+                    "FK_ArtistId0": {
+                        "foreignTable": "Artist",
+                        "columnMapping": {
+                            "ArtistId": "ArtistId"
+                        }
+                    }
+                },
+                "description": null
+            },
+            "Artist": {
+                "schemaName": "dbo",
+                "tableName": "Artist",
+                "columns": {
+                    "ArtistId": {
+                        "name": "ArtistId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Name": {
+                        "name": "Name",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_Artist": [
+                        "ArtistId"
+                    ]
+                },
+                "foreignRelations": {},
+                "description": null
+            },
+            "Customer": {
+                "schemaName": "dbo",
+                "tableName": "Customer",
+                "columns": {
+                    "Address": {
+                        "name": "Address",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "City": {
+                        "name": "City",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "Company": {
+                        "name": "Company",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "Country": {
+                        "name": "Country",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "CustomerId": {
+                        "name": "CustomerId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Email": {
+                        "name": "Email",
+                        "type": "nvarchar",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Fax": {
+                        "name": "Fax",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "FirstName": {
+                        "name": "FirstName",
+                        "type": "nvarchar",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "LastName": {
+                        "name": "LastName",
+                        "type": "nvarchar",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Phone": {
+                        "name": "Phone",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "PostalCode": {
+                        "name": "PostalCode",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "State": {
+                        "name": "State",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "SupportRepId": {
+                        "name": "SupportRepId",
+                        "type": "int",
+                        "nullable": "nullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_Customer": [
+                        "CustomerId"
+                    ]
+                },
+                "foreignRelations": {
+                    "FK_SupportRepId0": {
+                        "foreignTable": "Employee",
+                        "columnMapping": {
+                            "SupportRepId": "EmployeeId"
+                        }
+                    }
+                },
+                "description": null
+            },
+            "Employee": {
+                "schemaName": "dbo",
+                "tableName": "Employee",
+                "columns": {
+                    "Address": {
+                        "name": "Address",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "BirthDate": {
+                        "name": "BirthDate",
+                        "type": "datetime",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "City": {
+                        "name": "City",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "Country": {
+                        "name": "Country",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "Email": {
+                        "name": "Email",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "EmployeeId": {
+                        "name": "EmployeeId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Fax": {
+                        "name": "Fax",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "FirstName": {
+                        "name": "FirstName",
+                        "type": "nvarchar",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "HireDate": {
+                        "name": "HireDate",
+                        "type": "datetime",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "LastName": {
+                        "name": "LastName",
+                        "type": "nvarchar",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Phone": {
+                        "name": "Phone",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "PostalCode": {
+                        "name": "PostalCode",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "ReportsTo": {
+                        "name": "ReportsTo",
+                        "type": "int",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "State": {
+                        "name": "State",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "Title": {
+                        "name": "Title",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_Employee": [
+                        "EmployeeId"
+                    ]
+                },
+                "foreignRelations": {
+                    "FK_ReportsTo0": {
+                        "foreignTable": "Employee",
+                        "columnMapping": {
+                            "ReportsTo": "EmployeeId"
+                        }
+                    }
+                },
+                "description": null
+            },
+            "Genre": {
+                "schemaName": "dbo",
+                "tableName": "Genre",
+                "columns": {
+                    "GenreId": {
+                        "name": "GenreId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Name": {
+                        "name": "Name",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_Genre": [
+                        "GenreId"
+                    ]
+                },
+                "foreignRelations": {},
+                "description": null
+            },
+            "Invoice": {
+                "schemaName": "dbo",
+                "tableName": "Invoice",
+                "columns": {
+                    "BillingAddress": {
+                        "name": "BillingAddress",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "BillingCity": {
+                        "name": "BillingCity",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "BillingCountry": {
+                        "name": "BillingCountry",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "BillingPostalCode": {
+                        "name": "BillingPostalCode",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "BillingState": {
+                        "name": "BillingState",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "CustomerId": {
+                        "name": "CustomerId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "InvoiceDate": {
+                        "name": "InvoiceDate",
+                        "type": "datetime",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "InvoiceId": {
+                        "name": "InvoiceId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Total": {
+                        "name": "Total",
+                        "type": "numeric",
+                        "nullable": "nonNullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_Invoice": [
+                        "InvoiceId"
+                    ]
+                },
+                "foreignRelations": {
+                    "FK_CustomerId0": {
+                        "foreignTable": "Customer",
+                        "columnMapping": {
+                            "CustomerId": "CustomerId"
+                        }
+                    }
+                },
+                "description": null
+            },
+            "InvoiceLine": {
+                "schemaName": "dbo",
+                "tableName": "InvoiceLine",
+                "columns": {
+                    "InvoiceId": {
+                        "name": "InvoiceId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "InvoiceLineId": {
+                        "name": "InvoiceLineId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Quantity": {
+                        "name": "Quantity",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "TrackId": {
+                        "name": "TrackId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "UnitPrice": {
+                        "name": "UnitPrice",
+                        "type": "numeric",
+                        "nullable": "nonNullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_InvoiceLine": [
+                        "InvoiceLineId"
+                    ]
+                },
+                "foreignRelations": {
+                    "FK_InvoiceId0": {
+                        "foreignTable": "Invoice",
+                        "columnMapping": {
+                            "InvoiceId": "InvoiceId"
+                        }
+                    },
+                    "FK_TrackId0": {
+                        "foreignTable": "Track",
+                        "columnMapping": {
+                            "TrackId": "TrackId"
+                        }
+                    }
+                },
+                "description": null
+            },
+            "MediaType": {
+                "schemaName": "dbo",
+                "tableName": "MediaType",
+                "columns": {
+                    "MediaTypeId": {
+                        "name": "MediaTypeId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Name": {
+                        "name": "Name",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_MediaType": [
+                        "MediaTypeId"
+                    ]
+                },
+                "foreignRelations": {},
+                "description": null
+            },
+            "Playlist": {
+                "schemaName": "dbo",
+                "tableName": "Playlist",
+                "columns": {
+                    "Name": {
+                        "name": "Name",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "PlaylistId": {
+                        "name": "PlaylistId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_Playlist": [
+                        "PlaylistId"
+                    ]
+                },
+                "foreignRelations": {},
+                "description": null
+            },
+            "PlaylistTrack": {
+                "schemaName": "dbo",
+                "tableName": "PlaylistTrack",
+                "columns": {
+                    "PlaylistId": {
+                        "name": "PlaylistId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "TrackId": {
+                        "name": "TrackId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_PlaylistTrack": [
+                        "PlaylistId",
+                        "TrackId"
+                    ]
+                },
+                "foreignRelations": {
+                    "FK_PlaylistId0": {
+                        "foreignTable": "Playlist",
+                        "columnMapping": {
+                            "PlaylistId": "PlaylistId"
+                        }
+                    },
+                    "FK_TrackId0": {
+                        "foreignTable": "Track",
+                        "columnMapping": {
+                            "TrackId": "TrackId"
+                        }
+                    }
+                },
+                "description": null
+            },
+            "Track": {
+                "schemaName": "dbo",
+                "tableName": "Track",
+                "columns": {
+                    "AlbumId": {
+                        "name": "AlbumId",
+                        "type": "int",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "Bytes": {
+                        "name": "Bytes",
+                        "type": "int",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "Composer": {
+                        "name": "Composer",
+                        "type": "nvarchar",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "GenreId": {
+                        "name": "GenreId",
+                        "type": "int",
+                        "nullable": "nullable",
+                        "description": null
+                    },
+                    "MediaTypeId": {
+                        "name": "MediaTypeId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Milliseconds": {
+                        "name": "Milliseconds",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "Name": {
+                        "name": "Name",
+                        "type": "nvarchar",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "TrackId": {
+                        "name": "TrackId",
+                        "type": "int",
+                        "nullable": "nonNullable",
+                        "description": null
+                    },
+                    "UnitPrice": {
+                        "name": "UnitPrice",
+                        "type": "numeric",
+                        "nullable": "nonNullable",
+                        "description": null
+                    }
+                },
+                "uniquenessConstraints": {
+                    "PK_Track": [
+                        "TrackId"
+                    ]
+                },
+                "foreignRelations": {
+                    "FK_AlbumId0": {
+                        "foreignTable": "Album",
+                        "columnMapping": {
+                            "AlbumId": "AlbumId"
+                        }
+                    },
+                    "FK_GenreId0": {
+                        "foreignTable": "Genre",
+                        "columnMapping": {
+                            "GenreId": "GenreId"
+                        }
+                    },
+                    "FK_MediaTypeId0": {
+                        "foreignTable": "MediaType",
+                        "columnMapping": {
+                            "MediaTypeId": "MediaTypeId"
+                        }
+                    }
+                },
+                "description": null
+            }
+        },
+        "nativeQueries": {},
+        "aggregateFunctions": {
+            "bigint": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "AVG": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "bigint"
+                },
+                "MIN": {
+                    "returnType": "bigint"
+                },
+                "STDEV": {
+                    "returnType": "float"
+                },
+                "STDEVP": {
+                    "returnType": "float"
+                },
+                "SUM": {
+                    "returnType": "bigint"
+                },
+                "VAR": {
+                    "returnType": "float"
+                },
+                "VARP": {
+                    "returnType": "float"
+                }
+            },
+            "binary": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "bit": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "char": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "char"
+                },
+                "MIN": {
+                    "returnType": "char"
+                }
+            },
+            "date": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "datetime": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "datetime"
+                },
+                "MIN": {
+                    "returnType": "datetime"
+                }
+            },
+            "datetime2": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "datetimeoffset": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "decimal": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "AVG": {
+                    "returnType": "decimal"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "decimal"
+                },
+                "MIN": {
+                    "returnType": "decimal"
+                },
+                "STDEV": {
+                    "returnType": "float"
+                },
+                "STDEVP": {
+                    "returnType": "float"
+                },
+                "SUM": {
+                    "returnType": "decimal"
+                },
+                "VAR": {
+                    "returnType": "float"
+                },
+                "VARP": {
+                    "returnType": "float"
+                }
+            },
+            "float": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "AVG": {
+                    "returnType": "float"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "float"
+                },
+                "MIN": {
+                    "returnType": "float"
+                },
+                "STDEV": {
+                    "returnType": "float"
+                },
+                "STDEVP": {
+                    "returnType": "float"
+                },
+                "SUM": {
+                    "returnType": "float"
+                },
+                "VAR": {
+                    "returnType": "float"
+                },
+                "VARP": {
+                    "returnType": "float"
+                }
+            },
+            "geography": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "geometry": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "hierarchyid": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "image": {
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "int": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "AVG": {
+                    "returnType": "int"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "int"
+                },
+                "MIN": {
+                    "returnType": "int"
+                },
+                "STDEV": {
+                    "returnType": "float"
+                },
+                "STDEVP": {
+                    "returnType": "float"
+                },
+                "SUM": {
+                    "returnType": "int"
+                },
+                "VAR": {
+                    "returnType": "float"
+                },
+                "VARP": {
+                    "returnType": "float"
+                }
+            },
+            "money": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "AVG": {
+                    "returnType": "money"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "money"
+                },
+                "MIN": {
+                    "returnType": "money"
+                },
+                "STDEV": {
+                    "returnType": "float"
+                },
+                "STDEVP": {
+                    "returnType": "float"
+                },
+                "SUM": {
+                    "returnType": "money"
+                },
+                "VAR": {
+                    "returnType": "float"
+                },
+                "VARP": {
+                    "returnType": "float"
+                }
+            },
+            "nchar": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "ntext": {
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "numeric": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "numeric"
+                },
+                "MIN": {
+                    "returnType": "numeric"
+                },
+                "STDEV": {
+                    "returnType": "float"
+                },
+                "STDEVP": {
+                    "returnType": "float"
+                },
+                "VAR": {
+                    "returnType": "float"
+                },
+                "VARP": {
+                    "returnType": "float"
+                }
+            },
+            "nvarchar": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "real": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "AVG": {
+                    "returnType": "float"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "real"
+                },
+                "MIN": {
+                    "returnType": "real"
+                },
+                "STDEV": {
+                    "returnType": "float"
+                },
+                "STDEVP": {
+                    "returnType": "float"
+                },
+                "SUM": {
+                    "returnType": "float"
+                },
+                "VAR": {
+                    "returnType": "float"
+                },
+                "VARP": {
+                    "returnType": "float"
+                }
+            },
+            "smalldatetime": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "smallint": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "AVG": {
+                    "returnType": "int"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "smallint"
+                },
+                "MIN": {
+                    "returnType": "smallint"
+                },
+                "STDEV": {
+                    "returnType": "float"
+                },
+                "STDEVP": {
+                    "returnType": "float"
+                },
+                "SUM": {
+                    "returnType": "int"
+                },
+                "VAR": {
+                    "returnType": "float"
+                },
+                "VARP": {
+                    "returnType": "float"
+                }
+            },
+            "smallmoney": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "AVG": {
+                    "returnType": "money"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "smallmoney"
+                },
+                "MIN": {
+                    "returnType": "smallmoney"
+                },
+                "STDEV": {
+                    "returnType": "float"
+                },
+                "STDEVP": {
+                    "returnType": "float"
+                },
+                "SUM": {
+                    "returnType": "money"
+                },
+                "VAR": {
+                    "returnType": "float"
+                },
+                "VARP": {
+                    "returnType": "float"
+                }
+            },
+            "sql_variant": {
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "sysname": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "text": {
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "text"
+                },
+                "MIN": {
+                    "returnType": "text"
+                }
+            },
+            "time": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "timestamp": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "tinyint": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "AVG": {
+                    "returnType": "int"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "tinyint"
+                },
+                "MIN": {
+                    "returnType": "tinyint"
+                },
+                "STDEV": {
+                    "returnType": "float"
+                },
+                "STDEVP": {
+                    "returnType": "float"
+                },
+                "SUM": {
+                    "returnType": "int"
+                },
+                "VAR": {
+                    "returnType": "float"
+                },
+                "VARP": {
+                    "returnType": "float"
+                }
+            },
+            "uniqueidentifier": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "uniqueidentifier"
+                },
+                "MIN": {
+                    "returnType": "uniqueidentifier"
+                }
+            },
+            "varbinary": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            },
+            "varchar": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                },
+                "MAX": {
+                    "returnType": "varchar"
+                },
+                "MIN": {
+                    "returnType": "varchar"
+                }
+            },
+            "xml": {
+                "APPROX_COUNT_DISTINCT": {
+                    "returnType": "bigint"
+                },
+                "CHECKSUM_AGG": {
+                    "returnType": "int"
+                },
+                "COUNT": {
+                    "returnType": "int"
+                },
+                "COUNT_BIG": {
+                    "returnType": "bigint"
+                },
+                "GROUPING": {
+                    "returnType": "tinyint"
+                },
+                "GROUPING_ID": {
+                    "returnType": "int"
+                }
+            }
+        },
+        "comparisonOperators": {
+            "bigint": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "bigint"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "bigint"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "bigint"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "bigint"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "bigint"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "bigint"
+                }
+            },
+            "binary": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "binary"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "binary"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "binary"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "binary"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "binary"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "binary"
+                }
+            },
+            "bit": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "bit"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "bit"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "bit"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "bit"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "bit"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "bit"
+                }
+            },
+            "char": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "char"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "char"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "char"
+                },
+                "_like": {
+                    "operatorName": "LIKE",
+                    "argumentType": "char"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "char"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "char"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "char"
+                },
+                "_nlike": {
+                    "operatorName": "NOT LIKE",
+                    "argumentType": "char"
+                }
+            },
+            "date": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "date"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "date"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "date"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "date"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "date"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "date"
+                }
+            },
+            "datetime": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "datetime"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "datetime"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "datetime"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "datetime"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "datetime"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "datetime"
+                }
+            },
+            "datetime2": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "datetime2"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "datetime2"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "datetime2"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "datetime2"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "datetime2"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "datetime2"
+                }
+            },
+            "datetimeoffset": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "datetimeoffset"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "datetimeoffset"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "datetimeoffset"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "datetimeoffset"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "datetimeoffset"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "datetimeoffset"
+                }
+            },
+            "decimal": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "decimal"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "decimal"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "decimal"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "decimal"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "decimal"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "decimal"
+                }
+            },
+            "float": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "float"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "float"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "float"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "float"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "float"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "float"
+                }
+            },
+            "geography": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "geography"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "geography"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "geography"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "geography"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "geography"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "geography"
+                }
+            },
+            "geometry": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "geometry"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "geometry"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "geometry"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "geometry"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "geometry"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "geometry"
+                }
+            },
+            "hierarchyid": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "hierarchyid"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "hierarchyid"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "hierarchyid"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "hierarchyid"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "hierarchyid"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "hierarchyid"
+                }
+            },
+            "image": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "image"
+                }
+            },
+            "int": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "int"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "int"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "int"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "int"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "int"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "int"
+                }
+            },
+            "money": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "money"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "money"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "money"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "money"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "money"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "money"
+                }
+            },
+            "nchar": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "nchar"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "nchar"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "nchar"
+                },
+                "_like": {
+                    "operatorName": "LIKE",
+                    "argumentType": "nchar"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "nchar"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "nchar"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "nchar"
+                },
+                "_nlike": {
+                    "operatorName": "NOT LIKE",
+                    "argumentType": "nchar"
+                }
+            },
+            "ntext": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "ntext"
+                },
+                "_like": {
+                    "operatorName": "LIKE",
+                    "argumentType": "ntext"
+                },
+                "_nlike": {
+                    "operatorName": "NOT LIKE",
+                    "argumentType": "ntext"
+                }
+            },
+            "numeric": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "numeric"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "numeric"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "numeric"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "numeric"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "numeric"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "numeric"
+                }
+            },
+            "nvarchar": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "nvarchar"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "nvarchar"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "nvarchar"
+                },
+                "_like": {
+                    "operatorName": "LIKE",
+                    "argumentType": "nvarchar"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "nvarchar"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "nvarchar"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "nvarchar"
+                },
+                "_nlike": {
+                    "operatorName": "NOT LIKE",
+                    "argumentType": "nvarchar"
+                }
+            },
+            "real": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "real"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "real"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "real"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "real"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "real"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "real"
+                }
+            },
+            "smalldatetime": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "smalldatetime"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "smalldatetime"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "smalldatetime"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "smalldatetime"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "smalldatetime"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "smalldatetime"
+                }
+            },
+            "smallint": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "smallint"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "smallint"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "smallint"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "smallint"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "smallint"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "smallint"
+                }
+            },
+            "smallmoney": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "smallmoney"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "smallmoney"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "smallmoney"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "smallmoney"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "smallmoney"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "smallmoney"
+                }
+            },
+            "sql_variant": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "sql_variant"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "sql_variant"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "sql_variant"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "sql_variant"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "sql_variant"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "sql_variant"
+                }
+            },
+            "sysname": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "sysname"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "sysname"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "sysname"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "sysname"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "sysname"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "sysname"
+                }
+            },
+            "text": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "text"
+                },
+                "_like": {
+                    "operatorName": "LIKE",
+                    "argumentType": "text"
+                },
+                "_nlike": {
+                    "operatorName": "NOT LIKE",
+                    "argumentType": "text"
+                }
+            },
+            "time": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "time"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "time"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "time"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "time"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "time"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "time"
+                }
+            },
+            "timestamp": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "timestamp"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "timestamp"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "timestamp"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "timestamp"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "timestamp"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "timestamp"
+                }
+            },
+            "tinyint": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "tinyint"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "tinyint"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "tinyint"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "tinyint"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "tinyint"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "tinyint"
+                }
+            },
+            "uniqueidentifier": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "uniqueidentifier"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "uniqueidentifier"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "uniqueidentifier"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "uniqueidentifier"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "uniqueidentifier"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "uniqueidentifier"
+                }
+            },
+            "varbinary": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "varbinary"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "varbinary"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "varbinary"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "varbinary"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "varbinary"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "varbinary"
+                }
+            },
+            "varchar": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "varchar"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "varchar"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "varchar"
+                },
+                "_like": {
+                    "operatorName": "LIKE",
+                    "argumentType": "varchar"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "varchar"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "varchar"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "varchar"
+                },
+                "_nlike": {
+                    "operatorName": "NOT LIKE",
+                    "argumentType": "varchar"
+                }
+            },
+            "xml": {
+                "_eq": {
+                    "operatorName": "=",
+                    "argumentType": "xml"
+                },
+                "_gt": {
+                    "operatorName": ">",
+                    "argumentType": "xml"
+                },
+                "_gte": {
+                    "operatorName": ">=",
+                    "argumentType": "xml"
+                },
+                "_lt": {
+                    "operatorName": "<",
+                    "argumentType": "xml"
+                },
+                "_lte": {
+                    "operatorName": "<=",
+                    "argumentType": "xml"
+                },
+                "_neq": {
+                    "operatorName": "!=",
+                    "argumentType": "xml"
+                }
+            }
+        }
+    }
+}

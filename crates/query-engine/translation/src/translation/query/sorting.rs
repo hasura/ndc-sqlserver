@@ -551,7 +551,7 @@ fn select_for_path_element(
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
     relationship: &models::Relationship,
-    predicate: &models::Expression,
+    predicate: &Option<Box<models::Expression>>,
     select_list: sql::ast::SelectList,
     (join_table, from_clause): (TableNameAndReference, sql::ast::From),
 ) -> Result<sql::ast::Select, Error> {
@@ -559,29 +559,35 @@ fn select_for_path_element(
     let mut select = sql::helpers::simple_select(vec![]);
     select.select_list = select_list;
 
-    // generate a condition for the predicate.
-    let predicate_tables = RootAndCurrentTables {
-        root_table: root_and_current_tables.root_table.clone(),
-        current_table: join_table,
-    };
-    let (predicate_expr, predicate_joins) =
-        filtering::translate_expression(env, state, &predicate_tables, predicate)?;
+    
+    match predicate {   
+        None => Ok(select),
+        Some(predicate) => {
+            // generate a condition for the predicate.
+            let predicate_tables = RootAndCurrentTables {
+                root_table: root_and_current_tables.root_table.clone(),
+                current_table: join_table,
+            };
+            let (predicate_expr, predicate_joins) =
+                filtering::translate_expression(env, state, &predicate_tables, predicate)?;
 
-    // generate a condition for this join.
-    let join_condition = relationships::translate_column_mapping(
-        env,
-        &root_and_current_tables.current_table,
-        &predicate_tables.current_table.reference,
-        sql::helpers::empty_where(),
-        relationship,
-    )?;
+            // generate a condition for this join.
+            let join_condition = relationships::translate_column_mapping(
+                env,
+                &root_and_current_tables.current_table,
+                &predicate_tables.current_table.reference,
+                sql::helpers::empty_where(),
+                relationship,
+            )?;
 
-    select.where_ = sql::ast::Where(sql::ast::Expression::And {
-        left: Box::new(join_condition),
-        right: Box::new(predicate_expr),
-    });
+            select.where_ = sql::ast::Where(sql::ast::Expression::And {
+                left: Box::new(join_condition),
+                right: Box::new(predicate_expr),
+            });
 
-    select.from = Some(from_clause);
-    select.joins = predicate_joins;
-    Ok(select)
+            select.from = Some(from_clause);
+            select.joins = predicate_joins;
+            Ok(select)
+        }
+    }
 }
