@@ -26,26 +26,7 @@ pub struct SQLServer {}
 
 #[async_trait]
 impl connector::ConnectorSetup for SQLServer {
-    // type Connector = connector::Connector<Configuration = <Connector as connector::Connector>::Configuration, State = connector::Connector::State>;
-    // type Connector = dyn connector::Connector<Configuration = Arc<configuration::Configuration>, State = Arc<configuration::State>>;
     type Connector = SQLServer;
-    /// RawConfiguration is what the user specifies as JSON
-    // type RawConfiguration = configuration::version1::RawConfiguration;
-    // /// The type of validated configuration
-    // type Configuration = Arc<configuration::Configuration>;
-    // /// The type of unserializable state
-    // type State = Arc<configuration::State>;
-
-    // fn make_empty_configuration() -> configuration::version1::RawConfiguration {
-    //     configuration::version1::RawConfiguration::empty()
-    // }
-
-    // /// Configure a configuration maybe?
-    // async fn update_configuration(
-    //     args: Self::RawConfiguration,
-    // ) -> Result<Self::RawConfiguration, connector::UpdateConfigurationError> {
-    //     configuration::configure(&args).await
-    // }
 
     /// Validate the raw configuration provided by the user,
     /// returning a configuration error or a validated [`Connector::Configuration`].

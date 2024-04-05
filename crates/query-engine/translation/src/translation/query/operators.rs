@@ -22,46 +22,4 @@ pub fn translate_comparison_operator(
             op.argument_type.clone()
         ))
     }
-    // match operator {
-    //     models::ComparisonOperatorDefinition::Equal => {
-    //         Ok((sql::ast::BinaryOperator("=".to_string()), left_type.clone()))
-    //     }
-    //     models::ComparisonOperatorDefinition::In { .. } => {
-    //         Ok((sql::ast::BinaryOperator("IN".to_string()), left_type.clone()))
-    //     }
-    //     models::ComparisonOperatorDefinition::Custom { argument_type : models::Type::Named { name } } => {
-    //         let op = env.lookup_comparison_operator(left_type, name)?;
-
-    //         Ok((
-    //             sql::ast::BinaryOperator(op.operator_name.clone()),
-    //             op.argument_type.clone(),
-    //         ))
-    //     },
-    //     models::ComparisonOperatorDefinition::Custom { argument_type : models::Type::Predicate { object_type_name } } => {
-    //         let op = env.lookup_comparison_operator(left_type, object_type_name)?;
-
-    //         Ok((
-    //             sql::ast::BinaryOperator(op.operator_name.clone()),
-    //             op.argument_type.clone(),
-    //         ))
-    //     },
-    //     models::ComparisonOperatorDefinition::Custom { argument_type : models::Type::Nullable { underlying_type } } => {
-    //         // let op = env.lookup_comparison_operator(left_type, underlying_type)?;
-
-    //         // Ok((
-    //         //     sql::ast::BinaryOperator(op.operator_name.clone()),
-    //         //     op.argument_type.clone(),
-    //         // ))
-    //         Err(Error::NotSupported("nullable".to_string())) // nullable comparison operators are not supported
-    //     },
-    //     models::ComparisonOperatorDefinition::Custom { argument_type : models::Type::Array { element_type } } => {
-    //         // let op = env.lookup_comparison_operator(left_type, underlying_type)?;
-
-    //         // Ok((
-    //         //     sql::ast::BinaryOperator(op.operator_name.clone()),
-    //         //     op.argument_type.clone(),
-    //         // ))
-    //         Err(Error::NotSupported("array".to_string()))
-    //     }
-    // }
 }

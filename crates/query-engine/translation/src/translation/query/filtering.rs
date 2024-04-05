@@ -68,14 +68,12 @@ pub fn translate_expression(
             operator,
             value,
         } => {
-            // let mut joins = vec![];
             let left_typ = get_comparison_target_type(env, root_and_current_tables, column)?;
             let (left, left_joins) =
                 translate_comparison_target(env, state, root_and_current_tables, column)?;
             let op = env.lookup_comparison_operator(&left_typ, operator)?;
             // let (op, argument_type) =
             //     operators::translate_comparison_operator(env, &left_typ, operator)?;
-            //////
             if op.operator_kind == database::OperatorKind::In {
                 let mut joins = vec![];
                 joins.extend(left_joins);
@@ -173,65 +171,7 @@ pub fn translate_expression(
                     ))
 
             }
-            ////
-
-            // let (right, right_joins) = translate_comparison_value(
-            //     env,
-            //     state,
-            //     root_and_current_tables,
-            //     value.clone(),
-            //     &argument_type,
-            // )?;
-
-            // joins.extend(left_joins);
-            // joins.extend(right_joins);
-            // Ok((
-            //     sql::ast::Expression::BinaryOperation {
-            //         left: Box::new(left),
-            //         operator: op,
-            //         right: Box::new(right),
-            //     },
-            //     joins,
-            // ))
         }
-        // models::Expression::BinaryArrayComparisonOperator {
-        //     column,
-        //     operator,
-        //     values,
-        // } => {
-        //     let typ = infer_value_type_array(env, root_and_current_tables, column, operator)?;
-        //     let mut joins = vec![];
-        //     let (left, left_joins) =
-        //         translate_comparison_target(env, state, root_and_current_tables, column)?;
-        //     joins.extend(left_joins);
-        //     let right = values
-        //         .iter()
-        //         .map(|value| {
-        //             let (right, right_joins) = translate_comparison_value(
-        //                 env,
-        //                 state,
-        //                 root_and_current_tables,
-        //                 value.clone(),
-        //                 &typ,
-        //             )?;
-        //             joins.extend(right_joins);
-        //             Ok(right)
-        //         })
-        //         .collect::<Result<Vec<sql::ast::Expression>, Error>>()?;
-
-        //     Ok((
-        //         sql::ast::Expression::BinaryArrayOperation {
-        //             left: Box::new(left),
-        //             operator: match operator {
-        //                 models::BinaryArrayComparisonOperator::In => {
-        //                     sql::ast::BinaryArrayOperator::In
-        //                 }
-        //             },
-        //             right,
-        //         },
-        //         joins,
-        //     ))
-        // }
 
         models::Expression::Exists {
             in_collection,
@@ -630,22 +570,3 @@ fn get_comparison_target_type(
         },
     }
 }
-
-// /// Make a select a subquery expression from an expression.
-// fn make_unnest_subquery(state: &mut State, expression: sql::ast::Expression) -> sql::ast::Expression {
-//     let subquery_alias = state.make_table_alias("in_subquery".to_string());
-//     let subquery_reference = sql::ast::TableReference::AliasedTable(subquery_alias.clone());
-//     let subquery_from = sql::ast::From::Unnest {
-//         expression,
-//         column: sql::helpers::make_column_alias("value".to_string()),
-//         alias: subquery_alias,
-//     };
-//     let mut subquery = sql::helpers::simple_select(vec![sql::helpers::make_column(
-//         subquery_reference,
-//         sql::ast::ColumnName("value".to_string()),
-//         sql::helpers::make_column_alias("value".to_string()),
-//     )]);
-//     subquery.from = Some(subquery_from);
-//     sql::ast::Expression::CorrelatedSubSelect(Box::new(subquery))
-// }
-
