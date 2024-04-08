@@ -5,6 +5,7 @@
 //! The relevant types for configuration and state are defined in
 //! `super::configuration`.
 
+use ndc_sdk::connector::LocatedError;
 // use hyper::client::connect::Connect;
 // use ndc_client::apis::configuration::Configuration;
 use tiberius::Query;
@@ -13,6 +14,7 @@ use async_trait::async_trait;
 use ndc_sdk::connector;
 use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
+use tokio::fs;
 
 use super::configuration;
 use super::explain;
@@ -24,6 +26,8 @@ use std::sync::Arc;
 #[derive(Clone, Default)]
 pub struct SQLServer {}
 
+pub const CONFIGURATION_FILENAME: &str = "configuration.json";
+
 #[async_trait]
 impl connector::ConnectorSetup for SQLServer {
     type Connector = SQLServer;
@@ -31,16 +35,27 @@ impl connector::ConnectorSetup for SQLServer {
     /// Validate the raw configuration provided by the user,
     /// returning a configuration error or a validated [`Connector::Configuration`].
     async fn parse_configuration(
-        //TODO(PY): Fix it while adding the configuration directory
         &self,
-        _configuration_dir: impl AsRef<Path> + Send,
+        configuration_dir: impl AsRef<Path> + Send,
     ) -> Result<<Self::Connector as connector::Connector>::Configuration, connector::ParseError> {
-    // ) -> Result<<Self::Connector as connector::Connector>::Configuration, connector::ParseError> {
-        // configuration::validate_raw_configuration(configuration_dir)
-        //     .await
-        //     .map(Arc::new)
-        // TODO(PY): Implement parse_configuration as part of config directory CLI
-            todo!("parse_configuration is currently not implemented");
+        let configuration_file = configuration_dir.as_ref().join(CONFIGURATION_FILENAME);
+        let configuration_file_contents =
+        fs::read_to_string(&configuration_file)   
+            .await         
+            .map_err(|err| {
+                connector::ParseError::Other(format!("{}: {}", &configuration_file.display(), err).into())
+            })?;
+        let configuration: configuration::RawConfiguration =
+        serde_json::from_str(&configuration_file_contents).map_err(|error| connector::ParseError::ParseError(LocatedError{
+            file_path: configuration_file.clone(),
+            line: error.line(),
+            column: error.column(),
+            message: error.to_string(),
+        }))?;
+
+        configuration::validate_raw_configuration(configuration)
+            .await
+            .map(Arc::new)
     }
 
     /// Initialize the connector's in-memory state.
