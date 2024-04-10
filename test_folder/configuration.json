@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "mssql_connection_string": "Driver={ODBC Driver 17 for SQL Server};Server=127.0.0.1,64003;Database=Chinook;Uid=sa;Pwd=Password!;TrustServerCertificate=True",
+  "metadata": {
+    "tables": {},
+    "nativeQueries": {},
+    "aggregateFunctions": {},
+    "comparisonOperators": {}
+  }
+}

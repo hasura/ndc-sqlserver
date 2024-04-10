@@ -1,7 +1,8 @@
 //! Common functions used across test cases.
 
+use std::collections::HashMap;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use axum::http::StatusCode;
 use axum_test_helper::TestClient;
@@ -62,16 +63,29 @@ async fn run_against_server<Response: for<'a> serde::Deserialize<'a>>(
 }
 
 pub async fn create_router() -> axum::Router {
+    // pub async fn create_router(configuration_directory: impl AsRef<Path>) -> axum::Router {
     let _ = env_logger::builder().is_test(true).try_init();
 
     // work out where the deployment configs live
     let test_deployment_file = get_deployment_file();
+    // let test_deployment_file = get_deployment_file(configuration_directory);
+
+    // let environment = HashMap::from([(
+    //     ndc_sqlserver::configuration::connection_settings::DEFAULT_CONNECTION_URI_VARIABLE
+    //         .into(),
+    //     connection_uri.to_string(),
+    // )]);
+
+    // let setup = SqlServerSetup::new(environment);
+    let setup = connector::SQLServer::default();
 
     // initialise server state with the static configuration.
     let state = ndc_sdk::default_main::init_server_state::<connector::SQLServer>(
-        test_deployment_file.display().to_string(),
+        setup,
+        test_deployment_file
     )
-    .await;
+    .await
+    .unwrap();
 
     // create a fresh client
     ndc_sdk::default_main::create_router(state, None)
@@ -113,7 +127,10 @@ pub fn is_contained_in_lines(keywords: Vec<&str>, lines: String) {
 /// Find the project root via the crate root provided by `cargo test`,
 /// and get our single static configuration file.
 pub fn get_deployment_file() -> PathBuf {
+    // pub fn get_deployment_file(ndc_metadata_path: impl AsRef<Path>) -> PathBuf {
     let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     d.push("../../static/chinook-deployment.json");
+    // d.push("../../");
+    // d.push(ndc_metadata_path);
     d
 }

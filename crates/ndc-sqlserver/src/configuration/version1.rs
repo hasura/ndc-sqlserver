@@ -38,7 +38,7 @@ const NOT_COUNTABLE: [&str; 3] = ["image", "ntext", "text"];
 const NOT_APPROX_COUNTABLE: [&str; 4] = ["image", "sql_variant", "ntext", "text"];
 
 /// User configuration.
-#[derive(Debug, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, JsonSchema)]
 pub struct RawConfiguration {
     pub version: u32,
     pub mssql_connection_string: String,
@@ -50,6 +50,14 @@ impl RawConfiguration {
         Self {
             version: CURRENT_VERSION,
             mssql_connection_string: "".into(),
+            metadata: query_engine_metadata::metadata::Metadata::default(),
+        }
+    }
+
+    pub fn with_mssql_connection_string(mssql_connection_string: String) -> Self {
+        Self {
+            version: CURRENT_VERSION,
+            mssql_connection_string,
             metadata: query_engine_metadata::metadata::Metadata::default(),
         }
     }
