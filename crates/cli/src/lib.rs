@@ -85,12 +85,6 @@ async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()>
         serde_json::to_string_pretty(&output)? + "\n",
     )?;
 
-    let a = metadata::EnvironmentVariableDefinition {
-        name: "CONNECTION_URI".to_string(),
-        description: "The SQL server connection URI".to_string(),
-        default_value: None,
-    };
-
     // if requested, create the metadata
     if with_metadata {
         let metadata_dir = context.context_path.join(".hasura-connector");
