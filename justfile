@@ -144,7 +144,7 @@ format-check:
   cargo fmt --all -- --check
 
 find-unused-dependencies:
-  cargo machete
+  cargo machete --with-metadata
 
 # check the nix build works
 build-with-nix:
