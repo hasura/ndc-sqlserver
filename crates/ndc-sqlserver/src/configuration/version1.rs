@@ -358,6 +358,15 @@ fn get_comparison_operators_for_type(
         },
     );
 
+    comparison_operators.insert(
+        "_in".to_string(),
+        database::ComparisonOperator {
+            operator_name: "IN".to_string(),
+            argument_type: type_name.clone(),
+            operator_kind: database::OperatorKind::In,
+        },
+    );
+
     // include LIKE and NOT LIKE for string-ish types
     if CHARACTER_STRINGS.contains(&type_name.0.as_str())
         || UNICODE_CHARACTER_STRINGS.contains(&type_name.0.as_str())

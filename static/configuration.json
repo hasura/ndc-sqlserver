@@ -1748,6 +1748,11 @@
           "argumentType": "bigint",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "bigint",
+          "operatorKind": "in"
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "bigint",
@@ -1779,6 +1784,12 @@
           "operatorName": ">=",
           "argumentType": "binary",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "binary",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -1812,6 +1823,12 @@
           "argumentType": "bit",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "bit",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "bit",
@@ -1843,6 +1860,12 @@
           "operatorName": ">=",
           "argumentType": "char",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "char",
+          "operatorKind": "in"
+          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -1886,6 +1909,12 @@
           "argumentType": "date",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "date",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "date",
@@ -1917,6 +1946,12 @@
           "operatorName": ">=",
           "argumentType": "datetime",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "datetime",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -1950,6 +1985,12 @@
           "argumentType": "datetime2",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "datetime2",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "datetime2",
@@ -1981,6 +2022,12 @@
           "operatorName": ">=",
           "argumentType": "datetimeoffset",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "datetimeoffset",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -2014,6 +2061,12 @@
           "argumentType": "decimal",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "decimal",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "decimal",
@@ -2045,6 +2098,12 @@
           "operatorName": ">=",
           "argumentType": "float",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "float",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -2078,6 +2137,12 @@
           "argumentType": "geography",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "geography",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "geography",
@@ -2109,6 +2174,12 @@
           "operatorName": ">=",
           "argumentType": "geometry",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "geometry",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -2142,6 +2213,12 @@
           "argumentType": "hierarchyid",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "hierarchyid",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "hierarchyid",
@@ -2163,6 +2240,11 @@
           "operatorName": "=",
           "argumentType": "image",
           "operatorKind": "equal"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "image",
+          "operatorKind": "in"
         }
       },
       "int": {
@@ -2180,6 +2262,12 @@
           "operatorName": ">=",
           "argumentType": "int",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "int",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -2213,6 +2301,12 @@
           "argumentType": "money",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "money",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "money",
@@ -2244,6 +2338,12 @@
           "operatorName": ">=",
           "argumentType": "nchar",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "nchar",
+          "operatorKind": "in"
+          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -2277,6 +2377,11 @@
           "argumentType": "ntext",
           "operatorKind": "equal"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "ntext",
+          "operatorKind": "in"
+        },
         "_like": {
           "operatorName": "LIKE",
           "argumentType": "ntext",
@@ -2303,6 +2408,12 @@
           "operatorName": ">=",
           "argumentType": "numeric",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "numeric",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -2335,6 +2446,12 @@
           "operatorName": ">=",
           "argumentType": "nvarchar",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "nvarchar",
+          "operatorKind": "in"
+          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -2378,6 +2495,12 @@
           "argumentType": "real",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "real",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "real",
@@ -2409,6 +2532,12 @@
           "operatorName": ">=",
           "argumentType": "smalldatetime",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "smalldatetime",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -2442,6 +2571,12 @@
           "argumentType": "smallint",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "smallint",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "smallint",
@@ -2473,6 +2608,12 @@
           "operatorName": ">=",
           "argumentType": "smallmoney",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "smallmoney",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -2506,6 +2647,12 @@
           "argumentType": "sql_variant",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "sql_variant",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "sql_variant",
@@ -2538,6 +2685,12 @@
           "argumentType": "sysname",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "sysname",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "sysname",
@@ -2559,6 +2712,11 @@
           "operatorName": "=",
           "argumentType": "text",
           "operatorKind": "equal"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "text",
+          "operatorKind": "in"
         },
         "_like": {
           "operatorName": "LIKE",
@@ -2586,6 +2744,12 @@
           "operatorName": ">=",
           "argumentType": "time",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "time",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -2619,6 +2783,12 @@
           "argumentType": "timestamp",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "timestamp",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "timestamp",
@@ -2650,6 +2820,12 @@
           "operatorName": ">=",
           "argumentType": "tinyint",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "tinyint",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",
@@ -2683,6 +2859,12 @@
           "argumentType": "uniqueidentifier",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "uniqueidentifier",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "uniqueidentifier",
@@ -2715,6 +2897,12 @@
           "argumentType": "varbinary",
           "operatorKind": "custom"
         },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "varbinary",
+          "operatorKind": "in"
+          
+        },
         "_lt": {
           "operatorName": "<",
           "argumentType": "varbinary",
@@ -2746,6 +2934,12 @@
           "operatorName": ">=",
           "argumentType": "varchar",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "varchar",
+          "operatorKind": "in"
+          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -2788,6 +2982,12 @@
           "operatorName": ">=",
           "argumentType": "xml",
           "operatorKind": "custom"
+        },
+        "_in": {
+          "operatorName": "IN",
+          "argumentType": "xml",
+          "operatorKind": "in"
+          
         },
         "_lt": {
           "operatorName": "<",

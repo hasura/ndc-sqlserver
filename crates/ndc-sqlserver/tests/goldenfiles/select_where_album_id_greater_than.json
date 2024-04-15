@@ -13,21 +13,30 @@
         "arguments": {}
       }
     },
-    "where": {
+    "predicate": {
       "type": "binary_comparison_operator",
       "column": {
         "type": "column",
         "name": "AlbumId",
         "path": []
       },
-      "operator": {
-        "type": "other",
-        "name": "_gt"
-      },
+      "operator": "_gt",
       "value": {
         "type": "scalar",
         "value": 340
       }
+    },
+    "order_by": {
+      "elements": [
+        {
+          "order_direction": "asc",
+          "target": {
+            "type": "column",
+            "name": "AlbumId",
+            "path": []
+          }
+        }
+      ]
     }
   },
   "arguments": {},

@@ -14,5 +14,14 @@
         }
       }
     }
+  },
+  "comparisonOperators": {
+    "varchar": {
+      "_in": {
+        "operatorName": "IN",
+        "argumentType": "varchar",
+        "operatorKind": "in"
+      }
+    }
   }
 }
