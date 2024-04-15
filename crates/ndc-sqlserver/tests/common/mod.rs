@@ -53,8 +53,6 @@ async fn run_against_server<Response: for<'a> serde::Deserialize<'a>>(
             panic!("error look up");
         }
     };
-    dbg!("path", &path);
-    dbg!("body", &body);
     make_request(|client| {
         client
             .post(&path)

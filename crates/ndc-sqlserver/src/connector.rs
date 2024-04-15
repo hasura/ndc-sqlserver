@@ -51,7 +51,6 @@ impl connector::ConnectorSetup for SQLServer {
     ) -> Result<<Self::Connector as connector::Connector>::Configuration, connector::ParseError>
     {
         let configuration_file = configuration_dir.as_ref().join(CONFIGURATION_FILENAME);
-        dbg!("configuration_file", &configuration_file);
         let configuration_file_contents =
             fs::read_to_string(&configuration_file)
                 .await
@@ -174,7 +173,6 @@ impl connector::Connector for SQLServer {
         state: &Self::State,
         query_request: models::QueryRequest,
     ) -> Result<JsonResponse<models::ExplainResponse>, connector::ExplainError> {
-        dbg!("query_request", &query_request);
         explain::explain(configuration, state, query_request)
             .await
             .map(JsonResponse::Value)

@@ -53,7 +53,6 @@ pub async fn run(command: Command, context: Context) -> anyhow::Result<()> {
 /// Optionally, this can also create the connector metadata, which is used by the Hasura CLI to
 /// automatically work with this CLI as a plugin.
 async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()> {
-    dbg!("context", &context.context_path);
     let configuration_file = context
         .context_path
         .join(ndc_sqlserver::connector::CONFIGURATION_FILENAME);
@@ -91,8 +90,6 @@ async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()>
         description: "The SQL server connection URI".to_string(),
         default_value: None,
     };
-
-    dbg!("a", &a);
 
     // if requested, create the metadata
     if with_metadata {

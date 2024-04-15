@@ -167,7 +167,6 @@ fn translate_query_part(
     columns: Vec<(sql::ast::ColumnAlias, sql::ast::Expression)>,
     join_fields: Vec<relationships::JoinFieldInfo>,
 ) -> Result<sql::ast::Select, Error> {
-    dbg!("translate_query_part");
     let root_table = current_table.clone();
 
     // the root table and the current table are the same at this point
@@ -188,8 +187,6 @@ fn translate_query_part(
         sorting::translate_order_by(env, state, &root_and_current_tables, &query.order_by)?;
 
     relationship_joins.extend(order_by_joins);
-    dbg!("orderby done");
-    dbg!("predicate", query.predicate.clone());
     // translate where
     let (filter, filter_joins) = match query.clone().predicate {
         None => Ok((

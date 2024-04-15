@@ -116,7 +116,6 @@ pub async fn create_state(
 async fn create_mssql_pool(
     configuration: &RawConfiguration,
 ) -> Result<bb8::Pool<bb8_tiberius::ConnectionManager>, bb8_tiberius::Error> {
-    dbg!(configuration.mssql_connection_string.clone());
     let config = tiberius::Config::from_ado_string(&configuration.mssql_connection_string)?;
 
     let mgr = bb8_tiberius::ConnectionManager::new(config);
