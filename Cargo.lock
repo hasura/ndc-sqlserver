@@ -1313,7 +1313,6 @@ dependencies = [
  "ndc-client 0.1.0 (git+https://github.com/hasura/ndc-spec.git?tag=v0.1.0-rc.16)",
  "ndc-sdk",
  "ndc-test 0.1.0 (git+https://github.com/hasura/ndc-spec.git?tag=v0.1.0-rc.16)",
- "opentelemetry-otlp",
  "prometheus",
  "query-engine-execution",
  "query-engine-metadata",
