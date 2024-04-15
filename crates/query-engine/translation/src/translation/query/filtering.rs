@@ -6,13 +6,11 @@ use ndc_sdk::models;
 
 use super::error::Error;
 use super::helpers::{ColumnInfo, Env, RootAndCurrentTables, State, TableNameAndReference};
-use super::operators;
 use super::relationships;
 use super::root;
 use super::values;
 use query_engine_metadata::metadata::database;
 use query_engine_sql::sql;
-use query_engine_sql::sql::ast;
 
 /// Translate a boolean expression to a SQL expression.
 pub fn translate_expression(

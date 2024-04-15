@@ -1,10 +1,10 @@
 use super::{error::Error, helpers::Env};
-use ndc_sdk::models;
 use query_engine_metadata::metadata;
 use query_engine_sql::sql;
 
 /// Maps a binary comparison operator to their appropriate SqlServer name and arguments type.
-pub fn translate_comparison_operator(
+// TODO(PY): Remove this function
+pub fn _translate_comparison_operator(
     env: &Env,
     left_type: &metadata::ScalarType,
     operator: &String,
