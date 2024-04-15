@@ -82,29 +82,6 @@ services:
       sqlserver:
         condition: service_started
 
-  agent-configuration:
-    image: ghcr.io/hasura/ndc-sqlserver:dev
-    command:
-      - configuration
-      - serve
-    init: true
-    ports:
-      - 9100
-    environment:
-      PORT: 9100
-    healthcheck:
-      test:
-        - CMD
-        - ndc-sqlserver
-        - check-health
-        - --port=9100
-      interval: 1s
-      timeout: 1s
-      retries: 30
-    depends_on:
-      sqlserver:
-        condition: service_started
-
   # k6 will push statistics to Prometheus
   prometheus:
     image: prom/prometheus
