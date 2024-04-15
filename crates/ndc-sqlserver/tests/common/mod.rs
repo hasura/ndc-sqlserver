@@ -128,7 +128,7 @@ pub fn is_contained_in_lines(keywords: Vec<&str>, lines: String) {
 pub fn get_deployment_file() -> PathBuf {
     // pub fn get_deployment_file(ndc_metadata_path: impl AsRef<Path>) -> PathBuf {
     let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    d.push("../../static/chinook-deployment.json");
+    d.push("../../static/");
     // d.push("../../");
     // d.push(ndc_metadata_path);
     d
