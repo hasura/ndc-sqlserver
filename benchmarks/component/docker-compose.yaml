@@ -67,7 +67,7 @@ services:
       PORT: 8100
     volumes:
       - type: bind
-        source: ./generated/deployment.json
+        source: ../../static
         target: /deployment.json
         read_only: true
     healthcheck:
