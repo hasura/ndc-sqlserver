@@ -84,20 +84,20 @@ pub fn translate_expression(
                             column,
                         )?;
                         joins.extend(right_joins);
-                        return Ok((
+                        Ok((
                             sql::ast::Expression::BinaryArrayOperation {
                                 left: Box::new(left),
                                 operator: sql::ast::BinaryArrayOperator::In,
                                 right: vec![right],
                             },
                             joins,
-                        ));
+                        ))
                     }
                     models::ComparisonValue::Scalar { value: json_value } => match json_value {
                         serde_json::Value::Array(values) => {
                             // The expression on the left is definitely not IN an empty list of values
                             if values.is_empty() {
-                                return Ok((sql::helpers::false_expr(), joins));
+                                Ok((sql::helpers::false_expr(), joins))
                             } else {
                                 let right = values
                                     .iter()
@@ -116,17 +116,17 @@ pub fn translate_expression(
                                     })
                                     .collect::<Result<Vec<sql::ast::Expression>, Error>>()?;
 
-                                return Ok((
+                                Ok((
                                     sql::ast::Expression::BinaryArrayOperation {
                                         left: Box::new(left),
                                         operator: sql::ast::BinaryArrayOperator::In,
                                         right,
                                     },
                                     joins,
-                                ));
+                                ))
                             }
                         }
-                        _ => return Err(Error::TypeMismatch(json_value.clone(), left_typ)),
+                        _ => Err(Error::TypeMismatch(json_value.clone(), left_typ)),
                     },
                     models::ComparisonValue::Variable { .. } => {
                         // TODO(PY): array type
@@ -140,14 +140,14 @@ pub fn translate_expression(
                         )?;
                         joins.extend(right_joins);
 
-                        return Ok((
+                        Ok((
                             sql::ast::Expression::BinaryOperation {
                                 left: Box::new(left),
                                 operator: sql::ast::BinaryOperator(op.operator_name.clone()),
                                 right: Box::new(right),
                             },
                             joins,
-                        ));
+                        ))
                     }
                 }
             } else {
@@ -157,7 +157,7 @@ pub fn translate_expression(
                     env,
                     state,
                     root_and_current_tables,
-                    &value,
+                    value,
                     &op.argument_type,
                 )?;
                 joins.extend(right_joins);
@@ -384,10 +384,10 @@ fn translate_comparison_value(
 ) -> Result<(sql::ast::Expression, Vec<sql::ast::Join>), Error> {
     match value {
         models::ComparisonValue::Column { column } => {
-            translate_comparison_target(env, state, root_and_current_tables, &column)
+            translate_comparison_target(env, state, root_and_current_tables, column)
         }
         models::ComparisonValue::Scalar { value: json_value } => {
-            Ok((values::translate_json_value(&json_value, typ)?, vec![]))
+            Ok((values::translate_json_value(json_value, typ)?, vec![]))
         }
         models::ComparisonValue::Variable { name: var } => {
             Ok((values::translate_variable(var.clone(), typ), vec![]))

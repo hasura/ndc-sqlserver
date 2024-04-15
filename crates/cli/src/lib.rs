@@ -82,7 +82,7 @@ async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()>
 
     let output = schemars::schema_for!(ndc_sqlserver::configuration::RawConfiguration);
     fs::write(
-        &configuration_jsonschema_file_path,
+        configuration_jsonschema_file_path,
         serde_json::to_string_pretty(&output)? + "\n",
     )?;
 

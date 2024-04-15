@@ -9,7 +9,7 @@ pub fn _translate_comparison_operator(
     left_type: &metadata::ScalarType,
     operator: &String,
 ) -> Result<(sql::ast::BinaryOperator, metadata::ScalarType), Error> {
-    let op = env.lookup_comparison_operator(&left_type, operator)?;
+    let op = env.lookup_comparison_operator(left_type, operator)?;
     if op.operator_kind == metadata::OperatorKind::In {
         Ok((
             sql::ast::BinaryOperator("IN".to_string()),
