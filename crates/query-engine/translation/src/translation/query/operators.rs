@@ -11,15 +11,16 @@ pub fn translate_comparison_operator(
 ) -> Result<(sql::ast::BinaryOperator, metadata::ScalarType), Error> {
     let op = env.lookup_comparison_operator(&left_type, operator)?;
     if op.operator_kind == metadata::OperatorKind::In {
-        Ok((sql::ast::BinaryOperator("IN".to_string()), left_type.clone()))
-    }
-    else if op.operator_kind == metadata::OperatorKind::Equal {
+        Ok((
+            sql::ast::BinaryOperator("IN".to_string()),
+            left_type.clone(),
+        ))
+    } else if op.operator_kind == metadata::OperatorKind::Equal {
         Ok((sql::ast::BinaryOperator("=".to_string()), left_type.clone()))
-    }
-    else {
+    } else {
         Ok((
             sql::ast::BinaryOperator(op.operator_name.clone()),
-            op.argument_type.clone()
+            op.argument_type.clone(),
         ))
     }
 }

@@ -82,16 +82,16 @@ pub async fn validate_raw_configuration(
     config: RawConfiguration,
 ) -> Result<Configuration, connector::ParseError> {
     if config.version != 1 {
-        return Err(connector::ParseError::ValidateError(connector::InvalidNodes(vec![
-            connector::InvalidNode {
+        return Err(connector::ParseError::ValidateError(
+            connector::InvalidNodes(vec![connector::InvalidNode {
                 file_path: PathBuf::from("file_path"), // TODO(PY): find the path for the config
                 node_path: vec![connector::KeyOrIndex::Key("version".into())], //tODO(PY)
                 message: format!(
                     "invalid configuration version, expected 1, got {0}",
                     config.version
                 ),
-            },
-        ])));
+            }]),
+        ));
     }
     Ok(Configuration { config })
 }

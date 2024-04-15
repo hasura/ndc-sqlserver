@@ -15,7 +15,6 @@ pub struct Context {
     pub uri: String,
 }
 
-
 /// The command invoked by the user.
 #[derive(Debug, Clone, Subcommand)]
 pub enum Command {
@@ -69,9 +68,12 @@ async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()>
     // create the configuration file
     fs::write(
         configuration_file,
-        serde_json::to_string_pretty(&ndc_sqlserver::configuration::RawConfiguration::with_mssql_connection_string(context.uri))? + "\n",
-    )
-    ?;
+        serde_json::to_string_pretty(
+            &ndc_sqlserver::configuration::RawConfiguration::with_mssql_connection_string(
+                context.uri,
+            ),
+        )? + "\n",
+    )?;
 
     // create the jsonschema file
     let configuration_jsonschema_file_path = context
@@ -82,8 +84,7 @@ async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()>
     fs::write(
         &configuration_jsonschema_file_path,
         serde_json::to_string_pretty(&output)? + "\n",
-    )
-    ?;
+    )?;
 
     let a = metadata::EnvironmentVariableDefinition {
         name: "CONNECTION_URI".to_string(),
@@ -167,8 +168,7 @@ async fn update(context: Context) -> anyhow::Result<()> {
                 fs::write(
                     &configuration_file_path,
                     serde_json::to_string_pretty(&output)? + "\n",
-                )
-                ?;
+                )?;
             } else {
                 // The configuration is up-to-date. Nothing to do.
             }

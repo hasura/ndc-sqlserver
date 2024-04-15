@@ -82,7 +82,7 @@ pub async fn create_router() -> axum::Router {
     // initialise server state with the static configuration.
     let state = ndc_sdk::default_main::init_server_state::<connector::SQLServer>(
         setup,
-        test_deployment_file
+        test_deployment_file,
     )
     .await
     .unwrap();

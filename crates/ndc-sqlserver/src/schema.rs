@@ -58,15 +58,15 @@ pub async fn get_schema(
                                         }
                                         metadata::OperatorKind::In => {
                                             models::ComparisonOperatorDefinition::In
-                                        },
+                                        }
                                         metadata::OperatorKind::Custom => {
                                             models::ComparisonOperatorDefinition::Custom {
                                                 argument_type: models::Type::Named {
                                                     name: op_def.argument_type.0.clone(),
                                                 },
                                             }
-                                        },
-                                }
+                                        }
+                                    },
                                 )
                             })
                             .collect(),

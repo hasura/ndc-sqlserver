@@ -48,21 +48,26 @@ impl connector::ConnectorSetup for SQLServer {
     async fn parse_configuration(
         &self,
         configuration_dir: impl AsRef<Path> + Send,
-    ) -> Result<<Self::Connector as connector::Connector>::Configuration, connector::ParseError> {
+    ) -> Result<<Self::Connector as connector::Connector>::Configuration, connector::ParseError>
+    {
         let configuration_file = configuration_dir.as_ref().join(CONFIGURATION_FILENAME);
         let configuration_file_contents =
-        fs::read_to_string(&configuration_file)   
-            .await         
-            .map_err(|err| {
-                connector::ParseError::Other(format!("{}: {}", &configuration_file.display(), err).into())
-            })?;
+            fs::read_to_string(&configuration_file)
+                .await
+                .map_err(|err| {
+                    connector::ParseError::Other(
+                        format!("{}: {}", &configuration_file.display(), err).into(),
+                    )
+                })?;
         let configuration: configuration::RawConfiguration =
-        serde_json::from_str(&configuration_file_contents).map_err(|error| connector::ParseError::ParseError(LocatedError{
-            file_path: configuration_file.clone(),
-            line: error.line(),
-            column: error.column(),
-            message: error.to_string(),
-        }))?;
+            serde_json::from_str(&configuration_file_contents).map_err(|error| {
+                connector::ParseError::ParseError(LocatedError {
+                    file_path: configuration_file.clone(),
+                    line: error.line(),
+                    column: error.column(),
+                    message: error.to_string(),
+                })
+            })?;
 
         configuration::validate_raw_configuration(configuration)
             .await
@@ -80,7 +85,8 @@ impl connector::ConnectorSetup for SQLServer {
         &self,
         configuration: &<Self::Connector as connector::Connector>::Configuration,
         metrics: &mut prometheus::Registry,
-    ) -> Result<<Self::Connector as connector::Connector>::State, connector::InitializationError> {
+    ) -> Result<<Self::Connector as connector::Connector>::State, connector::InitializationError>
+    {
         configuration::create_state(configuration, metrics)
             .await
             .map(Arc::new)
@@ -90,7 +96,6 @@ impl connector::ConnectorSetup for SQLServer {
 
 #[async_trait]
 impl connector::Connector for SQLServer {
-
     /// The type of validated configuration
     type Configuration = Arc<configuration::Configuration>;
     /// The type of unserializable state

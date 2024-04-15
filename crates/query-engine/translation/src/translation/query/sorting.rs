@@ -559,8 +559,7 @@ fn select_for_path_element(
     let mut select = sql::helpers::simple_select(vec![]);
     select.select_list = select_list;
 
-    
-    match predicate {   
+    match predicate {
         None => Ok(select),
         Some(predicate) => {
             // generate a condition for the predicate.

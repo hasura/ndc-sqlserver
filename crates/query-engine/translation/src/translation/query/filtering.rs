@@ -79,8 +79,12 @@ pub fn translate_expression(
                 joins.extend(left_joins);
                 match value {
                     models::ComparisonValue::Column { column } => {
-                        let (right, right_joins) =
-                            translate_comparison_target(env, state, root_and_current_tables, column)?;
+                        let (right, right_joins) = translate_comparison_target(
+                            env,
+                            state,
+                            root_and_current_tables,
+                            column,
+                        )?;
                         joins.extend(right_joins);
                         return Ok((
                             sql::ast::Expression::BinaryArrayOperation {
@@ -95,7 +99,7 @@ pub fn translate_expression(
                         serde_json::Value::Array(values) => {
                             // The expression on the left is definitely not IN an empty list of values
                             if values.is_empty() {
-                                return Ok((sql::helpers::false_expr(), joins))
+                                return Ok((sql::helpers::false_expr(), joins));
                             } else {
                                 let right = values
                                     .iter()
@@ -121,11 +125,11 @@ pub fn translate_expression(
                                         right,
                                     },
                                     joins,
-                                ))
+                                ));
                             }
                         }
                         _ => return Err(Error::TypeMismatch(json_value.clone(), left_typ)),
-                    }
+                    },
                     models::ComparisonValue::Variable { .. } => {
                         // TODO(PY): array type
                         let array_type = left_typ;
@@ -145,12 +149,10 @@ pub fn translate_expression(
                                 right: Box::new(right),
                             },
                             joins,
-                        ))
+                        ));
                     }
-                
                 }
-            }
-            else {
+            } else {
                 let mut joins = vec![];
                 joins.extend(left_joins);
                 let (right, right_joins) = translate_comparison_value(
@@ -161,33 +163,33 @@ pub fn translate_expression(
                     &op.argument_type,
                 )?;
                 joins.extend(right_joins);
-                    Ok((
-                        sql::ast::Expression::BinaryOperation {
-                            left: Box::new(left),
-                            operator: sql::ast::BinaryOperator(op.operator_name.clone()),
-                            right: Box::new(right),
-                        },
-                        joins,
-                    ))
-
+                Ok((
+                    sql::ast::Expression::BinaryOperation {
+                        left: Box::new(left),
+                        operator: sql::ast::BinaryOperator(op.operator_name.clone()),
+                        right: Box::new(right),
+                    },
+                    joins,
+                ))
             }
         }
 
         models::Expression::Exists {
             in_collection,
             predicate,
-        } => match predicate{
+        } => match predicate {
             None => Ok((sql::helpers::true_expr(), vec![])),
             Some(predicate) => Ok((
-            translate_exists_in_collection(
-                env,
-                state,
-                root_and_current_tables,
-                in_collection.clone(),
-                predicate,
-            )?,
-            vec![],
-        ))},
+                translate_exists_in_collection(
+                    env,
+                    state,
+                    root_and_current_tables,
+                    in_collection.clone(),
+                    predicate,
+                )?,
+                vec![],
+            )),
+        },
         models::Expression::UnaryComparisonOperator { column, operator } => match operator {
             models::UnaryComparisonOperator::IsNull => {
                 let (value, joins) =
