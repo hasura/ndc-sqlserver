@@ -75,6 +75,7 @@ pub fn translate_order_by(
     root_and_current_tables: &RootAndCurrentTables,
     order_by: &Option<models::OrderBy>,
 ) -> Result<(sql::ast::OrderBy, Vec<sql::ast::Join>), Error> {
+    dbg!("translating order by");
     let mut joins: Vec<sql::ast::Join> = vec![];
 
     // For each order_by field, extract the relevant field name, direction, and join table (if relevant).

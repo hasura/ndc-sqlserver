@@ -27,7 +27,9 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_Album": ["AlbumId"]
+          "PK_Album": [
+            "AlbumId"
+          ]
         },
         "foreignRelations": {
           "FK_ArtistId0": {
@@ -57,7 +59,9 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_Artist": ["ArtistId"]
+          "PK_Artist": [
+            "ArtistId"
+          ]
         },
         "foreignRelations": {},
         "description": null
@@ -146,7 +150,9 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_Customer": ["CustomerId"]
+          "PK_Customer": [
+            "CustomerId"
+          ]
         },
         "foreignRelations": {
           "FK_SupportRepId0": {
@@ -254,7 +260,9 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_Employee": ["EmployeeId"]
+          "PK_Employee": [
+            "EmployeeId"
+          ]
         },
         "foreignRelations": {
           "FK_ReportsTo0": {
@@ -284,7 +292,9 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_Genre": ["GenreId"]
+          "PK_Genre": [
+            "GenreId"
+          ]
         },
         "foreignRelations": {},
         "description": null
@@ -349,7 +359,9 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_Invoice": ["InvoiceId"]
+          "PK_Invoice": [
+            "InvoiceId"
+          ]
         },
         "foreignRelations": {
           "FK_CustomerId0": {
@@ -397,7 +409,9 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_InvoiceLine": ["InvoiceLineId"]
+          "PK_InvoiceLine": [
+            "InvoiceLineId"
+          ]
         },
         "foreignRelations": {
           "FK_InvoiceId0": {
@@ -433,7 +447,9 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_MediaType": ["MediaTypeId"]
+          "PK_MediaType": [
+            "MediaTypeId"
+          ]
         },
         "foreignRelations": {},
         "description": null
@@ -456,7 +472,9 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_Playlist": ["PlaylistId"]
+          "PK_Playlist": [
+            "PlaylistId"
+          ]
         },
         "foreignRelations": {},
         "description": null
@@ -479,7 +497,10 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_PlaylistTrack": ["PlaylistId", "TrackId"]
+          "PK_PlaylistTrack": [
+            "PlaylistId",
+            "TrackId"
+          ]
         },
         "foreignRelations": {
           "FK_PlaylistId0": {
@@ -557,7 +578,9 @@
           }
         },
         "uniquenessConstraints": {
-          "PK_Track": ["TrackId"]
+          "PK_Track": [
+            "TrackId"
+          ]
         },
         "foreignRelations": {
           "FK_AlbumId0": {
@@ -1712,1074 +1735,1074 @@
       "bigint": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "bigint"
+          "argumentType": "bigint",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "bigint"
+          "argumentType": "bigint",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "bigint"
+          "argumentType": "bigint",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "bigint"
+          "argumentType": "bigint",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "bigint"
+          "argumentType": "bigint",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "bigint"
+          "argumentType": "bigint",
+          "operatorKind": "custom"
         }
       },
       "binary": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "binary"
+          "argumentType": "binary",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "binary"
+          "argumentType": "binary",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "binary"
+          "argumentType": "binary",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "binary"
+          "argumentType": "binary",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "binary"
+          "argumentType": "binary",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "binary"
+          "argumentType": "binary",
+          "operatorKind": "custom"
         }
       },
       "bit": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "bit"
+          "argumentType": "bit",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "bit"
+          "argumentType": "bit",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "bit"
+          "argumentType": "bit",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "bit"
+          "argumentType": "bit",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "bit"
+          "argumentType": "bit",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "bit"
+          "argumentType": "bit",
+          "operatorKind": "custom"
         }
       },
       "char": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "char"
+          "argumentType": "char",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "char"
+          "argumentType": "char",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "char"
+          "argumentType": "char",
+          "operatorKind": "custom"
         },
         "_like": {
           "operatorName": "LIKE",
-          "operatorKind": "custom",
-          "argumentType": "char"
+          "argumentType": "char",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "char"
+          "argumentType": "char",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "char"
+          "argumentType": "char",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "char"
+          "argumentType": "char",
+          "operatorKind": "custom"
         },
         "_nlike": {
           "operatorName": "NOT LIKE",
-          "operatorKind": "custom",
-          "argumentType": "char"
+          "argumentType": "char",
+          "operatorKind": "custom"
         }
       },
       "date": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "date"
+          "argumentType": "date",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "date"
+          "argumentType": "date",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "date"
+          "argumentType": "date",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "date"
+          "argumentType": "date",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "date"
+          "argumentType": "date",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "date"
+          "argumentType": "date",
+          "operatorKind": "custom"
         }
       },
       "datetime": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "datetime"
+          "argumentType": "datetime",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "datetime"
+          "argumentType": "datetime",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "datetime"
+          "argumentType": "datetime",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "datetime"
+          "argumentType": "datetime",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "datetime"
+          "argumentType": "datetime",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "datetime"
+          "argumentType": "datetime",
+          "operatorKind": "custom"
         }
       },
       "datetime2": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "datetime2"
+          "argumentType": "datetime2",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "datetime2"
+          "argumentType": "datetime2",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "datetime2"
+          "argumentType": "datetime2",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "datetime2"
+          "argumentType": "datetime2",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "datetime2"
+          "argumentType": "datetime2",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "datetime2"
+          "argumentType": "datetime2",
+          "operatorKind": "custom"
         }
       },
       "datetimeoffset": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "datetimeoffset"
+          "argumentType": "datetimeoffset",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "datetimeoffset"
+          "argumentType": "datetimeoffset",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "datetimeoffset"
+          "argumentType": "datetimeoffset",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "datetimeoffset"
+          "argumentType": "datetimeoffset",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "datetimeoffset"
+          "argumentType": "datetimeoffset",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "datetimeoffset"
+          "argumentType": "datetimeoffset",
+          "operatorKind": "custom"
         }
       },
       "decimal": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "decimal"
+          "argumentType": "decimal",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "decimal"
+          "argumentType": "decimal",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "decimal"
+          "argumentType": "decimal",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "decimal"
+          "argumentType": "decimal",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "decimal"
+          "argumentType": "decimal",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "decimal"
+          "argumentType": "decimal",
+          "operatorKind": "custom"
         }
       },
       "float": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "float"
+          "argumentType": "float",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "float"
+          "argumentType": "float",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "float"
+          "argumentType": "float",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "float"
+          "argumentType": "float",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "float"
+          "argumentType": "float",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "float"
+          "argumentType": "float",
+          "operatorKind": "custom"
         }
       },
       "geography": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "geography"
+          "argumentType": "geography",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "geography"
+          "argumentType": "geography",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "geography"
+          "argumentType": "geography",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "geography"
+          "argumentType": "geography",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "geography"
+          "argumentType": "geography",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "geography"
+          "argumentType": "geography",
+          "operatorKind": "custom"
         }
       },
       "geometry": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "geometry"
+          "argumentType": "geometry",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "geometry"
+          "argumentType": "geometry",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "geometry"
+          "argumentType": "geometry",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "geometry"
+          "argumentType": "geometry",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "geometry"
+          "argumentType": "geometry",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "geometry"
+          "argumentType": "geometry",
+          "operatorKind": "custom"
         }
       },
       "hierarchyid": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "hierarchyid"
+          "argumentType": "hierarchyid",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "hierarchyid"
+          "argumentType": "hierarchyid",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "hierarchyid"
+          "argumentType": "hierarchyid",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "hierarchyid"
+          "argumentType": "hierarchyid",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "hierarchyid"
+          "argumentType": "hierarchyid",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "hierarchyid"
+          "argumentType": "hierarchyid",
+          "operatorKind": "custom"
         }
       },
       "image": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "image"
+          "argumentType": "image",
+          "operatorKind": "equal"
         }
       },
       "int": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "int"
+          "argumentType": "int",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "int"
+          "argumentType": "int",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "int"
+          "argumentType": "int",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "int"
+          "argumentType": "int",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "int"
+          "argumentType": "int",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "int"
+          "argumentType": "int",
+          "operatorKind": "custom"
         }
       },
       "money": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "money"
+          "argumentType": "money",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "money"
+          "argumentType": "money",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "money"
+          "argumentType": "money",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "money"
+          "argumentType": "money",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "money"
+          "argumentType": "money",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "money"
+          "argumentType": "money",
+          "operatorKind": "custom"
         }
       },
       "nchar": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "nchar"
+          "argumentType": "nchar",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "nchar"
+          "argumentType": "nchar",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "nchar"
+          "argumentType": "nchar",
+          "operatorKind": "custom"
         },
         "_like": {
           "operatorName": "LIKE",
-          "operatorKind": "custom",
-          "argumentType": "nchar"
+          "argumentType": "nchar",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "nchar"
+          "argumentType": "nchar",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "nchar"
+          "argumentType": "nchar",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "nchar"
+          "argumentType": "nchar",
+          "operatorKind": "custom"
         },
         "_nlike": {
           "operatorName": "NOT LIKE",
-          "operatorKind": "custom",
-          "argumentType": "nchar"
+          "argumentType": "nchar",
+          "operatorKind": "custom"
         }
       },
       "ntext": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "ntext"
+          "argumentType": "ntext",
+          "operatorKind": "equal"
         },
         "_like": {
           "operatorName": "LIKE",
-          "operatorKind": "custom",
-          "argumentType": "ntext"
+          "argumentType": "ntext",
+          "operatorKind": "custom"
         },
         "_nlike": {
           "operatorName": "NOT LIKE",
-          "operatorKind": "custom",
-          "argumentType": "ntext"
+          "argumentType": "ntext",
+          "operatorKind": "custom"
         }
       },
       "numeric": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "numeric"
+          "argumentType": "numeric",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "numeric"
+          "argumentType": "numeric",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "numeric"
+          "argumentType": "numeric",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "numeric"
+          "argumentType": "numeric",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "numeric"
+          "argumentType": "numeric",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "numeric"
+          "argumentType": "numeric",
+          "operatorKind": "custom"
         }
       },
       "nvarchar": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "nvarchar"
+          "argumentType": "nvarchar",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "nvarchar"
+          "argumentType": "nvarchar",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "nvarchar"
+          "argumentType": "nvarchar",
+          "operatorKind": "custom"
         },
         "_like": {
           "operatorName": "LIKE",
-          "operatorKind": "custom",
-          "argumentType": "nvarchar"
+          "argumentType": "nvarchar",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "nvarchar"
+          "argumentType": "nvarchar",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "nvarchar"
+          "argumentType": "nvarchar",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "nvarchar"
+          "argumentType": "nvarchar",
+          "operatorKind": "custom"
         },
         "_nlike": {
           "operatorName": "NOT LIKE",
-          "operatorKind": "custom",
-          "argumentType": "nvarchar"
+          "argumentType": "nvarchar",
+          "operatorKind": "custom"
         }
       },
       "real": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "real"
+          "argumentType": "real",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "real"
+          "argumentType": "real",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "real"
+          "argumentType": "real",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "real"
+          "argumentType": "real",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "real"
+          "argumentType": "real",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "real"
+          "argumentType": "real",
+          "operatorKind": "custom"
         }
       },
       "smalldatetime": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "smalldatetime"
+          "argumentType": "smalldatetime",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "smalldatetime"
+          "argumentType": "smalldatetime",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "smalldatetime"
+          "argumentType": "smalldatetime",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "smalldatetime"
+          "argumentType": "smalldatetime",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "smalldatetime"
+          "argumentType": "smalldatetime",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "smalldatetime"
+          "argumentType": "smalldatetime",
+          "operatorKind": "custom"
         }
       },
       "smallint": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "smallint"
+          "argumentType": "smallint",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "smallint"
+          "argumentType": "smallint",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "smallint"
+          "argumentType": "smallint",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "smallint"
+          "argumentType": "smallint",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "smallint"
+          "argumentType": "smallint",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "smallint"
+          "argumentType": "smallint",
+          "operatorKind": "custom"
         }
       },
       "smallmoney": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "smallmoney"
+          "argumentType": "smallmoney",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "smallmoney"
+          "argumentType": "smallmoney",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "smallmoney"
+          "argumentType": "smallmoney",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "smallmoney"
+          "argumentType": "smallmoney",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "smallmoney"
+          "argumentType": "smallmoney",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "smallmoney"
+          "argumentType": "smallmoney",
+          "operatorKind": "custom"
         }
       },
       "sql_variant": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "sql_variant"
+          "argumentType": "sql_variant",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "sql_variant"
+          "argumentType": "sql_variant",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "sql_variant"
+          "argumentType": "sql_variant",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "sql_variant"
+          "argumentType": "sql_variant",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "sql_variant"
+          "argumentType": "sql_variant",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "sql_variant"
+          "argumentType": "sql_variant",
+          "operatorKind": "custom"
         }
       },
       "sysname": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "sysname"
+          "argumentType": "sysname",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "sysname"
+          "argumentType": "sysname",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "sysname"
+          "argumentType": "sysname",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "sysname"
+          "argumentType": "sysname",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "sysname"
+          "argumentType": "sysname",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "sysname"
+          "argumentType": "sysname",
+          "operatorKind": "custom"
         }
       },
       "text": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "text"
+          "argumentType": "text",
+          "operatorKind": "equal"
         },
         "_like": {
           "operatorName": "LIKE",
-          "operatorKind": "custom",
-          "argumentType": "text"
+          "argumentType": "text",
+          "operatorKind": "custom"
         },
         "_nlike": {
           "operatorName": "NOT LIKE",
-          "operatorKind": "custom",
-          "argumentType": "text"
+          "argumentType": "text",
+          "operatorKind": "custom"
         }
       },
       "time": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "time"
+          "argumentType": "time",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "time"
+          "argumentType": "time",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "time"
+          "argumentType": "time",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "time"
+          "argumentType": "time",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "time"
+          "argumentType": "time",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "time"
+          "argumentType": "time",
+          "operatorKind": "custom"
         }
       },
       "timestamp": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "timestamp"
+          "argumentType": "timestamp",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "timestamp"
+          "argumentType": "timestamp",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "timestamp"
+          "argumentType": "timestamp",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "timestamp"
+          "argumentType": "timestamp",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "timestamp"
+          "argumentType": "timestamp",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "timestamp"
+          "argumentType": "timestamp",
+          "operatorKind": "custom"
         }
       },
       "tinyint": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "tinyint"
+          "argumentType": "tinyint",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "tinyint"
+          "argumentType": "tinyint",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "tinyint"
+          "argumentType": "tinyint",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "tinyint"
+          "argumentType": "tinyint",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "tinyint"
+          "argumentType": "tinyint",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "tinyint"
+          "argumentType": "tinyint",
+          "operatorKind": "custom"
         }
       },
       "uniqueidentifier": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "uniqueidentifier"
+          "argumentType": "uniqueidentifier",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "uniqueidentifier"
+          "argumentType": "uniqueidentifier",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "uniqueidentifier"
+          "argumentType": "uniqueidentifier",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "uniqueidentifier"
+          "argumentType": "uniqueidentifier",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "uniqueidentifier"
+          "argumentType": "uniqueidentifier",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "uniqueidentifier"
+          "argumentType": "uniqueidentifier",
+          "operatorKind": "custom"
         }
       },
       "varbinary": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "varbinary"
+          "argumentType": "varbinary",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "varbinary"
+          "argumentType": "varbinary",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "varbinary"
+          "argumentType": "varbinary",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "varbinary"
+          "argumentType": "varbinary",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "varbinary"
+          "argumentType": "varbinary",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "varbinary"
+          "argumentType": "varbinary",
+          "operatorKind": "custom"
         }
       },
       "varchar": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "varchar"
+          "argumentType": "varchar",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "varchar"
+          "argumentType": "varchar",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "varchar"
+          "argumentType": "varchar",
+          "operatorKind": "custom"
         },
         "_like": {
           "operatorName": "LIKE",
-          "operatorKind": "custom",
-          "argumentType": "varchar"
+          "argumentType": "varchar",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "varchar"
+          "argumentType": "varchar",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "varchar"
+          "argumentType": "varchar",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "varchar"
+          "argumentType": "varchar",
+          "operatorKind": "custom"
         },
         "_nlike": {
           "operatorName": "NOT LIKE",
-          "operatorKind": "custom",
-          "argumentType": "varchar"
+          "argumentType": "varchar",
+          "operatorKind": "custom"
         }
       },
       "xml": {
         "_eq": {
           "operatorName": "=",
-          "operatorKind": "equal",
-          "argumentType": "xml"
+          "argumentType": "xml",
+          "operatorKind": "equal"
         },
         "_gt": {
           "operatorName": ">",
-          "operatorKind": "custom",
-          "argumentType": "xml"
+          "argumentType": "xml",
+          "operatorKind": "custom"
         },
         "_gte": {
           "operatorName": ">=",
-          "operatorKind": "custom",
-          "argumentType": "xml"
+          "argumentType": "xml",
+          "operatorKind": "custom"
         },
         "_lt": {
           "operatorName": "<",
-          "operatorKind": "custom",
-          "argumentType": "xml"
+          "argumentType": "xml",
+          "operatorKind": "custom"
         },
         "_lte": {
           "operatorName": "<=",
-          "operatorKind": "custom",
-          "argumentType": "xml"
+          "argumentType": "xml",
+          "operatorKind": "custom"
         },
         "_neq": {
           "operatorName": "!=",
-          "operatorKind": "custom",
-          "argumentType": "xml"
+          "argumentType": "xml",
+          "operatorKind": "custom"
         }
       }
     }

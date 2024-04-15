@@ -3,7 +3,7 @@ set shell := ["bash", "-c"]
 CONNECTOR_IMAGE_NAME := "ghcr.io/hasura/sqlserver-agent-rs"
 CONNECTOR_IMAGE_TAG := "dev"
 CONNECTOR_IMAGE := CONNECTOR_IMAGE_NAME + ":" + CONNECTOR_IMAGE_TAG
-CHINOOK_DEPLOYMENT := "static/chinook-deployment.json"
+CHINOOK_DEPLOYMENT := "static/configuration.json"
 SQLSERVER_CONNECTION_STRING := "DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true"
 
 # check everything

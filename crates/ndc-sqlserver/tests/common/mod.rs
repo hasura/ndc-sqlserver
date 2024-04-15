@@ -29,9 +29,10 @@ pub struct ExplainDetails {
     pub plan: String,
 }
 
+// TODO(PY): add run_explain_mutation
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_explain(testname: &str) -> ExactExplainResponse {
-    run_against_server("explain", testname).await
+    run_against_server("query/explain", testname).await
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
@@ -52,6 +53,8 @@ async fn run_against_server<Response: for<'a> serde::Deserialize<'a>>(
             panic!("error look up");
         }
     };
+    dbg!("path", &path);
+    dbg!("body", &body);
     make_request(|client| {
         client
             .post(&path)

@@ -136,7 +136,7 @@ impl connector::Connector for SQLServer {
     /// from the NDC specification.
     async fn get_capabilities() -> JsonResponse<models::CapabilitiesResponse> {
         JsonResponse::Value(models::CapabilitiesResponse {
-            version: "^0.1.0".into(),
+            version: "0.1.1".into(),
             capabilities: models::Capabilities {
                 query: models::QueryCapabilities {
                     aggregates: Some(models::LeafCapability {}),
@@ -174,6 +174,7 @@ impl connector::Connector for SQLServer {
         state: &Self::State,
         query_request: models::QueryRequest,
     ) -> Result<JsonResponse<models::ExplainResponse>, connector::ExplainError> {
+        dbg!("query_request", &query_request);
         explain::explain(configuration, state, query_request)
             .await
             .map(JsonResponse::Value)

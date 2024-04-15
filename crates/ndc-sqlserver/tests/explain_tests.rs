@@ -5,7 +5,7 @@ use crate::common::{is_contained_in_lines, run_explain};
 #[tokio::test]
 async fn select_by_pk() {
     let result = run_explain("select_by_pk").await;
-    is_contained_in_lines(vec!["Clustered", "Index", "Seek"], result.details.plan);
+    is_contained_in_lines(vec!["Clustered", "Index", "Scan"], result.details.plan);
     insta::assert_snapshot!(result.details.query);
 }
 

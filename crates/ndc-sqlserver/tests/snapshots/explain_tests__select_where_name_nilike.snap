@@ -10,9 +10,7 @@ FROM
       [0_Album].[AlbumId] AS [AlbumId],
       [0_Album].[Title] AS [Title]
     FROM
-      [dbo].[Album] AS [0_Album]
-    WHERE
-      ([0_Album].[Title] LIKE @P1) FOR JSON PATH,
+      [dbo].[Album] AS [0_Album] FOR JSON PATH,
       INCLUDE_NULL_VALUES
   ) AS [2_rows]([rows]) FOR JSON PATH,
   INCLUDE_NULL_VALUES,

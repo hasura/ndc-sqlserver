@@ -19,6 +19,7 @@ pub fn translate_expression(
     root_and_current_tables: &RootAndCurrentTables,
     predicate: &models::Expression,
 ) -> Result<(sql::ast::Expression, Vec<sql::ast::Join>), Error> {
+    dbg!("translate_expression", predicate);
     match predicate {
         models::Expression::And { expressions } => {
             let mut acc_joins = vec![];
@@ -161,6 +162,11 @@ pub fn translate_expression(
                     &op.argument_type,
                 )?;
                 joins.extend(right_joins);
+                dbg!("binary comparison op", sql::ast::Expression::BinaryOperation {
+                    left: Box::new(left.clone()),
+                    operator: sql::ast::BinaryOperator(op.operator_name.clone()),
+                    right: Box::new(right.clone()),
+                });
                 Ok((
                     sql::ast::Expression::BinaryOperation {
                         left: Box::new(left),
