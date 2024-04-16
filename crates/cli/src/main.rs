@@ -1,4 +1,4 @@
-//! The CLI application. This is used to configure a deployment of ndc-postgres.
+//! The CLI application. This is used to configure a deployment of ndc-sqlserver.
 //!
 //! This is intended to be automatically downloaded and invoked via the Hasura CLI, as a plugin.
 //! It is unlikely that end-users will use it directly.
@@ -20,7 +20,7 @@ const RELEASE_VERSION: Option<&str> = option_env!("RELEASE_VERSION");
 #[derive(Debug, Parser)]
 #[command(
     version = RELEASE_VERSION.unwrap_or("unknown"),
-    about = "Configuration tool for ndc-postgres"
+    about = "Configuration tool for ndc-sqlserver"
 )]
 pub struct Args {
     /// The path to the configuration. Defaults to the current directory.
