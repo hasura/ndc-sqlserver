@@ -26,6 +26,8 @@ pub async fn get_schema(
                 (
                     scalar_type.0.clone(),
                     models::ScalarType {
+                        // TODO(PY): Add representation for beta
+                        representation: None,
                         aggregate_functions: metadata
                             .aggregate_functions
                             .0

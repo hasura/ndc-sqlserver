@@ -7,7 +7,7 @@ mod ndc_tests {
     use std::net;
 
     #[tokio::test]
-    async fn test_connector() -> Result<(), Vec<ndc_test::FailedTest>> {
+    async fn test_connector() -> Result<(), Vec<ndc_test::reporter::FailedTest>> {
         let router = common::create_router().await;
         let server = hyper::Server::bind(&net::SocketAddr::new(
             net::IpAddr::V4(net::Ipv4Addr::LOCALHOST),
@@ -26,19 +26,21 @@ mod ndc_tests {
             }
         });
 
-        let configuration = ndc_client::apis::configuration::Configuration {
+        let configuration = ndc_test::client::Configuration {
             base_path,
-            user_agent: None,
             client: reqwest::Client::new(),
-            headers: Default::default(),
         };
 
-        let test_results = ndc_test::test_connector(
-            &ndc_test::TestConfiguration {
+        let mut test_results = ndc_test::reporter::TestResults::default();
+
+        ndc_test::test_connector(
+            &ndc_test::configuration::TestConfiguration {
                 seed: None,
                 snapshots_dir: None,
+                gen_config: Default::default(),
             },
             &configuration,
+            &mut test_results,
         )
         .await;
         if test_results.failures.is_empty() {

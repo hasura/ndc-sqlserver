@@ -6,7 +6,7 @@ edition = "2021"
 
 [dependencies]
 
-ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "dacf4cbb7705bc9f9c5a2856785e93e50a86df36" }
+ndc-sdk = { git = "https://github.com/hasura/ndc-sdk-rs.git", rev = "6158b1adbcc4ac7d8acb721c1626f6f715424a27" }
 
 query-engine-metadata = { path = "../metadata" }
 query-engine-sql = { path = "../sql" }

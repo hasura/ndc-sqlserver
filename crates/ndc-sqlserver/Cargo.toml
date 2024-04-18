@@ -14,7 +14,7 @@ name = "ndc-sqlserver"
 path = "bin/main.rs"
 
 [dependencies]
-ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "dacf4cbb7705bc9f9c5a2856785e93e50a86df36", package = "ndc-sdk" }
+ndc-sdk = { git = "https://github.com/hasura/ndc-sdk-rs.git", rev = "6158b1adbcc4ac7d8acb721c1626f6f715424a27" }
 
 query-engine-execution = { path = "../query-engine/execution" }
 query-engine-metadata = {path = "../query-engine/metadata"}
@@ -34,8 +34,8 @@ prometheus = "0.13.3"
 thiserror = "1.0"
 
 [dev-dependencies]
-ndc-client = { git = "https://github.com/hasura/ndc-spec.git", tag = "v0.1.0-rc.16" }
-ndc-test = { git = "https://github.com/hasura/ndc-spec.git", tag = "v0.1.0-rc.16" }
+ndc-models = { git = "https://github.com/hasura/ndc-spec.git", tag = "v0.1.2" }
+ndc-test = { git = "https://github.com/hasura/ndc-spec.git", tag = "v0.1.2" }
 
 axum = "0.6.19"
 axum-test-helper = "0.3.0"
