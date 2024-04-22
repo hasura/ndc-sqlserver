@@ -293,12 +293,12 @@ fn get_aggregate_functions_for_type(
         );
     };
 
-    aggregate_functions.insert(
-        "CHECKSUM_AGG".to_string(),
-        database::AggregateFunction {
-            return_type: metadata::ScalarType("int".to_string()),
-        },
-    );
+    // aggregate_functions.insert(
+    //     "CHECKSUM_AGG".to_string(),
+    //     database::AggregateFunction {
+    //         return_type: metadata::ScalarType("int".to_string()),
+    //     },
+    // );
 
     aggregate_functions.insert(
         "COUNT_BIG".to_string(),
@@ -307,19 +307,19 @@ fn get_aggregate_functions_for_type(
         },
     );
 
-    aggregate_functions.insert(
-        "GROUPING".to_string(),
-        database::AggregateFunction {
-            return_type: metadata::ScalarType("tinyint".to_string()),
-        },
-    );
+    // aggregate_functions.insert(
+    //     "GROUPING".to_string(),
+    //     database::AggregateFunction {
+    //         return_type: metadata::ScalarType("tinyint".to_string()),
+    //     },
+    // );
 
-    aggregate_functions.insert(
-        "GROUPING_ID".to_string(),
-        database::AggregateFunction {
-            return_type: metadata::ScalarType("int".to_string()),
-        },
-    );
+    // aggregate_functions.insert(
+    //     "GROUPING_ID".to_string(),
+    //     database::AggregateFunction {
+    //         return_type: metadata::ScalarType("int".to_string()),
+    //     },
+    // );
 
     aggregate_functions
 }
@@ -551,9 +551,10 @@ pub enum InitializationError {
 /// Collect all the types that can occur in the metadata. This is a bit circumstantial. A better
 /// approach is likely to record scalar type names directly in the metadata via configuration.sql.
 pub fn occurring_scalar_types(
-    tables: &metadata::TablesInfo,
-    native_queries: &metadata::NativeQueries,
+    metadata: &metadata::Metadata,
 ) -> BTreeSet<metadata::ScalarType> {
+    let tables = &metadata.tables;
+    let native_queries = &metadata.native_queries;
     let tables_column_types = tables
         .0
         .values()
@@ -569,8 +570,22 @@ pub fn occurring_scalar_types(
         .values()
         .flat_map(|v| v.arguments.values().map(|c| c.r#type.clone()));
 
+    let aggregate_types = metadata
+        .aggregate_functions
+        .0
+        .values()
+        .flat_map(|v| v.values().map(|c| c.return_type.clone()));
+
+    let comparison_operator_types = metadata
+        .comparison_operators
+        .0
+        .values()
+        .flat_map(|v| v.values().map(|c| c.argument_type.clone()));
+
     tables_column_types
         .chain(native_queries_column_types)
         .chain(native_queries_arguments_types)
+        .chain(aggregate_types)
+        .chain(comparison_operator_types)
         .collect::<BTreeSet<metadata::ScalarType>>()
 }

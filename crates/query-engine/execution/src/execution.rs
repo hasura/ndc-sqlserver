@@ -15,6 +15,7 @@ pub async fn mssql_execute(
     metrics: &metrics::Metrics,
     plan: sql::execution_plan::ExecutionPlan,
 ) -> Result<Bytes, Error> {
+    //dbg!("mssql_execute", &plan);
     let query = plan.query();
 
     tracing::info!(
@@ -76,6 +77,7 @@ async fn execute_query(
     buffer: &mut (impl BufMut + Send),
 ) -> Result<(), Error> {
     let query_text = query.sql.as_str();
+    // dbg!("query_text", query_text);
 
     let mut mssql_query = tiberius::Query::new(query_text);
 

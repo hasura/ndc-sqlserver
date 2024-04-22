@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use ndc_sqlserver::configuration;
 use similar_asserts::assert_eq;
 
-const CONNECTION_STRING: &str ="DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true";
+const CONNECTION_STRING: &str ="DRIVER={ODBC Driver 19 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true";
 
 const CHINOOK_DEPLOYMENT_PATH: &str = "static/configuration.json";
 
@@ -23,6 +23,7 @@ pub async fn configure_is_idempotent(
     connection_string: &str,
     chinook_deployment_path: impl AsRef<Path>,
 ) {
+    dbg!("chinook_deployment_path", chinook_deployment_path.as_ref());
     let expected_value = read_configuration(chinook_deployment_path);
 
     let mut args: configuration::RawConfiguration = serde_json::from_value(expected_value.clone())

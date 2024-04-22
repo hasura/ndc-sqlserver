@@ -30,6 +30,7 @@ mod ndc_tests {
             base_path,
             client: reqwest::Client::new(),
         };
+        //dbg!("configuration", &configuration);
 
         let mut test_results = ndc_test::reporter::TestResults::default();
 

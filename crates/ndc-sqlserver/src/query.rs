@@ -20,6 +20,7 @@ pub async fn query(
     state: &configuration::State,
     query_request: models::QueryRequest,
 ) -> Result<JsonResponse<models::QueryResponse>, connector::QueryError> {
+    dbg!("query_request", serde_json::to_string(&query_request).unwrap());
     tracing::info!("{}", serde_json::to_string(&query_request).unwrap());
     tracing::info!("{:?}", query_request);
 
@@ -29,11 +30,13 @@ pub async fn query(
         let plan = async { plan_query(configuration, state, query_request) }
             .instrument(info_span!("Plan query"))
             .await?;
+        //dbg!("plan", &plan);
 
         // Execute the query.
         let result = execute_query(state, plan)
             .instrument(info_span!("Execute query"))
             .await?;
+        //dbg!("result", &result);
 
         // assuming query succeeded, increment counter
         state.metrics.record_successful_query();
@@ -63,6 +66,7 @@ fn plan_query(
                 _ => connector::QueryError::InvalidRequest(err.to_string()),
             }
         });
+    // //dbg!("plan_query", &result);
     timer.complete_with(result)
 }
 
@@ -70,11 +74,13 @@ async fn execute_query(
     state: &configuration::State,
     plan: sql::execution_plan::ExecutionPlan,
 ) -> Result<JsonResponse<models::QueryResponse>, connector::QueryError> {
+    // //dbg!("execute_query", &plan);
     execution::mssql_execute(&state.mssql_pool, &state.metrics, plan)
         .await
         .map(JsonResponse::Serialized)
         .map_err(|err| match err {
             execution::Error::Query(err) => {
+                //dbg!("query_error", &err);
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }
@@ -83,6 +89,7 @@ async fn execute_query(
                 connector::QueryError::Other(err.into())
             }
             execution::Error::TiberiusError(err) => {
+                //dbg!("tiberius_error", &err);
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }

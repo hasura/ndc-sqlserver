@@ -815,12 +815,6 @@ expression: result
             "name": "bigint"
           }
         },
-        "CHECKSUM_AGG": {
-          "result_type": {
-            "type": "named",
-            "name": "int"
-          }
-        },
         "COUNT": {
           "result_type": {
             "type": "named",
