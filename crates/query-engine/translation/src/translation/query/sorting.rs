@@ -34,7 +34,9 @@ pub fn default_table_order_by(
                     elements: vec![order_by_element],
                 })
             }
-            None => Err(Error::NoConstraintsForOrdering),
+            None => Err(Error::NoConstraintsForOrdering(
+                table_info.table_name.clone(),
+            )),
         },
     }
 }

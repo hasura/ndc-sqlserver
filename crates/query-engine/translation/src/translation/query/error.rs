@@ -17,7 +17,7 @@ pub enum Error {
     EmptyPathForStarCountAggregate,
     TypeMismatch(serde_json::Value, database::ScalarType),
     CapabilityNotSupported(UnsupportedCapabilities),
-    NoConstraintsForOrdering,
+    NoConstraintsForOrdering(String),
     NoColumnsForOrdering,
     NotSupported(String),
     NoFieldsAndAggregates,
@@ -45,8 +45,8 @@ impl std::fmt::Display for Error {
                 "Column '{}' not found in collection '{}'.",
                 column_name, collection_name
             ),
-            Error::NoConstraintsForOrdering => {
-                write!(f, "No constraints found for ordering")
+            Error::NoConstraintsForOrdering(table_name) => {
+                write!(f, "No constraints found for ordering. An order by clause or a primary key on the table '{}' is required for queries with a limit or offset clause.", table_name)
             }
             Error::NoColumnsForOrdering => {
                 write!(f, "No columns found for ordering")
