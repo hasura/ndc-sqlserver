@@ -17,7 +17,7 @@ use ndc_sdk::models;
 use error::Error;
 use helpers::{Env, State, TableNameAndReference};
 use query_engine_metadata::metadata;
-use query_engine_sql::sql::{self, ast::{From, TableAlias}};
+use query_engine_sql::sql;
 
 /// Translate the incoming QueryRequest to an ExecutionPlan (SQL) to be run against the database.
 pub fn translate(
@@ -41,7 +41,7 @@ pub fn translate(
         &current_table,
         &from_clause,
         query_request.query,
-        &table_alias
+        &table_alias,
     )?;
 
     // form a single JSON item shaped `{ rows: [], aggregates: {} }`
@@ -94,11 +94,12 @@ pub fn translate_query(
 
     // translate rows query. if there are no fields, make this a None
     let row_select =
-        root::translate_rows_query(env, state, current_table, from_clause, &query, &table_alias)?;
-            // .map_or_else(map_no_fields_error_to_none, wrap_ok)?;
+        root::translate_rows_query(env, state, current_table, from_clause, &query, table_alias)?;
+    // .map_or_else(map_no_fields_error_to_none, wrap_ok)?;
 
     // translate aggregate select. if there are no fields, make this a None
-    let aggregate_select = root::translate_aggregate_query(env, state, current_table, from_clause, &query)?;
+    let aggregate_select =
+        root::translate_aggregate_query(env, state, current_table, from_clause, &query)?;
 
     match (row_select, aggregate_select) {
         (Some(rows), None) => Ok(sql::helpers::SelectSet::Rows(rows)),

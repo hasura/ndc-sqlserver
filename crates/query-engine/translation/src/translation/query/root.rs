@@ -5,7 +5,6 @@ use std::collections::BTreeMap;
 use indexmap::IndexMap;
 
 use ndc_sdk::models;
-use query_engine_sql::sql::ast::TableAlias;
 
 use super::aggregates;
 use super::error::Error;
@@ -23,13 +22,12 @@ pub fn translate_aggregate_query(
     from_clause: &sql::ast::From,
     query: &models::Query,
 ) -> Result<Option<sql::ast::Select>, Error> {
-
-    match &query.aggregates{
+    match &query.aggregates {
         None => Ok(None),
         Some(aggregate_fields) => {
-
             // create all aggregate columns
-            let aggregate_columns = aggregates::translate(&current_table.reference, aggregate_fields)?;
+            let aggregate_columns =
+                aggregates::translate(&current_table.reference, aggregate_fields)?;
 
             // create the select clause and the joins, order by, where clauses.
             // We don't add the limit afterwards.
@@ -44,81 +42,80 @@ pub fn translate_aggregate_query(
             select.for_json = sql::ast::ForJson::ForJsonPathWithoutArrayWrapper;
 
             select.from = Some(from_clause.clone());
-            
+
             Ok(Some(select))
-        }   
+        }
     }
 }
 
-/// Whether this rows query returns fields or not.
-pub enum ReturnsFields {
-    FieldsWereRequested,
-    NoFieldsWereRequested,
-}
-
-pub fn bar(
-    state: &mut State,
+pub fn make_no_fields_select_query(
     from_clause: &sql::ast::From,
     query: models::Query,
-    table_alias: &sql::ast::TableAlias
-)
--> Result<sql::ast::Select, Error> {
+    table_alias: &sql::ast::TableAlias,
+) -> Result<sql::ast::Select, Error> {
     let select = sql::ast::Select {
         with: sql::helpers::empty_with(),
-        select_list: sql::ast::SelectList::SelectList(
-            vec![(
-                sql::ast::ColumnAlias{
-                    name: "no_fields".to_string(),
-                },
-                sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("JSON_QUERY".to_string()), args: vec![
-                    sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("CONCAT".to_string()), args: vec![
+        select_list: sql::ast::SelectList::SelectList(vec![(
+            sql::ast::ColumnAlias {
+                name: "no_fields".to_string(),
+            },
+            sql::ast::Expression::FunctionCall {
+                function: sql::ast::Function::Unknown("JSON_QUERY".to_string()),
+                args: vec![sql::ast::Expression::FunctionCall {
+                    function: sql::ast::Function::Unknown("CONCAT".to_string()),
+                    args: vec![
                         sql::ast::Expression::Value(sql::ast::Value::String("[".to_string())),
-                        sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("STRING_AGG".to_string()), args: vec![
-                            sql::ast::Expression::Cast { expression: Box::new(sql::ast::Expression::Value(sql::ast::Value::String("{}".to_string()))),
-                                r#type: sql::ast::ScalarType("nvarchar(MAX)".to_string()) },
-                            sql::ast::Expression::Value(sql::ast::Value::String(",".to_string())),
-                        ] },
+                        sql::ast::Expression::FunctionCall {
+                            function: sql::ast::Function::Unknown("STRING_AGG".to_string()),
+                            args: vec![
+                                sql::ast::Expression::Cast {
+                                    expression: Box::new(sql::ast::Expression::Value(
+                                        sql::ast::Value::String("{}".to_string()),
+                                    )),
+                                    r#type: sql::ast::ScalarType("nvarchar(MAX)".to_string()),
+                                },
+                                sql::ast::Expression::Value(sql::ast::Value::String(
+                                    ",".to_string(),
+                                )),
+                            ],
+                        },
                         sql::ast::Expression::Value(sql::ast::Value::String("]".to_string())),
-                        ] }
-                    ] }
-            )],
-        ),
-        from: Some(sql::ast::From::Select { 
-                            select: Box::new(
-                                sql::ast::Select {
-                                    with: sql::helpers::empty_with(),
-                                    select_list: sql::ast::SelectList::SelectStar,
-                                    from: Some(from_clause.clone()),
-                                    joins: vec![],
-                                    where_: sql::ast::Where(sql::helpers::empty_where()),
-                                    group_by: sql::helpers::empty_group_by(),
-                                    order_by: sql::ast::OrderBy{
-                                        elements: vec![
-                                            sql::ast::OrderByElement{
-                                                target: sql::ast::Expression::Value(sql::ast::Value::Int8(1)),
-                                                direction: sql::ast::OrderByDirection::Asc,
-                                            }
-                                        ]
-                                    },
-                                    limit:
-                                        match (query.limit, query.offset) {
-                                            (None, None) => None,
-                                            (limit, Some(offset)) => Some(sql::ast::Limit { limit, offset }),
-                                            (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
-                                        },
-                                    for_json: sql::ast::ForJson::NoJson,
-                                }
-                            ),
-                            alias: table_alias.clone(),
-                            alias_path: sql::ast::AliasPath{
-                                elements: Vec::new(),
-                            } }),
+                    ],
+                }],
+            },
+        )]),
+        from: Some(sql::ast::From::Select {
+            select: Box::new(sql::ast::Select {
+                with: sql::helpers::empty_with(),
+                select_list: sql::ast::SelectList::SelectStar,
+                from: Some(from_clause.clone()),
+                joins: vec![],
+                where_: sql::ast::Where(sql::helpers::empty_where()),
+                group_by: sql::helpers::empty_group_by(),
+                order_by: sql::ast::OrderBy {
+                    elements: vec![sql::ast::OrderByElement {
+                        target: sql::ast::Expression::Value(sql::ast::Value::Int8(1)),
+                        direction: sql::ast::OrderByDirection::Asc,
+                    }],
+                },
+                limit: match (query.limit, query.offset) {
+                    (None, None) => None,
+                    (limit, Some(offset)) => Some(sql::ast::Limit { limit, offset }),
+                    (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
+                },
+                for_json: sql::ast::ForJson::NoJson,
+            }),
+            alias: table_alias.clone(),
+            alias_path: sql::ast::AliasPath {
+                elements: Vec::new(),
+            },
+        }),
         joins: Vec::new(),
         where_: sql::ast::Where(sql::helpers::empty_where()),
         group_by: sql::helpers::empty_group_by(),
         order_by: sql::helpers::empty_order_by(),
         for_json: sql::ast::ForJson::NoJson,
-        limit: None
+        limit: None,
     };
 
     Ok(select)
@@ -131,7 +128,7 @@ pub fn translate_rows_query(
     current_table: &TableNameAndReference,
     from_clause: &sql::ast::From,
     query: &models::Query,
-    table_alias: &sql::ast::TableAlias
+    table_alias: &sql::ast::TableAlias,
 ) -> Result<Option<sql::ast::Select>, Error> {
     // find the table according to the metadata.
     let collection_info = env.lookup_collection(&current_table.name)?;
@@ -141,97 +138,104 @@ pub fn translate_rows_query(
 
     // translate fields to select list
     if let Some(fields) = query.fields.clone() {
+        // remember whether we fields were requested or not.
+        // The case were fields were not requested, and also no aggregates were requested,
+        // can be used for `__typename` queries.
+        if IndexMap::is_empty(&fields) && query.aggregates.is_none() {
+            Some(make_no_fields_select_query(
+                from_clause,
+                query.clone(),
+                table_alias,
+            ))
+            .transpose()
+            // ReturnsFields::NoFieldsWereRequested
+        } else {
+            // ReturnsFields::FieldsWereRequested
+            // };
 
-    // remember whether we fields were requested or not.
-    // The case were fields were not requested, and also no aggregates were requested,
-    // can be used for `__typename` queries.
-    if IndexMap::is_empty(&fields) && query.aggregates.is_none() {
-        Some(bar(state, from_clause, query.clone(), &table_alias)).transpose()
-        // ReturnsFields::NoFieldsWereRequested
-    } else {
-        // ReturnsFields::FieldsWereRequested
-    // };
+            // translate fields to columns or relationships.
+            let columns: Vec<(sql::ast::ColumnAlias, sql::ast::Expression)> = fields
+                .into_iter()
+                .map(|(alias, field)| match field {
+                    models::Field::Column { column, .. } => {
+                        let column_info = collection_info.lookup_column(&column)?;
+                        Ok(sql::helpers::make_column(
+                            current_table.reference.clone(),
+                            column_info.name.clone(),
+                            sql::helpers::make_column_alias(alias),
+                        ))
+                    }
+                    models::Field::Relationship {
+                        query,
+                        relationship,
+                        arguments,
+                    } => {
+                        let table_alias = state.make_relationship_table_alias(&alias);
+                        let column_alias = sql::helpers::make_column_alias(alias);
+                        let json_column_alias = sql::helpers::make_json_column_alias();
+                        let column_name = sql::ast::ColumnReference::AliasedColumn {
+                            table: sql::ast::TableReference::AliasedTable(table_alias.clone()),
+                            column: json_column_alias.clone(),
+                        };
+                        join_fields.push(relationships::JoinFieldInfo {
+                            table_alias,
+                            column_alias: column_alias.clone(),
+                            relationship_name: relationship,
+                            arguments,
+                            query: *query,
+                        });
+                        Ok((
+                            column_alias,
+                            sql::ast::Expression::JsonQuery(
+                                Box::new(sql::ast::Expression::ColumnReference(column_name)),
+                                sql::helpers::empty_json_path(),
+                            ),
+                        ))
+                    }
+                })
+                .collect::<Result<Vec<_>, Error>>()?;
 
-    // translate fields to columns or relationships.
-    let columns: Vec<(sql::ast::ColumnAlias, sql::ast::Expression)> = fields
-        .into_iter()
-        .map(|(alias, field)| match field {
-            models::Field::Column { column, .. } => {
-                let column_info = collection_info.lookup_column(&column)?;
-                Ok(sql::helpers::make_column(
-                    current_table.reference.clone(),
-                    column_info.name.clone(),
-                    sql::helpers::make_column_alias(alias),
-                ))
+            // create the select clause and the joins, order by, where clauses.
+            // We'll add the limit afterwards.
+            let mut select =
+                translate_query_part(env, state, current_table, query, columns, join_fields)?;
+
+            // turn these into an array of JSON results
+            select.for_json = sql::ast::ForJson::ForJsonPath;
+
+            select.from = Some(from_clause.clone());
+
+            // if query has limit or offset, and no order_by, then create a default
+            let has_limit_or_offset: bool =
+                Option::is_some(&query.limit) || Option::is_some(&query.offset);
+
+            if has_limit_or_offset && select.order_by.elements.is_empty() {
+                match collection_info {
+                    CollectionInfo::Table { info, .. } => {
+                        select.order_by =
+                            sorting::default_table_order_by(info, current_table.reference.clone())?;
+                    }
+                    CollectionInfo::NativeQuery { info, .. } => {
+                        select.order_by = sorting::default_native_query_order_by(
+                            info,
+                            current_table.reference.clone(),
+                        )?;
+                    }
+                }
             }
-            models::Field::Relationship {
-                query,
-                relationship,
-                arguments,
-            } => {
-                let table_alias = state.make_relationship_table_alias(&alias);
-                let column_alias = sql::helpers::make_column_alias(alias);
-                let json_column_alias = sql::helpers::make_json_column_alias();
-                let column_name = sql::ast::ColumnReference::AliasedColumn {
-                    table: sql::ast::TableReference::AliasedTable(table_alias.clone()),
-                    column: json_column_alias.clone(),
-                };
-                join_fields.push(relationships::JoinFieldInfo {
-                    table_alias,
-                    column_alias: column_alias.clone(),
-                    relationship_name: relationship,
-                    arguments,
-                    query: *query,
-                });
-                Ok((
-                    column_alias,
-                    sql::ast::Expression::JsonQuery(
-                        Box::new(sql::ast::Expression::ColumnReference(column_name)),
-                        sql::helpers::empty_json_path(),
-                    ),
-                ))
-            }
-        })
-        .collect::<Result<Vec<_>, Error>>()?;
 
-    // create the select clause and the joins, order by, where clauses.
-    // We'll add the limit afterwards.
-    let mut select = translate_query_part(env, state, current_table, query, columns, join_fields)?;
+            // Add the limit.
+            select.limit = match (query.limit, query.offset) {
+                (None, None) => None,
+                (limit, Some(offset)) => Some(sql::ast::Limit { limit, offset }),
+                (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
+            };
 
-    // turn these into an array of JSON results
-    select.for_json = sql::ast::ForJson::ForJsonPath;
-
-    select.from = Some(from_clause.clone());
-
-    // if query has limit or offset, and no order_by, then create a default
-    let has_limit_or_offset: bool = Option::is_some(&query.limit) || Option::is_some(&query.offset);
-
-    if has_limit_or_offset && select.order_by.elements.is_empty() {
-        match collection_info {
-            CollectionInfo::Table { info, .. } => {
-                select.order_by =
-                    sorting::default_table_order_by(info, current_table.reference.clone())?;
-            }
-            CollectionInfo::NativeQuery { info, .. } => {
-                select.order_by =
-                    sorting::default_native_query_order_by(info, current_table.reference.clone())?;
-            }
+            Ok(Some(select))
         }
+    } else {
+        Ok(None)
     }
-
-    // Add the limit.
-    select.limit = match (query.limit, query.offset) {
-        (None, None) => None,
-        (limit, Some(offset)) => Some(sql::ast::Limit { limit, offset }),
-        (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
-    };
-
-    Ok(Some(select))
-}
-    }
-else {
-    Ok(None)
-}
 }
 
 /// Translate the lion (or common) part of 'rows' or 'aggregates' part of a query.
@@ -308,7 +312,7 @@ pub fn make_from_clause_and_reference(
 
     // find the table according to the metadata.
     let collection_info = env.lookup_collection(collection_name)?;
-    let from_clause = make_from_clause(state, &collection_alias, &collection_info, arguments)?;
+    let from_clause = make_from_clause(state, collection_alias, &collection_info, arguments)?;
 
     let current_table = TableNameAndReference {
         name: collection_name.to_string(),

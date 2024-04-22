@@ -43,22 +43,19 @@ pub fn translate(
                         },
                     );
                     match function.as_str() {
-                        "SUM" | "AVG" => {
-                            sql::ast::Expression::FunctionCall {
-                                function: sql::ast::Function::Unknown(function.clone()),
-                                args: vec![
-                                    sql::ast::Expression::Cast { expression: Box::new(column_ref_expression), r#type: sql::ast::ScalarType("BIGINT".to_string()) }
-                                ]
-                        }
-                    },
+                        "SUM" | "AVG" => sql::ast::Expression::FunctionCall {
+                            function: sql::ast::Function::Unknown(function.clone()),
+                            args: vec![sql::ast::Expression::Cast {
+                                expression: Box::new(column_ref_expression),
+                                r#type: sql::ast::ScalarType("BIGINT".to_string()),
+                            }],
+                        },
                         _ => sql::ast::Expression::FunctionCall {
                             function: sql::ast::Function::Unknown(function.clone()),
                             args: vec![column_ref_expression],
-                        }
-                    
-                    
+                        },
+                    }
                 }
-            },
                 models::Aggregate::StarCount {} => {
                     sql::ast::Expression::Count(sql::ast::CountType::Star)
                 }

@@ -540,7 +540,7 @@ fn from_for_path_element(
         &arguments,
         env,
         state,
-        &target_collection_alias,
+        target_collection_alias,
     )
 }
 
