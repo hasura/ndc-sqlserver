@@ -20,7 +20,7 @@ pub async fn get_schema(
 ) -> Result<models::SchemaResponse, connector::SchemaError> {
     let configuration::RawConfiguration { metadata, .. } = config;
     let scalar_types: BTreeMap<String, models::ScalarType> =
-        configuration::occurring_scalar_types(&metadata)
+        configuration::occurring_scalar_types(metadata)
             .iter()
             .map(|scalar_type| {
                 (

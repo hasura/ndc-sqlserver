@@ -550,9 +550,7 @@ pub enum InitializationError {
 
 /// Collect all the types that can occur in the metadata. This is a bit circumstantial. A better
 /// approach is likely to record scalar type names directly in the metadata via configuration.sql.
-pub fn occurring_scalar_types(
-    metadata: &metadata::Metadata,
-) -> BTreeSet<metadata::ScalarType> {
+pub fn occurring_scalar_types(metadata: &metadata::Metadata) -> BTreeSet<metadata::ScalarType> {
     let tables = &metadata.tables;
     let native_queries = &metadata.native_queries;
     let tables_column_types = tables

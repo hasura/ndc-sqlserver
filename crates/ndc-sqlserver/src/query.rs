@@ -20,7 +20,10 @@ pub async fn query(
     state: &configuration::State,
     query_request: models::QueryRequest,
 ) -> Result<JsonResponse<models::QueryResponse>, connector::QueryError> {
-    dbg!("query_request", serde_json::to_string(&query_request).unwrap());
+    dbg!(
+        "query_request",
+        serde_json::to_string(&query_request).unwrap()
+    );
     tracing::info!("{}", serde_json::to_string(&query_request).unwrap());
     tracing::info!("{:?}", query_request);
 
