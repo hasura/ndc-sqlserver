@@ -15,7 +15,6 @@ pub enum Error {
     },
     RelationshipArgumentWasOverriden(String),
     EmptyPathForStarCountAggregate,
-    NoFields,
     TypeMismatch(serde_json::Value, database::ScalarType),
     CapabilityNotSupported(UnsupportedCapabilities),
     NoConstraintsForOrdering,
@@ -73,9 +72,6 @@ impl std::fmt::Display for Error {
             }
             Error::EmptyPathForStarCountAggregate => {
                 write!(f, "No path elements supplied for Star Count Aggregate")
-            }
-            Error::NoFields => {
-                write!(f, "No fields in request.")
             }
             Error::TypeMismatch(value, typ) => {
                 write!(f, "Value '{:?}' is not of type '{:?}'.", value, typ)

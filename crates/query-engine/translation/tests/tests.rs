@@ -1,5 +1,12 @@
 mod common;
 
+    
+#[test]
+fn no_fields() {
+    let result = common::test_translation("no_fields").unwrap();
+    insta::assert_snapshot!(result);
+}
+
 #[test]
 fn select_where_album_id_equals_self_nested_object_relationship() {
     let result =

@@ -77,7 +77,7 @@ async fn execute_query(
     buffer: &mut (impl BufMut + Send),
 ) -> Result<(), Error> {
     let query_text = query.sql.as_str();
-    // dbg!("query_text", query_text);
+    dbg!("query_text", query_text);
 
     let mut mssql_query = tiberius::Query::new(query_text);
 

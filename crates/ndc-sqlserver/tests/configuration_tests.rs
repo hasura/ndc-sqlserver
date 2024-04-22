@@ -23,7 +23,7 @@ pub async fn configure_is_idempotent(
     connection_string: &str,
     chinook_deployment_path: impl AsRef<Path>,
 ) {
-    dbg!("chinook_deployment_path", chinook_deployment_path.as_ref());
+    // dbg!("chinook_deployment_path", chinook_deployment_path.as_ref());
     let expected_value = read_configuration(chinook_deployment_path);
 
     let mut args: configuration::RawConfiguration = serde_json::from_value(expected_value.clone())

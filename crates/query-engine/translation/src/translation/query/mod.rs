@@ -17,7 +17,7 @@ use ndc_sdk::models;
 use error::Error;
 use helpers::{Env, State, TableNameAndReference};
 use query_engine_metadata::metadata;
-use query_engine_sql::sql;
+use query_engine_sql::sql::{self, ast::From};
 
 /// Translate the incoming QueryRequest to an ExecutionPlan (SQL) to be run against the database.
 pub fn translate(
@@ -53,6 +53,8 @@ pub fn translate(
         select_set,
     );
 
+    // dbg!("json_select", &json_select);
+
     // add native queries if there are any
     json_select.with = sql::ast::With {
         common_table_expressions: native_queries::translate(state)?,
@@ -77,32 +79,118 @@ pub fn translate_query(
     from_clause: &sql::ast::From,
     query: models::Query,
 ) -> Result<sql::helpers::SelectSet, Error> {
-    // Error::NoFields becomes Ok(None)
-    // everything stays Err
-    let map_no_fields_error_to_none = |err| match err {
-        Error::NoFields => Ok(None),
-        other_error => Err(other_error),
-    };
+    // // Error::NoFields becomes Ok(None)
+    // // everything stays Err
+    // let map_no_fields_error_to_none = |err| match err {
+    //     Error::NoFields => Ok(None),
+    //     other_error => Err(other_error),
+    // };
 
     // wrap valid result in Some
-    let wrap_ok = |a| Ok(Some(a));
+    // let wrap_ok = |a| Ok(Some(a));
 
     // translate rows query. if there are no fields, make this a None
-    let row_select: Option<sql::ast::Select> =
-        root::translate_rows_query(env, state, current_table, from_clause, &query)
-            .map_or_else(map_no_fields_error_to_none, wrap_ok)?;
+    let row_select =
+        root::translate_rows_query(env, state, current_table, from_clause, &query)?;
+            // .map_or_else(map_no_fields_error_to_none, wrap_ok)?;
 
     // translate aggregate select. if there are no fields, make this a None
-    let aggregate_select: Option<sql::ast::Select> =
-        root::translate_aggregate_query(env, state, current_table, from_clause, &query)
-            .map_or_else(map_no_fields_error_to_none, wrap_ok)?;
+    let aggregate_select = root::translate_aggregate_query(env, state, current_table, from_clause, &query)?;
 
     match (row_select, aggregate_select) {
-        (Some(rows), None) => Ok(sql::helpers::SelectSet::Rows(rows)),
-        (None, Some(aggregates)) => Ok(sql::helpers::SelectSet::Aggregates(aggregates)),
-        (Some(rows), Some(aggregates)) => {
+        ((root::ReturnsFields::FieldsWereRequested, rows), None) => Ok(sql::helpers::SelectSet::Rows(rows)),
+        ((root::ReturnsFields::NoFieldsWereRequested, _), Some(aggregates)) => Ok(sql::helpers::SelectSet::Aggregates(aggregates)),
+        ((root::ReturnsFields::FieldsWereRequested, rows), Some(aggregates)) => {
             Ok(sql::helpers::SelectSet::RowsAndAggregates(rows, aggregates))
         }
-        _ => Err(Error::NoFields),
+        ((root::ReturnsFields::NoFieldsWereRequested, _), None) => {
+            let select = sql::ast::Select {
+                with: sql::helpers::empty_with(),
+                select_list: sql::ast::SelectList::SelectList(
+                    vec![(
+                        sql::ast::ColumnAlias{
+                            name: "no_fields".to_string(),
+                        },
+                        sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("JSON_QUERY".to_string()), args: vec![
+                            sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("CONCAT".to_string()), args: vec![
+                                sql::ast::Expression::Value(sql::ast::Value::String("[".to_string())),
+                                sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("STRING_AGG".to_string()), args: vec![
+                                    sql::ast::Expression::Cast { expression: Box::new(sql::ast::Expression::Value(sql::ast::Value::String("{}".to_string()))),
+                                        r#type: sql::ast::ScalarType("nvarchar(MAX)".to_string()) },
+                                    // sql::ast::Expression::Value(sql::ast::Value::String("{}".to_string())),
+                                    // sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("CAST".to_string()), args: vec![
+                                    //     // sql::ast::Expression::Value(sql::ast::Value::String("'{}' as nvarchar(MAX)".to_string()))
+                                    //     sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("AS".to_string()), args: vec![
+                                    //         sql::ast::Expression::Value(sql::ast::Value::String("'{}'".to_string())),
+                                    //         sql::ast::Expression::Value(sql::ast::Value::String("nvarchar(MAX)".to_string())),
+                                    //     ] }
+                                    // ] },
+                                    sql::ast::Expression::Value(sql::ast::Value::String(",".to_string())),
+                                ] },
+                                sql::ast::Expression::Value(sql::ast::Value::String("]".to_string())),
+                                ] }
+                            ] }
+                    )],
+                ),
+                // from: Some(from_clause.clone()),
+                from: Some(sql::ast::From::Select { 
+                                    select: Box::new(
+                                        sql::ast::Select {
+                                            with: sql::helpers::empty_with(),
+                                            select_list: sql::ast::SelectList::SelectStar,
+                                            from: Some(from_clause.clone()),
+                                            joins: vec![],
+                                            where_: sql::ast::Where(sql::helpers::empty_where()),
+                                            group_by: sql::helpers::empty_group_by(),
+                                            // order_by: sql::helpers::empty_order_by(),
+                                            order_by: sql::ast::OrderBy{
+                                                elements: vec![
+                                                    sql::ast::OrderByElement{
+                                                        target: sql::ast::Expression::Value(sql::ast::Value::Int8(1)),
+                                                        direction: sql::ast::OrderByDirection::Asc,
+                                                    }
+                                                ]
+                                            },
+                                            // limit: None,
+                                            limit: 
+                                                // Add the limit.
+                                                match (query.limit, query.offset) {
+                                                    (None, None) => None,
+                                                    (limit, Some(offset)) => Some(sql::ast::Limit { limit, offset }),
+                                                    (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
+                                                },
+                                            for_json: sql::ast::ForJson::NoJson,
+                                        }
+                                    ),
+                                    alias: state.make_table_alias("foo".to_string()),
+                                    alias_path: sql::ast::AliasPath{
+                                        elements: Vec::new(),
+                                    } }),
+                joins: Vec::new(),
+                where_: sql::ast::Where(sql::helpers::empty_where()),
+                group_by: sql::helpers::empty_group_by(),
+                // order_by: sql::ast::OrderBy{
+                //     elements: vec![
+                //         sql::ast::OrderByElement{
+                //             target: sql::ast::Expression::Value(sql::ast::Value::Int8(1)),
+                //             direction: sql::ast::OrderByDirection::Asc,
+                //         }
+                //     ]
+                // },
+                order_by: sql::helpers::empty_order_by(),
+                // order_by: sql::helpers::empty_order_by(),
+                for_json: sql::ast::ForJson::NoJson,
+                // limit: 
+                //     // Add the limit.
+                //     match (query.limit, query.offset) {
+                //         (None, None) => None,
+                //         (limit, Some(offset)) => Some(sql::ast::Limit { limit, offset }),
+                //         (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
+                //     }
+                limit: None
+
+            };
+            Ok(sql::helpers::SelectSet::Rows(select))
+        }
     }
 }
