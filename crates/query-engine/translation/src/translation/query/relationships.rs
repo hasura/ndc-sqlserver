@@ -35,13 +35,15 @@ pub fn translate_joins(
                 relationship_arguments: relationship.arguments.clone(),
             })?;
 
+            let table_alias = state.make_table_alias(relationship.target_collection.clone());
+
             // create a from clause and get a reference of inner query.
             let (target_collection, from_clause) = root::make_from_clause_and_reference(
                 &relationship.target_collection,
                 &arguments,
                 env,
                 state,
-                None,
+                &table_alias,
             )?;
 
             // process inner query and get the SELECTs for the 'rows' and 'aggregates' fields.
@@ -51,6 +53,7 @@ pub fn translate_joins(
                 &target_collection,
                 &from_clause,
                 join_field.query,
+                &table_alias,
             )?;
 
             // add join expressions to row / aggregate selects

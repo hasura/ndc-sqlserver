@@ -5,6 +5,7 @@ use std::collections::BTreeMap;
 use indexmap::IndexMap;
 
 use ndc_sdk::models;
+use query_engine_sql::sql::ast::TableAlias;
 
 use super::aggregates;
 use super::error::Error;
@@ -55,6 +56,74 @@ pub enum ReturnsFields {
     NoFieldsWereRequested,
 }
 
+pub fn bar(
+    state: &mut State,
+    from_clause: &sql::ast::From,
+    query: models::Query,
+    table_alias: &sql::ast::TableAlias
+)
+-> Result<sql::ast::Select, Error> {
+    let select = sql::ast::Select {
+        with: sql::helpers::empty_with(),
+        select_list: sql::ast::SelectList::SelectList(
+            vec![(
+                sql::ast::ColumnAlias{
+                    name: "no_fields".to_string(),
+                },
+                sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("JSON_QUERY".to_string()), args: vec![
+                    sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("CONCAT".to_string()), args: vec![
+                        sql::ast::Expression::Value(sql::ast::Value::String("[".to_string())),
+                        sql::ast::Expression::FunctionCall { function: sql::ast::Function::Unknown("STRING_AGG".to_string()), args: vec![
+                            sql::ast::Expression::Cast { expression: Box::new(sql::ast::Expression::Value(sql::ast::Value::String("{}".to_string()))),
+                                r#type: sql::ast::ScalarType("nvarchar(MAX)".to_string()) },
+                            sql::ast::Expression::Value(sql::ast::Value::String(",".to_string())),
+                        ] },
+                        sql::ast::Expression::Value(sql::ast::Value::String("]".to_string())),
+                        ] }
+                    ] }
+            )],
+        ),
+        from: Some(sql::ast::From::Select { 
+                            select: Box::new(
+                                sql::ast::Select {
+                                    with: sql::helpers::empty_with(),
+                                    select_list: sql::ast::SelectList::SelectStar,
+                                    from: Some(from_clause.clone()),
+                                    joins: vec![],
+                                    where_: sql::ast::Where(sql::helpers::empty_where()),
+                                    group_by: sql::helpers::empty_group_by(),
+                                    order_by: sql::ast::OrderBy{
+                                        elements: vec![
+                                            sql::ast::OrderByElement{
+                                                target: sql::ast::Expression::Value(sql::ast::Value::Int8(1)),
+                                                direction: sql::ast::OrderByDirection::Asc,
+                                            }
+                                        ]
+                                    },
+                                    limit:
+                                        match (query.limit, query.offset) {
+                                            (None, None) => None,
+                                            (limit, Some(offset)) => Some(sql::ast::Limit { limit, offset }),
+                                            (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
+                                        },
+                                    for_json: sql::ast::ForJson::NoJson,
+                                }
+                            ),
+                            alias: table_alias.clone(),
+                            alias_path: sql::ast::AliasPath{
+                                elements: Vec::new(),
+                            } }),
+        joins: Vec::new(),
+        where_: sql::ast::Where(sql::helpers::empty_where()),
+        group_by: sql::helpers::empty_group_by(),
+        order_by: sql::helpers::empty_order_by(),
+        for_json: sql::ast::ForJson::NoJson,
+        limit: None
+    };
+
+    Ok(select)
+}
+
 /// Translate rows part of query to sql ast.
 pub fn translate_rows_query(
     env: &Env,
@@ -62,7 +131,8 @@ pub fn translate_rows_query(
     current_table: &TableNameAndReference,
     from_clause: &sql::ast::From,
     query: &models::Query,
-) -> Result<(ReturnsFields, sql::ast::Select), Error> {
+    table_alias: &sql::ast::TableAlias
+) -> Result<Option<sql::ast::Select>, Error> {
     // find the table according to the metadata.
     let collection_info = env.lookup_collection(&current_table.name)?;
 
@@ -70,16 +140,17 @@ pub fn translate_rows_query(
     let mut join_fields: Vec<relationships::JoinFieldInfo> = vec![];
 
     // translate fields to select list
-    let fields = query.fields.clone().unwrap_or_default();
+    if let Some(fields) = query.fields.clone() {
 
     // remember whether we fields were requested or not.
     // The case were fields were not requested, and also no aggregates were requested,
     // can be used for `__typename` queries.
-    let returns_fields = if IndexMap::is_empty(&fields) {
-        ReturnsFields::NoFieldsWereRequested
+    if IndexMap::is_empty(&fields) && query.aggregates.is_none() {
+        Some(bar(state, from_clause, query.clone(), &table_alias)).transpose()
+        // ReturnsFields::NoFieldsWereRequested
     } else {
-        ReturnsFields::FieldsWereRequested
-    };
+        // ReturnsFields::FieldsWereRequested
+    // };
 
     // translate fields to columns or relationships.
     let columns: Vec<(sql::ast::ColumnAlias, sql::ast::Expression)> = fields
@@ -155,7 +226,12 @@ pub fn translate_rows_query(
         (limit, None) => Some(sql::ast::Limit { limit, offset: 0 }),
     };
 
-    Ok((returns_fields, select))
+    Ok(Some(select))
+}
+    }
+else {
+    Ok(None)
+}
 }
 
 /// Translate the lion (or common) part of 'rows' or 'aggregates' part of a query.
@@ -222,12 +298,12 @@ pub fn make_from_clause_and_reference(
     arguments: &BTreeMap<String, models::Argument>,
     env: &Env,
     state: &mut State,
-    collection_alias: Option<sql::ast::TableAlias>,
+    collection_alias: &sql::ast::TableAlias,
 ) -> Result<(TableNameAndReference, sql::ast::From), Error> {
-    let collection_alias = match collection_alias {
-        None => state.make_table_alias(collection_name.to_string()),
-        Some(alias) => alias,
-    };
+    // let collection_alias = match collection_alias {
+    //     None => state.make_table_alias(collection_name.to_string()),
+    //     Some(alias) => alias,
+    // };
     let collection_alias_name = sql::ast::TableReference::AliasedTable(collection_alias.clone());
 
     // find the table according to the metadata.

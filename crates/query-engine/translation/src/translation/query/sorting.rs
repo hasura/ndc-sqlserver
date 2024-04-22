@@ -540,7 +540,7 @@ fn from_for_path_element(
         &arguments,
         env,
         state,
-        Some(target_collection_alias.clone()),
+        &target_collection_alias,
     )
 }
 

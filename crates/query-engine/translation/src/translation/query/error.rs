@@ -20,6 +20,7 @@ pub enum Error {
     NoConstraintsForOrdering,
     NoColumnsForOrdering,
     NotSupported(String),
+    NoFieldsAndAggregates,
 }
 
 /// Capabilities we don't currently support.
@@ -81,6 +82,9 @@ impl std::fmt::Display for Error {
             }
             Error::NotSupported(thing) => {
                 write!(f, "Queries containing {} are not supported.", thing)
+            }
+            Error::NoFieldsAndAggregates => {
+                write!(f, "No fields or aggregates found in query")
             }
         }
     }

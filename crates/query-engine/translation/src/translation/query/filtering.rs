@@ -282,7 +282,7 @@ fn translate_comparison_pathelements(
                 &arguments,
                 env,
                 state,
-                Some(target_table_alias.clone()),
+                &target_table_alias,
             )?;
 
             // build a SELECT querying this table with the relevant predicate.
@@ -417,9 +417,11 @@ pub fn translate_exists_in_collection(
                 },
             )?;
 
+            let table_alias = state.make_table_alias(collection.clone());
+
             // create a from clause and get a reference of inner query.
             let (table, from_clause) =
-                root::make_from_clause_and_reference(&collection, &arguments, env, state, None)?;
+                root::make_from_clause_and_reference(&collection, &arguments, env, state, &table_alias)?;
 
             // CockroachDB doesn't like empty selects, so we do "SELECT 1 as 'one' ..."
             let column_alias = sql::helpers::make_column_alias("one".to_string());
@@ -469,13 +471,15 @@ pub fn translate_exists_in_collection(
                 },
             )?;
 
+            let table_alias = state.make_table_alias(relationship.target_collection.clone());
+
             // create a from clause and get a reference of inner query.
             let (table, from_clause) = root::make_from_clause_and_reference(
                 &relationship.target_collection,
                 &arguments,
                 env,
                 state,
-                None,
+                &table_alias,
             )?;
 
             // CockroachDB doesn't like empty selects, so we do "SELECT 1 as 'one' ..."

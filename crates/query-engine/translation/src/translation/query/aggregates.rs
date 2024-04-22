@@ -35,16 +35,30 @@ pub fn translate(
                     }
                 }
                 models::Aggregate::SingleColumn { column, function } => {
-                    sql::ast::Expression::FunctionCall {
-                        function: sql::ast::Function::Unknown(function.clone()),
-                        args: vec![sql::ast::Expression::ColumnReference(
-                            sql::ast::ColumnReference::AliasedColumn {
-                                table: table.clone(),
-                                column: sql::helpers::make_column_alias(column.clone()),
-                            },
-                        )],
-                    }
+                    dbg!("function", function);
+                    let column_ref_expression = sql::ast::Expression::ColumnReference(
+                        sql::ast::ColumnReference::AliasedColumn {
+                            table: table.clone(),
+                            column: sql::helpers::make_column_alias(column.clone()),
+                        },
+                    );
+                    match function.as_str() {
+                        "SUM" | "AVG" => {
+                            sql::ast::Expression::FunctionCall {
+                                function: sql::ast::Function::Unknown(function.clone()),
+                                args: vec![
+                                    sql::ast::Expression::Cast { expression: Box::new(column_ref_expression), r#type: sql::ast::ScalarType("BIGINT".to_string()) }
+                                ]
+                        }
+                    },
+                        _ => sql::ast::Expression::FunctionCall {
+                            function: sql::ast::Function::Unknown(function.clone()),
+                            args: vec![column_ref_expression],
+                        }
+                    
+                    
                 }
+            },
                 models::Aggregate::StarCount {} => {
                     sql::ast::Expression::Count(sql::ast::CountType::Star)
                 }
