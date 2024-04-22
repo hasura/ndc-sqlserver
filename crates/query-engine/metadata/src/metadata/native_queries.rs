@@ -26,6 +26,11 @@ pub struct NativeQueryInfo {
     pub arguments: BTreeMap<String, ColumnInfo>,
     #[serde(default)]
     pub description: Option<String>,
+    /// Execute the native query as a procedure, this is useful
+    /// if the native query mutates data.
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default)]
+    pub is_procedure: bool,
 }
 
 /// A part of a Native Query text, either raw text or a parameter.
@@ -42,7 +47,6 @@ pub enum NativeQueryPart {
 pub struct NativeQuerySql(pub Vec<NativeQueryPart>);
 
 // Serialization
-
 impl Serialize for NativeQuerySql {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
