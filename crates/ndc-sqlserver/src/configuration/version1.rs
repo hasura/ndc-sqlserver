@@ -293,33 +293,12 @@ fn get_aggregate_functions_for_type(
         );
     };
 
-    // aggregate_functions.insert(
-    //     "CHECKSUM_AGG".to_string(),
-    //     database::AggregateFunction {
-    //         return_type: metadata::ScalarType("int".to_string()),
-    //     },
-    // );
-
     aggregate_functions.insert(
         "COUNT_BIG".to_string(),
         database::AggregateFunction {
             return_type: metadata::ScalarType("bigint".to_string()),
         },
     );
-
-    // aggregate_functions.insert(
-    //     "GROUPING".to_string(),
-    //     database::AggregateFunction {
-    //         return_type: metadata::ScalarType("tinyint".to_string()),
-    //     },
-    // );
-
-    // aggregate_functions.insert(
-    //     "GROUPING_ID".to_string(),
-    //     database::AggregateFunction {
-    //         return_type: metadata::ScalarType("int".to_string()),
-    //     },
-    // );
 
     aggregate_functions
 }

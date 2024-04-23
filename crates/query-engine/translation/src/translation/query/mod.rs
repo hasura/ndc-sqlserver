@@ -55,8 +55,6 @@ pub fn translate(
         select_set,
     );
 
-    // dbg!("json_select", &json_select);
-
     // add native queries if there are any
     json_select.with = sql::ast::With {
         common_table_expressions: native_queries::translate(state)?,
@@ -82,20 +80,9 @@ pub fn translate_query(
     query: models::Query,
     table_alias: &sql::ast::TableAlias,
 ) -> Result<sql::helpers::SelectSet, Error> {
-    // // Error::NoFields becomes Ok(None)
-    // // everything stays Err
-    // let map_no_fields_error_to_none = |err| match err {
-    //     Error::NoFields => Ok(None),
-    //     other_error => Err(other_error),
-    // };
-
-    // wrap valid result in Some
-    // let wrap_ok = |a| Ok(Some(a));
-
     // translate rows query. if there are no fields, make this a None
     let row_select =
         root::translate_rows_query(env, state, current_table, from_clause, &query, table_alias)?;
-    // .map_or_else(map_no_fields_error_to_none, wrap_ok)?;
 
     // translate aggregate select. if there are no fields, make this a None
     let aggregate_select =

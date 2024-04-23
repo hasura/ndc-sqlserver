@@ -148,11 +148,7 @@ pub fn translate_rows_query(
                 table_alias,
             ))
             .transpose()
-            // ReturnsFields::NoFieldsWereRequested
         } else {
-            // ReturnsFields::FieldsWereRequested
-            // };
-
             // translate fields to columns or relationships.
             let columns: Vec<(sql::ast::ColumnAlias, sql::ast::Expression)> = fields
                 .into_iter()
@@ -304,10 +300,6 @@ pub fn make_from_clause_and_reference(
     state: &mut State,
     collection_alias: &sql::ast::TableAlias,
 ) -> Result<(TableNameAndReference, sql::ast::From), Error> {
-    // let collection_alias = match collection_alias {
-    //     None => state.make_table_alias(collection_name.to_string()),
-    //     Some(alias) => alias,
-    // };
     let collection_alias_name = sql::ast::TableReference::AliasedTable(collection_alias.clone());
 
     // find the table according to the metadata.

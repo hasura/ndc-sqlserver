@@ -6,8 +6,6 @@
 //! `super::configuration`.
 
 use ndc_sdk::connector::LocatedError;
-// use hyper::client::connect::Connect;
-// use ndc_client::apis::configuration::Configuration;
 use tiberius::Query;
 
 use async_trait::async_trait;
@@ -28,16 +26,6 @@ pub struct SQLServer {}
 
 pub const CONFIGURATION_FILENAME: &str = "configuration.json";
 pub const CONFIGURATION_JSONSCHEMA_FILENAME: &str = "schema.json";
-
-// pub struct SqlServerSetup<Env: Environment> {
-//     environment: Env,
-// }
-
-// impl<Env: Environment> SqlServerSetup<Env> {
-//     pub fn new(environment: Env) -> Self {
-//         Self { environment }
-//     }
-// }
 
 #[async_trait]
 impl connector::ConnectorSetup for SQLServer {

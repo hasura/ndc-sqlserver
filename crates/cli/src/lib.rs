@@ -167,7 +167,6 @@ async fn update(context: Context) -> anyhow::Result<()> {
         } else {
             // Input file changed before write.
         }
-        // return Ok(());
     }
 
     // We ran out of attempts.

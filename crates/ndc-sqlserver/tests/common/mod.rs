@@ -68,15 +68,7 @@ pub async fn create_router() -> axum::Router {
 
     // work out where the deployment configs live
     let test_deployment_file = get_deployment_file();
-    // let test_deployment_file = get_deployment_file(configuration_directory);
 
-    // let environment = HashMap::from([(
-    //     ndc_sqlserver::configuration::connection_settings::DEFAULT_CONNECTION_URI_VARIABLE
-    //         .into(),
-    //     connection_uri.to_string(),
-    // )]);
-
-    // let setup = SqlServerSetup::new(environment);
     let setup = connector::SQLServer::default();
 
     // initialise server state with the static configuration.
@@ -127,10 +119,7 @@ pub fn is_contained_in_lines(keywords: Vec<&str>, lines: String) {
 /// Find the project root via the crate root provided by `cargo test`,
 /// and get our single static configuration file.
 pub fn get_deployment_file() -> PathBuf {
-    // pub fn get_deployment_file(ndc_metadata_path: impl AsRef<Path>) -> PathBuf {
     let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     d.push("../../static/");
-    // d.push("../../");
-    // d.push(ndc_metadata_path);
     d
 }

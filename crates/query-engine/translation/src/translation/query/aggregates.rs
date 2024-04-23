@@ -35,7 +35,6 @@ pub fn translate(
                     }
                 }
                 models::Aggregate::SingleColumn { column, function } => {
-                    dbg!("function", function);
                     let column_ref_expression = sql::ast::Expression::ColumnReference(
                         sql::ast::ColumnReference::AliasedColumn {
                             table: table.clone(),

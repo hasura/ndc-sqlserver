@@ -70,8 +70,6 @@ pub fn translate_expression(
             let (left, left_joins) =
                 translate_comparison_target(env, state, root_and_current_tables, column)?;
             let op = env.lookup_comparison_operator(&left_typ, operator)?;
-            // let (op, argument_type) =
-            //     operators::translate_comparison_operator(env, &left_typ, operator)?;
             if op.operator_kind == database::OperatorKind::In {
                 let mut joins = vec![];
                 joins.extend(left_joins);
@@ -531,21 +529,6 @@ pub fn translate_exists_in_collection(
         }
     }
 }
-
-/// Infer the type of the ComparisonValue column from the operator and the ComparisonTarget.
-/// For array operators.
-// fn infer_value_type_array(
-//     env: &Env,
-//     root_and_current_tables: &RootAndCurrentTables,
-//     column: &models::ComparisonTarget,
-//     operator: &models::BinaryArrayComparisonOperator,
-// ) -> Result<database::ScalarType, Error> {
-//     match operator {
-//         models::BinaryArrayComparisonOperator::In => {
-//             get_comparison_target_type(env, root_and_current_tables, column)
-//         }
-//     }
-// }
 
 /// Extract the scalar type of a comparison target
 fn get_comparison_target_type(
