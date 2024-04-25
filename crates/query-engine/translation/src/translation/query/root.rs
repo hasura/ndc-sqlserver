@@ -142,12 +142,7 @@ pub fn translate_rows_query(
         // The case were fields were not requested, and also no aggregates were requested,
         // can be used for `__typename` queries.
         if IndexMap::is_empty(&fields) && query.aggregates.is_none() {
-            Some(make_no_fields_select_query(
-                from_clause,
-                query,
-                table_alias,
-            ))
-            .transpose()
+            Some(make_no_fields_select_query(from_clause, query, table_alias)).transpose()
         } else {
             // translate fields to columns or relationships.
             let columns: Vec<(sql::ast::ColumnAlias, sql::ast::Expression)> = fields
@@ -208,8 +203,10 @@ pub fn translate_rows_query(
             if has_limit_or_offset && select.order_by.elements.is_empty() {
                 match collection_info {
                     CollectionInfo::Table { info, .. } => {
-                        select.order_by =
-                            sorting::default_table_order_by(&info, current_table.reference.clone())?;
+                        select.order_by = sorting::default_table_order_by(
+                            &info,
+                            current_table.reference.clone(),
+                        )?;
                     }
                     CollectionInfo::NativeQuery { info, .. } => {
                         select.order_by = sorting::default_native_query_order_by(
@@ -335,8 +332,7 @@ fn make_from_clause(
         }
 
         CollectionInfo::NativeQuery { name, info } => {
-            let aliased_table =
-                state.insert_native_query(name, info.clone(), arguments.clone());
+            let aliased_table = state.insert_native_query(name, info.clone(), arguments.clone());
             Ok(sql::ast::From::Table {
                 reference: aliased_table,
                 alias: current_table_alias.clone(),
