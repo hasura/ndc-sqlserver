@@ -196,11 +196,11 @@ impl State {
     /// Introduce a new native query to the generated sql.
     pub fn insert_native_query(
         &mut self,
-        name: String,
+        name: &str,
         info: metadata::NativeQueryInfo,
         arguments: BTreeMap<String, models::Argument>,
     ) -> sql::ast::TableReference {
-        let alias = self.make_native_query_table_alias(&name);
+        let alias = self.make_native_query_table_alias(name);
         self.native_queries.native_queries.push(NativeQueryInfo {
             info,
             arguments,
@@ -268,7 +268,7 @@ impl State {
         self.make_table_alias(format!("ORDER_COUNT_FOR_{}", source_table_name))
     }
 
-    pub fn make_native_query_table_alias(&mut self, name: &String) -> sql::ast::TableAlias {
+    pub fn make_native_query_table_alias(&mut self, name: &str) -> sql::ast::TableAlias {
         self.make_table_alias(format!("NATIVE_QUERY_{}", name))
     }
 

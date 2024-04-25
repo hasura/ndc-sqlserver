@@ -40,7 +40,7 @@ pub fn translate(
         &mut state,
         &current_table,
         &from_clause,
-        query_request.query,
+        &query_request.query,
         &table_alias,
     )?;
 
@@ -77,16 +77,16 @@ pub fn translate_query(
     state: &mut State,
     current_table: &TableNameAndReference,
     from_clause: &sql::ast::From,
-    query: models::Query,
+    query: &models::Query,
     table_alias: &sql::ast::TableAlias,
 ) -> Result<sql::helpers::SelectSet, Error> {
     // translate rows query. if there are no fields, make this a None
     let row_select =
-        root::translate_rows_query(env, state, current_table, from_clause, &query, table_alias)?;
+        root::translate_rows_query(env, state, current_table, from_clause, query, table_alias)?;
 
     // translate aggregate select. if there are no fields, make this a None
     let aggregate_select =
-        root::translate_aggregate_query(env, state, current_table, from_clause, &query)?;
+        root::translate_aggregate_query(env, state, current_table, from_clause, query)?;
 
     match (row_select, aggregate_select) {
         (Some(rows), None) => Ok(sql::helpers::SelectSet::Rows(rows)),

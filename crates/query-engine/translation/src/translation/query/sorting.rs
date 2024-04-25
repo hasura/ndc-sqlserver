@@ -12,7 +12,7 @@ use query_engine_sql::sql;
 // unique column we see (which usually, hopefully, corresponds to the primary key, a sensible
 // default)
 pub fn default_table_order_by(
-    table_info: metadata::TableInfo,
+    table_info: &metadata::TableInfo,
     table_reference: sql::ast::TableReference,
 ) -> Result<sql::ast::OrderBy, Error> {
     match &table_info.uniqueness_constraints {
@@ -239,7 +239,7 @@ fn translate_order_by_target(
         env,
         state,
         root_and_current_tables,
-        column.to_string(),
+        column,
         path,
         function,
     )?;
@@ -295,7 +295,7 @@ fn translate_order_by_target_for_column(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    column_name: String,
+    column_name: &str,
     path: &[models::PathElement],
     function: Option<String>,
 ) -> Result<ColumnOrSelect, Error> {
@@ -330,7 +330,7 @@ fn translate_order_by_target_for_column(
             process_path_element_for_order_by_target_for_column(
                 (env, state),
                 root_and_current_tables,
-                &column_name,
+                column_name,
                 path,
                 &function,
                 &mut joins,
@@ -342,7 +342,7 @@ fn translate_order_by_target_for_column(
     if path.is_empty() {
         // if there were no relationship columns, we don't need to build a query, just return the column.
         let table = env.lookup_collection(&root_and_current_tables.current_table.name)?;
-        let selected_column = table.lookup_column(&column_name)?;
+        let selected_column = table.lookup_column(column_name)?;
 
         let selected_column_name = sql::ast::ColumnReference::AliasedColumn {
             table: root_and_current_tables.current_table.reference.clone(),
@@ -357,7 +357,7 @@ fn translate_order_by_target_for_column(
     else {
         // order by columns
         let table = env.lookup_collection(&last_table.name)?;
-        let selected_column = table.lookup_column(&column_name)?;
+        let selected_column = table.lookup_column(column_name)?;
 
         let selected_column_name = sql::ast::ColumnReference::AliasedColumn {
             table: last_table.reference,
