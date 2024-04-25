@@ -165,18 +165,15 @@ impl From {
 
 impl AliasPath {
     pub fn to_sql(&self, sql: &mut SQL) {
-        match self.elements.is_empty() {
-            true => {}
-            false => {
-                sql.append_syntax("(");
-                for (i, path_item) in self.elements.iter().enumerate() {
-                    path_item.to_sql(sql);
-                    if i < self.elements.len() - 1 {
-                        sql.append_syntax(",");
-                    }
+        if !self.elements.is_empty() {
+            sql.append_syntax("(");
+            for (i, path_item) in self.elements.iter().enumerate() {
+                path_item.to_sql(sql);
+                if i < self.elements.len() - 1 {
+                    sql.append_syntax(",");
                 }
-                sql.append_syntax(")");
             }
+            sql.append_syntax(")");
         }
     }
 }
