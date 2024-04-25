@@ -5,6 +5,9 @@ edition.workspace = true
 
 default-run = "ndc-sqlserver"
 
+[lints]
+workspace = true
+
 [lib]
 name = "ndc_sqlserver"
 path = "src/lib.rs"

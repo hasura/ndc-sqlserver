@@ -3,6 +3,9 @@ name = "query-engine-execution"
 version = "0.1.0"
 edition = "2021"
 
+[lints]
+workspace = true
+
 [dependencies]
 query-engine-sql = { path = "../sql" }
 
