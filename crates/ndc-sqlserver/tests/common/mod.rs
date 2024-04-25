@@ -63,7 +63,6 @@ async fn run_against_server<Response: for<'a> serde::Deserialize<'a>>(
 }
 
 pub async fn create_router() -> axum::Router {
-    // pub async fn create_router(configuration_directory: impl AsRef<Path>) -> axum::Router {
     let _ = env_logger::builder().is_test(true).try_init();
 
     // work out where the deployment configs live
