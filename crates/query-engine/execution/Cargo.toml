@@ -3,13 +3,16 @@ name = "query-engine-execution"
 version = "0.1.0"
 edition = "2021"
 
+[lints]
+workspace = true
+
 [dependencies]
 query-engine-sql = { path = "../sql" }
 
 tiberius = { version = "0.12.2", default-features = false, features = ["rustls"] }
 bb8 = "0.8.1"
 bb8-tiberius = "0.15.0"
-bytes = "1.5.0"
+bytes = "1.6.0"
 prometheus = "0.13.3"
 serde_json = "1.0.108"
 sqlformat = "0.2.2"

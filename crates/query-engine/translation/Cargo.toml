@@ -4,9 +4,12 @@ name = "query-engine-translation"
 version = "0.1.0"
 edition = "2021"
 
+[lints]
+workspace = true
+
 [dependencies]
 
-ndc-sdk = { git = "https://github.com/hasura/ndc-hub.git", rev = "fb03873" }
+ndc-sdk = { workspace = true }
 
 query-engine-metadata = { path = "../metadata" }
 query-engine-sql = { path = "../sql" }

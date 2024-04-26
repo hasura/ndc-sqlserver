@@ -9,6 +9,15 @@ use std::collections::{BTreeMap, BTreeSet};
 #[serde(rename_all = "camelCase")]
 pub struct ScalarType(pub String);
 
+/// The type of values that a column, field, or argument may take.
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum Type {
+    ScalarType(ScalarType),
+    CompositeType(String),
+    ArrayType(Box<Type>),
+}
+
 /// The complete list of supported binary operators for scalar types.
 /// Not all of these are supported for every type.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
@@ -21,10 +30,20 @@ pub struct ComparisonOperators(pub BTreeMap<ScalarType, BTreeMap<String, Compari
 pub struct ComparisonOperator {
     pub operator_name: String,
     pub argument_type: ScalarType,
+    pub operator_kind: OperatorKind,
+}
+
+/// Is it a built-in operator, or a custom operator.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub enum OperatorKind {
+    Equal,
+    In,
+    Custom,
 }
 
 /// Mapping from a "table" name to its information.
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct TablesInfo(pub BTreeMap<String, TableInfo>);
 

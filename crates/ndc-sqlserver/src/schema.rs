@@ -20,12 +20,14 @@ pub async fn get_schema(
 ) -> Result<models::SchemaResponse, connector::SchemaError> {
     let configuration::RawConfiguration { metadata, .. } = config;
     let scalar_types: BTreeMap<String, models::ScalarType> =
-        configuration::occurring_scalar_types(&metadata.tables, &metadata.native_queries)
+        configuration::occurring_scalar_types(metadata)
             .iter()
             .map(|scalar_type| {
                 (
                     scalar_type.0.clone(),
                     models::ScalarType {
+                        // TODO(PY): Add representation for beta
+                        representation: None,
                         aggregate_functions: metadata
                             .aggregate_functions
                             .0
@@ -52,10 +54,20 @@ pub async fn get_schema(
                             .map(|(op_name, op_def)| {
                                 (
                                     op_name.clone(),
-                                    models::ComparisonOperatorDefinition {
-                                        argument_type: models::Type::Named {
-                                            name: op_def.argument_type.0.clone(),
-                                        },
+                                    match op_def.operator_kind {
+                                        metadata::OperatorKind::Equal => {
+                                            models::ComparisonOperatorDefinition::Equal
+                                        }
+                                        metadata::OperatorKind::In => {
+                                            models::ComparisonOperatorDefinition::In
+                                        }
+                                        metadata::OperatorKind::Custom => {
+                                            models::ComparisonOperatorDefinition::Custom {
+                                                argument_type: models::Type::Named {
+                                                    name: op_def.argument_type.0.clone(),
+                                                },
+                                            }
+                                        }
                                     },
                                 )
                             })

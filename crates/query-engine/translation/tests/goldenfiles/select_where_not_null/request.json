@@ -23,7 +23,7 @@
         }
       ]
     },
-    "where": {
+    "predicate": {
       "type": "not",
       "expression": {
         "type": "unary_comparison_operator",

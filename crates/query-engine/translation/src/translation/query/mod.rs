@@ -6,7 +6,6 @@ mod aggregates;
 mod filtering;
 mod helpers;
 mod native_queries;
-mod operators;
 mod relationships;
 mod root;
 mod sorting;
@@ -26,12 +25,13 @@ pub fn translate(
 ) -> Result<sql::execution_plan::ExecutionPlan, Error> {
     let env = Env::new(metadata, query_request.collection_relationships);
     let mut state = State::new();
+    let table_alias = state.make_table_alias(query_request.collection.clone());
     let (current_table, from_clause) = root::make_from_clause_and_reference(
         &query_request.collection,
         &query_request.arguments,
         &env,
         &mut state,
-        None,
+        &table_alias,
     )?;
 
     let select_set = translate_query(
@@ -39,7 +39,8 @@ pub fn translate(
         &mut state,
         &current_table,
         &from_clause,
-        query_request.query,
+        &query_request.query,
+        &table_alias,
     )?;
 
     // form a single JSON item shaped `{ rows: [], aggregates: {} }`
@@ -75,27 +76,16 @@ pub fn translate_query(
     state: &mut State,
     current_table: &TableNameAndReference,
     from_clause: &sql::ast::From,
-    query: models::Query,
+    query: &models::Query,
+    table_alias: &sql::ast::TableAlias,
 ) -> Result<sql::helpers::SelectSet, Error> {
-    // Error::NoFields becomes Ok(None)
-    // everything stays Err
-    let map_no_fields_error_to_none = |err| match err {
-        Error::NoFields => Ok(None),
-        other_error => Err(other_error),
-    };
-
-    // wrap valid result in Some
-    let wrap_ok = |a| Ok(Some(a));
-
     // translate rows query. if there are no fields, make this a None
-    let row_select: Option<sql::ast::Select> =
-        root::translate_rows_query(env, state, current_table, from_clause, &query)
-            .map_or_else(map_no_fields_error_to_none, wrap_ok)?;
+    let row_select =
+        root::translate_rows_query(env, state, current_table, from_clause, query, table_alias)?;
 
     // translate aggregate select. if there are no fields, make this a None
-    let aggregate_select: Option<sql::ast::Select> =
-        root::translate_aggregate_query(env, state, current_table, from_clause, &query)
-            .map_or_else(map_no_fields_error_to_none, wrap_ok)?;
+    let aggregate_select =
+        root::translate_aggregate_query(env, state, current_table, from_clause, query)?;
 
     match (row_select, aggregate_select) {
         (Some(rows), None) => Ok(sql::helpers::SelectSet::Rows(rows)),
@@ -103,6 +93,6 @@ pub fn translate_query(
         (Some(rows), Some(aggregates)) => {
             Ok(sql::helpers::SelectSet::RowsAndAggregates(rows, aggregates))
         }
-        _ => Err(Error::NoFields),
+        (None, None) => Err(Error::NoFieldsAndAggregates),
     }
 }

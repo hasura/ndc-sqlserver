@@ -29,17 +29,14 @@
                         "relationship": "AlbumArtist",
                         "arguments": {}
                       },
-                      "where": {
+                      "predicate": {
                         "type": "binary_comparison_operator",
                         "column": {
                           "type": "column",
                           "name": "Name",
                           "path": []
                         },
-                        "operator": {
-                          "type": "other",
-                          "name": "_like"
-                        },
+                        "operator": "_like",
                         "value": {
                           "type": "scalar",
                           "value": "Accept"
@@ -79,7 +76,6 @@
         "ArtistId": "ArtistId"
       },
       "relationship_type": "object",
-      "source_collection_or_type": "Album",
       "target_collection": "Artist",
       "arguments": {}
     },
@@ -88,7 +84,6 @@
         "AlbumId": "AlbumId"
       },
       "relationship_type": "object",
-      "source_collection_or_type": "Track",
       "target_collection": "Album",
       "arguments": {}
     }
