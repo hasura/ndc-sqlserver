@@ -1253,7 +1253,7 @@ dependencies = [
 [[package]]
 name = "ndc-sdk"
 version = "0.1.0"
-source = "git+https://github.com/hasura/ndc-sdk-rs.git?rev=fe945b6616e5b8bbefa537e5044b4ec962416d4b#fe945b6616e5b8bbefa537e5044b4ec962416d4b"
+source = "git+https://github.com/hasura/ndc-sdk-rs.git?rev=5f243d2b648f1a49a04dce0e2aff47ea80cb1846#5f243d2b648f1a49a04dce0e2aff47ea80cb1846"
 dependencies = [
  "async-trait",
  "axum",
@@ -1475,7 +1475,6 @@ dependencies = [
  "bytes",
  "http",
  "opentelemetry",
- "reqwest",
 ]
 
 [[package]]
