@@ -37,8 +37,8 @@ prometheus = "0.13.3"
 thiserror = "1.0"
 
 [dev-dependencies]
-ndc-models = { git = "https://github.com/hasura/ndc-spec.git", tag = "v0.1.2" }
-ndc-test = { git = "https://github.com/hasura/ndc-spec.git", tag = "v0.1.2" }
+ndc-models = { workspace = true }
+ndc-test = { workspace = true }
 
 axum = "0.6.19"
 axum-test-helper = "0.3.0"
