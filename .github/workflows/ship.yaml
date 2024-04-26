@@ -168,7 +168,13 @@ jobs:
         run: |
           if [[ '${{matrix.target}}' == x86_64-unknown-linux-gnu ]]; then
             sudo apt-get install pkg-config libssl-dev
-          fi 
+          fi
+          if [[ '${{matrix.target}}' == aarch64-unknown-linux-gnu ]]; then
+            sudo apt-get install pkg-config libssl-dev
+          fi
+          if [[ '${{matrix.target}}' == x86_64-apple-darwin ]]; then
+            brew install openssl
+          fi
           # If we're on a tag, use the tag name as the release version.
           if [[ "$GITHUB_REF_TYPE" == 'tag' ]]; then
             # Ensure that the version specified in Cargo.toml is the same as the tag (with a 'v' prefix).
