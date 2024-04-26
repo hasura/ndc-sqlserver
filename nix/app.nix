@@ -23,24 +23,17 @@ let
       in
       lib.cleanSourceWith { src = craneLib.path ./..; filter = isSourceFile; };
 
-      strictDeps = true;
-
-    # build-time inputs
-    nativeBuildInputs = [
-      openssl.dev # required to build Rust crates that can conduct TLS connections
-      pkg-config # required to find OpenSSL
-    ];
-
-    # runtime inputs
     buildInputs = [
-      openssl # required for TLS connections
-      protobuf # required by opentelemetry-proto, a dependency of axum-tracing-opentelemetry
-    ] ++ lib.optionals hostPlatform.isDarwin [
-      # macOS-specific dependencies
+      openssl
+    ] ++ lib.optionals stdenv.hostPlatform.isDarwin [
       libiconv
-      darwin.apple_sdk.frameworks.CoreFoundation
       darwin.apple_sdk.frameworks.Security
       darwin.apple_sdk.frameworks.SystemConfiguration
+    ];
+
+    nativeBuildInputs = [
+      pkg-config # required for non-static builds
+      protobuf # required by opentelemetry-proto, a dependency of axum-tracing-opentelemetry
     ];
   };
 
