@@ -24,7 +24,7 @@ query-engine-metadata = {path = "../query-engine/metadata"}
 query-engine-sql = { path = "../query-engine/sql" }
 query-engine-translation = { path = "../query-engine/translation" }
 
-tiberius = { version = "0.12.2", default-features = false, features = ["opentls"] }
+tiberius = { version = "0.12.2", default-features = false, features = ["rustls"] }
 bb8 = "0.8.1"
 bb8-tiberius = "0.15.0"
 async-trait = "0.1.74"
@@ -45,6 +45,6 @@ axum-test-helper = "0.3.0"
 env_logger = "0.10.1"
 hyper = { version = "0.14.27", features = ["tcp"] }
 insta = { version = "1.34.0", features = ["json"] }
-reqwest = "0.11.22"
+reqwest = { version = "0.11.22", default-features = false, features = ["rustls-tls"] }
 similar-asserts = "1.5.0"
 serde_derive = "1.0"

@@ -200,7 +200,7 @@ jobs:
           echo "RUSTFLAGS = ${RUSTFLAGS}"
 
           echo "Building for target: ${CARGO_BUILD_TARGET}"
-          cargo build --release --package=ndc-sqlserver-cli
+          cargo build --release --bin ndc-sqlserver-cli
 
           mkdir -p release
           mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli release/ndc-sqlserver-cli-${{ matrix.target }}${{ matrix.extension }}
