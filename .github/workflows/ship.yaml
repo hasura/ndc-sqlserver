@@ -172,8 +172,7 @@ jobs:
           fi
           if [[ '${{matrix.target}}' == 'aarch64-unknown-linux-gnu' ]]; then
             sudo apt update
-            sudo apt install openssl
-            echo "$(openssl version -d)"
+            sudo apt install libssl-dev
           fi
           if [[ '${{matrix.target}}' == 'x86_64-apple-darwin' ]]; then
             brew install openssl
