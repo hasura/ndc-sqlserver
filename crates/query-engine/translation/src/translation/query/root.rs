@@ -48,11 +48,38 @@ pub fn translate_aggregate_query(
     }
 }
 
+/*
+
+SELECT
+  JSON_QUERY(
+    CONCAT('[', STRING_AGG(cast('{}' as nvarchar(MAX)), ','), ']')
+  ) AS [no_fields]
+FROM
+  ( SELECT * FROM <table-name> ORDER BY 1 ASC OFFSET <offset> ROWS FETCH NEXT <limit> ROWS ONLY
+    WHERE <where-clause>
+  )
+*/
 pub fn make_no_fields_select_query(
+    env: &Env,
+    state: &mut State,
     from_clause: &sql::ast::From,
     query: &models::Query,
     table_alias: &sql::ast::TableAlias,
+    current_table: &TableNameAndReference,
 ) -> Result<sql::ast::Select, Error> {
+    // Root table and current table are same at this point.
+    let root_and_current_table = RootAndCurrentTables {
+        root_table: current_table.clone(),
+        current_table: current_table.clone(),
+    };
+    let where_expression = match &query.predicate {
+        Some(predicate) => {
+            let expression =
+                filtering::translate_expression(env, state, &root_and_current_table, predicate)?.0;
+            sql::ast::Where(expression)
+        }
+        None => sql::ast::Where(sql::helpers::empty_where()),
+    };
     let select = sql::ast::Select {
         with: sql::helpers::empty_with(),
         select_list: sql::ast::SelectList::SelectList(vec![(
@@ -90,7 +117,7 @@ pub fn make_no_fields_select_query(
                 select_list: sql::ast::SelectList::SelectStar,
                 from: Some(from_clause.clone()),
                 joins: vec![],
-                where_: sql::ast::Where(sql::helpers::empty_where()),
+                where_: where_expression,
                 group_by: sql::helpers::empty_group_by(),
                 order_by: sql::ast::OrderBy {
                     elements: vec![sql::ast::OrderByElement {
@@ -142,7 +169,15 @@ pub fn translate_rows_query(
         // The case were fields were not requested, and also no aggregates were requested,
         // can be used for `__typename` queries.
         if IndexMap::is_empty(&fields) && query.aggregates.is_none() {
-            Some(make_no_fields_select_query(from_clause, query, table_alias)).transpose()
+            Some(make_no_fields_select_query(
+                env,
+                state,
+                from_clause,
+                query,
+                table_alias,
+                current_table,
+            ))
+            .transpose()
         } else {
             // translate fields to columns or relationships.
             let columns: Vec<(sql::ast::ColumnAlias, sql::ast::Expression)> = fields
