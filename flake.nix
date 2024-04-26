@@ -100,7 +100,6 @@
             pkgs.nixpkgs-fmt
             pkgs.nodePackages.prettier
             pkgs.pkg-config
-            pkgs.rnix-lsp
             pkgs.skopeo
             rust.rustToolchain
           ] ++ (
