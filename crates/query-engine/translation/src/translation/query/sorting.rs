@@ -178,7 +178,7 @@ fn translate_order_by_star_count_aggregate(
         Ok(())
     }?;
 
-    match path.get(0) {
+    match path.first() {
         Some(path_element) => {
             // examine the path elements' relationship.
             let relationship = env.lookup_relationship(&path_element.relationship)?;
