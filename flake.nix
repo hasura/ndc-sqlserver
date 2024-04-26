@@ -1,9 +1,9 @@
 {
-  description = "PostgreSQL data connector";
+  description = "SQL Server data connector";
 
   inputs = {
-    nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
-    flake-utils.url = github:numtide/flake-utils;
+    nixpkgs.url = "github:NixOS/nixpkgs?branch=nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
 
     crane = {
       url = "github:ipetkov/crane";
