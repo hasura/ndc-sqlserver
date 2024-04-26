@@ -167,9 +167,11 @@ jobs:
       - name: build the CLI
         run: |
           if [[ '${{matrix.target}}' == x86_64-unknown-linux-gnu ]]; then
+            sudo apt-get update
             sudo apt-get install pkg-config libssl-dev
           fi
           if [[ '${{matrix.target}}' == aarch64-unknown-linux-gnu ]]; then
+            sudo apt-get update
             sudo pacman -S pkg-config openssl
           fi
           if [[ '${{matrix.target}}' == x86_64-apple-darwin ]]; then
