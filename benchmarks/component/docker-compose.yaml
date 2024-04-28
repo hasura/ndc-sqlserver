@@ -61,9 +61,10 @@ services:
     ports:
       - "8080:8080"
     environment:
-      CONNECTION_URI: sqlserverql://sqlserver:password@localhost:1433
+      CONNECTION_URI: Driver={ODBC Driver 17 for SQL Server};Server=127.0.0.1,1433;Database=Chinook;Uid=sa;Pwd=Password!;TrustServerCertificate=True
       # we don't care about traces right now, and the benchmarks flood the batch buffer
       OTEL_TRACES_SAMPLER: "always_off"
+      PORT: 8080
     volumes:
       - type: bind
         source: ../../static
