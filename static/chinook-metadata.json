@@ -3,7 +3,7 @@
     "definition": {
       "name": "db",
       "url": {
-        "singleUrl": "http://localhost:8100"
+        "singleUrl": "http://localhost:8080"
       },
       "schema": {
         "scalar_types": {

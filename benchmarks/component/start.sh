@@ -45,15 +45,15 @@ kill "$AGENT_PID" && wait "$AGENT_PID" || :
 rm -f ./agent.pid
 
 info 'Starting the agent'
-if nc -z localhost 8100; then
-  echo >&2 'ERROR: There is already an agent running on port 8100.'
+if nc -z localhost 8080; then
+  echo >&2 'ERROR: There is already an agent running on port 8080.'
   exit 1
 fi
 
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT='http://localhost:4317' \
   OTEL_SERVICE_NAME='ndc-sqlserver' \
   cargo run -p ndc-sqlserver --quiet --release -- \
-    serve --configuration=./generated/deployment.json \
+    serve --configuration=./generated/deployment \
   >& agent.log &
 AGENT_PID=$!
 echo "$AGENT_PID" > ./agent.pid
