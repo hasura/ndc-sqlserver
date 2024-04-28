@@ -61,7 +61,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      CONFIGURATION_FILE: "/deployment.json"
+      CONNECTION_URI: sqlserverql://sqlserver:password@localhost:64002
       # we don't care about traces right now, and the benchmarks flood the batch buffer
       OTEL_TRACES_SAMPLER: "always_off"
     volumes:
