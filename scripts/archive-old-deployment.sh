@@ -14,8 +14,23 @@ SNAPSHOT_DIR="$(realpath ${CURRENT_DIR}/../static/deployment-snapshots)"
 # create snapshot dir if does not exist
 mkdir -p "$SNAPSHOT_DIR"
 
-# create filename from hash of contents
-NEW_FILENAME="$(sha256sum "${CHINOOK_DEPLOYMENT}" | cut -f1 -d' ').json"
+if [ -f ${CHINOOK_DEPLOYMENT}new_configuration/configuration.json ]; then
+    # create filename from hash of contents
+    NEW_DIRECTORY="$(sha256sum "${CHINOOK_DEPLOYMENT}new_configuration/configuration.json" | cut -f1 -d' ')"
 
-# copy current deployment to new filename
-cp "${CHINOOK_DEPLOYMENT}" "${SNAPSHOT_DIR}/${NEW_FILENAME}"
+    mkdir -p "${SNAPSHOT_DIR}/${NEW_DIRECTORY}"
+
+    # copy current deployment to new filename
+    cp -r "${CHINOOK_DEPLOYMENT}new_configuration"* "${SNAPSHOT_DIR}/${NEW_DIRECTORY}"
+
+    rm -r "${CHINOOK_DEPLOYMENT}new_configuration"
+else
+    # create filename from hash of contents
+    NEW_DIRECTORY="$(sha256sum "${CHINOOK_DEPLOYMENT}configuration.json" | cut -f1 -d' ')"
+
+    mkdir -p "${SNAPSHOT_DIR}/${NEW_DIRECTORY}"
+
+    # copy current deployment to new filename
+    cp -r "${CHINOOK_DEPLOYMENT}configuration.json"* "${SNAPSHOT_DIR}/${NEW_DIRECTORY}"
+fi
+

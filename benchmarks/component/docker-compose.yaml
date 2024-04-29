@@ -6,7 +6,7 @@ services:
   benchmark:
     image: grafana/k6
     environment:
-      AGENT_SOCKET: "agent:8100"
+      AGENT_SOCKET: "agent:8080"
       OUTPUT_DIRECTORY: "/home/k6/output"
       K6_OUT: "experimental-prometheus-rw"
       K6_PROMETHEUS_RW_SERVER_URL: "http://prometheus:9090/api/v1/write"
@@ -59,16 +59,16 @@ services:
       - serve
     init: true
     ports:
-      - "8100:8100"
+      - "8080:8080"
     environment:
-      CONFIGURATION_FILE: "/deployment.json"
+      CONNECTION_URI: "Driver={ODBC Driver 19 for SQL Server};Server=127.0.0.1,1433;Database=Chinook;Uid=sa;Pwd=Password!;TrustServerCertificate=True"
       # we don't care about traces right now, and the benchmarks flood the batch buffer
       OTEL_TRACES_SAMPLER: "always_off"
-      PORT: 8100
+      PORT: 8080
     volumes:
       - type: bind
         source: ../../static
-        target: /deployment.json
+        target: /etc/connector
         read_only: true
     healthcheck:
       test:
