@@ -54,7 +54,7 @@ services:
       - 1433
 
   agent:
-    image: ghcr.io/hasura/ndc-sqlserver:dev
+    image: ghcr.io/hasura/ndc-sqlserver:076a49730
     command:
       - serve
     init: true
@@ -70,11 +70,11 @@ services:
         source: ../../static
         target: /etc/connector
         read_only: true
-    healthcheck:
-      test:
-        - CMD
-        - ndc-sqlserver
-        - check-health
+    # healthcheck:
+    #   test:
+    #     - CMD
+    #     - ndc-sqlserver
+    #     - check-health
       interval: 1s
       timeout: 1s
       retries: 30
