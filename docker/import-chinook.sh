@@ -1,18 +1,26 @@
-#run the setup script to create the DB and the schema in the DB
-#do this in a loop because the timing for when the SQL instance is ready is indeterminate
+#!/usr/bin/env bash
 
-PASSWORD="Password!"
+set -e
+set -u
 
-for i in {1..50};
-do
-    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${PASSWORD}" -i /static/chinook-sqlserver.sql
-    if [ $? -eq 0 ]
-    then
-        echo "setup.sql completed"
-        break
-    else
-        echo "not ready yet..."
-        sleep 1
-    fi
+# do something on the database
+function sqlcmd {
+  /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "${SA_PASSWORD}" "$@"
+}
+
+# wait up to 60s for the database to start
+START_TIME="$(date +%s)"
+while ! sqlcmd -Q 'SELECT 1'; do
+  if [[ "$(( START_TIME + 60 ))" -lt "$(date +%s)" ]]; then
+    echo >&2 'Could not connect to the database.'
+    exit 1
+  fi
 done
 
+# import the data
+sqlcmd -i /static/chinook-sqlserver.sql || {
+  echo >&2 'Failed to import the data.'
+  exit 1
+}
+
+echo >&2 'Successfully imported the data.'
