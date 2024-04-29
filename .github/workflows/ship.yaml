@@ -26,6 +26,7 @@ jobs:
         with:
           name: hasura-v3-dev
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          useDaemon: false # attempt to stop hanging on cleanup
 
       - name: Build a binary with Nix
         run: nix build --print-build-logs '.#${{ matrix.target }}'
@@ -72,6 +73,7 @@ jobs:
         with:
           name: hasura-v3-dev
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          useDaemon: false # attempt to stop hanging on cleanup
 
       - id: gcloud-auth
         name: Authenticate to Google Cloud 🔑
