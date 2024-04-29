@@ -75,9 +75,9 @@ services:
     #     - CMD
     #     - ndc-sqlserver
     #     - check-health
-      interval: 1s
-      timeout: 1s
-      retries: 30
+      # interval: 1s
+      # timeout: 1s
+      # retries: 30
     depends_on:
       sqlserver:
         condition: service_started
