@@ -1,2 +1,6 @@
-# import chinook and go!
-/docker/import-chinook.sh & /opt/mssql/bin/sqlservr
+#!/usr/bin/env bash
+
+set -e
+
+/docker/import-chinook.sh &
+exec /opt/mssql/bin/sqlservr "$@"
