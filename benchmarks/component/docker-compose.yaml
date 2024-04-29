@@ -1,5 +1,3 @@
-version: "3.6"
-
 name: ndc-sqlserver-component-benchmarks
 
 services:
@@ -50,8 +48,6 @@ services:
     extends:
       file: ../../docker-compose.yaml
       service: sqlserver
-    ports:
-      - 1433
 
   agent:
     image: ghcr.io/hasura/ndc-sqlserver:dev
@@ -61,7 +57,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      CONNECTION_URI: "Driver={ODBC Driver 19 for SQL Server};Server=127.0.0.1,1433;Database=Chinook;Uid=sa;Pwd=Password!;TrustServerCertificate=True"
+      CONNECTION_URI: "Server=tcp:sqlserver;Database=Chinook;Uid=SA;Pwd=Password!;TrustServerCertificate=True"
       # we don't care about traces right now, and the benchmarks flood the batch buffer
       OTEL_TRACES_SAMPLER: "always_off"
       PORT: 8080
@@ -80,7 +76,7 @@ services:
       retries: 30
     depends_on:
       sqlserver:
-        condition: service_started
+        condition: service_healthy
 
   # k6 will push statistics to Prometheus
   prometheus:
