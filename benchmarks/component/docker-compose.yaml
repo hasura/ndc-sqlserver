@@ -57,13 +57,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      CONNECTION_URI: "Server=tcp:sqlserver;Database=Chinook;Uid=SA;Pwd=Password!;TrustServerCertificate=True"
       # we don't care about traces right now, and the benchmarks flood the batch buffer
       OTEL_TRACES_SAMPLER: "always_off"
       PORT: 8080
     volumes:
       - type: bind
-        source: ../../static
+        source: ./configuration
         target: /etc/connector
         read_only: true
     healthcheck:
