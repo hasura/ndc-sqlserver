@@ -31,7 +31,7 @@ pub struct Args {
     // TODO(PY): Add command in lib.rs
     pub subcommand: Command,
     #[arg(long = "connection-uri", env = "CONNECTION_URI")]
-    pub url: String,
+    pub url: Option<String>,
 }
 
 /// The application entrypoint. It pulls information from the environment and then calls the [run]

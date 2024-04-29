@@ -9,10 +9,11 @@ use clap::Subcommand;
 const UPDATE_ATTEMPTS: u8 = 3;
 
 /// The various contextual bits and bobs we need to run.
+#[derive(Debug)]
 pub struct Context {
     pub context_path: PathBuf,
     pub release_version: Option<&'static str>,
-    pub uri: String,
+    pub uri: Option<String>,
 }
 
 /// The command invoked by the user.
@@ -64,14 +65,16 @@ async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()>
         Err(Error::DirectoryIsNotEmpty)?;
     }
 
+    let raw_configuration = match context.uri {
+        Some(uri) => {
+            ndc_sqlserver::configuration::RawConfiguration::with_mssql_connection_string(uri)
+        }
+        None => ndc_sqlserver::configuration::RawConfiguration::empty(),
+    };
     // create the configuration file
     fs::write(
         configuration_file,
-        serde_json::to_string_pretty(
-            &ndc_sqlserver::configuration::RawConfiguration::with_mssql_connection_string(
-                context.uri,
-            ),
-        )? + "\n",
+        serde_json::to_string_pretty(&raw_configuration)? + "\n",
     )?;
 
     // create the jsonschema file
@@ -133,6 +136,7 @@ async fn update(context: Context) -> anyhow::Result<()> {
     // It is possible to change the file in the middle of introspection.
     // We want to detect this scenario and retry, or fail if we are unable to.
     // We do that with a few attempts.
+    update_uri_from_context(&context).await?;
     for _attempt in 1..=UPDATE_ATTEMPTS {
         let configuration_file_path = context
             .context_path
@@ -188,4 +192,31 @@ async fn read_config_file_contents(configuration_file_path: &PathBuf) -> anyhow:
                 anyhow::anyhow!(err)
             }
         })
+}
+
+/// Since the URI is not mandatory for `initialize`, we need to update it first. Please not that this will only update
+/// the URI if the raw configuration is empty.
+async fn update_uri_from_context(context: &Context) -> anyhow::Result<()> {
+    let configuration_file_path = context
+        .context_path
+        .join(ndc_sqlserver::connector::CONFIGURATION_FILENAME);
+    let mut input: ndc_sqlserver::configuration::RawConfiguration = {
+        let configuration_file_contents =
+            read_config_file_contents(&configuration_file_path).await?;
+        serde_json::from_str(&configuration_file_contents)?
+    };
+    if input == ndc_sqlserver::configuration::RawConfiguration::empty() {
+        if let Some(uri) = &context.uri {
+            input.mssql_connection_string = uri.clone();
+        } else {
+            return Err(anyhow::anyhow!(
+                "Cannot introspect without a connection URI. Please provide one."
+            ));
+        }
+        fs::write(
+            &configuration_file_path,
+            serde_json::to_string_pretty(&input)? + "\n",
+        )?;
+    }
+    Ok(())
 }
