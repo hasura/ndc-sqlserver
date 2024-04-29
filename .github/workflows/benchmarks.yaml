@@ -40,6 +40,7 @@ jobs:
           for benchmark in $(ls benchmarks); do
             echo "Starting agent..."
             docker compose up --wait agent || {
+              echo "Failed to start agent. Logs:"
               docker compose logs agent
               exit 1
             }
@@ -66,7 +67,7 @@ jobs:
           output-file-path: benchmark-results.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
-          alert-threshold: 200%
+          fail-on-alert: false
           comment-on-alert: true
 
       # scream into Slack if something goes wrong
