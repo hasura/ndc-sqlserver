@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1714403601153,
+  "lastUpdate": 1714404870691,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -1735,6 +1735,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.1494905037779046,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "samir@functional.computer",
+            "name": "Samir Talwar",
+            "username": "SamirTalwar"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "61429967fde3fa4e8d8557472fee08be86321558",
+          "message": "CI: Disable the Cachix daemon. (#113)\n\n* CI: Disable the Cachix daemon.\n\nThe Cachix action seems to hang randomly on cleanup. Let's disable the\ndaemon and see if it helps.\n\n* Missed a couple.\n\n---------\n\nCo-authored-by: pranshi06 <85474619+pranshi06@users.noreply.github.com>",
+          "timestamp": "2024-04-29T15:21:41Z",
+          "tree_id": "3e6c56e6c2a5c8c0b06c2329953ce8a445957ddb",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/61429967fde3fa4e8d8557472fee08be86321558"
+        },
+        "date": 1714404869604,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 97.2659375,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 126.93911,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 97.3481480398705,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 1.741862922080628,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.12825635104178335,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 599.705399,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 855.94935,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 594.3207211415831,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 2.909490622247631,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.14489374776888578,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 205.270202,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 248.2345948,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 203.75823426525452,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 2.70496462235306,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.12739074648783602,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 210.279707,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 247.6226403999999,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 209.98405785190818,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 1.9486038667814114,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.15563739275614527,
             "unit": "ms"
           }
         ]
