@@ -8,7 +8,7 @@
 
 ### Fixed
 
-## [v0.1.0] - 2024-04-27
+## [prepare-for-v0.1.0] - 2024-04-27
 
 Initial release.
 
