@@ -54,7 +54,7 @@ services:
       - 1433
 
   agent:
-    image: ghcr.io/hasura/ndc-sqlserver:076a49730
+    image: ghcr.io/hasura/ndc-sqlserver:dev
     command:
       - serve
     init: true
