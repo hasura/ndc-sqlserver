@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1701859370858,
+  "lastUpdate": 1714403601153,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -1611,6 +1611,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.16779585421991602,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "samir@functional.computer",
+            "name": "Samir Talwar",
+            "username": "SamirTalwar"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "70bead41b7c3ea29de560131e3268ae286296627",
+          "message": "Attempt to fix the benchmarks. (#117)\n\n* Simplify the benchmark SQL Server config.\n\n* If healthchecks fail, do not panic, but report something meaningful.\n\n* Be more rigorous about importing Chinook data.\n\n* Grab a Chinook dataset which is way faster to load.\n\nThis one does multiple inserts at once.\n\n* Use a separate configuration file for benchmarks.\n\n* fix test_configure_is_idempotent by updating the connection string\n\n* format\n\n---------\n\nCo-authored-by: Pranshi <pranshi@hasura.io>",
+          "timestamp": "2024-04-29T15:00:36Z",
+          "tree_id": "b2e86aeee547d94f93ad5827f4c8ac3e03e6ce78",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/70bead41b7c3ea29de560131e3268ae286296627"
+        },
+        "date": 1714403599839,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 99.575346,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 132.60786859999996,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 101.03180549304749,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 1.5721646122319584,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.1575445973861774,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 595.831206,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 649.2201394,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 570.7209236397958,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 2.693529042308228,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.15178358433162378,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 214.770981,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 359.35088749999994,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 222.0447711500458,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 2.074180895285167,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.15867968381564415,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 212.335756,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 248.24047079999997,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 210.86389320979876,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 1.7383867338662071,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.1494905037779046,
             "unit": "ms"
           }
         ]
