@@ -8,9 +8,13 @@
 
 ### Fixed
 
-## [v0.1.0] - 2024-04-27
+## [v0.1.0] - 2024-04-30
 
-Initial release.
+- Initial release with support of ndc-spec v0.1.2 (beta)
+  - Support for CLI plugin for Hasura v3 CLI, which allows the CLI to 
+    introspect the database on demand.
+  - Query explain endpoint has been changed from `/explain` to `/query/explain`.
+  - The default port was changed from 8100 to 8080.
 
 <!-- end -->
 
