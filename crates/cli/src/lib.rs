@@ -205,7 +205,7 @@ async fn update_uri_from_context(context: &Context) -> anyhow::Result<()> {
             read_config_file_contents(&configuration_file_path).await?;
         serde_json::from_str(&configuration_file_contents)?
     };
-    if input == ndc_sqlserver::configuration::RawConfiguration::empty() {
+    if input.mssql_connection_string.is_empty() {
         if let Some(uri) = &context.uri {
             input.mssql_connection_string = uri.clone();
         } else {
