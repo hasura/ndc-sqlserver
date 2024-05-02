@@ -94,6 +94,88 @@ fn make_procedure_type(
     }
 }
 
+struct NativeQueriesSchema {
+    read_only_native_queries: Vec<models::CollectionInfo>,
+    procedure_native_queries: Vec<models::ProcedureInfo>,
+}
+
+/// Given the `native_queries` metadata, separate the native queries that
+/// are tracked as collections and procedures and also update the `object_types`
+/// with the new objects that are created with every native query.
+fn get_native_queries(
+    native_queries: &query_engine_metadata::metadata::NativeQueries,
+    object_types: &mut BTreeMap<String, models::ObjectType>,
+    scalar_types: &mut BTreeMap<String, models::ScalarType>,
+) -> Result<NativeQueriesSchema, connector::SchemaError> {
+    let mut read_only_native_queries = Vec::new();
+    let mut procedure_native_queries = Vec::new();
+
+    native_queries.0.iter().for_each(|(name, info)| {
+        let native_query_object_type = models::ObjectType {
+            description: info.description.clone(),
+            fields: BTreeMap::from_iter(info.columns.values().map(|column| {
+                (
+                    column.name.clone(),
+                    models::ObjectField {
+                        description: column.description.clone(),
+                        r#type: column_to_type(column),
+                    },
+                )
+            })),
+        };
+        object_types.insert(name.clone(), native_query_object_type);
+        if info.is_procedure {
+            let procedure_info = make_procedure_type(
+                name.clone(),
+                info.description.clone(),
+                info.arguments
+                    .iter()
+                    .map(|(column_name, column_info)| {
+                        (
+                            column_name.clone(),
+                            models::ArgumentInfo {
+                                description: column_info.description.clone(),
+                                argument_type: column_to_type(column_info),
+                            },
+                        )
+                    })
+                    .collect(),
+                models::Type::Named { name: name.clone() },
+                object_types,
+                scalar_types,
+            );
+            procedure_native_queries.push(procedure_info);
+        } else {
+            let native_query_collection_info = models::CollectionInfo {
+                name: name.clone(),
+                description: info.description.clone(),
+                arguments: info
+                    .arguments
+                    .iter()
+                    .map(|(name, column_info)| {
+                        (
+                            name.clone(),
+                            models::ArgumentInfo {
+                                description: column_info.description.clone(),
+                                argument_type: column_to_type(column_info),
+                            },
+                        )
+                    })
+                    .collect(),
+                collection_type: name.clone(),
+                uniqueness_constraints: BTreeMap::new(),
+                foreign_keys: BTreeMap::new(),
+            };
+            read_only_native_queries.push(native_query_collection_info);
+        }
+    });
+
+    Ok(NativeQueriesSchema {
+        read_only_native_queries,
+        procedure_native_queries,
+    })
+}
+
 /// Get the connector's schema.
 ///
 /// This function implements the [schema endpoint](https://hasura.github.io/ndc-spec/specification/schema/index.html)
@@ -197,33 +279,6 @@ pub async fn get_schema(
         })
         .collect();
 
-    let native_queries_read_only: Vec<models::CollectionInfo> = metadata
-        .native_queries
-        .0
-        .iter()
-        .filter(|(_, info)| !info.is_procedure)
-        .map(|(name, info)| models::CollectionInfo {
-            name: name.clone(),
-            description: info.description.clone(),
-            arguments: info
-                .arguments
-                .iter()
-                .map(|(name, column_info)| {
-                    (
-                        name.clone(),
-                        models::ArgumentInfo {
-                            description: column_info.description.clone(),
-                            argument_type: column_to_type(column_info),
-                        },
-                    )
-                })
-                .collect(),
-            collection_type: name.clone(),
-            uniqueness_constraints: BTreeMap::new(),
-            foreign_keys: BTreeMap::new(),
-        })
-        .collect();
-
     let table_types = BTreeMap::from_iter(metadata.tables.0.iter().map(|(table_name, table)| {
         let object_type = models::ObjectType {
             description: table.description.clone(),
@@ -240,57 +295,20 @@ pub async fn get_schema(
         (table_name.clone(), object_type)
     }));
 
-    let native_queries_types =
-        BTreeMap::from_iter(metadata.native_queries.0.iter().map(|(name, info)| {
-            let object_type = models::ObjectType {
-                description: info.description.clone(),
-                fields: BTreeMap::from_iter(info.columns.values().map(|column| {
-                    (
-                        column.name.clone(),
-                        models::ObjectField {
-                            description: column.description.clone(),
-                            r#type: column_to_type(column),
-                        },
-                    )
-                })),
-            };
-            (name.clone(), object_type)
-        }));
-
     let mut object_types = table_types;
-    object_types.extend(native_queries_types);
 
-    let native_queries_tracked_as_procedures: Vec<models::ProcedureInfo> = metadata
-        .native_queries
-        .0
-        .iter()
-        .filter(|(_, info)| info.is_procedure)
-        .map(|(name, info)| {
-            make_procedure_type(
-                name.clone(),
-                info.description.clone(),
-                info.arguments
-                    .iter()
-                    .map(|(column_name, column_info)| {
-                        (
-                            column_name.clone(),
-                            models::ArgumentInfo {
-                                description: column_info.description.clone(),
-                                argument_type: column_to_type(column_info),
-                            },
-                        )
-                    })
-                    .collect(),
-                models::Type::Named { name: name.clone() },
-                &mut object_types,
-                &mut scalar_types,
-            )
-        })
-        .collect();
+    let NativeQueriesSchema {
+        read_only_native_queries,
+        procedure_native_queries,
+    } = get_native_queries(
+        &metadata.native_queries,
+        &mut object_types,
+        &mut scalar_types,
+    )?;
     let mut collections = tables;
-    collections.extend(native_queries_read_only);
+    collections.extend(read_only_native_queries);
 
-    let procedures = native_queries_tracked_as_procedures;
+    let procedures = procedure_native_queries;
 
     Ok(models::SchemaResponse {
         collections,

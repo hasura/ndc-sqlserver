@@ -13,6 +13,14 @@ use std::collections::BTreeMap;
 #[serde(rename_all = "camelCase")]
 pub struct NativeQueries(pub BTreeMap<String, NativeQueryInfo>);
 
+/// Name of the temporary table where the results of the
+/// procedure will be written to.
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct NativeQueryProcedure {
+    pub temporary_table_name: String,
+}
+
 /// Information about a Native Query
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
@@ -27,7 +35,7 @@ pub struct NativeQueryInfo {
     #[serde(default)]
     pub description: Option<String>,
     /// Execute the native query as a procedure, this is useful
-    /// if the native query mutates data.
+    /// if the native query mutates database.
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     #[serde(default)]
     pub is_procedure: bool,
