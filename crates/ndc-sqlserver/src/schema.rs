@@ -96,8 +96,15 @@ fn make_procedure_type(
     }
 }
 
-/// Gets the schema of the native mutations. A native mutation creates
-/// creates an object corresponding to the `columns` type.
+/// Gets the schema of the native mutations.
+
+/// Each native mutation creates two objects:
+/// 1. Object with name `{native_mutation_name}_response`, this object
+///    will contain two fields:
+///         a. affected_rows: int - The rows affected by the native mutation.
+///         b. returning: `{native_mutation_name}` - Data returned by the native mutation.
+/// 2. Object with name `{native_mutation_name}` whose fields will
+///    contain the fields specified in the `columns`.
 fn get_native_mutations_schema(
     native_mutations: &query_engine_metadata::metadata::NativeMutations,
     object_types: &mut BTreeMap<String, models::ObjectType>,
@@ -145,9 +152,9 @@ fn get_native_mutations_schema(
     Ok(procedure_native_queries)
 }
 
-/// Given the `native_queries` metadata, separate the native queries that
-/// are tracked as collections and procedures and also update the `object_types`
-/// with the new objects that are created with every native query.
+/// Gets the schema of the native mutations. Each native query creates
+/// creates an object named as the name of the native query
+/// with the fields of the object corresponding to the `columns` type.
 fn get_native_queries_schema(
     native_queries: &query_engine_metadata::metadata::NativeQueries,
     object_types: &mut BTreeMap<String, models::ObjectType>,
