@@ -335,19 +335,18 @@ pub async fn get_schema(
 
     let mut object_types = table_types;
 
-    let read_only_native_queries =
-        get_native_queries_schema(&metadata.native_queries, &mut object_types)?;
+    let native_queries = get_native_queries_schema(&metadata.native_queries, &mut object_types)?;
 
-    let procedure_native_queries = get_native_mutations_schema(
+    let native_mutations = get_native_mutations_schema(
         &metadata.native_mutations,
         &mut object_types,
         &mut scalar_types,
     )?;
 
     let mut collections = tables;
-    collections.extend(read_only_native_queries);
+    collections.extend(native_queries);
 
-    let procedures = procedure_native_queries;
+    let procedures = native_mutations;
 
     Ok(models::SchemaResponse {
         collections,
