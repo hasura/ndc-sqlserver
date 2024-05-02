@@ -151,9 +151,10 @@ fn get_native_mutations_schema(
     Ok(procedure_native_queries)
 }
 
-/// Gets the schema of the native mutations. Each native query creates
-/// creates an object named as the name of the native query
-/// with the fields of the object corresponding to the `columns` type.
+/// Gets the schema of the native queries.
+/// Each native query creates creates an object named as the name
+/// of the native query with the fields of the object corresponding
+/// to the `columns` field.
 fn get_native_queries_schema(
     native_queries: &query_engine_metadata::metadata::NativeQueries,
     object_types: &mut BTreeMap<String, models::ObjectType>,
