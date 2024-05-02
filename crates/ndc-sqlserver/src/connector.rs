@@ -5,47 +5,56 @@
 //! The relevant types for configuration and state are defined in
 //! `super::configuration`.
 
-use tiberius::Query;
+use std::path::Path;
+use std::sync::Arc;
 
 use async_trait::async_trait;
 use ndc_sdk::connector;
 use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
+use tokio::fs;
 
 use super::configuration;
 use super::explain;
 use super::query;
 use super::schema;
-use std::sync::Arc;
 
 #[derive(Clone, Default)]
 pub struct SQLServer {}
 
+pub const CONFIGURATION_FILENAME: &str = "configuration.json";
+pub const CONFIGURATION_JSONSCHEMA_FILENAME: &str = "schema.json";
+
 #[async_trait]
-impl connector::Connector for SQLServer {
-    /// RawConfiguration is what the user specifies as JSON
-    type RawConfiguration = configuration::RawConfiguration;
-    /// The type of validated configuration
-    type Configuration = Arc<configuration::Configuration>;
-    /// The type of unserializable state
-    type State = Arc<configuration::State>;
-
-    fn make_empty_configuration() -> Self::RawConfiguration {
-        configuration::RawConfiguration::empty()
-    }
-
-    /// Configure a configuration maybe?
-    async fn update_configuration(
-        args: Self::RawConfiguration,
-    ) -> Result<Self::RawConfiguration, connector::UpdateConfigurationError> {
-        configuration::configure(&args).await
-    }
+impl connector::ConnectorSetup for SQLServer {
+    type Connector = SQLServer;
 
     /// Validate the raw configuration provided by the user,
     /// returning a configuration error or a validated [`Connector::Configuration`].
-    async fn validate_raw_configuration(
-        configuration: Self::RawConfiguration,
-    ) -> Result<Self::Configuration, connector::ValidateError> {
+    async fn parse_configuration(
+        &self,
+        configuration_dir: impl AsRef<Path> + Send,
+    ) -> Result<<Self::Connector as connector::Connector>::Configuration, connector::ParseError>
+    {
+        let configuration_file = configuration_dir.as_ref().join(CONFIGURATION_FILENAME);
+        let configuration_file_contents =
+            fs::read_to_string(&configuration_file)
+                .await
+                .map_err(|err| {
+                    connector::ParseError::Other(
+                        format!("{}: {}", &configuration_file.display(), err).into(),
+                    )
+                })?;
+        let configuration: configuration::RawConfiguration =
+            serde_json::from_str(&configuration_file_contents).map_err(|error| {
+                connector::ParseError::ParseError(connector::LocatedError {
+                    file_path: configuration_file.clone(),
+                    line: error.line(),
+                    column: error.column(),
+                    message: error.to_string(),
+                })
+            })?;
+
         configuration::validate_raw_configuration(configuration)
             .await
             .map(Arc::new)
@@ -59,15 +68,24 @@ impl connector::Connector for SQLServer {
     /// In addition, this function should register any
     /// connector-specific metrics with the metrics registry.
     async fn try_init_state(
-        configuration: &Self::Configuration,
+        &self,
+        configuration: &<Self::Connector as connector::Connector>::Configuration,
         metrics: &mut prometheus::Registry,
-    ) -> Result<Self::State, connector::InitializationError> {
+    ) -> Result<<Self::Connector as connector::Connector>::State, connector::InitializationError>
+    {
         configuration::create_state(configuration, metrics)
             .await
             .map(Arc::new)
             .map_err(|err| connector::InitializationError::Other(err.into()))
     }
+}
 
+#[async_trait]
+impl connector::Connector for SQLServer {
+    /// The type of validated configuration
+    type Configuration = Arc<configuration::Configuration>;
+    /// The type of unserializable state
+    type State = Arc<configuration::State>;
     /// Update any metrics from the state
     ///
     /// Note: some metrics can be updated directly, and do not
@@ -94,7 +112,7 @@ impl connector::Connector for SQLServer {
     ) -> Result<(), connector::HealthError> {
         health_check_connect(state)
             .await
-            .map_err(|e| connector::HealthError::Other(Box::new(e)))
+            .map_err(connector::HealthError::Other)
     }
 
     /// Get the connector's capabilities.
@@ -103,12 +121,16 @@ impl connector::Connector for SQLServer {
     /// from the NDC specification.
     async fn get_capabilities() -> JsonResponse<models::CapabilitiesResponse> {
         JsonResponse::Value(models::CapabilitiesResponse {
-            versions: "^0.1.0".into(),
+            version: "0.1.2".into(),
             capabilities: models::Capabilities {
-                explain: Some(models::LeafCapability {}),
                 query: models::QueryCapabilities {
                     aggregates: Some(models::LeafCapability {}),
                     variables: Some(models::LeafCapability {}),
+                    explain: Some(models::LeafCapability {}),
+                },
+                mutation: models::MutationCapabilities {
+                    transactional: Some(models::LeafCapability {}),
+                    explain: Some(models::LeafCapability {}),
                 },
                 relationships: Some(models::RelationshipCapabilities {
                     relation_comparisons: Some(models::LeafCapability {}),
@@ -132,7 +154,7 @@ impl connector::Connector for SQLServer {
     ///
     /// This function implements the [explain endpoint](https://hasura.github.io/ndc-spec/specification/explain.html)
     /// from the NDC specification.
-    async fn explain(
+    async fn query_explain(
         configuration: &Self::Configuration,
         state: &Self::State,
         query_request: models::QueryRequest,
@@ -140,6 +162,15 @@ impl connector::Connector for SQLServer {
         explain::explain(configuration, state, query_request)
             .await
             .map(JsonResponse::Value)
+    }
+
+    async fn mutation_explain(
+        _configuration: &Self::Configuration,
+        _state: &Self::State,
+        _mutation_request: models::MutationRequest,
+    ) -> Result<JsonResponse<models::ExplainResponse>, connector::ExplainError> {
+        //TODO(PY): Implement mutation explain
+        todo!("mutation explain is currently not implemented")
     }
 
     /// Execute a mutation
@@ -168,28 +199,21 @@ impl connector::Connector for SQLServer {
 }
 
 // let's connect to our sql server and get the party started
-async fn health_check_connect(state: &configuration::State) -> Result<(), tiberius::error::Error> {
-    let mut connection = state.mssql_pool.get().await.unwrap();
+async fn health_check_connect(
+    state: &configuration::State,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync + 'static>> {
+    let mut connection = state.mssql_pool.get().await?;
+    let select = tiberius::Query::new("SELECT 1");
 
-    // let's do a query to check everything is ok
-    let params = vec![String::from("hello"), String::from("world")];
-    let mut select = Query::new("SELECT @P1, @P2");
-
-    // bind parameters....
-    for param in params.into_iter() {
-        select.bind(param);
-    }
-
-    // go!
     let stream = select.query(&mut connection).await?;
+    let Some(row) = stream.into_row().await? else {
+        return Err("No results returned from health check query".into());
+    };
 
-    // Nothing is fetched, the first result set starts.
-    let row = stream.into_row().await?.unwrap();
-
-    let inner_result: Vec<Option<&str>> = vec![row.get(0), row.get(1)];
-
-    // check we got the result we expected, panic if not!
-    assert!(inner_result == vec![Some("hello"), Some("world")]);
+    // check we got a valid result
+    if row.get(0) != Some(1) {
+        return Err("Health check query returned invalid results".into());
+    }
 
     Ok(())
 }

@@ -1,12 +1,12 @@
-version: "3.6"
-
 services:
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2017-latest
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    user: root
     platform: linux/amd64
     ports:
       - 64003:1433
-    command: bash -c "/docker/entrypoint.sh"
+    entrypoint:
+      - /docker/entrypoint.sh
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Developer"
@@ -28,7 +28,7 @@ services:
       test:
         - CMD-SHELL
         - |
-          /opt/mssql-tools/bin/sqlcmd -U SA -P "$$SA_PASSWORD"
+          /opt/mssql-tools/bin/sqlcmd -U SA -P "$$SA_PASSWORD" -d 'Chinook'
       start_period: 5s
       interval: 5s
       timeout: 10s
@@ -81,7 +81,7 @@ services:
       - 3050:3050
 
   jaeger:
-    image: jaegertracing/all-in-one:1.37
+    image: jaegertracing/all-in-one:1.56
     restart: always
     ports:
       - 5775:5775/udp

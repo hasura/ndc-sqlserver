@@ -68,7 +68,7 @@ just run
    ```
    curl -H "Content-Type: application/json" \
      --data "@crates/ndc-sqlserver/tests/goldenfiles/select_where_variable.json" \
-    http://localhost:8100/query \
+    http://localhost:8080/query \
     | jq
    ```
 

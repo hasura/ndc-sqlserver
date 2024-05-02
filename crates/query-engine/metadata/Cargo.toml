@@ -4,6 +4,9 @@ name = "query-engine-metadata"
 version = "0.1.0"
 edition = "2021"
 
+[lints]
+workspace = true
+
 [dependencies]
 schemars = { version = "0.8.16", features = ["smol_str"] }
-serde = { version = "^1.0.193", features = ["derive"] }
+serde = { version = "1.0.198", features = ["derive"] }

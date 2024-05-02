@@ -4,9 +4,10 @@ use std::path::{Path, PathBuf};
 use ndc_sqlserver::configuration;
 use similar_asserts::assert_eq;
 
-const CONNECTION_STRING: &str ="DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true";
+const CONNECTION_STRING: &str =
+    "Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true";
 
-const CHINOOK_DEPLOYMENT_PATH: &str = "static/chinook-deployment.json";
+const CHINOOK_DEPLOYMENT_PATH: &str = "static/configuration.json";
 
 #[tokio::test]
 async fn test_configure_is_idempotent() {

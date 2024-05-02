@@ -184,7 +184,7 @@ fn get_query_text(
 ) -> Result<String, Error> {
     let empty_map = BTreeMap::new();
     let variable_sets = variables.unwrap_or_default();
-    let variables = variable_sets.get(0).unwrap_or(&empty_map);
+    let variables = variable_sets.first().unwrap_or(&empty_map);
 
     let declarations =
         query

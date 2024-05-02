@@ -29,9 +29,10 @@ pub struct ExplainDetails {
     pub plan: String,
 }
 
+// TODO(PY): add run_explain_mutation
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_explain(testname: &str) -> ExactExplainResponse {
-    run_against_server("explain", testname).await
+    run_against_server("query/explain", testname).await
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
@@ -67,11 +68,15 @@ pub async fn create_router() -> axum::Router {
     // work out where the deployment configs live
     let test_deployment_file = get_deployment_file();
 
+    let setup = connector::SQLServer::default();
+
     // initialise server state with the static configuration.
     let state = ndc_sdk::default_main::init_server_state::<connector::SQLServer>(
-        test_deployment_file.display().to_string(),
+        setup,
+        test_deployment_file,
     )
-    .await;
+    .await
+    .unwrap();
 
     // create a fresh client
     ndc_sdk::default_main::create_router(state, None)
@@ -114,6 +119,6 @@ pub fn is_contained_in_lines(keywords: Vec<&str>, lines: String) {
 /// and get our single static configuration file.
 pub fn get_deployment_file() -> PathBuf {
     let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    d.push("../../static/chinook-deployment.json");
+    d.push("../../static/");
     d
 }

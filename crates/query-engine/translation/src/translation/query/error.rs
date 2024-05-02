@@ -15,12 +15,12 @@ pub enum Error {
     },
     RelationshipArgumentWasOverriden(String),
     EmptyPathForStarCountAggregate,
-    NoFields,
     TypeMismatch(serde_json::Value, database::ScalarType),
     CapabilityNotSupported(UnsupportedCapabilities),
-    NoConstraintsForOrdering,
+    NoConstraintsForOrdering(String),
     NoColumnsForOrdering,
     NotSupported(String),
+    NoFieldsAndAggregates,
 }
 
 /// Capabilities we don't currently support.
@@ -45,8 +45,8 @@ impl std::fmt::Display for Error {
                 "Column '{}' not found in collection '{}'.",
                 column_name, collection_name
             ),
-            Error::NoConstraintsForOrdering => {
-                write!(f, "No constraints found for ordering")
+            Error::NoConstraintsForOrdering(table_name) => {
+                write!(f, "No constraints found for ordering. An order by clause or a primary key on the table '{}' is required for queries with a limit or offset clause.", table_name)
             }
             Error::NoColumnsForOrdering => {
                 write!(f, "No columns found for ordering")
@@ -74,9 +74,6 @@ impl std::fmt::Display for Error {
             Error::EmptyPathForStarCountAggregate => {
                 write!(f, "No path elements supplied for Star Count Aggregate")
             }
-            Error::NoFields => {
-                write!(f, "No fields in request.")
-            }
             Error::TypeMismatch(value, typ) => {
                 write!(f, "Value '{:?}' is not of type '{:?}'.", value, typ)
             }
@@ -85,6 +82,9 @@ impl std::fmt::Display for Error {
             }
             Error::NotSupported(thing) => {
                 write!(f, "Queries containing {} are not supported.", thing)
+            }
+            Error::NoFieldsAndAggregates => {
+                write!(f, "No fields or aggregates found in query")
             }
         }
     }

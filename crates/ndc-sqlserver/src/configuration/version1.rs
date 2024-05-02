@@ -9,6 +9,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
+use std::path::PathBuf;
 use thiserror::Error;
 use tiberius::Query;
 
@@ -37,7 +38,7 @@ const NOT_COUNTABLE: [&str; 3] = ["image", "ntext", "text"];
 const NOT_APPROX_COUNTABLE: [&str; 4] = ["image", "sql_variant", "ntext", "text"];
 
 /// User configuration.
-#[derive(Debug, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, JsonSchema)]
 pub struct RawConfiguration {
     pub version: u32,
     pub mssql_connection_string: String,
@@ -49,6 +50,14 @@ impl RawConfiguration {
         Self {
             version: CURRENT_VERSION,
             mssql_connection_string: "".into(),
+            metadata: query_engine_metadata::metadata::Metadata::default(),
+        }
+    }
+
+    pub fn with_mssql_connection_string(mssql_connection_string: String) -> Self {
+        Self {
+            version: CURRENT_VERSION,
+            mssql_connection_string,
             metadata: query_engine_metadata::metadata::Metadata::default(),
         }
     }
@@ -71,17 +80,18 @@ pub struct State {
 /// Validate the user configuration.
 pub async fn validate_raw_configuration(
     config: RawConfiguration,
-) -> Result<Configuration, connector::ValidateError> {
+) -> Result<Configuration, connector::ParseError> {
     if config.version != 1 {
-        return Err(connector::ValidateError::ValidateError(vec![
-            connector::InvalidRange {
-                path: vec![connector::KeyOrIndex::Key("version".into())],
+        return Err(connector::ParseError::ValidateError(
+            connector::InvalidNodes(vec![connector::InvalidNode {
+                file_path: PathBuf::from("file_path"), // TODO(PY): find the path for the config
+                node_path: vec![connector::KeyOrIndex::Key("version".into())], //tODO(PY)
                 message: format!(
                     "invalid configuration version, expected 1, got {0}",
                     config.version
                 ),
-            },
-        ]));
+            }]),
+        ));
     }
     Ok(Configuration { config })
 }
@@ -132,7 +142,7 @@ async fn select_first_row(
 /// Construct the deployment configuration by introspecting the database.
 pub async fn configure(
     configuration: &RawConfiguration,
-) -> Result<RawConfiguration, connector::UpdateConfigurationError> {
+) -> Result<RawConfiguration, connector::ParseError> {
     let mssql_pool = create_mssql_pool(configuration).await.unwrap();
 
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
@@ -284,30 +294,9 @@ fn get_aggregate_functions_for_type(
     };
 
     aggregate_functions.insert(
-        "CHECKSUM_AGG".to_string(),
-        database::AggregateFunction {
-            return_type: metadata::ScalarType("int".to_string()),
-        },
-    );
-
-    aggregate_functions.insert(
         "COUNT_BIG".to_string(),
         database::AggregateFunction {
             return_type: metadata::ScalarType("bigint".to_string()),
-        },
-    );
-
-    aggregate_functions.insert(
-        "GROUPING".to_string(),
-        database::AggregateFunction {
-            return_type: metadata::ScalarType("tinyint".to_string()),
-        },
-    );
-
-    aggregate_functions.insert(
-        "GROUPING_ID".to_string(),
-        database::AggregateFunction {
-            return_type: metadata::ScalarType("int".to_string()),
         },
     );
 
@@ -343,6 +332,16 @@ fn get_comparison_operators_for_type(
         database::ComparisonOperator {
             operator_name: "=".to_string(),
             argument_type: type_name.clone(),
+            operator_kind: database::OperatorKind::Equal,
+        },
+    );
+
+    comparison_operators.insert(
+        "_in".to_string(),
+        database::ComparisonOperator {
+            operator_name: "IN".to_string(),
+            argument_type: type_name.clone(),
+            operator_kind: database::OperatorKind::In,
         },
     );
 
@@ -355,6 +354,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: "LIKE".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
         comparison_operators.insert(
@@ -362,6 +362,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: "NOT LIKE".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
     }
@@ -374,6 +375,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: "!=".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
         comparison_operators.insert(
@@ -381,6 +383,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: "<".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
         comparison_operators.insert(
@@ -388,6 +391,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: ">".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
 
@@ -396,6 +400,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: ">=".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
         comparison_operators.insert(
@@ -403,6 +408,7 @@ fn get_comparison_operators_for_type(
             database::ComparisonOperator {
                 operator_name: "<=".to_string(),
                 argument_type: type_name.clone(),
+                operator_kind: database::OperatorKind::Custom,
             },
         );
     }
@@ -523,10 +529,9 @@ pub enum InitializationError {
 
 /// Collect all the types that can occur in the metadata. This is a bit circumstantial. A better
 /// approach is likely to record scalar type names directly in the metadata via configuration.sql.
-pub fn occurring_scalar_types(
-    tables: &metadata::TablesInfo,
-    native_queries: &metadata::NativeQueries,
-) -> BTreeSet<metadata::ScalarType> {
+pub fn occurring_scalar_types(metadata: &metadata::Metadata) -> BTreeSet<metadata::ScalarType> {
+    let tables = &metadata.tables;
+    let native_queries = &metadata.native_queries;
     let tables_column_types = tables
         .0
         .values()
@@ -542,8 +547,22 @@ pub fn occurring_scalar_types(
         .values()
         .flat_map(|v| v.arguments.values().map(|c| c.r#type.clone()));
 
+    let aggregate_types = metadata
+        .aggregate_functions
+        .0
+        .values()
+        .flat_map(|v| v.values().map(|c| c.return_type.clone()));
+
+    let comparison_operator_types = metadata
+        .comparison_operators
+        .0
+        .values()
+        .flat_map(|v| v.values().map(|c| c.argument_type.clone()));
+
     tables_column_types
         .chain(native_queries_column_types)
         .chain(native_queries_arguments_types)
+        .chain(aggregate_types)
+        .chain(comparison_operator_types)
         .collect::<BTreeSet<metadata::ScalarType>>()
 }

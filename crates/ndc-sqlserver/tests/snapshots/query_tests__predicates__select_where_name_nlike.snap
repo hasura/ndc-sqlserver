@@ -24,26 +24,6 @@ expression: result
       {
         "AlbumId": 7,
         "Title": "Facelift"
-      },
-      {
-        "AlbumId": 8,
-        "Title": "Warner 25 Anos"
-      },
-      {
-        "AlbumId": 9,
-        "Title": "Plays Metallica By Four Cellos"
-      },
-      {
-        "AlbumId": 10,
-        "Title": "Audioslave"
-      },
-      {
-        "AlbumId": 11,
-        "Title": "Out Of Exile"
-      },
-      {
-        "AlbumId": 12,
-        "Title": "BackBeat Soundtrack"
       }
     ]
   }

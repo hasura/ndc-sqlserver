@@ -1,12 +1,10 @@
-version: "3.6"
-
 name: ndc-sqlserver-component-benchmarks
 
 services:
   benchmark:
     image: grafana/k6
     environment:
-      AGENT_SOCKET: "agent:8100"
+      AGENT_SOCKET: "agent:8080"
       OUTPUT_DIRECTORY: "/home/k6/output"
       K6_OUT: "experimental-prometheus-rw"
       K6_PROMETHEUS_RW_SERVER_URL: "http://prometheus:9090/api/v1/write"
@@ -50,8 +48,6 @@ services:
     extends:
       file: ../../docker-compose.yaml
       service: sqlserver
-    ports:
-      - 1433
 
   agent:
     image: ghcr.io/hasura/ndc-sqlserver:dev
@@ -59,16 +55,15 @@ services:
       - serve
     init: true
     ports:
-      - "8100:8100"
+      - "8080:8080"
     environment:
-      CONFIGURATION_FILE: "/deployment.json"
       # we don't care about traces right now, and the benchmarks flood the batch buffer
       OTEL_TRACES_SAMPLER: "always_off"
-      PORT: 8100
+      PORT: 8080
     volumes:
       - type: bind
-        source: ./generated/deployment.json
-        target: /deployment.json
+        source: ./configuration
+        target: /etc/connector
         read_only: true
     healthcheck:
       test:
@@ -80,30 +75,7 @@ services:
       retries: 30
     depends_on:
       sqlserver:
-        condition: service_started
-
-  agent-configuration:
-    image: ghcr.io/hasura/ndc-sqlserver:dev
-    command:
-      - configuration
-      - serve
-    init: true
-    ports:
-      - 9100
-    environment:
-      PORT: 9100
-    healthcheck:
-      test:
-        - CMD
-        - ndc-sqlserver
-        - check-health
-        - --port=9100
-      interval: 1s
-      timeout: 1s
-      retries: 30
-    depends_on:
-      sqlserver:
-        condition: service_started
+        condition: service_healthy
 
   # k6 will push statistics to Prometheus
   prometheus:

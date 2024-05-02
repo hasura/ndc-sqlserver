@@ -34,31 +34,36 @@
     "date": {
       "_eq": {
         "operatorName": "=",
-        "argumentType": "date"
+        "argumentType": "date",
+        "operatorKind": "equal"
       }
     },
     "time": {
       "_eq": {
         "operatorName": "=",
-        "argumentType": "time"
+        "argumentType": "time",
+        "operatorKind": "equal"
       }
     },
     "timetz": {
       "_eq": {
         "operatorName": "=",
-        "argumentType": "timetz"
+        "argumentType": "timetz",
+        "operatorKind": "equal"
       }
     },
     "timestamp": {
       "_eq": {
         "operatorName": "=",
-        "argumentType": "timestamp"
+        "argumentType": "timestamp",
+        "operatorKind": "equal"
       }
     },
     "timestamptz": {
       "_eq": {
         "operatorName": "=",
-        "argumentType": "timestamptz"
+        "argumentType": "timestamptz",
+        "operatorKind": "equal"
       }
     }
   }

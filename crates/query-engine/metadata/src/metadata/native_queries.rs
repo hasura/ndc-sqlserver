@@ -9,13 +9,13 @@ use std::collections::BTreeMap;
 // Types
 
 /// Metadata information of native queries.
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NativeQueries(pub BTreeMap<String, NativeQueryInfo>);
 
 /// Metadata information of native mutations that are supposed to be
 /// tracked as mutations.
-#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NativeMutations(pub BTreeMap<String, NativeQueryInfo>);
 

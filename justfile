@@ -3,8 +3,9 @@ set shell := ["bash", "-c"]
 CONNECTOR_IMAGE_NAME := "ghcr.io/hasura/sqlserver-agent-rs"
 CONNECTOR_IMAGE_TAG := "dev"
 CONNECTOR_IMAGE := CONNECTOR_IMAGE_NAME + ":" + CONNECTOR_IMAGE_TAG
-CHINOOK_DEPLOYMENT := "static/chinook-deployment.json"
-SQLSERVER_CONNECTION_STRING := "DRIVER={ODBC Driver 18 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true"
+CHINOOK_DEPLOYMENT := "static/"
+SQLSERVER_CONNECTION_STRING := "DRIVER={ODBC Driver 19 for SQL Server};SERVER=127.0.0.1,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true"
+SQLSERVER_BROKEN_QUERIES_NDC_METADATA := "static/broken-queries-ndc-metadata"
 
 # check everything
 check: format-check find-unused-dependencies build lint test
@@ -46,7 +47,9 @@ dev-config: start-dependencies
 # re-generate the deployment configuration file
 generate-chinook-configuration: build start-dependencies
   ./scripts/archive-old-deployment.sh '{{CHINOOK_DEPLOYMENT}}'
-  ./scripts/generate-chinook-configuration.sh 'ndc-sqlserver' '{{SQLSERVER_CONNECTION_STRING}}' '{{CHINOOK_DEPLOYMENT}}'
+
+  CONNECTION_URI='{{SQLSERVER_CONNECTION_STRING}}' cargo run --bin ndc-sqlserver-cli -- --context='{{CHINOOK_DEPLOYMENT}}new_configuration/' initialize
+  CONNECTION_URI='{{SQLSERVER_CONNECTION_STRING}}' cargo run --bin ndc-sqlserver-cli -- --context='{{CHINOOK_DEPLOYMENT}}new_configuration/' update
 
 test-introspection:
   #!/bin/bash
@@ -144,7 +147,7 @@ format-check:
   cargo fmt --all -- --check
 
 find-unused-dependencies:
-  cargo machete
+  cargo machete --with-metadata
 
 # check the nix build works
 build-with-nix:
