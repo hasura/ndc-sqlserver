@@ -1260,7 +1260,7 @@ dependencies = [
 [[package]]
 name = "ndc-sdk"
 version = "0.1.0"
-source = "git+https://github.com/hasura/ndc-sdk-rs.git?rev=fe945b6616e5b8bbefa537e5044b4ec962416d4b#fe945b6616e5b8bbefa537e5044b4ec962416d4b"
+source = "git+https://github.com/hasura/ndc-sdk-rs.git?rev=a273a01efccfc71ef3341cf5f357b2c9ae2d109f#a273a01efccfc71ef3341cf5f357b2c9ae2d109f"
 dependencies = [
  "async-trait",
  "axum",
@@ -1924,7 +1924,6 @@ dependencies = [
  "percent-encoding",
  "pin-project-lite",
  "rustls 0.21.10",
- "rustls-native-certs 0.6.3",
  "rustls-pemfile 1.0.4",
  "serde",
  "serde_json",
