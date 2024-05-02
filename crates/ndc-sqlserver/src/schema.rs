@@ -30,7 +30,7 @@ fn column_to_type(column: &metadata::ColumnInfo) -> models::Type {
 ///
 /// Because procedures return an `affected_rows` count alongside the result type that it's
 /// `returning`, we have to generate a separate object type for its result. As part of that, we may
-/// also have to include the `int4` scalar type (if it isn't included for another reason elsewhere
+/// also have to include the `int` scalar type (if it isn't included for another reason elsewhere
 /// in the schema). So, this function creates that object type, optionally adds that scalar type,
 /// and then returns a `ProcedureInfo` that points to the correct object type.
 fn make_procedure_type(
@@ -44,18 +44,17 @@ fn make_procedure_type(
     let mut fields = BTreeMap::new();
     let object_type_name = format!("{name}_response");
 
-    // If int4 doesn't exist anywhere else in the schema, we need to add it here. However, a user
+    // If int doesn't exist anywhere else in the schema, we need to add it here. However, a user
     // can't filter or aggregate based on the affected rows of a procedure, so we don't need to add
-    // any aggregate functions or comparison operators. However, if int4 exists elsewhere in the
+    // any aggregate functions or comparison operators. However, if int exists elsewhere in the
     // schema and has already been added, it will also already contain these functions and
     // operators.
     scalar_types
         .entry("int".to_string())
         .or_insert(models::ScalarType {
-            //representation: Some(models::TypeRepresentation::Int32),
             aggregate_functions: BTreeMap::new(),
             comparison_operators: BTreeMap::new(),
-            representation: Some(TypeRepresentation::Int8),
+            representation: Some(TypeRepresentation::Int32),
         });
 
     fields.insert(
