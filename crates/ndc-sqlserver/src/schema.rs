@@ -105,13 +105,13 @@ fn make_procedure_type(
 /// 2. Object with name `{native_mutation_name}` whose fields will
 ///    contain the fields specified in the `columns`.
 fn get_native_mutations_schema(
-    native_mutations: &query_engine_metadata::metadata::NativeMutations,
+    native_mutations_metadata: &query_engine_metadata::metadata::NativeMutations,
     object_types: &mut BTreeMap<String, models::ObjectType>,
     scalar_types: &mut BTreeMap<String, models::ScalarType>,
 ) -> Result<Vec<models::ProcedureInfo>, connector::SchemaError> {
-    let mut procedure_native_queries = Vec::new();
+    let mut native_mutations = Vec::new();
 
-    native_mutations.0.iter().for_each(|(name, info)| {
+    native_mutations_metadata.0.iter().for_each(|(name, info)| {
         let native_query_object_type = models::ObjectType {
             description: info.description.clone(),
             fields: BTreeMap::from_iter(info.columns.iter().map(|(column_name, column)| {
@@ -145,10 +145,10 @@ fn get_native_mutations_schema(
             object_types,
             scalar_types,
         );
-        procedure_native_queries.push(procedure_info);
+        native_mutations.push(procedure_info);
     });
 
-    Ok(procedure_native_queries)
+    Ok(native_mutations)
 }
 
 /// Gets the schema of the native queries.
