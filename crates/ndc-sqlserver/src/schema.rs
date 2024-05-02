@@ -49,7 +49,7 @@ fn make_procedure_type(
     // schema and has already been added, it will also already contain these functions and
     // operators.
     scalar_types
-        .entry("Int".to_string())
+        .entry("int".to_string())
         .or_insert(models::ScalarType {
             //representation: Some(models::TypeRepresentation::Int32),
             aggregate_functions: BTreeMap::new(),
@@ -61,7 +61,7 @@ fn make_procedure_type(
         models::ObjectField {
             description: Some("The number of rows affected by the mutation".to_string()),
             r#type: models::Type::Named {
-                name: "Int".to_string(),
+                name: "int".to_string(),
             },
         },
     );
@@ -94,28 +94,21 @@ fn make_procedure_type(
     }
 }
 
-struct NativeQueriesSchema {
-    read_only_native_queries: Vec<models::CollectionInfo>,
-    procedure_native_queries: Vec<models::ProcedureInfo>,
-}
-
-/// Given the `native_queries` metadata, separate the native queries that
-/// are tracked as collections and procedures and also update the `object_types`
-/// with the new objects that are created with every native query.
-fn get_native_queries(
-    native_queries: &query_engine_metadata::metadata::NativeQueries,
+/// Gets the schema of the native mutations. A native mutation creates
+/// creates an object corresponding to the `columns` type.
+fn get_native_mutations_schema(
+    native_mutations: &query_engine_metadata::metadata::NativeMutations,
     object_types: &mut BTreeMap<String, models::ObjectType>,
     scalar_types: &mut BTreeMap<String, models::ScalarType>,
-) -> Result<NativeQueriesSchema, connector::SchemaError> {
-    let mut read_only_native_queries = Vec::new();
+) -> Result<Vec<models::ProcedureInfo>, connector::SchemaError> {
     let mut procedure_native_queries = Vec::new();
 
-    native_queries.0.iter().for_each(|(name, info)| {
+    native_mutations.0.iter().for_each(|(name, info)| {
         let native_query_object_type = models::ObjectType {
             description: info.description.clone(),
-            fields: BTreeMap::from_iter(info.columns.values().map(|column| {
+            fields: BTreeMap::from_iter(info.columns.iter().map(|(column_name, column)| {
                 (
-                    column.name.clone(),
+                    column_name.clone(),
                     models::ObjectField {
                         description: column.description.clone(),
                         r#type: column_to_type(column),
@@ -124,56 +117,80 @@ fn get_native_queries(
             })),
         };
         object_types.insert(name.clone(), native_query_object_type);
-        if info.is_procedure {
-            let procedure_info = make_procedure_type(
-                name.clone(),
-                info.description.clone(),
-                info.arguments
-                    .iter()
-                    .map(|(column_name, column_info)| {
-                        (
-                            column_name.clone(),
-                            models::ArgumentInfo {
-                                description: column_info.description.clone(),
-                                argument_type: column_to_type(column_info),
-                            },
-                        )
-                    })
-                    .collect(),
-                models::Type::Named { name: name.clone() },
-                object_types,
-                scalar_types,
-            );
-            procedure_native_queries.push(procedure_info);
-        } else {
-            let native_query_collection_info = models::CollectionInfo {
-                name: name.clone(),
-                description: info.description.clone(),
-                arguments: info
-                    .arguments
-                    .iter()
-                    .map(|(name, column_info)| {
-                        (
-                            name.clone(),
-                            models::ArgumentInfo {
-                                description: column_info.description.clone(),
-                                argument_type: column_to_type(column_info),
-                            },
-                        )
-                    })
-                    .collect(),
-                collection_type: name.clone(),
-                uniqueness_constraints: BTreeMap::new(),
-                foreign_keys: BTreeMap::new(),
-            };
-            read_only_native_queries.push(native_query_collection_info);
-        }
+
+        let procedure_info = make_procedure_type(
+            name.clone(),
+            info.description.clone(),
+            info.arguments
+                .iter()
+                .map(|(column_name, column_info)| {
+                    (
+                        column_name.clone(),
+                        models::ArgumentInfo {
+                            description: column_info.description.clone(),
+                            argument_type: column_to_type(column_info),
+                        },
+                    )
+                })
+                .collect(),
+            models::Type::Named { name: name.clone() },
+            object_types,
+            scalar_types,
+        );
+        procedure_native_queries.push(procedure_info);
     });
 
-    Ok(NativeQueriesSchema {
-        read_only_native_queries,
-        procedure_native_queries,
-    })
+    Ok(procedure_native_queries)
+}
+
+/// Given the `native_queries` metadata, separate the native queries that
+/// are tracked as collections and procedures and also update the `object_types`
+/// with the new objects that are created with every native query.
+fn get_native_queries_schema(
+    native_queries: &query_engine_metadata::metadata::NativeQueries,
+    object_types: &mut BTreeMap<String, models::ObjectType>,
+) -> Result<Vec<models::CollectionInfo>, connector::SchemaError> {
+    let mut read_only_native_queries = Vec::new();
+
+    native_queries.0.iter().for_each(|(name, info)| {
+        let native_query_object_type = models::ObjectType {
+            description: info.description.clone(),
+            fields: BTreeMap::from_iter(info.columns.iter().map(|(column_name, column)| {
+                (
+                    column_name.clone(),
+                    models::ObjectField {
+                        description: column.description.clone(),
+                        r#type: column_to_type(column),
+                    },
+                )
+            })),
+        };
+        object_types.insert(name.clone(), native_query_object_type);
+
+        let native_query_collection_info = models::CollectionInfo {
+            name: name.clone(),
+            description: info.description.clone(),
+            arguments: info
+                .arguments
+                .iter()
+                .map(|(name, column_info)| {
+                    (
+                        name.clone(),
+                        models::ArgumentInfo {
+                            description: column_info.description.clone(),
+                            argument_type: column_to_type(column_info),
+                        },
+                    )
+                })
+                .collect(),
+            collection_type: name.clone(),
+            uniqueness_constraints: BTreeMap::new(),
+            foreign_keys: BTreeMap::new(),
+        };
+        read_only_native_queries.push(native_query_collection_info);
+    });
+
+    Ok(read_only_native_queries)
 }
 
 /// Get the connector's schema.
@@ -297,14 +314,15 @@ pub async fn get_schema(
 
     let mut object_types = table_types;
 
-    let NativeQueriesSchema {
-        read_only_native_queries,
-        procedure_native_queries,
-    } = get_native_queries(
-        &metadata.native_queries,
+    let read_only_native_queries =
+        get_native_queries_schema(&metadata.native_queries, &mut object_types)?;
+
+    let procedure_native_queries = get_native_mutations_schema(
+        &metadata.native_mutations,
         &mut object_types,
         &mut scalar_types,
     )?;
+
     let mut collections = tables;
     collections.extend(read_only_native_queries);
 
@@ -317,4 +335,138 @@ pub async fn get_schema(
         object_types,
         scalar_types,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use ndc_sdk::models::{ObjectField, ObjectType, ProcedureInfo};
+    use query_engine_metadata::metadata::{
+        parse_native_query, ColumnInfo, NativeMutations, NativeQueryInfo, NativeQuerySql,
+        ScalarType,
+    };
+
+    use super::*;
+
+    #[test]
+    fn test_native_mutation_schema() {
+        let parsed_sql = parse_native_query("INSERT INTO Authors(Id, Name) OUTPUT inserted.Id as id, inserted.Name as name VALUES ({{id}}, {{name}})");
+        let sql = NativeQuerySql(parsed_sql);
+
+        let id_col_info = ColumnInfo {
+            name: "Id".to_string(),
+            r#type: ScalarType("int".to_string()),
+            nullable: metadata::Nullable::NonNullable,
+            description: None,
+        };
+
+        let name_col_info = ColumnInfo {
+            name: "Name".to_string(),
+            r#type: ScalarType("varchar".to_string()),
+            nullable: metadata::Nullable::NonNullable,
+            description: None,
+        };
+
+        let mut columns = BTreeMap::new();
+
+        columns.insert("id".to_owned(), id_col_info);
+        columns.insert("name".to_owned(), name_col_info);
+
+        let native_mutation_info = NativeQueryInfo {
+            arguments: BTreeMap::new(),
+            sql,
+            columns,
+            description: None,
+        };
+
+        let mut native_mutations = BTreeMap::new();
+
+        native_mutations.insert(
+            "insert_user_native_mutation".to_string(),
+            native_mutation_info,
+        );
+
+        let native_mutations = NativeMutations(native_mutations);
+
+        let mut object_types = BTreeMap::new();
+        let mut scalar_types = BTreeMap::new();
+
+        let native_mutation_procedure_info =
+            get_native_mutations_schema(&native_mutations, &mut object_types, &mut scalar_types)
+                .unwrap();
+
+        let expected_mutation_procedure_info = ProcedureInfo {
+            name: "insert_user_native_mutation".to_string(),
+            description: None,
+            arguments: BTreeMap::new(),
+            result_type: ndc_sdk::models::Type::Named {
+                name: "insert_user_native_mutation_response".into(),
+            },
+        };
+
+        assert_eq!(
+            native_mutation_procedure_info,
+            vec![expected_mutation_procedure_info]
+        );
+
+        let expected_object_field_id = ObjectField {
+            description: None,
+            r#type: models::Type::Named {
+                name: "int".to_string(),
+            },
+        };
+
+        let expected_object_field_name = ObjectField {
+            description: None,
+            r#type: models::Type::Named {
+                name: "varchar".to_string(),
+            },
+        };
+
+        let expected_object_field_affected_rows = ObjectField {
+            description: Some("The number of rows affected by the mutation".into()),
+            r#type: models::Type::Named {
+                name: "int".to_string(),
+            },
+        };
+
+        let expected_native_mutation_object_type = ObjectType {
+            description: None,
+            fields: BTreeMap::from([
+                ("id".to_owned(), expected_object_field_id),
+                ("name".to_owned(), expected_object_field_name),
+            ]),
+        };
+
+        let expected_object_field_returning = ObjectField {
+            description: Some("Data from rows affected by the mutation".into()),
+            r#type: models::Type::Array {
+                element_type: Box::new(models::Type::Named {
+                    name: "insert_user_native_mutation".into(),
+                }),
+            },
+        };
+
+        let expected_native_mutation_response_object_type = ObjectType {
+            description: Some("Responses from the 'insert_user_native_mutation' procedure".into()),
+            fields: BTreeMap::from([
+                (
+                    "affected_rows".to_owned(),
+                    expected_object_field_affected_rows,
+                ),
+                ("returning".to_owned(), expected_object_field_returning),
+            ]),
+        };
+
+        let mut expected_object_types = BTreeMap::new();
+        expected_object_types.insert(
+            "insert_user_native_mutation".into(),
+            expected_native_mutation_object_type,
+        );
+        expected_object_types.insert(
+            "insert_user_native_mutation_response".to_string(),
+            expected_native_mutation_response_object_type,
+        );
+
+        assert_eq!(object_types, expected_object_types);
+    }
 }

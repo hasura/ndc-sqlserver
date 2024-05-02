@@ -13,15 +13,13 @@ use std::collections::BTreeMap;
 #[serde(rename_all = "camelCase")]
 pub struct NativeQueries(pub BTreeMap<String, NativeQueryInfo>);
 
-/// Name of the temporary table where the results of the
-/// procedure will be written to.
-#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
+/// Metadata information of native mutations that are supposed to be
+/// tracked as mutations.
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct NativeQueryProcedure {
-    pub temporary_table_name: String,
-}
+pub struct NativeMutations(pub BTreeMap<String, NativeQueryInfo>);
 
-/// Information about a Native Query
+/// Information about a Native Query/Mutation.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NativeQueryInfo {
@@ -34,11 +32,6 @@ pub struct NativeQueryInfo {
     pub arguments: BTreeMap<String, ColumnInfo>,
     #[serde(default)]
     pub description: Option<String>,
-    /// Execute the native query as a procedure, this is useful
-    /// if the native query mutates database.
-    #[serde(skip_serializing_if = "std::ops::Not::not")]
-    #[serde(default)]
-    pub is_procedure: bool,
 }
 
 /// A part of a Native Query text, either raw text or a parameter.
@@ -116,7 +109,7 @@ impl JsonSchema for NativeQuerySql {
 
 /// Parse a native query into parts where variables have the
 /// syntax `{{<variable>}}`.
-fn parse_native_query(string: &str) -> Vec<NativeQueryPart> {
+pub fn parse_native_query(string: &str) -> Vec<NativeQueryPart> {
     let vec: Vec<Vec<NativeQueryPart>> = string
         .split("{{")
         .map(|part| match part.split_once("}}") {

@@ -666,6 +666,38 @@
         },
         "description": null
       },
+      "insert_artist_and_return_id": {
+        "sql": "INSERT INTO [dbo].[Artist] (ArtistId, Name) OUTPUT inserted.ArtistId  VALUES ({{id}} as int, {{name}} as text)",
+        "columns": {
+          "ArtistId": {
+            "name": "ArtistId",
+            "type": "int",
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "Name": {
+            "name": "Name",
+            "type": "varchar",
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "arguments": {
+          "ArtistId": {
+            "name": "ArtistId",
+            "type": "int",
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "Name": {
+            "name": "Name",
+            "type": "varchar",
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "isProcedure": true
+      },
       "value_types": {
         "sql": "SELECT {{bigint}} as bigint, {{char}} as char, {{date}} as date, {{float}} as float, {{int}} as int, {{numeric}} as numeric, {{text}} as text, {{time}} as time, {{timestamp}} as timestamp",
         "columns": {

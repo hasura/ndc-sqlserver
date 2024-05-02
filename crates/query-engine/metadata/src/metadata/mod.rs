@@ -19,6 +19,8 @@ pub struct Metadata {
     #[serde(default)]
     pub native_queries: NativeQueries,
     #[serde(default)]
+    pub native_mutations: NativeMutations,
+    #[serde(default)]
     pub aggregate_functions: AggregateFunctions,
     #[serde(default)]
     pub comparison_operators: ComparisonOperators,
