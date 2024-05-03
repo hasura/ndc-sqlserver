@@ -1,4 +1,5 @@
 mod configuration;
+pub mod introspection;
 pub mod version1;
 
 pub use configuration::{CONFIGURATION_FILENAME, CONFIGURATION_JSONSCHEMA_FILENAME};

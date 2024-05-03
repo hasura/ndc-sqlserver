@@ -1,6 +1,6 @@
 //! Configuration and state for our connector.
 
-use crate::version1::introspection;
+use super::introspection;
 use ndc_sdk::connector;
 use query_engine_execution::metrics;
 use query_engine_metadata::metadata;
