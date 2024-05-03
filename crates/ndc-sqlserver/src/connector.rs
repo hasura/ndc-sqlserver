@@ -14,16 +14,13 @@ use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
 use tokio::fs;
 
-use super::configuration;
 use super::explain;
 use super::query;
 use super::schema;
+use ndc_sqlserver_configuration as configuration;
 
 #[derive(Clone, Default)]
 pub struct SQLServer {}
-
-pub const CONFIGURATION_FILENAME: &str = "configuration.json";
-pub const CONFIGURATION_JSONSCHEMA_FILENAME: &str = "schema.json";
 
 #[async_trait]
 impl connector::ConnectorSetup for SQLServer {
@@ -36,7 +33,9 @@ impl connector::ConnectorSetup for SQLServer {
         configuration_dir: impl AsRef<Path> + Send,
     ) -> Result<<Self::Connector as connector::Connector>::Configuration, connector::ParseError>
     {
-        let configuration_file = configuration_dir.as_ref().join(CONFIGURATION_FILENAME);
+        let configuration_file = configuration_dir
+            .as_ref()
+            .join(configuration::CONFIGURATION_FILENAME);
         let configuration_file_contents =
             fs::read_to_string(&configuration_file)
                 .await

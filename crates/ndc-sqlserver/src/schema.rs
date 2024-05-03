@@ -9,7 +9,7 @@ use ndc_sdk::connector;
 use ndc_sdk::models;
 use query_engine_metadata::metadata;
 
-use super::configuration;
+use ndc_sqlserver_configuration as configuration;
 
 /// Get the connector's schema.
 ///
