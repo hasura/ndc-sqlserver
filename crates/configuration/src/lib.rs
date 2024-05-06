@@ -1,6 +1,9 @@
 mod configuration;
+mod error;
 pub mod introspection;
 pub mod version1;
+
+pub use error::Error;
 
 pub use configuration::{CONFIGURATION_FILENAME, CONFIGURATION_JSONSCHEMA_FILENAME};
 

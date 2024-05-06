@@ -54,9 +54,37 @@ impl connector::ConnectorSetup for SQLServer {
                 })
             })?;
 
-        configuration::validate_raw_configuration(configuration)
+        configuration::validate_raw_configuration(configuration_file, configuration)
             .await
             .map(Arc::new)
+            .map_err(|error| match error {
+                configuration::Error::ParseError {
+                    file_path,
+                    line,
+                    column,
+                    message,
+                } => connector::ParseError::ParseError(connector::LocatedError {
+                    file_path,
+                    line,
+                    column,
+                    message,
+                }),
+                configuration::Error::InvalidConfigVersion { version, file_path } => {
+                    connector::ParseError::ValidateError(connector::InvalidNodes(vec![
+                        connector::InvalidNode {
+                            file_path,
+                            node_path: vec![connector::KeyOrIndex::Key("version".into())],
+                            message: format!(
+                                "invalid configuration version, expected 1, got {version}",
+                            ),
+                        },
+                    ]))
+                }
+                configuration::Error::IoError(inner) => connector::ParseError::IoError(inner),
+                configuration::Error::IoErrorButStringified(inner) => {
+                    connector::ParseError::Other(inner.into())
+                }
+            })
     }
 
     /// Initialize the connector's in-memory state.

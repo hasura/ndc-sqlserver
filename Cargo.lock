@@ -1342,7 +1342,6 @@ version = "0.1.0"
 dependencies = [
  "bb8",
  "bb8-tiberius",
- "ndc-sdk",
  "prometheus",
  "query-engine-execution",
  "query-engine-metadata",
