@@ -19,6 +19,7 @@ pub struct Env<'a> {
 /// Stateful information changed throughout the translation process.
 pub struct State {
     native_queries: NativeQueries,
+    native_mutations: NativeMutations,
     global_table_index: TableAliasIndex,
 }
 
@@ -33,6 +34,31 @@ struct NativeQueries {
     /// native queries that receive different arguments should result in different CTEs,
     /// and be used via a AliasedTable in the query.
     native_queries: Vec<NativeQueryInfo>,
+}
+
+impl NativeQueries {
+    fn new() -> NativeQueries {
+        NativeQueries {
+            native_queries: vec![],
+        }
+    }
+}
+
+#[derive(Debug)]
+/// Store top-level native mutations generated throught the translation process.
+///
+/// Native mutations are run first and then whatever response we get from the
+/// query, it becomes the input to a second select query which will return the
+struct NativeMutations {
+    native_mutations: Vec<NativeQueryInfo>,
+}
+
+impl NativeMutations {
+    fn new() -> NativeMutations {
+        NativeMutations {
+            native_mutations: vec![],
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -182,6 +208,7 @@ impl Default for State {
     fn default() -> State {
         State {
             native_queries: NativeQueries::new(),
+            native_mutations: NativeMutations::new(),
             global_table_index: TableAliasIndex(0),
         }
     }
@@ -212,6 +239,11 @@ impl State {
     /// Fetch the tracked native queries used in the query plan and their table alias.
     pub fn get_native_queries(self) -> Vec<NativeQueryInfo> {
         self.native_queries.native_queries
+    }
+
+    /// Fetch the tracked native queries used in the query plan and their table alias.
+    pub fn get_native_mutations(self) -> Vec<NativeQueryInfo> {
+        self.native_mutations.native_mutations
     }
 
     /// increment the table index and return the current one.
@@ -280,13 +312,5 @@ impl State {
         source_table_name: &String,
     ) -> sql::ast::TableAlias {
         self.make_table_alias(format!("BOOLEXP_{}", source_table_name))
-    }
-}
-
-impl NativeQueries {
-    fn new() -> NativeQueries {
-        NativeQueries {
-            native_queries: vec![],
-        }
     }
 }

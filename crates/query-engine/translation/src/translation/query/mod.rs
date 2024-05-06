@@ -22,7 +22,7 @@ use query_engine_sql::sql;
 pub fn translate(
     metadata: &metadata::Metadata,
     query_request: models::QueryRequest,
-) -> Result<sql::execution_plan::ExecutionPlan, Error> {
+) -> Result<sql::execution_plan::QueryExecutionPlan, Error> {
     let env = Env::new(metadata, query_request.collection_relationships);
     let mut state = State::new();
     let table_alias = state.make_table_alias(query_request.collection.clone());
@@ -56,7 +56,7 @@ pub fn translate(
 
     // add native queries if there are any
     json_select.with = sql::ast::With {
-        common_table_expressions: native_queries::translate(state)?,
+        common_table_expressions: native_queries::translate_native_queries(state)?,
     };
 
     // normalize ast
