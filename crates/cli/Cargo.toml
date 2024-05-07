@@ -7,7 +7,7 @@ edition.workspace = true
 workspace = true
 
 [dependencies]
-ndc-sqlserver = { path = "../ndc-sqlserver" }
+ndc-sqlserver-configuration = { path = "../configuration" }
 
 anyhow = "1.0.82"
 clap = { version = "4.5.4", features = ["derive", "env"] }

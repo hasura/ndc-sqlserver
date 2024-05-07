@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use ndc_sqlserver::configuration;
+use ndc_sqlserver_configuration as configuration;
 use similar_asserts::assert_eq;
 
 const CONNECTION_STRING: &str =
@@ -42,7 +42,7 @@ pub async fn configure_is_idempotent(
 
 pub async fn configure_initial_configuration_is_unchanged(
     connection_string: &str,
-) -> ndc_sqlserver::configuration::RawConfiguration {
+) -> configuration::RawConfiguration {
     let args = configuration::RawConfiguration {
         mssql_connection_string: connection_string.to_string(),
 

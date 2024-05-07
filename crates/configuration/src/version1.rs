@@ -1,7 +1,7 @@
 //! Configuration and state for our connector.
 
-use crate::configuration::introspection;
-use ndc_sdk::connector;
+use super::introspection;
+use crate::error::Error;
 use query_engine_execution::metrics;
 use query_engine_metadata::metadata;
 use query_engine_metadata::metadata::{database, Nullable};
@@ -79,19 +79,14 @@ pub struct State {
 
 /// Validate the user configuration.
 pub async fn validate_raw_configuration(
+    file_path: PathBuf,
     config: RawConfiguration,
-) -> Result<Configuration, connector::ParseError> {
+) -> Result<Configuration, Error> {
     if config.version != 1 {
-        return Err(connector::ParseError::ValidateError(
-            connector::InvalidNodes(vec![connector::InvalidNode {
-                file_path: PathBuf::from("file_path"), // TODO(PY): find the path for the config
-                node_path: vec![connector::KeyOrIndex::Key("version".into())], //tODO(PY)
-                message: format!(
-                    "invalid configuration version, expected 1, got {0}",
-                    config.version
-                ),
-            }]),
-        ));
+        return Err(Error::InvalidConfigVersion {
+            version: config.version,
+            file_path: file_path.clone(),
+        });
     }
     Ok(Configuration { config })
 }
@@ -140,9 +135,7 @@ async fn select_first_row(
 }
 
 /// Construct the deployment configuration by introspecting the database.
-pub async fn configure(
-    configuration: &RawConfiguration,
-) -> Result<RawConfiguration, connector::ParseError> {
+pub async fn configure(configuration: &RawConfiguration) -> Result<RawConfiguration, Error> {
     let mssql_pool = create_mssql_pool(configuration).await.unwrap();
 
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
