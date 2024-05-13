@@ -57,12 +57,13 @@ services:
     ports:
       - "8080:8080"
     environment:
+      CONNECTION_URI: "Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true"
       # we don't care about traces right now, and the benchmarks flood the batch buffer
       OTEL_TRACES_SAMPLER: "always_off"
       PORT: 8080
     volumes:
       - type: bind
-        source: ./configuration
+        source: ../../static/v3-chinook-ndc-metadata
         target: /etc/connector
         read_only: true
     healthcheck:

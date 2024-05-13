@@ -14,6 +14,11 @@ pub enum Error {
         column: usize,
         message: String,
     },
+    #[error("missing environment variable in {file_path}: {message}")]
+    MissingEnvironmentVariable {
+        file_path: std::path::PathBuf,
+        message: String,
+    },
     #[error("invalid configuration version, expected 1, got {version} in {file_path}")]
     InvalidConfigVersion {
         version: u32,

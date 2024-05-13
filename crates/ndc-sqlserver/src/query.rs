@@ -53,8 +53,8 @@ fn plan_query(
     query_request: models::QueryRequest,
 ) -> Result<sql::execution_plan::ExecutionPlan, connector::QueryError> {
     let timer = state.metrics.time_query_plan();
-    let result = translation::query::translate(&configuration.config.metadata, query_request)
-        .map_err(|err| {
+    let result =
+        translation::query::translate(&configuration.metadata, query_request).map_err(|err| {
             tracing::error!("{}", err);
             match err {
                 translation::query::error::Error::NotSupported(_) => {

@@ -44,11 +44,10 @@ pub async fn main() -> anyhow::Result<()> {
         Some(path) => path,
         None => env::current_dir()?,
     };
-    let uri = args.url;
     let context = Context {
         context_path,
         release_version: RELEASE_VERSION,
-        uri,
+        environment: ndc_sqlserver_configuration::environment::ProcessEnvironment,
     };
     run(args.subcommand, context).await?;
     Ok(())

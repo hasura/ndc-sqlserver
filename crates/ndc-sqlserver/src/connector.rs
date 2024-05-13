@@ -9,6 +9,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 use async_trait::async_trait;
+use configuration::environment::Environment;
 use ndc_sdk::connector;
 use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
@@ -22,8 +23,18 @@ use ndc_sqlserver_configuration as configuration;
 #[derive(Clone, Default)]
 pub struct SQLServer {}
 
+pub struct SQLServerSetup<Env: Environment> {
+    environment: Env,
+}
+
+impl<Env: Environment> SQLServerSetup<Env> {
+    pub fn new(environment: Env) -> Self {
+        Self { environment }
+    }
+}
+
 #[async_trait]
-impl connector::ConnectorSetup for SQLServer {
+impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetup<Env> {
     type Connector = SQLServer;
 
     /// Validate the raw configuration provided by the user,
@@ -54,37 +65,50 @@ impl connector::ConnectorSetup for SQLServer {
                 })
             })?;
 
-        configuration::validate_raw_configuration(configuration_file, configuration)
-            .await
-            .map(Arc::new)
-            .map_err(|error| match error {
-                configuration::Error::ParseError {
-                    file_path,
-                    line,
-                    column,
-                    message,
-                } => connector::ParseError::ParseError(connector::LocatedError {
-                    file_path,
-                    line,
-                    column,
-                    message,
-                }),
-                configuration::Error::InvalidConfigVersion { version, file_path } => {
-                    connector::ParseError::ValidateError(connector::InvalidNodes(vec![
-                        connector::InvalidNode {
-                            file_path,
-                            node_path: vec![connector::KeyOrIndex::Key("version".into())],
-                            message: format!(
-                                "invalid configuration version, expected 1, got {version}",
-                            ),
-                        },
-                    ]))
-                }
-                configuration::Error::IoError(inner) => connector::ParseError::IoError(inner),
-                configuration::Error::IoErrorButStringified(inner) => {
-                    connector::ParseError::Other(inner.into())
-                }
-            })
+        configuration::validate_raw_configuration(
+            &configuration_file,
+            configuration,
+            &self.environment,
+        )
+        .await
+        .map(Arc::new)
+        .map_err(|error| match error {
+            configuration::Error::ParseError {
+                file_path,
+                line,
+                column,
+                message,
+            } => connector::ParseError::ParseError(connector::LocatedError {
+                file_path,
+                line,
+                column,
+                message,
+            }),
+            configuration::Error::InvalidConfigVersion { version, file_path } => {
+                connector::ParseError::ValidateError(connector::InvalidNodes(vec![
+                    connector::InvalidNode {
+                        file_path,
+                        node_path: vec![connector::KeyOrIndex::Key("version".into())],
+                        message: format!(
+                            "invalid configuration version, expected 1, got {version}",
+                        ),
+                    },
+                ]))
+            }
+            configuration::Error::MissingEnvironmentVariable { file_path, message } => {
+                connector::ParseError::ValidateError(connector::InvalidNodes(vec![
+                    connector::InvalidNode {
+                        file_path,
+                        node_path: vec![connector::KeyOrIndex::Key("connectionUri".into())],
+                        message,
+                    },
+                ]))
+            }
+            configuration::Error::IoError(inner) => connector::ParseError::IoError(inner),
+            configuration::Error::IoErrorButStringified(inner) => {
+                connector::ParseError::Other(inner.into())
+            }
+        })
     }
 
     /// Initialize the connector's in-memory state.

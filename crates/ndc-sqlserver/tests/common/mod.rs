@@ -1,5 +1,6 @@
 //! Common functions used across test cases.
 
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
@@ -62,21 +63,23 @@ async fn run_against_server<Response: for<'a> serde::Deserialize<'a>>(
     .await
 }
 
-pub async fn create_router() -> axum::Router {
+pub async fn create_router(connection_uri: &str) -> axum::Router {
     let _ = env_logger::builder().is_test(true).try_init();
 
     // work out where the deployment configs live
     let test_deployment_file = get_deployment_file();
 
-    let setup = connector::SQLServer::default();
+    // Initialize server state with the configuration above, injecting the URI.
+    let environment = HashMap::from([(
+        ndc_sqlserver_configuration::DEFAULT_CONNECTION_URI_VARIABLE.into(),
+        connection_uri.to_string(),
+    )]);
+    let setup = connector::SQLServerSetup::new(environment);
 
     // initialise server state with the static configuration.
-    let state = ndc_sdk::default_main::init_server_state::<connector::SQLServer>(
-        setup,
-        test_deployment_file,
-    )
-    .await
-    .unwrap();
+    let state = ndc_sdk::default_main::init_server_state(setup, test_deployment_file)
+        .await
+        .unwrap();
 
     // create a fresh client
     ndc_sdk::default_main::create_router(state, None)
@@ -87,7 +90,7 @@ async fn make_request<Response: for<'a> serde::Deserialize<'a>>(
     request: impl FnOnce(axum_test_helper::TestClient) -> axum_test_helper::RequestBuilder,
 ) -> Response {
     // create a fresh client
-    let router = create_router().await;
+    let router = create_router(POSTGRESQL_CONNECTION_STRING).await;
     let client = TestClient::new(router);
 
     // make the request

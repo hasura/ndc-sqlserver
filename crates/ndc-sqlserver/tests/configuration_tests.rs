@@ -1,7 +1,11 @@
+use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use configuration::environment::Variable;
+use configuration::validate_raw_configuration;
 use ndc_sqlserver_configuration as configuration;
+use ndc_sqlserver_configuration::secret;
 use similar_asserts::assert_eq;
 
 const CONNECTION_STRING: &str =
@@ -26,30 +30,51 @@ pub async fn configure_is_idempotent(
 ) {
     let expected_value = read_configuration(chinook_deployment_path);
 
-    let mut args: configuration::RawConfiguration = serde_json::from_value(expected_value.clone())
+    let args: configuration::RawConfiguration = serde_json::from_value(expected_value.clone())
         .expect("Unable to deserialize as RawConfiguration");
+    let environment = HashMap::from([(
+        configuration::DEFAULT_CONNECTION_URI_VARIABLE.into(),
+        connection_string.into(),
+    )]);
+    let file_path = PathBuf::new();
 
-    args.mssql_connection_string = connection_string.to_string();
+    let configuration = validate_raw_configuration(&file_path, args, environment)
+        .await
+        .unwrap();
+    // dbg!(&configuration);
 
-    let actual = configuration::configure(&args)
+    // args.mssql_connection_string = connection_string.to_string();
+
+    let actual = configuration::configure(&configuration)
         .await
         .expect("configuration::configure");
 
     let actual_value = serde_json::to_value(actual).expect("serde_json::to_value");
+    dbg!(&actual_value);
 
     assert_eq!(expected_value, actual_value);
 }
 
 pub async fn configure_initial_configuration_is_unchanged(
     connection_string: &str,
-) -> configuration::RawConfiguration {
+) -> configuration::Configuration {
+    let connection_uri_variable: Variable = "MAGIC_URI".into();
     let args = configuration::RawConfiguration {
-        mssql_connection_string: connection_string.to_string(),
+        mssql_connection_string: secret::Secret::FromEnvironment {
+            variable: connection_uri_variable.clone(),
+        },
 
         ..configuration::RawConfiguration::empty()
     };
 
-    configuration::configure(&args)
+    let environment = HashMap::from([(connection_uri_variable, connection_string.into())]);
+    let file_path = PathBuf::new();
+
+    let configuration = validate_raw_configuration(&file_path, args, environment)
+        .await
+        .unwrap();
+
+    configuration::configure(&configuration)
         .await
         .expect("configuration::configure")
 }
