@@ -1340,7 +1340,6 @@ dependencies = [
 name = "ndc-sqlserver-configuration"
 version = "0.1.0"
 dependencies = [
- "anyhow",
  "bb8",
  "bb8-tiberius",
  "prometheus",

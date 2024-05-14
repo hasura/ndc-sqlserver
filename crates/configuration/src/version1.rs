@@ -11,7 +11,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
-use std::path::PathBuf;
+
 use thiserror::Error;
 use tiberius::Query;
 
@@ -82,14 +82,14 @@ pub struct State {
 
 /// Validate the user configuration.
 pub async fn validate_raw_configuration(
-    file_path: &PathBuf,
+    file_path: &std::path::Path,
     config: RawConfiguration,
     environment: impl Environment,
 ) -> Result<Configuration, Error> {
     if config.version != 1 {
         return Err(Error::InvalidConfigVersion {
             version: config.version,
-            file_path: file_path.clone(),
+            file_path: file_path.to_path_buf(),
         });
     }
     let mssql_connection_string = match config.mssql_connection_string {
@@ -98,7 +98,7 @@ pub async fn validate_raw_configuration(
             environment
                 .read(&variable)
                 .map_err(|err| Error::MissingEnvironmentVariable {
-                    file_path: file_path.clone(),
+                    file_path: file_path.to_path_buf(),
                     message: format!("{err}"),
                 })?
         }
