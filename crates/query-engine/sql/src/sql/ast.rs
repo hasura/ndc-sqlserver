@@ -26,6 +26,15 @@ pub enum CTExpr {
     RawSql(Vec<RawSql>),
 }
 
+/// A collection of `RawSQLStatement` that will
+/// be executed together. The `RawSQLStatement`s will
+/// be separated by semicolons.
+pub struct RawSQLQuery(pub Vec<RawSQLStatement>);
+
+/// A single SQL statement.
+#[derive(Debug, Clone, PartialEq)]
+pub struct RawSQLStatement(pub Vec<RawSql>);
+
 /// Raw SQL written by a user which is opaque to us
 #[derive(Debug, Clone, PartialEq)]
 pub enum RawSql {

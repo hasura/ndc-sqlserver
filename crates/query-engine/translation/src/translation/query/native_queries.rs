@@ -1,12 +1,11 @@
 //! Handle native queries translation after building the query.
 
 use ndc_sdk::models;
-use query_engine_sql::sql::ast::TableAlias;
 
-use super::error::Error;
-use super::helpers::NativeQueryInfo;
-use super::helpers::State;
-use super::values;
+use crate::translation::error::Error;
+use crate::translation::helpers::{NativeQueryInfo, State};
+use crate::translation::values;
+
 use query_engine_metadata::metadata::{self};
 use query_engine_sql::sql;
 
@@ -63,20 +62,4 @@ pub fn translate_native_queries(
     }
 
     Ok(ctes)
-}
-
-/// Translate native mutations collected in State by the translation process into
-/// a vector of Raw SQL statements
-pub fn translate_native_mutations(
-    state: State,
-) -> Result<Vec<(TableAlias, Vec<sql::ast::RawSql>)>, Error> {
-    let native_mutations = state.get_native_mutations();
-
-    let mut native_mutations_sql_queries = vec![];
-
-    for native_mutation in native_mutations {
-        let sql = generate_sql(&native_mutation)?;
-        native_mutations_sql_queries.push((native_mutation.alias, sql));
-    }
-    Ok(native_mutations_sql_queries)
 }

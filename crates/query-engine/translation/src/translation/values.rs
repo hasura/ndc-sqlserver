@@ -1,6 +1,7 @@
 //! Handle the translation of literal values.
 
-use super::error::Error;
+use crate::translation::error::Error;
+
 use query_engine_metadata::metadata::database;
 use query_engine_sql::sql;
 use sql::ast::{Expression, Value};
@@ -33,6 +34,9 @@ pub fn translate_json_value(
             r#type: sql::ast::ScalarType(scalar_type.0.clone()),
         })
     } else {
+        println!(
+            "translate_json_value {value:#?} and scalar type {scalar_type:#?} and exp is {exp:#?}"
+        );
         Ok(exp)
     }
 }

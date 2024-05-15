@@ -60,7 +60,26 @@ impl RawSql {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
             RawSql::RawText(text) => sql.append_syntax(text),
-            RawSql::Expression(exp) => exp.to_sql(sql),
+            RawSql::Expression(exp) => {
+                exp.to_sql(sql);
+            }
+        }
+    }
+}
+
+impl RawSQLStatement {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        for item in self.0.iter() {
+            item.to_sql(sql);
+        }
+    }
+}
+
+impl RawSQLQuery {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        for item in self.0.iter() {
+            item.to_sql(sql);
+            sql.append_syntax(";");
         }
     }
 }
@@ -237,7 +256,9 @@ impl Expression {
     pub fn to_sql(&self, sql: &mut SQL) {
         match &self {
             Expression::ColumnReference(column_reference) => column_reference.to_sql(sql),
-            Expression::Value(value) => value.to_sql(sql),
+            Expression::Value(value) => {
+                value.to_sql(sql);
+            }
             Expression::Cast { expression, r#type } => {
                 sql.append_syntax("cast");
                 sql.append_syntax("(");

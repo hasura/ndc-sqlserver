@@ -607,7 +607,7 @@
     },
     "nativeMutations": {
       "insert_artist_and_return_id": {
-        "sql": "INSERT INTO [dbo].[Artist] (ArtistId, Name) OUTPUT inserted.ArtistId  VALUES ({{id}} as int, {{name}} as text)",
+        "sql": "INSERT INTO [dbo].[Artist] (ArtistId, Name) OUTPUT inserted.ArtistId, inserted.Name  VALUES ({{ArtistId}}, {{Name}})",
         "columns": {
           "ArtistId": {
             "name": "ArtistId",
@@ -635,6 +635,74 @@
             "nullable": "nullable",
             "description": null
           }
+        }
+      },
+      "insert_all_types": {
+        "sql": "INSERT INTO [dbo].[SampleTable] (IntColumn, BigIntColumn, SmallIntColumn, TinyIntColumn, DecimalColumn) OUTPUT inserted.IntColumn, inserted.BigIntColumn, inserted.SmallIntColumn, inserted.TinyIntColumn, inserted.DecimalColumn  VALUES ({{IntColumn}}, {{BigIntColumn}}, {{SmallIntColumn}}, {{TinyIntColumn}}, {{DecimalColumn}})",
+        "columns": {
+          "IntColumn": {
+            "name": "ArtistId",
+            "type": "int",
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "BigIntColumn": {
+            "name": "BigIntColumn",
+            "type": "int",
+            "nullable": "nullable",
+            "description": null
+          },
+          "SmallIntColumn": {
+            "name": "SmallIntColumn",
+            "type": "int",
+            "nullable": "nullable",
+            "description": null
+          },
+          "TinyIntColumn": {
+            "name": "TinyIntColumn",
+            "type": "int",
+            "nullable": "nullable",
+            "description": null
+          },
+          "DecimalColumn": {
+            "name": "DecimalColumn",
+            "type": "float",
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "arguments": {
+          "IntColumn": {
+            "name": "IntColumn",
+            "type": "int",
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "BigIntColumn": {
+            "name": "BigIntColumn",
+            "type": "int",
+            "nullable": "nullable",
+            "description": null
+          },
+          "SmallIntColumn": {
+            "name": "SmallIntColumn",
+            "type": "int",
+            "nullable": "nullable",
+            "description": null
+          },
+          "TinyIntColumn": {
+            "name": "TinyIntColumn",
+            "type": "int",
+            "nullable": "nullable",
+            "description": null
+          },
+          "DecimalColumn": {
+            "name": "TinyIntColumn",
+            "type": "float",
+            "nullable": "nullable",
+            "description": null
+          }
+
         }
       }
     },

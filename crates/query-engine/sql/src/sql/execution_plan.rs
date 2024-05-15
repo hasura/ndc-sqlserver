@@ -5,6 +5,17 @@ use crate::sql;
 use std::collections::BTreeMap;
 
 #[derive(Debug)]
+/// Definition of a mutation execution plan to be run against the database.
+pub struct MutationExecutionPlan {
+    /// The mutation query to be run.
+    pub mutation_query: sql::string::SQL,
+    // /// Select query that will run on the response
+    // /// of the `mutation_query` and will ultimately
+    // /// return the response of the NDC request.
+    // pub response_selection: sql::ast::Select,
+}
+
+#[derive(Debug)]
 /// Definition of a query execution plan to be run against the database.
 pub struct QueryExecutionPlan {
     pub variables: Option<Vec<BTreeMap<String, serde_json::Value>>>,

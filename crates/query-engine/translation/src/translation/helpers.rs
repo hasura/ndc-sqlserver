@@ -50,7 +50,7 @@ impl NativeQueries {
 /// Native mutations are run first and then whatever response we get from the
 /// query, it becomes the input to a second select query which will return the
 struct NativeMutations {
-    native_mutations: Vec<NativeQueryInfo>,
+    native_mutations: Vec<NativeMutationInfo>,
 }
 
 impl NativeMutations {
@@ -67,6 +67,12 @@ pub struct NativeQueryInfo {
     pub info: metadata::NativeQueryInfo,
     pub arguments: BTreeMap<String, models::Argument>,
     pub alias: sql::ast::TableAlias,
+}
+
+#[derive(Debug)]
+pub struct NativeMutationInfo {
+    pub info: metadata::NativeQueryInfo,
+    pub arguments: BTreeMap<String, serde_json::Value>,
 }
 
 /// For the root table in the query, and for the current table we are processing,
@@ -112,6 +118,15 @@ pub enum CollectionInfo {
     },
 }
 
+#[derive(Debug)]
+/// Metadata information about a procedure.
+pub enum ProcedureInfo {
+    NativeMutation {
+        name: String,
+        info: metadata::NativeQueryInfo,
+    },
+}
+
 impl<'a> Env<'a> {
     /// Create a new Env by supplying the metadata and relationships.
     pub fn new(
@@ -123,6 +138,19 @@ impl<'a> Env<'a> {
             relationships,
         }
     }
+
+    pub fn lookup_procedure(&self, procedure_name: &str) -> Result<ProcedureInfo, Error> {
+        self.metadata
+            .native_mutations
+            .0
+            .get(procedure_name)
+            .ok_or(Error::ProcedureNotFound(procedure_name.to_string()))
+            .map(|native_mutation_info| ProcedureInfo::NativeMutation {
+                name: procedure_name.to_string(),
+                info: native_mutation_info.clone(),
+            })
+    }
+
     /// Lookup a collection's information in the metadata.
     pub fn lookup_collection(&self, collection_name: &str) -> Result<CollectionInfo, Error> {
         let table = self
@@ -236,13 +264,24 @@ impl State {
         sql::ast::TableReference::AliasedTable(alias)
     }
 
+    pub fn insert_native_mutation(
+        &mut self,
+        name: &str,
+        info: metadata::NativeQueryInfo,
+        arguments: BTreeMap<String, serde_json::Value>,
+    ) {
+        self.native_mutations
+            .native_mutations
+            .push(NativeMutationInfo { info, arguments });
+    }
+
     /// Fetch the tracked native queries used in the query plan and their table alias.
     pub fn get_native_queries(self) -> Vec<NativeQueryInfo> {
         self.native_queries.native_queries
     }
 
     /// Fetch the tracked native queries used in the query plan and their table alias.
-    pub fn get_native_mutations(self) -> Vec<NativeQueryInfo> {
+    pub fn get_native_mutations(self) -> Vec<NativeMutationInfo> {
         self.native_mutations.native_mutations
     }
 

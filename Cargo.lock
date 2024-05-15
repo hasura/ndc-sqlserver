@@ -1731,6 +1731,7 @@ dependencies = [
  "query-engine-sql",
  "serde_json",
  "sqlformat",
+ "thiserror",
  "tiberius",
  "tokio-stream",
  "tracing",

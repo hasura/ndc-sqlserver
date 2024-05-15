@@ -55,6 +55,11 @@ pub async fn explain(
 
                     connector::ExplainError::Other(err.to_string().into())
                 }
+                execution::Error::Mutation(err) => {
+                    tracing::error!("{}", err);
+
+                    connector::ExplainError::Other(err.to_string().into())
+                }
             })?;
 
         state.metrics.record_successful_explain();
@@ -80,7 +85,7 @@ fn plan_query(
         .map_err(|err| {
             tracing::error!("{}", err);
             match err {
-                translation::query::error::Error::CapabilityNotSupported(_) => {
+                translation::error::Error::CapabilityNotSupported(_) => {
                     state.metrics.error_metrics.record_unsupported_capability();
                     connector::ExplainError::UnsupportedOperation(err.to_string())
                 }

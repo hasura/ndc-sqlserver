@@ -57,7 +57,7 @@ fn plan_query(
         .map_err(|err| {
             tracing::error!("{}", err);
             match err {
-                translation::query::error::Error::NotSupported(_) => {
+                translation::error::Error::NotSupported(_) => {
                     connector::QueryError::UnsupportedOperation(err.to_string())
                 }
                 _ => connector::QueryError::InvalidRequest(err.to_string()),
@@ -70,7 +70,7 @@ async fn execute_query(
     state: &configuration::State,
     plan: sql::execution_plan::QueryExecutionPlan,
 ) -> Result<JsonResponse<models::QueryResponse>, connector::QueryError> {
-    execution::mssql_execute(&state.mssql_pool, &state.metrics, plan)
+    execution::mssql_execute_query_plan(&state.mssql_pool, &state.metrics, plan)
         .await
         .map(JsonResponse::Serialized)
         .map_err(|err| match err {
@@ -83,6 +83,10 @@ async fn execute_query(
                 connector::QueryError::Other(err.into())
             }
             execution::Error::TiberiusError(err) => {
+                tracing::error!("{}", err);
+                connector::QueryError::Other(err.into())
+            }
+            execution::Error::Mutation(err) => {
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }

@@ -21,6 +21,7 @@ pub enum Error {
     NoColumnsForOrdering,
     NotSupported(String),
     NoFieldsAndAggregates,
+    ProcedureNotFound(String),
 }
 
 /// Capabilities we don't currently support.
@@ -85,6 +86,9 @@ impl std::fmt::Display for Error {
             }
             Error::NoFieldsAndAggregates => {
                 write!(f, "No fields or aggregates found in query")
+            }
+            Error::ProcedureNotFound(name) => {
+                write!(f, "Procedure '{}' not found.", name)
             }
         }
     }
