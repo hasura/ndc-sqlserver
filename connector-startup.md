@@ -62,7 +62,7 @@ Then, create a connector manifest by passing a name — in this case `app_connec
 command:
 
 ```bash
-ddn add connector-manifest app_connector --subgraph app --hub-connector hasura/postgres --type cloud
+ddn add connector-manifest app_connector --subgraph app --hub-connector hasura/sqlserver --type cloud
 ```
 
 Open your project in VS Code and open the `app_connector.build.hml` file in our project. We can then add the
