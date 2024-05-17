@@ -207,7 +207,7 @@ fn get_native_queries_schema(
 /// This function implements the [schema endpoint](https://hasura.github.io/ndc-spec/specification/schema/index.html)
 /// from the NDC specification.
 pub async fn get_schema(
-    configuration::Configuration { config, .. }: &configuration::Configuration,
+    configuration::Configuration { config }: &configuration::Configuration,
 ) -> Result<models::SchemaResponse, connector::SchemaError> {
     let configuration::RawConfiguration { metadata, .. } = config;
     let mut scalar_types: BTreeMap<String, models::ScalarType> =

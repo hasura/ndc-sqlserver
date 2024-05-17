@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-use ndc_sdk::models;
+use ndc_sdk::models::{self, NestedField};
 
 use super::error::Error;
 use query_engine_metadata::metadata;
@@ -19,7 +19,7 @@ pub struct Env<'a> {
 /// Stateful information changed throughout the translation process.
 pub struct State {
     native_queries: NativeQueries,
-    native_mutations: NativeMutations,
+    mutations: Vec<MutationOperation>,
     global_table_index: TableAliasIndex,
 }
 
@@ -45,20 +45,8 @@ impl NativeQueries {
 }
 
 #[derive(Debug)]
-/// Store top-level native mutations generated throught the translation process.
-///
-/// Native mutations are run first and then whatever response we get from the
-/// query, it becomes the input to a second select query which will return the
-struct NativeMutations {
-    native_mutations: Vec<NativeMutationInfo>,
-}
-
-impl NativeMutations {
-    fn new() -> NativeMutations {
-        NativeMutations {
-            native_mutations: vec![],
-        }
-    }
+pub enum MutationOperation {
+    NativeMutation(NativeMutationInfo),
 }
 
 #[derive(Debug)]
@@ -71,8 +59,11 @@ pub struct NativeQueryInfo {
 
 #[derive(Debug)]
 pub struct NativeMutationInfo {
+    /// Name of the native mutation
+    pub name: String,
     pub info: metadata::NativeQueryInfo,
     pub arguments: BTreeMap<String, serde_json::Value>,
+    pub fields: Option<models::NestedField>,
 }
 
 /// For the root table in the query, and for the current table we are processing,
@@ -236,7 +227,7 @@ impl Default for State {
     fn default() -> State {
         State {
             native_queries: NativeQueries::new(),
-            native_mutations: NativeMutations::new(),
+            mutations: Vec::new(),
             global_table_index: TableAliasIndex(0),
         }
     }
@@ -264,15 +255,21 @@ impl State {
         sql::ast::TableReference::AliasedTable(alias)
     }
 
+    /// Introduce a new native mutation to the state.
     pub fn insert_native_mutation(
         &mut self,
         name: &str,
         info: metadata::NativeQueryInfo,
         arguments: BTreeMap<String, serde_json::Value>,
+        fields: Option<NestedField>,
     ) {
-        self.native_mutations
-            .native_mutations
-            .push(NativeMutationInfo { info, arguments });
+        self.mutations
+            .push(MutationOperation::NativeMutation(NativeMutationInfo {
+                name: name.to_string(),
+                info,
+                arguments,
+                fields,
+            }));
     }
 
     /// Fetch the tracked native queries used in the query plan and their table alias.
@@ -280,9 +277,8 @@ impl State {
         self.native_queries.native_queries
     }
 
-    /// Fetch the tracked native queries used in the query plan and their table alias.
-    pub fn get_native_mutations(self) -> Vec<NativeMutationInfo> {
-        self.native_mutations.native_mutations
+    pub fn get_mutation_operations(self) -> Vec<MutationOperation> {
+        self.mutations
     }
 
     /// increment the table index and return the current one.

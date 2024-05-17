@@ -1727,8 +1727,10 @@ dependencies = [
  "bb8",
  "bb8-tiberius",
  "bytes",
+ "ndc-sdk",
  "prometheus",
  "query-engine-sql",
+ "query-engine-translation",
  "serde_json",
  "sqlformat",
  "thiserror",
@@ -1749,7 +1751,10 @@ dependencies = [
 name = "query-engine-sql"
 version = "0.1.0"
 dependencies = [
+ "indexmap 2.2.6",
+ "ndc-sdk",
  "serde_json",
+ "thiserror",
 ]
 
 [[package]]

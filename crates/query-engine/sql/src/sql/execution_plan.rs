@@ -1,18 +1,68 @@
 //! Describe the SQL execution plan.
 
+use indexmap::IndexMap;
+
 use crate::sql;
 
 use std::collections::BTreeMap;
 
+use ndc_sdk::models;
+
+use super::ast::{Select, TableAlias, WithJSONSchema};
+
+#[derive(Debug)]
+pub struct NativeMutationResponseSelection {
+    /// JSON schema of the response obtained after
+    /// running the mutation SQL query.
+    pub response_json_schema: WithJSONSchema,
+    /// Select AST that will be run on the
+    /// response of the native mutation and then
+    /// ultimately form the response of the NDC
+    /// request.
+    /// Note that, the mutation response needs to
+    /// be added in a CTE, after we run the mutation
+    /// SQL and get the response back.
+    pub response_select: Select,
+    /// Alias of the CTE where the response is expected to be.
+    pub response_cte_table_alias: TableAlias,
+}
+
+#[derive(Debug)]
+pub struct NativeMutationExecutionPlan {
+    /// First query that will run when executed.
+    ///
+    /// In case of native mutations, this will be the SQL statement
+    /// where the user provided native mutation SQL query will be run
+    /// after substituting the value of the arguments.
+    /// The response obtained from this query will become the source
+    /// for the `response_selection_cte`.
+    pub mutation_sql_query: sql::string::SQL,
+    /// Select query that will run on the response
+    /// of the `mutation_sql_query`
+    pub response_selection: NativeMutationResponseSelection,
+    /// Name of the operation, this should be the name of the procedure
+    pub native_mutation_name: String,
+}
+
+#[derive(Debug)]
+pub enum MutationExecutionPlan {
+    NativeMutation(NativeMutationExecutionPlan),
+}
+
 #[derive(Debug)]
 /// Definition of a mutation execution plan to be run against the database.
-pub struct MutationExecutionPlan {
-    /// The mutation query to be run.
-    pub mutation_query: sql::string::SQL,
-    // /// Select query that will run on the response
-    // /// of the `mutation_query` and will ultimately
-    // /// return the response of the NDC request.
-    // pub response_selection: sql::ast::Select,
+pub struct MutationsExecutionPlan {
+    /// First query that will run when executed.
+    ///
+    /// In case of native mutations, this will be the SQL statement
+    /// where the user provided native mutation SQL query will be run
+    /// after substituting the value of the arguments.
+    /// The response obtained from this query will become the source
+    /// for the `response_selection`.
+    //    pub pre: sql::string::SQL,
+    /// The mutations that need to be run.
+    pub mutations: Vec<MutationExecutionPlan>,
+    // TODO(KC): Add a `post` step here
 }
 
 #[derive(Debug)]

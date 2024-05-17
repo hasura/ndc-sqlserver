@@ -22,6 +22,10 @@ pub enum Error {
     NotSupported(String),
     NoFieldsAndAggregates,
     ProcedureNotFound(String),
+    SerdeSerializationError(serde_json::Error),
+    UnexpectedStructure(String),
+    NoProcedureResultFieldsRequested,
+    NotImplementedYet(String),
 }
 
 /// Capabilities we don't currently support.
@@ -89,6 +93,18 @@ impl std::fmt::Display for Error {
             }
             Error::ProcedureNotFound(name) => {
                 write!(f, "Procedure '{}' not found.", name)
+            }
+            Error::SerdeSerializationError(serde_err) => {
+                write!(f, "JSON serialization error: {}", serde_err)
+            }
+            Error::UnexpectedStructure(s) => {
+                write!(f, "Unexpected structure received: {}", s)
+            }
+            Error::NotImplementedYet(e) => {
+                write!(f, "{} is not implemented yet", e)
+            }
+            Error::NoProcedureResultFieldsRequested => {
+                write!(f, "No procedure fields were requested.")
             }
         }
     }

@@ -4,7 +4,7 @@ mod aggregates;
 mod filtering;
 mod native_queries;
 mod relationships;
-mod root;
+pub mod root;
 mod sorting;
 
 use ndc_sdk::models;
