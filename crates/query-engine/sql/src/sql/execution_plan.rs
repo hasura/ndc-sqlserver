@@ -1,12 +1,8 @@
 //! Describe the SQL execution plan.
 
-use indexmap::IndexMap;
-
 use crate::sql;
 
 use std::collections::BTreeMap;
-
-use ndc_sdk::models;
 
 use super::ast::{Select, TableAlias, WithJSONSchema};
 

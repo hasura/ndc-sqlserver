@@ -9,11 +9,7 @@ use query_engine_sql::sql::{
     execution_plan::{MutationExecutionPlan, NativeMutationExecutionPlan},
     string::SQL,
 };
-use query_engine_translation::translation::{
-    helpers::{Env, State, TableNameAndReference},
-    mutation::mutation::generate_native_mutation_response_cte,
-    query::translate_query,
-};
+use query_engine_translation::translation::mutation::mutation::generate_native_mutation_response_cte;
 use serde_json::Value;
 use std::collections::{BTreeMap, HashMap};
 use thiserror::Error;
@@ -77,10 +73,12 @@ pub async fn execute_mutations(
     let mut i = plan.mutations.into_iter();
 
     if let Some(mutation) = i.next() {
-        let mutation_response = execute_mutation(&mut connection, mutation, &mut buffer).await;
+        execute_mutation(&mut connection, mutation, &mut buffer).await;
     }
 
-    buffer.put(&[b']'][..]); // we end by closing the array
+    buffer.put(&[b']'][..]); // Close the operation_results array
+
+    buffer.put(&[b'}'][..]); // we end by closing the object
 
     query_timer.complete_with(Ok(buffer.freeze()))
 }

@@ -156,16 +156,31 @@ impl<'a> Env<'a> {
 
         match table {
             Some(table) => Ok(table),
-            None => self
-                .metadata
-                .native_queries
-                .0
-                .get(collection_name)
-                .map(|nq| CollectionInfo::NativeQuery {
-                    name: collection_name.to_string(),
-                    info: nq.clone(),
-                })
-                .ok_or(Error::CollectionNotFound(collection_name.to_string())),
+            None => {
+                let native_query = self
+                    .metadata
+                    .native_queries
+                    .0
+                    .get(collection_name)
+                    .map(|nq| CollectionInfo::NativeQuery {
+                        name: collection_name.to_string(),
+                        info: nq.clone(),
+                    });
+                // FIXME(KC): THis is terrible. Please refactor this.
+                match native_query {
+                    Some(native_query) => Ok(native_query),
+                    None => self
+                        .metadata
+                        .native_mutations
+                        .0
+                        .get(collection_name)
+                        .map(|nq| CollectionInfo::NativeQuery {
+                            name: collection_name.to_string(),
+                            info: nq.clone(),
+                        })
+                        .ok_or(Error::CollectionNotFound(collection_name.to_string())),
+                }
+            }
         }
     }
 

@@ -617,7 +617,7 @@
           },
           "Name": {
             "name": "Name",
-            "type": "varchar",
+            "type": "varchar(50)",
             "nullable": "nullable",
             "description": null
           }
