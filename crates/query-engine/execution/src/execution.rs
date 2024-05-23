@@ -363,9 +363,6 @@ async fn execute_native_mutation(
     let response_json =
         convert_mutation_response_to_json(native_mutation_response.first().unwrap_or(&Vec::new()))?;
 
-    // TODO: Construct the response selection AST with the help of `native_mutation_response_json`
-    // TODO: Execute the response selection query now.
-
     let mutation_response_cte = generate_native_mutation_response_cte(
         response_json,
         native_mutation_plan.response_selection.response_json_schema,
@@ -383,6 +380,8 @@ async fn execute_native_mutation(
     let mut response_selection_sql = SQL::new();
 
     response_selection_select.to_sql(&mut response_selection_sql);
+
+    println!("response selection sql is {}", response_selection_sql.sql);
 
     execute_query(
         connection,

@@ -16,6 +16,7 @@ use query_engine_sql::sql::execution_plan::{
     NativeMutationResponseSelection,
 };
 use query_engine_sql::sql::helpers::empty_where;
+use query_engine_sql::sql::helpers::make_column_alias;
 use query_engine_sql::sql::helpers::{empty_group_by, empty_order_by, empty_with};
 use query_engine_sql::sql::string::SQL;
 
@@ -105,20 +106,23 @@ pub fn parse_procedure_fields(
     fields: Option<models::NestedField>,
 ) -> Result<
     (
-        Option<IndexMap<String, models::Aggregate>>, // Contains "affected_rows"
-        (String, Option<IndexMap<String, models::Field>>), // Contains "returning"
+        (String, Option<IndexMap<String, models::Aggregate>>), // Contains "affected_rows"
+        (String, Option<IndexMap<String, models::Field>>),     // Contains "returning"
     ),
     Error,
 > {
     match fields {
         Some(models::NestedField::Object(models::NestedObject { fields })) => {
-            let mut affected_rows = None;
+            let mut affected_rows = ("affected_rows".to_string(), None);
             let mut returning = ("returning".to_string(), None);
 
             for (alias, field) in fields {
                 match field {
                     models::Field::Column { column, fields: _ } if column == "affected_rows" => {
-                        affected_rows = Some(indexmap!(alias => models::Aggregate::StarCount {}));
+                        affected_rows = (
+                            alias.clone(),
+                            Some(indexmap!(alias => models::Aggregate::StarCount {})),
+                        );
                     }
                     models::Field::Column { column, fields } if column == "returning" => {
                         returning = match fields {
@@ -151,7 +155,7 @@ pub fn parse_procedure_fields(
                 }
             }
 
-            if affected_rows.is_none() && returning.1.is_none() {
+            if affected_rows.1.is_none() && returning.1.is_none() {
                 Err(Error::NoProcedureResultFieldsRequested)?
             }
 
@@ -281,12 +285,11 @@ fn generate_mutation_execution_plan(
 
                 raw_sql_statement.to_sql(&mut mutation_sql_query);
 
-                // TODO(KC): Test this by aliasing the `returning` field.
                 let (affected_rows, (returning_alias, returning)) =
                     parse_procedure_fields(native_mutation_info.fields.clone())?;
 
                 let query = ndc_sdk::models::Query {
-                    aggregates: affected_rows,
+                    aggregates: affected_rows.1,
                     fields: returning,
                     limit: None,
                     offset: None,
@@ -324,14 +327,34 @@ fn generate_mutation_execution_plan(
 
                 // form a single JSON item shaped `{ rows: [], aggregates: {} }`
                 // that matches the models::RowSet type
-                let json_select = sql::helpers::select_rowset(
-                    state.make_table_alias("universe".to_string()),
-                    state.make_table_alias("rows".to_string()),
-                    sql::helpers::make_column_alias("rows".to_string()),
+                // let json_select = sql::helpers::select_rowset(
+                //     state.make_table_alias("universe".to_string()),
+                //     state.make_table_alias("rows".to_string()),
+                //     sql::helpers::make_column_alias("rows".to_string()),
+                //     state.make_table_alias("aggregates".to_string()),
+                //     sql::helpers::make_column_alias("aggregates".to_string()),
+                //     select_set,
+                // );
+
+                // form a single JSON item shaped `{ rows: [], aggregates: {} }`
+                // that matches the models::RowSet type
+                let json_select = sql::helpers::select_mutation_rowset(
+                    (
+                        state.make_table_alias("universe".to_string()),
+                        sql::helpers::make_column_alias("universe".to_string()),
+                    ),
+                    (
+                        state.make_table_alias("rows".to_string()),
+                        sql::helpers::make_column_alias(returning_alias),
+                    ),
                     state.make_table_alias("aggregates".to_string()),
-                    sql::helpers::make_column_alias("aggregates".to_string()),
+                    make_column_alias(affected_rows.0),
                     select_set,
                 );
+
+                let mut response_selection_sql = SQL::new();
+
+                json_select.to_sql(&mut response_selection_sql);
 
                 let response_selection = get_native_mutation_response_selection(
                     &native_mutation_info,
