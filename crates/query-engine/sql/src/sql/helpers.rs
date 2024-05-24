@@ -1,7 +1,5 @@
 //! Helpers for building sql::ast types in certain shapes and patterns.
 
-use thiserror::Error;
-
 use super::ast::*;
 
 /// Used as input to helpers to construct SELECTs which return 'rows' and/or 'aggregates' results.

@@ -9,6 +9,7 @@ use tracing::{info_span, Instrument};
 
 use ndc_sdk::connector;
 use ndc_sdk::models;
+use query_engine_execution::error;
 use query_engine_execution::execution;
 use query_engine_sql::sql;
 use query_engine_translation::translation;
@@ -40,22 +41,22 @@ pub async fn explain(
             .instrument(info_span!("Explain query"))
             .await
             .map_err(|err| match err {
-                execution::Error::Query(err) => {
+                error::Error::Query(err) => {
                     tracing::error!("{}", err);
 
                     connector::ExplainError::Other(err.to_string().into())
                 }
-                execution::Error::ConnectionPool(err) => {
+                error::Error::ConnectionPool(err) => {
                     tracing::error!("{}", err);
 
                     connector::ExplainError::Other(err.to_string().into())
                 }
-                execution::Error::TiberiusError(err) => {
+                error::Error::TiberiusError(err) => {
                     tracing::error!("{}", err);
 
                     connector::ExplainError::Other(err.to_string().into())
                 }
-                execution::Error::Mutation(err) => {
+                error::Error::Mutation(err) => {
                     tracing::error!("{}", err);
 
                     connector::ExplainError::Other(err.to_string().into())

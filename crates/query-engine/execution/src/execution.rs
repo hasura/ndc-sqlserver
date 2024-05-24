@@ -1,8 +1,12 @@
 //! Execute an execution plan against the database.
 
-use crate::metrics;
+use crate::{
+    helpers::{execute_statement, rollback_on_exception},
+    metrics,
+};
 use bytes::{BufMut, Bytes, BytesMut};
 
+use crate::error::{Error, MutationError, NativeMutationResponseParseError};
 use query_engine_sql::sql::{
     self,
     ast::With,
@@ -12,7 +16,6 @@ use query_engine_sql::sql::{
 use query_engine_translation::translation::mutation::mutation::generate_native_mutation_response_cte;
 use serde_json::Value;
 use std::collections::{BTreeMap, HashMap};
-use thiserror::Error;
 use tiberius::QueryItem;
 use tokio_stream::StreamExt;
 use tracing::{info_span, Instrument};
@@ -47,22 +50,13 @@ pub async fn mssql_execute_query_plan(
     query_timer.complete_with(bytes_result)
 }
 
-pub async fn execute_mutations(
-    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
-    metrics: &metrics::Metrics,
+/// Runs the `plan` in a transaction. If this function returns an error,
+/// then the transaction should be rolled back.
+async fn execute_mutations_transaction(
     plan: sql::execution_plan::MutationsExecutionPlan,
+    connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
 ) -> Result<Bytes, Error> {
-    // TODO: Run this in a transaction.
-
-    let acquisition_timer = metrics.time_connection_acquisition_wait();
-    let connection_result = mssql_pool
-        .get()
-        .instrument(info_span!("Acquire connection"))
-        .await
-        .map_err(Error::ConnectionPool);
-    let mut connection = acquisition_timer.complete_with(connection_result)?;
-
-    let query_timer = metrics.time_query_execution();
+    execute_statement(connection, "BEGIN TRANSACTION".to_string()).await?;
 
     // this buffer represents the JSON response
     let mut buffer = BytesMut::new();
@@ -73,12 +67,12 @@ pub async fn execute_mutations(
     let mut i = plan.mutations.into_iter();
 
     if let Some(mutation) = i.next() {
-        execute_mutation(&mut connection, mutation, &mut buffer).await;
+        execute_mutation(connection, mutation, &mut buffer).await?;
 
         for mutation in i {
             buffer.put(&[b','][..]); // each result, except the first, is prefixed by a ','
 
-            execute_mutation(&mut connection, mutation, &mut buffer).await;
+            execute_mutation(connection, mutation, &mut buffer).await?;
         }
     }
 
@@ -86,7 +80,31 @@ pub async fn execute_mutations(
 
     buffer.put(&[b'}'][..]); // we end by closing the object
 
-    query_timer.complete_with(Ok(buffer.freeze()))
+    execute_statement(connection, "COMMIT".to_string()).await?;
+
+    Ok(buffer.freeze())
+}
+
+pub async fn execute_mutations(
+    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+    metrics: &metrics::Metrics,
+    plan: sql::execution_plan::MutationsExecutionPlan,
+) -> Result<Bytes, Error> {
+    let acquisition_timer = metrics.time_connection_acquisition_wait();
+    let connection_result = mssql_pool
+        .get()
+        .instrument(info_span!("Acquire connection"))
+        .await
+        .map_err(Error::ConnectionPool);
+    let mut connection = acquisition_timer.complete_with(connection_result)?;
+
+    let query_timer = metrics.time_query_execution();
+    let mutation_response = rollback_on_exception(
+        execute_mutations_transaction(plan, &mut connection).await,
+        &mut connection,
+    )
+    .await;
+    query_timer.complete_with(mutation_response)
 }
 
 async fn execute_queries(
@@ -519,38 +537,4 @@ async fn execute_explain(
     let _ = connection.simple_query("SET SHOWPLAN_TEXT OFF").await;
 
     Ok(results)
-}
-
-#[derive(Debug, Error)]
-pub enum NativeMutationResponseParseError {
-    #[error("Unable to parse the float number, because it is not a valid JSON float number.")]
-    InvalidJSONFloatNumber,
-    #[error("Unable to parse response of type {0:#?}. HINT: Try casting the output of the column as as string in the native mutation SQL query.")]
-    UnknownType(tiberius::ColumnType),
-    #[error("Unable to parse response: {0}. HINT: Try casting the output of the column as a string in the native mutation SQL query.")]
-    UnableToParseResponse(tiberius::error::Error),
-}
-
-#[derive(Debug, Error)]
-pub enum MutationError {
-    #[error("Error executing native mutation, column name: {column_name}, column type: {column_type:#?}, error: {error}")]
-    NativeMutation {
-        column_name: String,
-        column_type: tiberius::ColumnType,
-        error: NativeMutationResponseParseError,
-    },
-    #[error("The native mutation {native_mutation_name} is returning more than one set of rows. A native mutation statement is expected to return exactly one set of row set")]
-    NativeMutationMoreThanOneRowSet { native_mutation_name: String },
-    #[error("Error in serializing the native mutation response to JSON. Error: {0}")]
-    JSONSerializationError(serde_json::Error),
-    #[error("Error in translating the response selection query: {0}")]
-    NativeMutationResponseSelectionError(query_engine_translation::translation::error::Error),
-}
-
-#[derive(Debug)]
-pub enum Error {
-    Query(String),
-    ConnectionPool(bb8::RunError<bb8_tiberius::Error>),
-    TiberiusError(tiberius::error::Error),
-    Mutation(MutationError),
 }

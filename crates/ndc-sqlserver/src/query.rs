@@ -6,6 +6,7 @@ use super::configuration;
 use ndc_sdk::connector;
 use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
+use query_engine_execution::error;
 use query_engine_execution::execution;
 use query_engine_sql::sql;
 use query_engine_translation::translation;
@@ -74,19 +75,19 @@ async fn execute_query(
         .await
         .map(JsonResponse::Serialized)
         .map_err(|err| match err {
-            execution::Error::Query(err) => {
+            error::Error::Query(err) => {
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }
-            execution::Error::ConnectionPool(err) => {
+            error::Error::ConnectionPool(err) => {
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }
-            execution::Error::TiberiusError(err) => {
+            error::Error::TiberiusError(err) => {
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }
-            execution::Error::Mutation(err) => {
+            error::Error::Mutation(err) => {
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }
