@@ -74,6 +74,12 @@ pub async fn execute_mutations(
 
     if let Some(mutation) = i.next() {
         execute_mutation(&mut connection, mutation, &mut buffer).await;
+
+        for mutation in i {
+            buffer.put(&[b','][..]); // each result, except the first, is prefixed by a ','
+
+            execute_mutation(&mut connection, mutation, &mut buffer).await;
+        }
     }
 
     buffer.put(&[b']'][..]); // Close the operation_results array
