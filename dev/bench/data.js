@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1715761670739,
+  "lastUpdate": 1716794351362,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -2727,6 +2727,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.0755222080381081,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "karthikeyan@hasura.io",
+            "name": "Karthikeyan Chinnakonda",
+            "username": "codingkarthik"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "9f64e42233101099a8d997c656314b8b405b7ebd",
+          "message": "Native mutation support - Incremental PR - I (#118)\n\nhttps://hasurahq.atlassian.net/browse/ES-99\n\n<!-- The PR description should answer 2 (maybe 3) important questions:\n-->\n\n### What\n\n<!-- What is this PR trying to accomplish (and why, if it's not\nobvious)? -->\n\nThis PR does the following things:\n\n1. Parses `nativeMutations` from the configuration.json file.\n2. Generates the NDC schema of the native mutations.\n\n### How\n\n<!-- How is it trying to accomplish it (what are the implementation\nsteps)? -->\n\nThe schema of a native mutation is created in the following way:\n\n1. A native mutation creates two object types:\na. Object that corresponds to the `columns` that will capture the output\nof the native query.\nb. Object that will be the response of the native query with\n`affected_rows` and `returning` being the fields of the object.",
+          "timestamp": "2024-05-27T07:10:46Z",
+          "tree_id": "46d8a1c83cec9da5561a2f439d7a899ed2d5425a",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/9f64e42233101099a8d997c656314b8b405b7ebd"
+        },
+        "date": 1716794350198,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 59.342819000000006,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 75.94112100000001,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 60.774403064888,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.6710458417258636,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.09597786546387736,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 388.58127349999995,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 416.05708985,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 375.93678266754927,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 0.9952976338882991,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.08281749470462557,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 131.51565,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 145.0013648,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 129.90978536715693,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.6150162229747025,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.070898235309794,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 131.9490755,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 146.27346104999998,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 129.8389788323607,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.7029839672414084,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.07667692824926088,
             "unit": "ms"
           }
         ]
