@@ -7,7 +7,7 @@ use bytes::{BufMut, Bytes, BytesMut};
 use query_engine_sql::sql::{
     self,
     ast::With,
-    execution_plan::{MutationExecutionPlan, NativeMutationExecutionPlan},
+    execution_plan::{MutationOperationExecutionPlan, NativeMutationOperationExecutionPlan},
     string::SQL,
 };
 use query_engine_translation::translation::mutation::mutation::generate_native_mutation_response_cte;
@@ -20,7 +20,7 @@ use tracing::{info_span, Instrument};
 /// Runs the `plan` in a transaction. If this function returns an error,
 /// then the transaction should be rolled back.
 async fn execute_mutations_transaction(
-    plan: sql::execution_plan::MutationsExecutionPlan,
+    plan: sql::execution_plan::MutationExecutionPlan,
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
 ) -> Result<Bytes, Error> {
     execute_statement(connection, "BEGIN TRANSACTION".to_string()).await?;
@@ -179,7 +179,7 @@ fn convert_mutation_response_to_json(db_results: &Vec<tiberius::Row>) -> Result<
 pub async fn execute_mutations(
     mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
     metrics: &metrics::Metrics,
-    plan: sql::execution_plan::MutationsExecutionPlan,
+    plan: sql::execution_plan::MutationExecutionPlan,
 ) -> Result<Bytes, Error> {
     let acquisition_timer = metrics.time_connection_acquisition_wait();
     let connection_result = mssql_pool
@@ -200,11 +200,11 @@ pub async fn execute_mutations(
 
 async fn execute_mutation(
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
-    mutation_plan: MutationExecutionPlan,
+    mutation_plan: MutationOperationExecutionPlan,
     buffer: &mut (impl BufMut + Send),
 ) -> Result<(), Error> {
     match mutation_plan {
-        MutationExecutionPlan::NativeMutation(native_mutation_plan) => {
+        MutationOperationExecutionPlan::NativeMutation(native_mutation_plan) => {
             execute_native_mutation(connection, native_mutation_plan, buffer).await
         }
     }
@@ -213,7 +213,7 @@ async fn execute_mutation(
 /// Execute the mutation query.
 async fn execute_native_mutation(
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
-    native_mutation_plan: NativeMutationExecutionPlan,
+    native_mutation_plan: NativeMutationOperationExecutionPlan,
     buffer: &mut (impl BufMut + Send),
 ) -> Result<(), Error> {
     let mutation_query = &native_mutation_plan.mutation_sql_query;

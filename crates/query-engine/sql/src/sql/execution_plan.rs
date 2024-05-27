@@ -24,7 +24,7 @@ pub struct NativeMutationResponseSelection {
 }
 
 #[derive(Debug)]
-pub struct NativeMutationExecutionPlan {
+pub struct NativeMutationOperationExecutionPlan {
     /// First query that will run when executed.
     ///
     /// In case of native mutations, this will be the SQL statement
@@ -41,24 +41,17 @@ pub struct NativeMutationExecutionPlan {
 }
 
 #[derive(Debug)]
-pub enum MutationExecutionPlan {
-    NativeMutation(NativeMutationExecutionPlan),
+pub enum MutationOperationExecutionPlan {
+    NativeMutation(NativeMutationOperationExecutionPlan),
 }
 
 #[derive(Debug)]
 /// Definition of a mutation execution plan to be run against the database.
-pub struct MutationsExecutionPlan {
-    /// First query that will run when executed.
-    ///
-    /// In case of native mutations, this will be the SQL statement
-    /// where the user provided native mutation SQL query will be run
-    /// after substituting the value of the arguments.
-    /// The response obtained from this query will become the source
-    /// for the `response_selection`.
-    //    pub pre: sql::string::SQL,
-    /// The mutations that need to be run.
-    pub mutations: Vec<MutationExecutionPlan>,
-    // TODO(KC): Add a `post` step here
+pub struct MutationExecutionPlan {
+    /// A list of mutation execution plans to be run,
+    /// Each mutation execution plan corresponds to a
+    /// single mutation operation plan.
+    pub mutations: Vec<MutationOperationExecutionPlan>,
 }
 
 #[derive(Debug)]

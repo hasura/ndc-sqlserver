@@ -51,7 +51,7 @@ fn plan_mutation(
     configuration: &configuration::Configuration,
     state: &configuration::State,
     mutation_request: models::MutationRequest,
-) -> Result<sql::execution_plan::MutationsExecutionPlan, connector::MutationError> {
+) -> Result<sql::execution_plan::MutationExecutionPlan, connector::MutationError> {
     let timer = state.metrics.time_mutation_plan();
     let result = translation::mutation::mutation::translate(
         &configuration.config.metadata,
@@ -71,7 +71,7 @@ fn plan_mutation(
 
 async fn execute_mutations_plan(
     state: &configuration::State,
-    plan: sql::execution_plan::MutationsExecutionPlan,
+    plan: sql::execution_plan::MutationExecutionPlan,
 ) -> Result<JsonResponse<models::MutationResponse>, connector::MutationError> {
     mutation::execute_mutations(&state.mssql_pool, &state.metrics, plan)
         .await

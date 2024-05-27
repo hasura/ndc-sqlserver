@@ -3,7 +3,7 @@ use indexmap::IndexMap;
 use ndc_sdk::models::{self};
 use query_engine_metadata::metadata;
 use query_engine_sql::sql::execution_plan::{
-    MutationExecutionPlan, MutationsExecutionPlan, NativeMutationExecutionPlan,
+    MutationExecutionPlan, MutationOperationExecutionPlan, NativeMutationOperationExecutionPlan,
     NativeMutationResponseSelection,
 };
 use query_engine_sql::sql::{
@@ -28,7 +28,7 @@ use crate::translation::{
 pub fn translate(
     metadata: &metadata::Metadata,
     mutation_request: models::MutationRequest,
-) -> Result<sql::execution_plan::MutationsExecutionPlan, Error> {
+) -> Result<sql::execution_plan::MutationExecutionPlan, Error> {
     let env = Env::new(metadata, mutation_request.collection_relationships);
     let state = State::new();
 
@@ -214,8 +214,8 @@ fn generate_mutation_execution_plan(
     env: &Env,
     mut state: State,
     mutation_operations: Vec<MutationOperation>,
-) -> Result<MutationsExecutionPlan, Error> {
-    let mut mutations: Vec<MutationExecutionPlan> = Vec::new();
+) -> Result<MutationExecutionPlan, Error> {
+    let mut mutations: Vec<MutationOperationExecutionPlan> = Vec::new();
 
     // Traverse over the mutation operations and compute the SQL statements that need to
     // be run.
@@ -282,18 +282,7 @@ fn generate_mutation_execution_plan(
                     &json_response_cte_alias,
                 )?;
 
-                // form a single JSON item shaped `{ rows: [], aggregates: {} }`
-                // that matches the models::RowSet type
-                // let json_select = sql::helpers::select_rowset(
-                //     state.make_table_alias("universe".to_string()),
-                //     state.make_table_alias("rows".to_string()),
-                //     sql::helpers::make_column_alias("rows".to_string()),
-                //     state.make_table_alias("aggregates".to_string()),
-                //     sql::helpers::make_column_alias("aggregates".to_string()),
-                //     select_set,
-                // );
-
-                // form a single JSON item shaped `{ rows: [], aggregates: {} }`
+                // form a single JSON item shaped `{ type: "procedure", result: "<mutation_operation_result>" }`
                 // that matches the models::RowSet type
                 let json_select = sql::helpers::select_mutation_rowset(
                     (
@@ -319,18 +308,18 @@ fn generate_mutation_execution_plan(
                     json_response_cte_alias,
                 )?;
 
-                let native_mutation_exec_plan = NativeMutationExecutionPlan {
+                let native_mutation_exec_plan = NativeMutationOperationExecutionPlan {
                     mutation_sql_query,
                     response_selection,
                     native_mutation_name: native_mutation_info.name.clone(),
                 };
 
-                mutations.push(MutationExecutionPlan::NativeMutation(
+                mutations.push(MutationOperationExecutionPlan::NativeMutation(
                     native_mutation_exec_plan,
                 ));
             }
         }
     }
 
-    Ok(MutationsExecutionPlan { mutations })
+    Ok(MutationExecutionPlan { mutations })
 }
