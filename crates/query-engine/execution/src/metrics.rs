@@ -8,8 +8,11 @@ pub struct Metrics {
     query_total: IntCounter,
     explain_total: IntCounter,
     query_total_time: Histogram,
+    mutation_total_time: Histogram,
     query_plan_time: Histogram,
+    mutation_plan_time: Histogram,
     query_execution_time: Histogram,
+    mutation_execution_time: Histogram,
     connection_acquisition_wait_time: Histogram,
     pub error_metrics: ErrorMetrics,
 }
@@ -47,6 +50,24 @@ impl Metrics {
             "Time taken to execute an already-planned query, in seconds.",
         )?;
 
+        let mutation_total_time = add_histogram_metric(
+            metrics_registry,
+            "ndc_sqlserver_mutation_total_time",
+            "Total time taken to plan and execute a mutation, in seconds",
+        )?;
+
+        let mutation_plan_time = add_histogram_metric(
+            metrics_registry,
+            "ndc_sqlserver_mutation_plan_time",
+            "Time taken to plan a mutation for execution, in seconds.",
+        )?;
+
+        let mutation_execution_time = add_histogram_metric(
+            metrics_registry,
+            "ndc_sqlserver_mutation_execution_time",
+            "Time taken to execute an already-planned mutation, in seconds.",
+        )?;
+
         let connection_acquisition_wait_time = add_histogram_metric(
             metrics_registry,
             "ndc_sqlserver_connection_acquisition_wait_time",
@@ -63,6 +84,9 @@ impl Metrics {
             query_execution_time,
             connection_acquisition_wait_time,
             error_metrics,
+            mutation_execution_time,
+            mutation_plan_time,
+            mutation_total_time,
         })
     }
 
@@ -78,12 +102,24 @@ impl Metrics {
         Timer(self.query_total_time.start_timer())
     }
 
+    pub fn time_mutation_total(&self) -> Timer {
+        Timer(self.query_total_time.start_timer())
+    }
+
     pub fn time_query_plan(&self) -> Timer {
         Timer(self.query_plan_time.start_timer())
     }
 
+    pub fn time_mutation_plan(&self) -> Timer {
+        Timer(self.mutation_plan_time.start_timer())
+    }
+
     pub fn time_query_execution(&self) -> Timer {
-        Timer(self.query_execution_time.start_timer())
+        Timer(self.mutation_execution_time.start_timer())
+    }
+
+    pub fn time_mutation_execution(&self) -> Timer {
+        Timer(self.mutation_execution_time.start_timer())
     }
 
     pub fn time_connection_acquisition_wait(&self) -> Timer {

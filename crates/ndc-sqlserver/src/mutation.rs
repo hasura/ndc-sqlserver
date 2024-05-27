@@ -1,4 +1,7 @@
-//! Implement the `/mutation` endpoint to run a mutation against SQLServer.
+//! Implement the `/mutation` endpoint to run a mutation statement against SQL Server.
+//! See the Hasura
+//! [Native Data Connector Specification](https://hasura.github.io/ndc-spec/specification/mutations/index.html)
+//! for further details.
 
 use ndc_sdk::{connector, json_response::JsonResponse, models};
 use ndc_sqlserver_configuration as configuration;
@@ -6,20 +9,40 @@ use query_engine_execution::error;
 use query_engine_execution::execution;
 use query_engine_sql::sql;
 use query_engine_translation::translation;
+use tracing::info_span;
+use tracing::Instrument;
 
+/// Execute a mutation
+///
+/// This function implements the [mutation endpoint](https://hasura.github.io/ndc-spec/specification/mutations/index.html)
+/// from the NDC specification.
 pub async fn mutation(
     configuration: &configuration::Configuration,
     state: &configuration::State,
-    mutation_request: models::MutationRequest,
+    request: models::MutationRequest,
 ) -> Result<JsonResponse<models::MutationResponse>, connector::MutationError> {
-    tracing::info!("{}", serde_json::to_string(&mutation_request).unwrap());
-    tracing::info!("{:?}", mutation_request);
+    let timer = state.metrics.time_mutation_total();
 
-    let timer = state.metrics.time_query_total();
+    let result = async move {
+        tracing::info!(
+            request_json = serde_json::to_string(&request).unwrap(),
+            request = ?request
+        );
+        let plan = async { plan_mutation(configuration, state, request) }
+            .instrument(info_span!("Execute Mutation"))
+            .await?;
 
-    let plan = plan_mutation(configuration, state, mutation_request)?;
+        let result = async {
+            execute_mutations_plan(state, plan)
+                .instrument(info_span!("Execute mutation"))
+                .await
+        }
+        .await?;
 
-    let result = execute_mutations_plan(state, plan).await;
+        Ok(result)
+    }
+    .instrument(info_span!("/mutation"))
+    .await;
 
     timer.complete_with(result)
 }
