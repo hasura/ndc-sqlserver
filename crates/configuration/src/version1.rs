@@ -141,6 +141,7 @@ pub async fn configure(configuration: &RawConfiguration) -> Result<RawConfigurat
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
 
     metadata.native_queries = configuration.metadata.native_queries.clone();
+    metadata.native_mutations = configuration.metadata.native_mutations.clone();
 
     let tables_row = select_first_row(&mssql_pool, TABLE_CONFIGURATION_QUERY).await;
 

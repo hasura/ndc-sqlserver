@@ -3290,6 +3290,47 @@ expression: result
         }
       }
     },
+    "insert_artist_and_return_id": {
+      "fields": {
+        "ArtistId": {
+          "type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "Name": {
+          "type": {
+            "type": "nullable",
+            "underlying_type": {
+              "type": "named",
+              "name": "varchar"
+            }
+          }
+        }
+      }
+    },
+    "insert_artist_and_return_id_response": {
+      "description": "Responses from the 'insert_artist_and_return_id' procedure",
+      "fields": {
+        "affected_rows": {
+          "description": "The number of rows affected by the mutation",
+          "type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "returning": {
+          "description": "Data from rows affected by the mutation",
+          "type": {
+            "type": "array",
+            "element_type": {
+              "type": "named",
+              "name": "insert_artist_and_return_id"
+            }
+          }
+        }
+      }
+    },
     "value_types": {
       "fields": {
         "bigint": {
@@ -3735,5 +3776,30 @@ expression: result
     }
   ],
   "functions": [],
-  "procedures": []
+  "procedures": [
+    {
+      "name": "insert_artist_and_return_id",
+      "arguments": {
+        "ArtistId": {
+          "type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "Name": {
+          "type": {
+            "type": "nullable",
+            "underlying_type": {
+              "type": "named",
+              "name": "varchar"
+            }
+          }
+        }
+      },
+      "result_type": {
+        "type": "named",
+        "name": "insert_artist_and_return_id_response"
+      }
+    }
+  ]
 }

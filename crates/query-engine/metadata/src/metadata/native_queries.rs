@@ -13,7 +13,13 @@ use std::collections::BTreeMap;
 #[serde(rename_all = "camelCase")]
 pub struct NativeQueries(pub BTreeMap<String, NativeQueryInfo>);
 
-/// Information about a Native Query
+/// Metadata information of native mutations that are supposed to be
+/// tracked as mutations.
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct NativeMutations(pub BTreeMap<String, NativeQueryInfo>);
+
+/// Information about a Native Query/Mutation.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NativeQueryInfo {
@@ -42,7 +48,6 @@ pub enum NativeQueryPart {
 pub struct NativeQuerySql(pub Vec<NativeQueryPart>);
 
 // Serialization
-
 impl Serialize for NativeQuerySql {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -104,7 +109,7 @@ impl JsonSchema for NativeQuerySql {
 
 /// Parse a native query into parts where variables have the
 /// syntax `{{<variable>}}`.
-fn parse_native_query(string: &str) -> Vec<NativeQueryPart> {
+pub fn parse_native_query(string: &str) -> Vec<NativeQueryPart> {
     let vec: Vec<Vec<NativeQueryPart>> = string
         .split("{{")
         .map(|part| match part.split_once("}}") {
