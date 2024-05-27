@@ -25,16 +25,13 @@ pub struct NativeMutationResponseSelection {
 
 #[derive(Debug)]
 pub struct NativeMutationOperationExecutionPlan {
-    /// First query that will run when executed.
+    /// Native mutation SQL query provided by the user.
     ///
-    /// In case of native mutations, this will be the SQL statement
-    /// where the user provided native mutation SQL query will be run
-    /// after substituting the value of the arguments.
     /// The response obtained from this query will become the source
     /// for the `response_selection_cte`.
     pub mutation_sql_query: sql::string::SQL,
     /// Select query that will run on the response
-    /// of the `mutation_sql_query`
+    /// of the `mutation_sql_query`.
     pub response_selection: NativeMutationResponseSelection,
     /// Name of the operation, this should be the name of the procedure
     pub native_mutation_name: String,
