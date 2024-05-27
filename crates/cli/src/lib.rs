@@ -6,6 +6,8 @@ use std::path::PathBuf;
 
 use clap::Subcommand;
 
+use ndc_sqlserver_configuration as configuration;
+
 const UPDATE_ATTEMPTS: u8 = 3;
 
 /// The various contextual bits and bobs we need to run.
@@ -56,7 +58,7 @@ pub async fn run(command: Command, context: Context) -> anyhow::Result<()> {
 async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()> {
     let configuration_file = context
         .context_path
-        .join(ndc_sqlserver::connector::CONFIGURATION_FILENAME);
+        .join(configuration::CONFIGURATION_FILENAME);
     fs::create_dir_all(&context.context_path)?; // TODO(PY): .await
 
     // refuse to initialize the directory unless it is empty
@@ -66,10 +68,8 @@ async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()>
     }
 
     let raw_configuration = match context.uri {
-        Some(uri) => {
-            ndc_sqlserver::configuration::RawConfiguration::with_mssql_connection_string(uri)
-        }
-        None => ndc_sqlserver::configuration::RawConfiguration::empty(),
+        Some(uri) => configuration::RawConfiguration::with_mssql_connection_string(uri),
+        None => configuration::RawConfiguration::empty(),
     };
     // create the configuration file
     fs::write(
@@ -80,9 +80,9 @@ async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()>
     // create the jsonschema file
     let configuration_jsonschema_file_path = context
         .context_path
-        .join(ndc_sqlserver::connector::CONFIGURATION_JSONSCHEMA_FILENAME);
+        .join(configuration::CONFIGURATION_JSONSCHEMA_FILENAME);
 
-    let output = schemars::schema_for!(ndc_sqlserver::configuration::RawConfiguration);
+    let output = schemars::schema_for!(configuration::RawConfiguration);
     fs::write(
         configuration_jsonschema_file_path,
         serde_json::to_string_pretty(&output)? + "\n",
@@ -140,16 +140,16 @@ async fn update(context: Context) -> anyhow::Result<()> {
     for _attempt in 1..=UPDATE_ATTEMPTS {
         let configuration_file_path = context
             .context_path
-            .join(ndc_sqlserver::connector::CONFIGURATION_FILENAME);
-        let input: ndc_sqlserver::configuration::RawConfiguration = {
+            .join(configuration::CONFIGURATION_FILENAME);
+        let input: configuration::RawConfiguration = {
             let configuration_file_contents =
                 read_config_file_contents(&configuration_file_path).await?;
             serde_json::from_str(&configuration_file_contents)?
         };
-        let output = ndc_sqlserver::configuration::configure(&input).await?;
+        let output = configuration::configure(&input).await?;
 
         // Check that the input file did not change since we started introspecting,
-        let input_again_before_write: ndc_sqlserver::configuration::RawConfiguration = {
+        let input_again_before_write: configuration::RawConfiguration = {
             let configuration_file_contents =
                 read_config_file_contents(&configuration_file_path).await?;
             serde_json::from_str(&configuration_file_contents)?
@@ -199,8 +199,8 @@ async fn read_config_file_contents(configuration_file_path: &PathBuf) -> anyhow:
 async fn update_uri_from_context(context: &Context) -> anyhow::Result<()> {
     let configuration_file_path = context
         .context_path
-        .join(ndc_sqlserver::connector::CONFIGURATION_FILENAME);
-    let mut input: ndc_sqlserver::configuration::RawConfiguration = {
+        .join(configuration::CONFIGURATION_FILENAME);
+    let mut input: configuration::RawConfiguration = {
         let configuration_file_contents =
             read_config_file_contents(&configuration_file_path).await?;
         serde_json::from_str(&configuration_file_contents)?

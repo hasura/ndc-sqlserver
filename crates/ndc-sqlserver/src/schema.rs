@@ -10,7 +10,7 @@ use ndc_sdk::models;
 use ndc_sdk::models::TypeRepresentation;
 use query_engine_metadata::metadata;
 
-use super::configuration;
+use ndc_sqlserver_configuration as configuration;
 
 /// Extract the models::Type representation of a readonly column.
 fn column_to_type(column: &metadata::ColumnInfo) -> models::Type {

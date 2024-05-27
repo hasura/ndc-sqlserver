@@ -8,6 +8,12 @@
 
 ### Fixed
 
+## [v0.1.1] - 2024-05-15
+
+### Added
+
+- Support for CLI plugin for Arch Linux systems
+
 ## [v0.1.0] - 2024-04-30
 
 - Initial release with support of ndc-spec v0.1.2 (beta)
@@ -19,4 +25,5 @@
 <!-- end -->
 
 [Unreleased]: https://github.com/hasura/ndc-sqlserver/compare/v0.6.0...HEAD
+[v0.1.1]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.1.1
 [v0.1.0]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.1.0
