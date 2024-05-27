@@ -6,7 +6,7 @@
 use ndc_sdk::{connector, json_response::JsonResponse, models};
 use ndc_sqlserver_configuration as configuration;
 use query_engine_execution::error;
-use query_engine_execution::execution;
+use query_engine_execution::mutation;
 use query_engine_sql::sql;
 use query_engine_translation::translation;
 use tracing::info_span;
@@ -52,7 +52,7 @@ fn plan_mutation(
     state: &configuration::State,
     mutation_request: models::MutationRequest,
 ) -> Result<sql::execution_plan::MutationsExecutionPlan, connector::MutationError> {
-    let timer = state.metrics.time_query_plan();
+    let timer = state.metrics.time_mutation_plan();
     let result = translation::mutation::mutation::translate(
         &configuration.config.metadata,
         mutation_request,
@@ -73,7 +73,7 @@ async fn execute_mutations_plan(
     state: &configuration::State,
     plan: sql::execution_plan::MutationsExecutionPlan,
 ) -> Result<JsonResponse<models::MutationResponse>, connector::MutationError> {
-    execution::execute_mutations(&state.mssql_pool, &state.metrics, plan)
+    mutation::execute_mutations(&state.mssql_pool, &state.metrics, plan)
         .await
         .map(JsonResponse::Serialized)
         .map_err(|err| match err {

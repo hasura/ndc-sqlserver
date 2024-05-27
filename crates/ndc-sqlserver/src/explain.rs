@@ -11,7 +11,7 @@ use ndc_sdk::connector;
 use ndc_sdk::models;
 use ndc_sqlserver_configuration as configuration;
 use query_engine_execution::error;
-use query_engine_execution::execution;
+use query_engine_execution::query;
 use query_engine_sql::sql;
 use query_engine_translation::translation;
 
@@ -36,7 +36,7 @@ pub async fn explain(
             .await?;
 
         // Execute an explain query.
-        let (query, plan) = execution::explain(&state.mssql_pool, plan)
+        let (query, plan) = query::explain(&state.mssql_pool, plan)
             .instrument(info_span!("Explain query"))
             .await
             .map_err(|err| match err {

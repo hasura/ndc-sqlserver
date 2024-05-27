@@ -103,7 +103,7 @@ impl Metrics {
     }
 
     pub fn time_mutation_total(&self) -> Timer {
-        Timer(self.query_total_time.start_timer())
+        Timer(self.mutation_total_time.start_timer())
     }
 
     pub fn time_query_plan(&self) -> Timer {
@@ -115,7 +115,7 @@ impl Metrics {
     }
 
     pub fn time_query_execution(&self) -> Timer {
-        Timer(self.mutation_execution_time.start_timer())
+        Timer(self.query_execution_time.start_timer())
     }
 
     pub fn time_mutation_execution(&self) -> Timer {

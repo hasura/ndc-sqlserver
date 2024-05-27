@@ -7,7 +7,7 @@ use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
 use ndc_sqlserver_configuration as configuration;
 use query_engine_execution::error;
-use query_engine_execution::execution;
+use query_engine_execution::query;
 use query_engine_sql::sql;
 use query_engine_translation::translation;
 use tracing::{info_span, Instrument};
@@ -71,7 +71,7 @@ async fn execute_query(
     state: &configuration::State,
     plan: sql::execution_plan::QueryExecutionPlan,
 ) -> Result<JsonResponse<models::QueryResponse>, connector::QueryError> {
-    execution::mssql_execute_query_plan(&state.mssql_pool, &state.metrics, plan)
+    query::mssql_execute_query_plan(&state.mssql_pool, &state.metrics, plan)
         .await
         .map(JsonResponse::Serialized)
         .map_err(|err| match err {
