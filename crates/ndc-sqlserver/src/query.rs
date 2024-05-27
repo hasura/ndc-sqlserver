@@ -2,10 +2,10 @@
 //! See the Hasura
 //! [Native Data Connector Specification](https://hasura.github.io/ndc-spec/specification/queries/index.html)
 //! for further details.
-use super::configuration;
 use ndc_sdk::connector;
 use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
+use ndc_sqlserver_configuration as configuration;
 use query_engine_execution::error;
 use query_engine_execution::execution;
 use query_engine_sql::sql;

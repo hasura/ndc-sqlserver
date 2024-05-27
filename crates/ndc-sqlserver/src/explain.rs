@@ -9,12 +9,11 @@ use tracing::{info_span, Instrument};
 
 use ndc_sdk::connector;
 use ndc_sdk::models;
+use ndc_sqlserver_configuration as configuration;
 use query_engine_execution::error;
 use query_engine_execution::execution;
 use query_engine_sql::sql;
 use query_engine_translation::translation;
-
-use super::configuration;
 
 /// Explain a query by creating an execution plan
 ///

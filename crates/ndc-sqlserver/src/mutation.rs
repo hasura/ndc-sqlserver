@@ -1,7 +1,7 @@
 //! Implement the `/mutation` endpoint to run a mutation against SQLServer.
 
-use super::configuration;
 use ndc_sdk::{connector, json_response::JsonResponse, models};
+use ndc_sqlserver_configuration as configuration;
 use query_engine_execution::error;
 use query_engine_execution::execution;
 use query_engine_sql::sql;

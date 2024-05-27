@@ -10,7 +10,7 @@ use ndc_sdk::models;
 use ndc_sdk::models::TypeRepresentation;
 use query_engine_metadata::metadata;
 
-use super::configuration;
+use ndc_sqlserver_configuration as configuration;
 
 /// Extract the models::Type representation of a readonly column.
 fn column_to_type(column: &metadata::ColumnInfo) -> models::Type {
@@ -24,6 +24,56 @@ fn column_to_type(column: &metadata::ColumnInfo) -> models::Type {
             }),
         },
     }
+}
+/// Gets the schema of the native queries.
+/// Each native query creates creates an object named as the name
+/// of the native query with the fields of the object corresponding
+/// to the `columns` field.
+fn get_native_queries_schema(
+    native_queries: &query_engine_metadata::metadata::NativeQueries,
+    object_types: &mut BTreeMap<String, models::ObjectType>,
+) -> Result<Vec<models::CollectionInfo>, connector::SchemaError> {
+    let mut read_only_native_queries = Vec::new();
+
+    native_queries.0.iter().for_each(|(name, info)| {
+        let native_query_object_type = models::ObjectType {
+            description: info.description.clone(),
+            fields: BTreeMap::from_iter(info.columns.iter().map(|(column_name, column)| {
+                (
+                    column_name.clone(),
+                    models::ObjectField {
+                        description: column.description.clone(),
+                        r#type: column_to_type(column),
+                    },
+                )
+            })),
+        };
+        object_types.insert(name.clone(), native_query_object_type);
+
+        let native_query_collection_info = models::CollectionInfo {
+            name: name.clone(),
+            description: info.description.clone(),
+            arguments: info
+                .arguments
+                .iter()
+                .map(|(name, column_info)| {
+                    (
+                        name.clone(),
+                        models::ArgumentInfo {
+                            description: column_info.description.clone(),
+                            argument_type: column_to_type(column_info),
+                        },
+                    )
+                })
+                .collect(),
+            collection_type: name.clone(),
+            uniqueness_constraints: BTreeMap::new(),
+            foreign_keys: BTreeMap::new(),
+        };
+        read_only_native_queries.push(native_query_collection_info);
+    });
+
+    Ok(read_only_native_queries)
 }
 
 /// Build a `ProcedureInfo` type from the given parameters.
@@ -149,57 +199,6 @@ fn get_native_mutations_schema(
     });
 
     Ok(native_mutations)
-}
-
-/// Gets the schema of the native queries.
-/// Each native query creates creates an object named as the name
-/// of the native query with the fields of the object corresponding
-/// to the `columns` field.
-fn get_native_queries_schema(
-    native_queries: &query_engine_metadata::metadata::NativeQueries,
-    object_types: &mut BTreeMap<String, models::ObjectType>,
-) -> Result<Vec<models::CollectionInfo>, connector::SchemaError> {
-    let mut read_only_native_queries = Vec::new();
-
-    native_queries.0.iter().for_each(|(name, info)| {
-        let native_query_object_type = models::ObjectType {
-            description: info.description.clone(),
-            fields: BTreeMap::from_iter(info.columns.iter().map(|(column_name, column)| {
-                (
-                    column_name.clone(),
-                    models::ObjectField {
-                        description: column.description.clone(),
-                        r#type: column_to_type(column),
-                    },
-                )
-            })),
-        };
-        object_types.insert(name.clone(), native_query_object_type);
-
-        let native_query_collection_info = models::CollectionInfo {
-            name: name.clone(),
-            description: info.description.clone(),
-            arguments: info
-                .arguments
-                .iter()
-                .map(|(name, column_info)| {
-                    (
-                        name.clone(),
-                        models::ArgumentInfo {
-                            description: column_info.description.clone(),
-                            argument_type: column_to_type(column_info),
-                        },
-                    )
-                })
-                .collect(),
-            collection_type: name.clone(),
-            uniqueness_constraints: BTreeMap::new(),
-            foreign_keys: BTreeMap::new(),
-        };
-        read_only_native_queries.push(native_query_collection_info);
-    });
-
-    Ok(read_only_native_queries)
 }
 
 /// Get the connector's schema.

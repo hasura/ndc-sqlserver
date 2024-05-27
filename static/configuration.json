@@ -907,6 +907,40 @@
         "description": null
       }
     },
+    "nativeMutations": {
+      "insert_artist_and_return_id": {
+        "sql": "INSERT INTO [dbo].[Artist] (ArtistId, Name) OUTPUT inserted.ArtistId  VALUES ({{id}} as int, {{name}} as text)",
+        "columns": {
+          "ArtistId": {
+            "name": "ArtistId",
+            "type": "int",
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "Name": {
+            "name": "Name",
+            "type": "varchar",
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "arguments": {
+          "ArtistId": {
+            "name": "ArtistId",
+            "type": "int",
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "Name": {
+            "name": "Name",
+            "type": "varchar",
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "description": null
+      }
+    },
     "aggregateFunctions": {
       "bigint": {
         "APPROX_COUNT_DISTINCT": {
