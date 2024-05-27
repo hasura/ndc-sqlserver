@@ -5,7 +5,8 @@ use std::collections::BTreeMap;
 use ndc_sdk::models::{self, NestedField};
 
 use super::error::Error;
-use query_engine_metadata::metadata;
+use crate::translation::values;
+use query_engine_metadata::metadata::{self, NativeQuerySql};
 use query_engine_sql::sql;
 
 #[derive(Debug)]
@@ -116,6 +117,42 @@ pub enum ProcedureInfo {
         name: String,
         info: metadata::NativeQueryInfo,
     },
+}
+
+/// Substitutes the value of the arguments
+/// in the parameterized SQL statement and returns
+/// a SQL statement that can be run in the DB.
+pub fn generate_native_query_sql(
+    type_arguments: BTreeMap<String, query_engine_metadata::metadata::ColumnInfo>,
+    native_query_arguments: BTreeMap<String, ndc_sdk::models::Argument>,
+    native_query_sql: NativeQuerySql,
+) -> Result<Vec<sql::ast::RawSql>, Error> {
+    native_query_sql
+        .0
+        .iter()
+        .map(|part| match part {
+            metadata::NativeQueryPart::Text(text) => Ok(sql::ast::RawSql::RawText(text.clone())),
+            metadata::NativeQueryPart::Parameter(param) => {
+                let typ = match type_arguments.get(param) {
+                    None => Err(Error::ArgumentNotFound(param.clone())),
+                    Some(argument) => Ok(argument.r#type.clone()),
+                }?;
+
+                let exp = match native_query_arguments.get(param) {
+                    None => Err(Error::ArgumentNotFound(param.clone())),
+                    Some(argument) => match argument {
+                        models::Argument::Literal { value } => {
+                            values::translate_json_value(value, &typ)
+                        }
+                        models::Argument::Variable { name } => {
+                            Ok(values::translate_variable(name.clone(), &typ))
+                        }
+                    },
+                }?;
+                Ok(sql::ast::RawSql::Expression(exp))
+            }
+        })
+        .collect()
 }
 
 impl<'a> Env<'a> {

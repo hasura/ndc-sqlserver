@@ -1,31 +1,29 @@
-use std::collections::HashMap;
-
 use indexmap::indexmap;
 use indexmap::IndexMap;
 use ndc_sdk::models::{self};
 use query_engine_metadata::metadata;
-use query_engine_sql::sql;
-use query_engine_sql::sql::ast::CommonTableExpression;
-use query_engine_sql::sql::ast::Where;
-use query_engine_sql::sql::ast::{
-    ColumnAlias, ColumnName, Expression, From, RawSQLStatement, ScalarType, Select, TableAlias,
-    WithJSONSchema,
-};
 use query_engine_sql::sql::execution_plan::{
     MutationExecutionPlan, MutationsExecutionPlan, NativeMutationExecutionPlan,
     NativeMutationResponseSelection,
 };
-use query_engine_sql::sql::helpers::empty_where;
-use query_engine_sql::sql::helpers::make_column_alias;
-use query_engine_sql::sql::helpers::{empty_group_by, empty_order_by, empty_with};
-use query_engine_sql::sql::string::SQL;
+use query_engine_sql::sql::{
+    self,
+    ast::{
+        ColumnAlias, ColumnName, CommonTableExpression, Expression, RawSQLStatement, ScalarType,
+        Select, TableAlias, Where, WithJSONSchema,
+    },
+    helpers::{empty_group_by, empty_order_by, empty_where, empty_with, make_column_alias},
+    string::SQL,
+};
 
-use crate::translation::error::Error;
-use crate::translation::helpers::MutationOperation;
-use crate::translation::helpers::TableNameAndReference;
-use crate::translation::helpers::{Env, NativeMutationInfo, ProcedureInfo, State};
-use crate::translation::query;
-use crate::translation::values;
+use crate::translation::helpers::generate_native_query_sql;
+use crate::translation::{
+    error::Error,
+    helpers::{
+        Env, MutationOperation, NativeMutationInfo, ProcedureInfo, State, TableNameAndReference,
+    },
+    query,
+};
 
 pub fn translate(
     metadata: &metadata::Metadata,
@@ -68,32 +66,6 @@ fn translate_mutation_operation(
             }
         }
     }
-}
-
-// FIXME: This function already exists in `translation/query.rs`, please refactor to
-// deduplicate it.
-fn generate_sql(native_mutation: &NativeMutationInfo) -> Result<Vec<sql::ast::RawSql>, Error> {
-    native_mutation
-        .info
-        .sql
-        .0
-        .iter()
-        .map(|part| match part {
-            metadata::NativeQueryPart::Text(text) => Ok(sql::ast::RawSql::RawText(text.clone())),
-            metadata::NativeQueryPart::Parameter(param) => {
-                let typ = match native_mutation.info.arguments.get(param) {
-                    None => Err(Error::ArgumentNotFound(param.clone())),
-                    Some(argument) => Ok(argument.r#type.clone()),
-                }?;
-                let exp = match native_mutation.arguments.get(param) {
-                    None => Err(Error::ArgumentNotFound(param.clone())),
-                    Some(argument) => values::translate_json_value(argument, &typ),
-                }?;
-
-                Ok(sql::ast::RawSql::Expression(exp))
-            }
-        })
-        .collect()
 }
 
 /// A procedure expects an object with two fields:
@@ -167,33 +139,6 @@ pub fn parse_procedure_fields(
         }
         None => Err(Error::NoProcedureResultFieldsRequested)?,
     }
-}
-
-pub fn native_mutation_response_select(
-    mutation_response: Vec<HashMap<String, Option<serde_json::Value>>>,
-    response_selection: NativeMutationResponseSelection,
-) -> Result<Select, Error> {
-    let from = Some(From::OpenJSON {
-        alias: TableAlias {
-            unique_index: 0,
-            name: "open_json".to_string(),
-        },
-        json_value_param: sql::string::Param::String(
-            serde_json::to_string(&mutation_response).map_err(Error::SerdeSerializationError)?,
-        ),
-        with_json_schema: response_selection.response_json_schema,
-    });
-    Ok(Select {
-        with: empty_with(),
-        select_list: sql::ast::SelectList::SelectStar, // TODO(KC): This is a placeholder, this should contain the cols requested.
-        from,
-        joins: Vec::new(),
-        order_by: empty_order_by(),
-        where_: sql::ast::Where(sql::helpers::empty_where()),
-        for_json: sql::ast::ForJson::NoJson,
-        limit: None,
-        group_by: empty_group_by(),
-    })
 }
 
 /// This function constructs a CTE that represents the return type of the
@@ -279,11 +224,23 @@ fn generate_mutation_execution_plan(
             crate::translation::helpers::MutationOperation::NativeMutation(
                 native_mutation_info,
             ) => {
-                let raw_sql_statement = generate_sql(&native_mutation_info).map(RawSQLStatement)?;
+                let raw_sql = generate_native_query_sql(
+                    native_mutation_info.info.arguments.clone(),
+                    native_mutation_info
+                        .arguments
+                        .clone()
+                        .into_iter()
+                        .map(|(arg_name, arg_value)| {
+                            (arg_name, models::Argument::Literal { value: arg_value })
+                        })
+                        .collect(),
+                    native_mutation_info.info.sql.clone(),
+                )
+                .map(RawSQLStatement)?;
 
                 let mut mutation_sql_query = SQL::new();
 
-                raw_sql_statement.to_sql(&mut mutation_sql_query);
+                raw_sql.to_sql(&mut mutation_sql_query);
 
                 let (affected_rows, (returning_alias, returning)) =
                     parse_procedure_fields(native_mutation_info.fields.clone())?;
