@@ -34,9 +34,6 @@ pub fn translate_json_value(
             r#type: sql::ast::ScalarType(scalar_type.0.clone()),
         })
     } else {
-        println!(
-            "translate_json_value {value:#?} and scalar type {scalar_type:#?} and exp is {exp:#?}"
-        );
         Ok(exp)
     }
 }
