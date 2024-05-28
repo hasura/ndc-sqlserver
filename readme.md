@@ -103,7 +103,7 @@ To use the SQL server connector, follow these steps in a Hasura project:
    Follow the project configuration build [guide](https://hasura.io/docs/3.0/project-configuration/builds/) to apply
    other actions on the build.
 
-5.  Test the API
+5. Test the API
 
    The console URL in the build information cna be used to open the GraphiQL console to test out the API
 
@@ -114,3 +114,25 @@ ndc-sqlserver is still in early stages of development and we are currently not a
 ## License
 
 The Hasura SQLServer connector is available under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
+## Running the connector locally
+
+To run the SQL server connector locally, follow these steps:
+
+1. Initialize a configuration:
+
+   ```sh
+   cargo run --bin ndc-sqlserver-cli -- --context='<directory>'  initialize
+   ```
+
+2. Update the configuration by introspecting the database:
+
+   ```sh
+   CONNECTION_URI='<sqlserver-connection-string>' cargo run --bin ndc-sqlserver-cli -- --context='<directory>'  update
+   ```
+
+3. Run the connector:
+
+   ```sh
+   cargo run serve --configuration '<directory>'
+   ```
