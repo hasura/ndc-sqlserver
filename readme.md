@@ -20,7 +20,7 @@ Below, you'll find a matrix of all supported features for the SQL Server connect
 
 | Feature                         | Supported | Notes |
 | ------------------------------- | --------- | ----- |
-| Native Queries + Logical Models |    ❌     |       |
+| Native Queries + Logical Models |    ✅     |       |
 | Simple Object Query             |    ✅     |       |
 | Filter / Search                 |    ✅     |       |
 | Simple Aggregation              |    ✅     |       |
@@ -29,11 +29,11 @@ Below, you'll find a matrix of all supported features for the SQL Server connect
 | Table Relationships             |    ✅     |       |
 | Views                           |    ✅     |       |
 | Remote Relationships            |    ✅     |       |
-| Custom Fields                   | ✅ ❌     |       |
+| Custom Fields                   |    ❌     |       |
 | Mutations                       |    ❌     |       |
 | Distinct                        |    ✅     |       |
-| Enums                           | ✅ ❌     |       |
-| Naming Conventions              | ✅ ❌     |       |
+| Enums                           |    ❌     |       |
+| Naming Conventions              |    ❌     |       |
 | Default Values                  |    ❌     |       |
 | User-defined Functions          |    ❌     |       |
 
@@ -83,6 +83,35 @@ To use the SQL server connector, follow these steps in a Hasura project:
    ```bash
    ddn update connector-link sqlserver_connector
    ```
+
+4. Add all models and commands present in the database to the connector metadata
+
+   ```bash
+   ddn update data-connector-link sqlserver_connector --add-all-resources
+   ```
+
+4. Create a build
+
+   ```bash
+   ddn build supergraph-manifest
+   ```
+
+   This will return information about the build:
+
+   |               |                                                                                                   |
+   | ------------- | ------------------------------------------------------------------------------------------------- |
+   | Build Version | bd96bb221a                                                                                        |
+   | API URL       | https://<PROJECT_NAME>-bd96bb221a.ddn.hasura.app/graphql                                          |
+   | Console URL   | https://console.hasura.io/project/<PROJECT_NAME>/environment/default/build/bd96bb221a/graphql     |
+   | Project Name  | <PROJECT_NAME>                                                                                    |
+   | Description   |                                                                                                   |
+
+   Follow the project configuration build [guide](https://hasura.io/docs/3.0/project-configuration/builds/) to apply
+   other actions on the build.
+
+5.  Test the API
+
+   The console URL in the build information cna be used to open the GraphiQL console to test out the API
 
 ## Contributing
 
