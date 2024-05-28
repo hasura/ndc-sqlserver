@@ -9,7 +9,7 @@ use serde::Deserialize;
 
 use ndc_sqlserver::connector;
 
-pub const POSTGRESQL_CONNECTION_STRING: &str = "sqlserverql://sqlserver:password@localhost:64002";
+pub const MSSQL_CONNECTION_STRING: &str = "sqlserverql://sqlserver:password@localhost:64002";
 
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_query(testname: &str) -> serde_json::Value {
