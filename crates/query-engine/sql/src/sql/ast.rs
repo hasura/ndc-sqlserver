@@ -103,8 +103,9 @@ pub enum From {
         alias: TableAlias,
         alias_path: AliasPath,
     },
-    /// Select from a JSON value, as if it were
-    /// a relational table.
+    /// Query a JSON value, as if it were
+    /// a relational table. The `with_json_schema`
+    /// specifies the schema of the JSON value provided.
     OpenJSON {
         /// Name of the alias of the OpenJSON expression.
         alias: TableAlias,
