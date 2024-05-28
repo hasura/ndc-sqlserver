@@ -13,7 +13,7 @@ use tracing::{info_span, Instrument};
 pub async fn mssql_execute(
     mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
     metrics: &metrics::Metrics,
-    plan: sql::execution_plan::ExecutionPlan,
+    plan: sql::execution_plan::QueryExecutionPlan,
 ) -> Result<Bytes, Error> {
     let query = plan.query();
 
@@ -41,7 +41,7 @@ pub async fn mssql_execute(
 
 async fn execute_queries(
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
-    plan: sql::execution_plan::ExecutionPlan,
+    plan: sql::execution_plan::QueryExecutionPlan,
 ) -> Result<Bytes, Error> {
     let query = plan.query();
 
@@ -143,7 +143,7 @@ async fn execute_query(
 /// Convert a query to an EXPLAIN query and execute it against postgres.
 pub async fn explain(
     mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
-    plan: sql::execution_plan::ExecutionPlan,
+    plan: sql::execution_plan::QueryExecutionPlan,
 ) -> Result<(String, String), Error> {
     let query = plan.query();
 

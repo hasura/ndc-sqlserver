@@ -8,4 +8,10 @@ edition.workspace = true
 workspace = true
 
 [dependencies]
+
+ndc-sdk = { workspace = true }
+
+indexmap  = "2.1"
+
 serde_json = "1.0.116"
+thiserror = "1.0"
