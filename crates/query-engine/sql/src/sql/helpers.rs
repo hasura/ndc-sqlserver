@@ -285,6 +285,14 @@ pub fn select_rowset(
     }
 }
 
+/// Similar to `select_rowset`, but this function will return the data in the
+/// following format:
+///
+/// { "type": "procedure",
+///   "result": { <mutation_operation_result> }
+/// }
+///
+/// where `mutation_operation_result` will contain the fields requested.
 pub fn select_mutation_rowset(
     (result_table_alias, result_column_alias): (TableAlias, ColumnAlias),
     (row_table_alias, row_column_alias): (TableAlias, ColumnAlias),
