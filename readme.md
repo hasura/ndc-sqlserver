@@ -39,8 +39,6 @@ Below, you'll find a matrix of all supported features for the SQL Server connect
 
 ## Before you get Started
 
-[Prerequisites or recommended steps before using the connector.]
-
 1. Create a [Hasura Cloud account](https://console.hasura.io)
 2. Install the [CLI](https://hasura.io/docs/3.0/cli/installation/)
 3. Install the [Hasura VS Code extension](https://marketplace.visualstudio.com/items?itemName=HasuraHQ.hasura)
@@ -81,14 +79,10 @@ To use the SQL server connector, follow these steps in a Hasura project:
    ```
 
    ```bash
-   ddn update connector-link sqlserver_connector
-   ```
-
-4. Add all models and commands present in the database to the connector metadata
-
-   ```bash
    ddn update data-connector-link sqlserver_connector --add-all-resources
    ```
+
+   `--add-all-resources` flag adds all the models and commands present in the database to the connector metadata.
 
 4. Create a build
 
