@@ -1,5 +1,5 @@
 //! Runs the tests provided by the ndc-spec.
-pub mod common;
+mod common;
 
 #[cfg(test)]
 mod ndc_tests {

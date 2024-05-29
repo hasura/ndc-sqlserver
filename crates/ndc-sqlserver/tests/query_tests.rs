@@ -1,4 +1,4 @@
-pub mod common;
+mod common;
 
 mod basic {
     use super::common::run_query;

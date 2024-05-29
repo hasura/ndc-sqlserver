@@ -7,6 +7,10 @@ use axum::http::StatusCode;
 use axum_test_helper::TestClient;
 use serde::Deserialize;
 
+pub mod configuration;
+pub mod database;
+pub mod fresh_deployments;
+
 use ndc_sqlserver::connector;
 
 pub const MSSQL_CONNECTION_STRING: &str = "sqlserverql://sqlserver:password@localhost:64002";
@@ -14,6 +18,11 @@ pub const MSSQL_CONNECTION_STRING: &str = "sqlserverql://sqlserver:password@loca
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_query(testname: &str) -> serde_json::Value {
     run_against_server("query", testname).await
+}
+
+/// Run a query against the server, get the result, and compare against the snapshot.
+pub async fn run_mutation(testname: &str) -> serde_json::Value {
+    run_against_server("mutation", testname).await
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
