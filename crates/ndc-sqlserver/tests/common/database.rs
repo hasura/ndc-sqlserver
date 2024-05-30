@@ -7,12 +7,13 @@ use tokio_util::compat::{Compat, TokioAsyncWriteCompatExt};
 
 use uuid;
 
+#[derive(Debug, Clone)]
 pub struct MSSQLDatabaseConfig {
     pub host: String,
-    port: u16,
-    user: String,
+    pub port: u16,
+    pub user: String,
     pub db_name: String,
-    password: String,
+    pub password: String,
 }
 
 impl MSSQLDatabaseConfig {
@@ -38,6 +39,16 @@ impl MSSQLDatabaseConfig {
             password: "".to_string(),
         }
     }
+
+    pub fn original_db_config() -> MSSQLDatabaseConfig {
+        MSSQLDatabaseConfig {
+            host: "localhost".into(),
+            port: 64003,
+            user: "SA".into(),
+            password: "Password!".into(),
+            db_name: "Chinook".into(),
+        }
+    }
 }
 
 /// create a fresh db with a random name, return it's name and connection string
@@ -47,7 +58,7 @@ pub async fn create_fresh_database(connection_config: MSSQLDatabaseConfig) -> MS
     create_database_copy(connection_config, &db_name).await
 }
 
-async fn create_mssql_connection(
+pub async fn create_mssql_connection(
     connection_config: &MSSQLDatabaseConfig,
 ) -> Client<Compat<TcpStream>> {
     let connection_uri = connection_config.construct_uri();
@@ -68,8 +79,7 @@ async fn create_database_copy(
 ) -> MSSQLDatabaseConfig {
     let mut connection = create_mssql_connection(&connection_config).await;
 
-    let create_db_sql =
-        format!("CREATE DATABASE \"{new_db_name}\" WITH TEMPLATE chinook_template;");
+    let create_db_sql = format!("CREATE DATABASE \"{new_db_name}\";");
 
     connection
         .simple_query(create_db_sql.as_str())
@@ -81,21 +91,22 @@ async fn create_database_copy(
 }
 
 /// given a connection string, drop a database `db_name`
-pub async fn drop_database(
-    db_name: &str,
-    connection_config: MSSQLDatabaseConfig,
-) -> Result<(), String> {
-    let mut connection = create_mssql_connection(&connection_config).await;
+pub async fn drop_database(db_name: &str, connection_uri: String) -> Result<(), String> {
+    let config = Config::from_ado_string(&connection_uri).unwrap();
 
-    let drop_db_sql = format!("DROP DATABASE IF EXISTS \"{db_name}\" WITH (FORCE)");
+    let tcp = TcpStream::connect(config.get_addr()).await.unwrap();
+    tcp.set_nodelay(true).unwrap();
+
+    println!("Connection config is {config:#?}");
+
+    let mut connection = Client::connect(config, tcp.compat_write()).await.unwrap();
+
+    let drop_db_sql = format!("USE master; ALTER DATABASE  \"{db_name}\" SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE \"{db_name}\" ");
 
     // we don't mind if this fails
     match connection.simple_query(drop_db_sql).await {
         Err(e) => {
-            println!(
-                "Dropping DB {} failed with error: {}",
-                connection_config.db_name, e
-            );
+            println!("Dropping DB {} failed with error: {}", db_name, e);
         }
         Ok(_) => {}
     }

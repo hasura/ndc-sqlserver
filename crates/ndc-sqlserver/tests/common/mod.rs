@@ -13,7 +13,7 @@ pub mod fresh_deployments;
 
 use ndc_sqlserver::connector;
 
-pub const MSSQL_CONNECTION_STRING: &str = "sqlserverql://sqlserver:password@localhost:64002";
+use self::database::MSSQLDatabaseConfig;
 
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_query(testname: &str) -> serde_json::Value {

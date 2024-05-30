@@ -1,7 +1,10 @@
 use crate::common::configuration;
 use crate::common::database;
+use std::fs;
 use std::path::{Path, PathBuf};
 
+use super::configuration::get_path_from_project_root;
+use super::database::create_mssql_connection;
 use super::database::MSSQLDatabaseConfig;
 
 #[derive(Debug)]
@@ -18,7 +21,8 @@ impl FreshDeployment {
         original_connection_db_config: MSSQLDatabaseConfig,
         ndc_metadata_path: impl AsRef<Path>,
     ) -> anyhow::Result<FreshDeployment> {
-        let db_config = database::create_fresh_database(original_connection_db_config).await;
+        let db_config =
+            database::create_fresh_database(original_connection_db_config.clone()).await;
 
         let temp_deploys_path = PathBuf::from("static/temp-deploys");
 
@@ -34,11 +38,26 @@ impl FreshDeployment {
 
         let new_ndc_metadata_path = PathBuf::from("static/temp-deploys").join(&db_config.db_name);
 
+        let init_db_sql_file_path = get_path_from_project_root("static/chinook-sqlserver.sql");
+
+        // The `chinook-sqlserver.sql` file contains `GO` after every statement. Running, it as it
+        // is leads to syntax errors. So, just replacing all `GO`s with an empty string. This works!
+        let init_db_sql = fs::read_to_string(init_db_sql_file_path)
+            .unwrap()
+            .replace("GO", "");
+
+        let mut new_db_connection = create_mssql_connection(&db_config).await;
+
+        new_db_connection
+            .execute(init_db_sql, &[])
+            .await
+            .expect("Error initializing the newly created DB");
+
         Ok(FreshDeployment {
             db_name: db_config.db_name,
             ndc_metadata_path: new_ndc_metadata_path,
             connection_uri: new_connection_uri.clone(),
-            admin_connection_uri: new_connection_uri.to_string(),
+            admin_connection_uri: original_connection_db_config.construct_uri(),
         })
     }
 }
@@ -59,14 +78,23 @@ impl Drop for FreshDeployment {
         std::mem::swap(&mut self.ndc_metadata_path, &mut ndc_metadata_path);
         std::mem::swap(&mut self.admin_connection_uri, &mut admin_connection_uri);
 
-        let empty_db_config = MSSQLDatabaseConfig::empty();
-
         // In order to call async behavior from a synchronous `Drop`, we must block on it.
         // This magic incantation seems to do the trick. Others did not.
         let result: anyhow::Result<()> = tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(async move {
-                database::drop_database(&db_name, empty_db_config).await;
-                configuration::delete_ndc_metadata(&ndc_metadata_path).await?;
+                let drop_db_result = database::drop_database(&db_name, admin_connection_uri).await;
+
+                match drop_db_result {
+                    Err(e) => println!("Error while dropping the temp db: {e}"),
+                    Ok(()) => {}
+                }
+
+                configuration::delete_ndc_metadata(&ndc_metadata_path)
+                    .await
+                    .map_err(|e| {
+                        format!("Error while deleting the temporary NDC metadata folder: {e}")
+                    })
+                    .unwrap();
                 Ok(())
             })
         });
