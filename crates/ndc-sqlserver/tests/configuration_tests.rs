@@ -4,8 +4,8 @@ use std::path::Path;
 use ndc_sqlserver_configuration as configuration;
 use similar_asserts::assert_eq;
 
-mod common;
-use common::configuration::get_path_from_project_root;
+pub mod common;
+use common::configuration::*;
 
 const CONNECTION_STRING: &str =
     "Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true";

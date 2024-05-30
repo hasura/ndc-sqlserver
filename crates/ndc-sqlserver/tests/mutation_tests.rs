@@ -1,8 +1,8 @@
 #[cfg(test)]
-mod common;
+pub mod common;
 
 mod basic {
-    use crate::common::{database::MSSQLDatabaseConfig, run_mutation};
+    use crate::common::{database::MSSQLDatabaseConfig, helpers::run_mutation};
 
     use super::common::fresh_deployments::FreshDeployment;
 

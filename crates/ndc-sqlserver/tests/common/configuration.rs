@@ -7,10 +7,6 @@ use tokio::fs;
 
 use ndc_sqlserver_configuration::RawConfiguration;
 
-use copy_dir;
-
-use super::database::create_mssql_connection;
-
 /// Find the project root via the crate root provided by `cargo test`,
 /// and get our single static configuration file.
 /// This depends on the convention that all our crates live in `/crates/<name>`

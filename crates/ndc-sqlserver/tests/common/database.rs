@@ -30,16 +30,6 @@ impl MSSQLDatabaseConfig {
         )
     }
 
-    pub fn empty() -> MSSQLDatabaseConfig {
-        MSSQLDatabaseConfig {
-            host: "".to_string(),
-            port: 0,
-            user: "".to_string(),
-            db_name: "".to_string(),
-            password: "".to_string(),
-        }
-    }
-
     pub fn original_db_config() -> MSSQLDatabaseConfig {
         MSSQLDatabaseConfig {
             host: "localhost".into(),

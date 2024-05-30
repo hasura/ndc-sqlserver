@@ -1,5 +1,5 @@
 //! Runs the tests provided by the ndc-spec.
-mod common;
+pub mod common;
 
 #[cfg(test)]
 mod ndc_tests {
@@ -8,7 +8,7 @@ mod ndc_tests {
 
     #[tokio::test]
     async fn test_connector() -> Result<(), Vec<ndc_test::reporter::FailedTest>> {
-        let router = common::create_router().await;
+        let router = common::helpers::create_router().await;
         let server = hyper::Server::bind(&net::SocketAddr::new(
             net::IpAddr::V4(net::Ipv4Addr::LOCALHOST),
             0,
