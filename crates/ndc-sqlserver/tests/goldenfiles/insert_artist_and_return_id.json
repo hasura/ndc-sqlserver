@@ -30,7 +30,7 @@
               }
             }
           },
-          "affected_rows_haha": {
+          "affected_rows": {
             "type": "column",
             "column": "affected_rows"
           }
@@ -67,7 +67,7 @@
               }
             }
           },
-          "affected_rows_haha": {
+          "affected_rows": {
             "type": "column",
             "column": "affected_rows"
           }

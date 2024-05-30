@@ -13,7 +13,7 @@ expression: result
             "id": 276
           }
         ],
-        "affected_rows_haha": 1
+        "affected_rows": 1
       }
     },
     {
@@ -25,7 +25,7 @@ expression: result
             "id": 277
           }
         ],
-        "affected_rows_haha": 1
+        "affected_rows": 1
       }
     }
   ]
