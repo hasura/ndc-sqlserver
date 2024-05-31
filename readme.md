@@ -5,8 +5,7 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-purple.svg?style=flat)](LICENSE.txt)
 [![Status](https://img.shields.io/badge/status-alpha-yellow.svg?style=flat)](./readme.md)
 
-The Hasura SQLServer Connector allows for connecting to a SQL Server database giving you an instant GraphQL API on top
-of your SQL Server data.
+With this connector, Hasura allows you to instantly create a real-time GraphQL API on top of your data models in Microsoft SQL Server. This connector supports SQL Server's functionalities listed in the table below, allowing for efficient and scalable data operations. Additionally, users benefit from all the powerful features of Hasura’s Data Delivery Network (DDN) platform, including query pushdown capabilities that delegate query operations to the database, thereby enhancing query optimization and performance.
 
 This connector is built using the [Rust Data Connector SDK](https://github.com/hasura/ndc-hub#rusk-sdk) and implements
 the [Data Connector Spec](https://github.com/hasura/ndc-spec).
@@ -46,7 +45,7 @@ Below, you'll find a matrix of all supported features for the SQL Server connect
 
 ## Using the connector
 
-To use the SQL server connector, follow these steps in a Hasura project:
+To use the SQL Server connector, follow these steps in a Hasura project:
 
 1. Add the connector:
 
@@ -109,17 +108,17 @@ To use the SQL server connector, follow these steps in a Hasura project:
 
 ## Contributing
 
-ndc-sqlserver is still in early stages of development and we are currently not accepting contributions.
+We are accepting contributions for ndc-sqlserver.
 
 ## License
 
-The Hasura SQLServer connector is available under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+The Hasura SQL Server connector is available under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Running the connector locally
 
 To run the SQL server connector locally, follow these steps:
 
-1. Initialize a configuration:
+1. Set up a connector configuration file:
 
    ```sh
    cargo run --bin ndc-sqlserver-cli -- --context='<directory>'  initialize
