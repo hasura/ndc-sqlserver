@@ -1,5 +1,7 @@
 //! Type definitions of a SQL AST representation.
 
+use super::string::Param;
+
 /// An EXPLAIN clause
 #[derive(Debug, Clone, PartialEq)]
 pub enum Explain<'a> {
@@ -24,7 +26,17 @@ pub struct CommonTableExpression {
 #[derive(Debug, Clone, PartialEq)]
 pub enum CTExpr {
     RawSql(Vec<RawSql>),
+    Select(Select),
 }
+
+/// A collection of `RawSQLStatement` that will
+/// be executed together. The `RawSQLStatement`s will
+/// be separated by semicolons.
+pub struct RawSQLQuery(pub Vec<RawSQLStatement>);
+
+/// A single SQL statement.
+#[derive(Debug, Clone, PartialEq)]
+pub struct RawSQLStatement(pub Vec<RawSql>);
 
 /// Raw SQL written by a user which is opaque to us
 #[derive(Debug, Clone, PartialEq)]
@@ -68,6 +80,15 @@ pub enum SelectList {
     SelectStar,
 }
 
+/// Schema of the JSON value which will help
+/// us query the JSON value like a relational
+/// table.
+/// The first `String` value in the tuple is the name of the
+/// column and the second `String` value in the tuple is the
+/// type of the column that the value needs to be coerced into.
+#[derive(Debug, Clone, PartialEq)]
+pub struct WithJSONSchema(pub Vec<(ColumnAlias, ScalarType)>);
+
 /// A FROM clause
 #[derive(Debug, Clone, PartialEq)]
 pub enum From {
@@ -81,6 +102,19 @@ pub enum From {
         select: Box<Select>,
         alias: TableAlias,
         alias_path: AliasPath,
+    },
+    /// Query a JSON value, as if it were
+    /// a relational table. The `with_json_schema`
+    /// specifies the schema of the JSON value provided.
+    OpenJSON {
+        /// Name of the alias of the OpenJSON expression.
+        alias: TableAlias,
+        /// Parameter of the JSON payload.
+        json_value_param: Param,
+        /// Schema of the JSON value which will help
+        /// us query the JSON value like a relational
+        /// table.
+        with_json_schema: WithJSONSchema,
     },
 }
 

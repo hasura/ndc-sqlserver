@@ -102,6 +102,10 @@ pub fn normalize_cte(mut cte: CommonTableExpression) -> CommonTableExpression {
                 })
                 .collect(),
         ),
+        CTExpr::Select(mut select) => {
+            select.where_ = Where(normalize_expr(select.where_.0));
+            CTExpr::Select(select)
+        }
     };
     cte
 }
