@@ -1794,8 +1794,6 @@ dependencies = [
 name = "query-engine-sql"
 version = "0.1.1"
 dependencies = [
- "indexmap 2.2.6",
- "ndc-sdk",
  "serde_json",
  "thiserror",
 ]
