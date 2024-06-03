@@ -5,7 +5,11 @@
 [![License](https://img.shields.io/badge/license-Apache--2.0-purple.svg?style=flat)](LICENSE.txt)
 [![Status](https://img.shields.io/badge/status-alpha-yellow.svg?style=flat)](./readme.md)
 
-With this connector, Hasura allows you to instantly create a real-time GraphQL API on top of your data models in Microsoft SQL Server. This connector supports SQL Server's functionalities listed in the table below, allowing for efficient and scalable data operations. Additionally, users benefit from all the powerful features of Hasura’s Data Delivery Network (DDN) platform, including query pushdown capabilities that delegate query operations to the database, thereby enhancing query optimization and performance.
+With this connector, Hasura allows you to instantly create a real-time GraphQL API on top of your data models in
+Microsoft SQL Server. This connector supports SQL Server's functionalities listed in the table below, allowing for
+efficient and scalable data operations. Additionally, users benefit from all the powerful features of Hasura’s Data
+Delivery Network (DDN) platform, including query pushdown capabilities that delegate query operations to the database,
+thereby enhancing query optimization and performance.
 
 This connector is built using the [Rust Data Connector SDK](https://github.com/hasura/ndc-hub#rusk-sdk) and implements
 the [Data Connector Spec](https://github.com/hasura/ndc-spec).
@@ -108,30 +112,10 @@ To use the SQL Server connector, follow these steps in a Hasura project:
 
 ## Contributing
 
-We are accepting contributions for ndc-sqlserver.
+ndc-sqlserver is still in early stages and we have some work actively underway, but we are always happy for any
+community contributions. Refer to our [development guide](./docs/development.md).
 
 ## License
 
-The Hasura SQL Server connector is available under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
-
-## Running the connector locally
-
-To run the SQL server connector locally, follow these steps:
-
-1. Set up a connector configuration file:
-
-   ```sh
-   cargo run --bin ndc-sqlserver-cli -- --context='<directory>'  initialize
-   ```
-
-2. Update the configuration by introspecting the database:
-
-   ```sh
-   CONNECTION_URI='<sqlserver-connection-string>' cargo run --bin ndc-sqlserver-cli -- --context='<directory>'  update
-   ```
-
-3. Run the connector:
-
-   ```sh
-   cargo run serve --configuration '<directory>'
-   ```
+The Hasura SQL Server connector is available under the [Apache License
+2.0](https://www.apache.org/licenses/LICENSE-2.0).
