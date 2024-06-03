@@ -20,6 +20,20 @@ mod native_mutations {
 
         insta::assert_json_snapshot!(result);
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[serial]
+    /// Native mutation that selects a relationship.
+    async fn native_mutation_insert_artist_and_return_artist() {
+        let original_db_config = MSSQLDatabaseConfig::original_db_config();
+        let _ndc_metadata = FreshDeployment::create(original_db_config, "static")
+            .await
+            .unwrap();
+
+        let result = run_mutation("insert_artist_and_return_artist").await;
+
+        insta::assert_json_snapshot!(result);
+    }
 }
 
 mod negative_native_mutations_test {
