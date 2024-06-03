@@ -447,15 +447,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "copy_dir"
-version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "543d1dd138ef086e2ff05e3a48cf9da045da2033d16f8538fd76b86cd49b2ca3"
-dependencies = [
- "walkdir",
-]
-
-[[package]]
 name = "core-foundation"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1322,11 +1313,9 @@ dependencies = [
  "async-trait",
  "axum",
  "axum-test-helper",
- "copy_dir",
  "env_logger",
  "hyper",
  "insta",
- "ndc-models 0.1.2 (git+https://github.com/hasura/ndc-spec.git?rev=c59f824ff95e6a376c34f85816e80164bc1f3894)",
  "ndc-sdk",
  "ndc-sqlserver-configuration",
  "ndc-test",
@@ -1337,7 +1326,6 @@ dependencies = [
  "query-engine-translation",
  "reqwest",
  "serde",
- "serde_derive",
  "serde_json",
  "serial_test",
  "similar-asserts",
@@ -1355,13 +1343,11 @@ dependencies = [
  "anyhow",
  "build-data",
  "clap",
- "insta",
  "ndc-sqlserver-configuration",
  "schemars",
  "serde",
  "serde_json",
  "serde_yaml",
- "tempfile",
  "thiserror",
  "tokio",
 ]
@@ -1770,7 +1756,6 @@ dependencies = [
  "bb8",
  "bb8-tiberius",
  "bytes",
- "ndc-sdk",
  "prometheus",
  "query-engine-sql",
  "query-engine-translation",
@@ -1795,7 +1780,6 @@ name = "query-engine-sql"
 version = "0.1.1"
 dependencies = [
  "serde_json",
- "thiserror",
 ]
 
 [[package]]
@@ -2205,15 +2189,6 @@ checksum = "2768de7e6ef19f59c5fd3c3ac207ef12b68a49f95e3172d67e4a04cfd992ca06"
 dependencies = [
  "safe-proc-macro2",
  "safe-regex-compiler",
-]
-
-[[package]]
-name = "same-file"
-version = "1.0.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
-dependencies = [
- "winapi-util",
 ]
 
 [[package]]
@@ -3140,16 +3115,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 
 [[package]]
-name = "walkdir"
-version = "2.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "29790946404f91d9c5d06f9874efddea1dc06c5efe94541a7d6863108e3a5e4b"
-dependencies = [
- "same-file",
- "winapi-util",
-]
-
-[[package]]
 name = "want"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3300,15 +3265,6 @@ name = "winapi-i686-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ac3b87c63620426dd9b991e5ce0329eff545bccbbb34f3be09ff6fb6ab51b7b6"
-
-[[package]]
-name = "winapi-util"
-version = "0.1.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d4cc384e1e73b93bafa6fb4f1df8c41695c8a91cf9c4c64358067d15a7b6c6b"
-dependencies = [
- "windows-sys 0.52.0",
-]
 
 [[package]]
 name = "winapi-x86_64-pc-windows-gnu"

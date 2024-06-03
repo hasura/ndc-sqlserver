@@ -8,6 +8,4 @@ edition.workspace = true
 workspace = true
 
 [dependencies]
-
 serde_json = "1.0.116"
-thiserror = "1.0"
