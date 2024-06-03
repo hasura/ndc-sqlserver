@@ -24,7 +24,7 @@ impl MSSQLDatabaseConfig {
             user,
             db_name,
             password,
-        }: &MSSQLDatabaseConfig = &self;
+        }: &MSSQLDatabaseConfig = self;
         format!(
             "Server={host},{port};Uid={user};Database={db_name};Pwd={password};TrustServerCertificate=true"
         )
@@ -57,8 +57,7 @@ pub async fn create_mssql_connection(
     let tcp = TcpStream::connect(config.get_addr()).await.unwrap();
     tcp.set_nodelay(true).unwrap();
 
-    let connection = Client::connect(config, tcp.compat_write()).await.unwrap();
-    connection
+    Client::connect(config, tcp.compat_write()).await.unwrap()
 }
 
 /// connect to database with `connection_uri` then create a new DB called `new_db_name`

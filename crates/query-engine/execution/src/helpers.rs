@@ -9,7 +9,7 @@ pub(crate) async fn execute_statement(
     connection
         .simple_query(sql)
         .await
-        .map_err(|e| Error::TiberiusError(e))?;
+        .map_err(Error::TiberiusError)?;
     Ok(())
 }
 

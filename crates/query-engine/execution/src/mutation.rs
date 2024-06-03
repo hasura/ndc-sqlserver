@@ -56,7 +56,7 @@ fn convert_mutation_response_to_json(db_results: &Vec<tiberius::Row>) -> Result<
     // Each element of the vector corresponds to the results of a single SQL statement.
     let mut db_results_json: Vec<HashMap<String, Option<serde_json::Value>>> = Vec::new();
 
-    for row in db_results.into_iter() {
+    for row in db_results.iter() {
         let mut row_result_json = HashMap::new();
 
         let cols = row.columns().to_owned();
@@ -122,7 +122,7 @@ fn convert_mutation_response_to_json(db_results: &Vec<tiberius::Row>) -> Result<
 
                     row_result_json.insert(
                         col.name().to_owned(),
-                        json_float_val.map(|f| serde_json::Value::Number(f)),
+                        json_float_val.map(serde_json::Value::Number),
                     );
                 }
 

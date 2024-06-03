@@ -76,5 +76,5 @@ pub async fn delete_ndc_metadata(ndc_metadata_path: impl AsRef<Path>) -> anyhow:
 }
 
 fn set_connection_uri(input: &mut RawConfiguration, connection_uri: String) {
-    input.mssql_connection_string = connection_uri.into();
+    input.mssql_connection_string = connection_uri;
 }
