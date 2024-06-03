@@ -16,9 +16,9 @@ pub fn translate_native_queries(
     for native_query in native_queries {
         // convert metadata representation to sql::ast representation
         let sql = generate_native_query_sql(
-            native_query.info.arguments,
-            native_query.arguments,
-            native_query.info.sql,
+            &native_query.info.arguments,
+            &native_query.arguments,
+            &native_query.info.sql,
         )?;
 
         // add a cte

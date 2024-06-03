@@ -53,19 +53,16 @@ fn plan_mutation(
     mutation_request: models::MutationRequest,
 ) -> Result<sql::execution_plan::MutationExecutionPlan, connector::MutationError> {
     let timer = state.metrics.time_mutation_plan();
-    let result = translation::mutation::mutation::translate(
-        &configuration.config.metadata,
-        mutation_request,
-    )
-    .map_err(|err| {
-        tracing::error!("{}", err);
-        match err {
-            translation::error::Error::NotSupported(_) => {
-                connector::MutationError::UnsupportedOperation(err.to_string())
+    let result = translation::mutation::translate(&configuration.config.metadata, mutation_request)
+        .map_err(|err| {
+            tracing::error!("{}", err);
+            match err {
+                translation::error::Error::NotSupported(_) => {
+                    connector::MutationError::UnsupportedOperation(err.to_string())
+                }
+                _ => connector::MutationError::InvalidRequest(err.to_string()),
             }
-            _ => connector::MutationError::InvalidRequest(err.to_string()),
-        }
-    });
+        });
     timer.complete_with(result)
 }
 

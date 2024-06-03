@@ -127,9 +127,9 @@ pub enum ProcedureInfo {
 /// in the parameterized SQL statement and returns
 /// a SQL statement that can be run in the DB.
 pub fn generate_native_query_sql(
-    type_arguments: BTreeMap<String, query_engine_metadata::metadata::ColumnInfo>,
-    native_query_arguments: BTreeMap<String, ndc_sdk::models::Argument>,
-    native_query_sql: NativeQuerySql,
+    type_arguments: &BTreeMap<String, query_engine_metadata::metadata::ColumnInfo>,
+    native_query_arguments: &BTreeMap<String, ndc_sdk::models::Argument>,
+    native_query_sql: &NativeQuerySql,
 ) -> Result<Vec<sql::ast::RawSql>, Error> {
     native_query_sql
         .0

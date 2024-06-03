@@ -10,7 +10,7 @@ use query_engine_sql::sql::{
     execution_plan::{MutationOperationExecutionPlan, NativeMutationOperationExecutionPlan},
     string::SQL,
 };
-use query_engine_translation::translation::mutation::mutation::generate_native_mutation_response_cte;
+use query_engine_translation::translation::mutation::generate_native_mutation_response_cte;
 use std::collections::{BTreeMap, HashMap};
 
 use crate::error::{Error, MutationError, NativeMutationResponseParseError};
@@ -52,7 +52,7 @@ async fn execute_mutations_transaction(
     Ok(buffer.freeze())
 }
 
-fn convert_mutation_response_to_json(db_results: &Vec<tiberius::Row>) -> Result<String, Error> {
+fn convert_mutation_response_to_json(db_results: &[tiberius::Row]) -> Result<String, Error> {
     // Each element of the vector corresponds to the results of a single SQL statement.
     let mut db_results_json: Vec<HashMap<String, Option<serde_json::Value>>> = Vec::new();
 
