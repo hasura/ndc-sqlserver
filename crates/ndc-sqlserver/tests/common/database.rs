@@ -101,34 +101,3 @@ pub async fn drop_database(db_name: &str, connection_uri: String) -> Result<(), 
     }
     Ok(())
 }
-
-// #[test]
-// fn test_same_db_name() {
-//     let connection_uri = "postgresql://user:password@internet.com:100/database";
-//     assert_eq!(
-//         replace_database_name(connection_uri, "database"),
-//         connection_uri.to_string()
-//     )
-// }
-
-// #[test]
-// fn test_different_db_name() {
-//     let connection_uri = "postgresql://user:password@internet.com:100/database";
-//     let expected = "postgresql://user:password@internet.com:100/new-database";
-
-//     assert_eq!(
-//         replace_database_name(connection_uri, "new-database"),
-//         expected.to_string()
-//     )
-// }
-
-// #[test]
-// fn test_different_db_name_no_port() {
-//     let connection_uri = "postgresql://user:password@internet.com/database";
-//     let expected = "postgresql://user:password@internet.com/new-database";
-
-//     assert_eq!(
-//         replace_database_name(connection_uri, "new-database"),
-//         expected.to_string()
-//     )
-// }
