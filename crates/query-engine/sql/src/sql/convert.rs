@@ -30,8 +30,11 @@ impl CommonTableExpression {
             None => {}
             Some(names) => {
                 sql.append_syntax("(");
-                for name in names {
+                for (index, name) in names.iter().enumerate() {
                     name.to_sql(sql);
+                    if index < (names.len() - 1) {
+                        sql.append_syntax(",")
+                    }
                 }
                 sql.append_syntax(")");
             }
@@ -44,6 +47,21 @@ impl CommonTableExpression {
     }
 }
 
+impl WithJSONSchema {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        sql.append_syntax("WITH (");
+        for (index, (col_name, col_type)) in self.0.iter().enumerate() {
+            col_name.to_sql(sql);
+            sql.append_syntax(" ");
+            col_type.to_sql(sql);
+            if index < (self.0.len() - 1) {
+                sql.append_syntax(", ")
+            }
+        }
+        sql.append_syntax(")");
+    }
+}
+
 impl CTExpr {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
@@ -51,6 +69,9 @@ impl CTExpr {
                 for item in raw_vec {
                     item.to_sql(sql);
                 }
+            }
+            CTExpr::Select(select) => {
+                select.to_sql(sql);
             }
         }
     }
@@ -60,7 +81,26 @@ impl RawSql {
     pub fn to_sql(&self, sql: &mut SQL) {
         match self {
             RawSql::RawText(text) => sql.append_syntax(text),
-            RawSql::Expression(exp) => exp.to_sql(sql),
+            RawSql::Expression(exp) => {
+                exp.to_sql(sql);
+            }
+        }
+    }
+}
+
+impl RawSQLStatement {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        for item in self.0.iter() {
+            item.to_sql(sql);
+        }
+    }
+}
+
+impl RawSQLQuery {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        for item in self.0.iter() {
+            item.to_sql(sql);
+            sql.append_syntax(";");
         }
     }
 }
@@ -157,7 +197,20 @@ impl From {
                 sql.append_syntax(")");
                 sql.append_syntax(" AS ");
                 alias.to_sql(sql);
-                alias_path.to_sql(sql)
+                alias_path.to_sql(sql);
+            }
+            From::OpenJSON {
+                alias,
+                with_json_schema,
+                json_value_param,
+            } => {
+                sql.append_syntax("OPENJSON");
+                sql.append_syntax("(");
+                sql.append_param(json_value_param.clone());
+                sql.append_syntax(")");
+                sql.append_syntax(" ");
+                with_json_schema.to_sql(sql);
+                alias.to_sql(sql);
             }
         }
     }
@@ -237,7 +290,9 @@ impl Expression {
     pub fn to_sql(&self, sql: &mut SQL) {
         match &self {
             Expression::ColumnReference(column_reference) => column_reference.to_sql(sql),
-            Expression::Value(value) => value.to_sql(sql),
+            Expression::Value(value) => {
+                value.to_sql(sql);
+            }
             Expression::Cast { expression, r#type } => {
                 sql.append_syntax("cast");
                 sql.append_syntax("(");
