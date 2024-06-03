@@ -170,7 +170,15 @@ fn get_native_mutation_response_selection(
             }),
         ));
 
-        with_json_schema.push((column_alias, ScalarType(col_info.r#type.0.clone())))
+        with_json_schema.push((
+            column_alias,
+            ScalarType(
+                col_info
+                    .cast_as
+                    .clone()
+                    .unwrap_or(col_info.column_info.r#type.0.clone()),
+            ),
+        ))
     }
 
     Ok(NativeMutationResponseSelection {

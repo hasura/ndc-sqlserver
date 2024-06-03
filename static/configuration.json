@@ -808,7 +808,7 @@
     },
     "nativeMutations": {
       "insert_artist_and_return_id": {
-        "sql": "INSERT INTO [dbo].[Artist] (ArtistId, Name) OUTPUT inserted.ArtistId  VALUES ({{ArtistId}}, {{Name}})",
+        "sql": "INSERT INTO [dbo].[Artist] (ArtistId, Name) OUTPUT inserted.*  VALUES ({{ArtistId}}, {{Name}})",
         "columns": {
           "ArtistId": {
             "name": "ArtistId",
@@ -820,7 +820,8 @@
             "name": "Name",
             "type": "varchar",
             "nullable": "nullable",
-            "description": null
+            "description": null,
+            "castAs": "varchar(100)"
           }
         },
         "arguments": {

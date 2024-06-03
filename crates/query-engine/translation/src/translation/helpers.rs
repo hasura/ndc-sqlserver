@@ -62,7 +62,7 @@ pub struct NativeQueryInfo {
 pub struct NativeMutationInfo {
     /// Name of the native mutation
     pub name: String,
-    pub info: metadata::NativeQueryInfo,
+    pub info: metadata::NativeMutationInfo,
     pub arguments: BTreeMap<String, serde_json::Value>,
     pub fields: Option<models::NestedField>,
 }
@@ -108,6 +108,10 @@ pub enum CollectionInfo {
         name: String,
         info: metadata::NativeQueryInfo,
     },
+    NativeMutation {
+        name: String,
+        info: metadata::NativeMutationInfo,
+    },
 }
 
 #[derive(Debug)]
@@ -115,7 +119,7 @@ pub enum CollectionInfo {
 pub enum ProcedureInfo {
     NativeMutation {
         name: String,
-        info: metadata::NativeQueryInfo,
+        info: metadata::NativeMutationInfo,
     },
 }
 
@@ -211,7 +215,7 @@ impl<'a> Env<'a> {
                         .native_mutations
                         .0
                         .get(collection_name)
-                        .map(|nq| CollectionInfo::NativeQuery {
+                        .map(|nq| CollectionInfo::NativeMutation {
                             name: collection_name.to_string(),
                             info: nq.clone(),
                         })
@@ -271,6 +275,17 @@ impl CollectionInfo {
                     column_name.to_string(),
                     name.clone(),
                 )),
+            CollectionInfo::NativeMutation { name, info } => info
+                .columns
+                .get(column_name)
+                .map(|column_info| ColumnInfo {
+                    name: sql::ast::ColumnName(column_info.column_info.name.clone()),
+                    r#type: column_info.column_info.r#type.clone(),
+                })
+                .ok_or(Error::ColumnNotFoundInCollection(
+                    column_name.to_string(),
+                    name.clone(),
+                )),
         }
     }
 }
@@ -311,7 +326,7 @@ impl State {
     pub fn insert_native_mutation(
         &mut self,
         name: &str,
-        info: metadata::NativeQueryInfo,
+        info: metadata::NativeMutationInfo,
         arguments: BTreeMap<String, serde_json::Value>,
         fields: Option<NestedField>,
     ) {

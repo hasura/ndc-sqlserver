@@ -1,0 +1,20 @@
+---
+source: crates/ndc-sqlserver/tests/mutation_tests.rs
+expression: result
+---
+{
+  "operation_results": [
+    {
+      "type": "procedure",
+      "result": {
+        "output": [
+          {
+            "name": "R",
+            "id": 276
+          }
+        ],
+        "rows_affected": 1
+      }
+    }
+  ]
+}

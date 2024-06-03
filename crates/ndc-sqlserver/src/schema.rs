@@ -168,8 +168,8 @@ fn get_native_mutations_schema(
                 (
                     column_name.clone(),
                     models::ObjectField {
-                        description: column.description.clone(),
-                        r#type: column_to_type(column),
+                        description: column.column_info.description.clone(),
+                        r#type: column_to_type(&column.column_info),
                     },
                 )
             })),
@@ -360,8 +360,8 @@ pub async fn get_schema(
 mod tests {
     use ndc_sdk::models::{ObjectField, ObjectType, ProcedureInfo};
     use query_engine_metadata::metadata::{
-        parse_native_query, ColumnInfo, NativeMutations, NativeQueryInfo, NativeQuerySql,
-        ScalarType,
+        parse_native_query, ColumnInfo, NativeMutationColumnInfo, NativeMutationInfo,
+        NativeMutations, NativeQuerySql, ScalarType,
     };
 
     use super::*;
@@ -387,10 +387,22 @@ mod tests {
 
         let mut columns = BTreeMap::new();
 
-        columns.insert("id".to_owned(), id_col_info);
-        columns.insert("name".to_owned(), name_col_info);
+        columns.insert(
+            "id".to_owned(),
+            NativeMutationColumnInfo {
+                column_info: id_col_info,
+                cast_as: None,
+            },
+        );
+        columns.insert(
+            "name".to_owned(),
+            NativeMutationColumnInfo {
+                column_info: name_col_info,
+                cast_as: None,
+            },
+        );
 
-        let native_mutation_info = NativeQueryInfo {
+        let native_mutation_info = NativeMutationInfo {
             arguments: BTreeMap::new(),
             sql,
             columns,

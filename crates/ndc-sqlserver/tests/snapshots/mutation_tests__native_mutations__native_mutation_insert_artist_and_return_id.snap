@@ -9,7 +9,7 @@ expression: result
       "result": {
         "returning": [
           {
-            "name": null,
+            "name": "Ramesh",
             "id": 276
           }
         ],
@@ -19,13 +19,13 @@ expression: result
     {
       "type": "procedure",
       "result": {
-        "returning": [
+        "output": [
           {
-            "name": null,
-            "id": 277
+            "artist_name": "Suresh",
+            "artist_id": 277
           }
         ],
-        "affected_rows": 1
+        "rows_affected": 1
       }
     }
   ]

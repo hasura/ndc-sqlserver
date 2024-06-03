@@ -26,6 +26,7 @@ pub enum Error {
     UnexpectedStructure(String),
     NoProcedureResultFieldsRequested,
     NotImplementedYet(String),
+    UnexpectedInternalError(String),
 }
 
 /// Capabilities we don't currently support.
@@ -105,6 +106,9 @@ impl std::fmt::Display for Error {
             }
             Error::NoProcedureResultFieldsRequested => {
                 write!(f, "No procedure fields were requested.")
+            }
+            Error::UnexpectedInternalError(s) => {
+                write!(f, "Unexepcted internal error: {s}")
             }
         }
     }

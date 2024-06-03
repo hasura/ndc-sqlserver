@@ -252,6 +252,8 @@ pub fn translate_rows_query(
                             current_table.reference.clone(),
                         )?;
                     }
+                    // Native mutations will not have limit or offset
+                    CollectionInfo::NativeMutation { .. } => {}
                 }
             }
 
@@ -376,5 +378,8 @@ fn make_from_clause(
                 alias: current_table_alias.clone(),
             })
         }
+        CollectionInfo::NativeMutation { .. } => Err(Error::UnexpectedInternalError(
+            "Native mutations can't have a `FROM` clause attached with them".into(),
+        )),
     }
 }

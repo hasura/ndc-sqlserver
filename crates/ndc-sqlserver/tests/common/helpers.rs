@@ -5,18 +5,35 @@ use std::path::PathBuf;
 
 use axum::http::StatusCode;
 use axum_test_helper::TestClient;
+
 use serde::Deserialize;
 
 use ndc_sqlserver::connector;
 
+/// Create a test client from a router.
+pub fn create_client(router: axum::Router) -> TestClient {
+    TestClient::new(router)
+}
+
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_query(testname: &str) -> serde_json::Value {
-    run_against_server("query", testname).await
+    let router = create_router().await;
+    let client = create_client(router);
+    run_against_server(&client, "query", testname, StatusCode::OK).await
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_mutation(testname: &str) -> serde_json::Value {
-    run_against_server("mutation", testname).await
+    let router = create_router().await;
+    let client = create_client(router);
+    run_against_server(&client, "mutation", testname, StatusCode::OK).await
+}
+
+/// Run a query against the server, get the result, and compare against the snapshot.
+pub async fn run_mutation_fail(testname: &str, expected_status: StatusCode) -> serde_json::Value {
+    let router = create_router().await;
+    let client = create_client(router);
+    run_against_server(&client, "mutation", testname, expected_status).await
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
@@ -35,18 +52,23 @@ pub struct ExplainDetails {
 // TODO(PY): add run_explain_mutation
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_explain(testname: &str) -> ExactExplainResponse {
-    run_against_server("query/explain", testname).await
+    let router = create_router().await;
+    let client = create_client(router);
+    run_against_server(&client, "query/explain", testname, StatusCode::OK).await
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
-pub async fn get_schema() -> ndc_sdk::models::SchemaResponse {
-    make_request(|client| client.get("/schema")).await
+pub async fn get_schema(router: axum::Router) -> ndc_sdk::models::SchemaResponse {
+    let client = create_client(router);
+    make_request(&client, |client| client.get("/schema"), StatusCode::OK).await
 }
 
 /// Run an action against the server, and get the response.
 async fn run_against_server<Response: for<'a> serde::Deserialize<'a>>(
+    client: &TestClient,
     action: &str,
     testname: &str,
+    expected_status: StatusCode,
 ) -> Response {
     let path = format!("/{}", action);
     let body = match fs::read_to_string(format!("tests/goldenfiles/{}.json", testname)) {
@@ -56,12 +78,16 @@ async fn run_against_server<Response: for<'a> serde::Deserialize<'a>>(
             panic!("error look up");
         }
     };
-    make_request(|client| {
-        client
-            .post(&path)
-            .header("Content-Type", "application/json")
-            .body(body)
-    })
+    make_request(
+        client,
+        |client| {
+            client
+                .post(&path)
+                .header("Content-Type", "application/json")
+                .body(body)
+        },
+        expected_status,
+    )
     .await
 }
 
@@ -85,28 +111,35 @@ pub async fn create_router() -> axum::Router {
     ndc_sdk::default_main::create_router(state, None)
 }
 
-/// Make a single request against the server, and get the response.
+/// Make a single request against a new server, and get the response.
 async fn make_request<Response: for<'a> serde::Deserialize<'a>>(
-    request: impl FnOnce(axum_test_helper::TestClient) -> axum_test_helper::RequestBuilder,
+    client: &TestClient,
+    request: impl FnOnce(&TestClient) -> axum_test_helper::RequestBuilder,
+    expected_status: StatusCode,
 ) -> Response {
-    // create a fresh client
-    let router = create_router().await;
-    let client = TestClient::new(router);
-
     // make the request
     let response = request(client).send().await;
+    let status = response.status();
+    let body = response.bytes().await;
 
     // ensure we get a successful response
     assert_eq!(
-        response.status(),
-        StatusCode::OK,
-        "Expected a successful response but got status {}.\nBody:\n{}",
-        response.status(),
-        response.text().await
+        status,
+        expected_status,
+        "Expected status code {} but got status {}.\nBody:\n{}",
+        expected_status,
+        status,
+        std::str::from_utf8(&body).unwrap()
     );
 
     // deserialize the response
-    response.json().await
+    serde_json::from_slice(&body).unwrap_or_else(|err| {
+        panic!(
+            "Invalid JSON in response body.\nError: {}\nBody:\n{:?}\n",
+            err,
+            std::str::from_utf8(&body).unwrap()
+        )
+    })
 }
 
 /// Check if all keywords are contained in this vector of strings.
