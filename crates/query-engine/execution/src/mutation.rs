@@ -267,8 +267,6 @@ async fn execute_native_mutation(
 
     response_selection_select.to_sql(&mut response_selection_sql);
 
-    println!("response selection sql is {}", response_selection_sql.sql);
-
     execute_query(
         connection,
         &response_selection_sql,
