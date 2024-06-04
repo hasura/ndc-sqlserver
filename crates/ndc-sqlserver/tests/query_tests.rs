@@ -1,9 +1,7 @@
 pub mod common;
 
-#[cfg(test)]
 mod basic {
-    use super::common::helpers::*;
-
+    use super::common::run_query;
     #[tokio::test]
     async fn select_by_pk() {
         let result = run_query("select_by_pk").await;
@@ -24,7 +22,7 @@ mod basic {
 }
 
 mod predicates {
-    use super::common::helpers::*;
+    use super::common::run_query;
 
     #[tokio::test]
     async fn select_where_name_like() {
@@ -148,7 +146,7 @@ mod predicates {
 }
 
 mod sorting {
-    use super::common::helpers::*;
+    use super::common::run_query;
 
     #[tokio::test]
     async fn select_order_by_name() {
@@ -212,7 +210,7 @@ mod sorting {
 }
 
 mod aggregation {
-    use super::common::helpers::*;
+    use super::common::run_query;
 
     #[tokio::test]
     async fn aggregate_count_albums() {
@@ -240,7 +238,7 @@ mod aggregation {
 }
 
 mod relationships {
-    use super::common::helpers::*;
+    use super::common::run_query;
     #[tokio::test]
     async fn select_album_object_relationship_to_artist() {
         let result = run_query("select_album_object_relationship_to_artist").await;
@@ -280,7 +278,7 @@ mod relationships {
 
 #[cfg(test)]
 mod native_queries {
-    use super::common::helpers::*;
+    use super::common::run_query;
 
     #[tokio::test]
     async fn select_artist() {
@@ -323,7 +321,7 @@ mod native_queries {
 
 #[cfg(test)]
 mod types {
-    use super::common::helpers::*;
+    use super::common::run_query;
 
     #[tokio::test]
     async fn select_value_types() {
