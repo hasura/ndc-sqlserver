@@ -200,7 +200,6 @@ pub fn select_rowset(
             final_aggregate_select
         }
         SelectSet::RowsAndAggregates(row_select, aggregate_select) => {
-            println!("Aggregate select is {:#?}", aggregate_select);
             let both_row = vec![
                 (
                     make_column_alias("rows".to_string()),
