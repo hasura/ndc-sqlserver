@@ -112,8 +112,7 @@ To use the SQL Server connector, follow these steps in a Hasura project:
 
 ## Contributing
 
-ndc-sqlserver is still in early stages and we have some work actively underway, but we are always happy for any
-community contributions. Refer to our [development guide](./docs/development.md).
+We're happy to receive any contributions from the community. Please refer to our [development guide](./docs/development.md).
 
 ## License
 
