@@ -1,157 +1,121 @@
-# SQLServer Native Data Connector
+# SQL Server Connector
 
-## Introduction
+[![Docs](https://img.shields.io/badge/docs-v3.x-brightgreen.svg?style=flat)](https://hasura.io/docs/3.0/getting-started/overview/)
+[![ndc-hub](https://img.shields.io/badge/ndc--hub-sqlserver-blue.svg?style=flat)](https://hasura.io/connectors/sqlserver)
+[![License](https://img.shields.io/badge/license-Apache--2.0-purple.svg?style=flat)](LICENSE.txt)
+[![Status](https://img.shields.io/badge/status-alpha-yellow.svg?style=flat)](./readme.md)
 
-This a very work in progress Native Data Connector for SQLServer made in the
-Hasura Hackathon August 2023. It is a fork of
-[postgres-ndc](https://github.com/hasura/postgres-ndc) and aims to follow the
-conventions established there.
+With this connector, Hasura allows you to instantly create a real-time GraphQL API on top of your data models in
+Microsoft SQL Server. This connector supports SQL Server's functionalities listed in the table below, allowing for
+efficient and scalable data operations. Additionally, users benefit from all the powerful features of Hasura’s Data
+Delivery Network (DDN) platform, including query pushdown capabilities that delegate query operations to the database,
+thereby enhancing query optimization and performance.
 
-Things we have:
+This connector is built using the [Rust Data Connector SDK](https://github.com/hasura/ndc-hub#rusk-sdk) and implements
+the [Data Connector Spec](https://github.com/hasura/ndc-spec).
 
-- basic queries
-- filtering
-- basic ordering
-- relationships
-- variables
-- sorting
+- [Connector information in the Hasura Hub](https://hasura.io/connectors/sqlserver)
+- [Hasura V3 Documentation](https://hasura.io/docs/3.0)
 
-Things we definitely don't have:
+## Features
 
-- database introspection
-- explain queries
-- reinstate benchmarks
+Below, you'll find a matrix of all supported features for the SQL Server connector:
 
-The best view of progress is probably `/crates/ndc-sqlserver/tests/`, and look
-at which tests are still commented out. If you'd to contribute, a very good
-start would be to uncomment one and try to fix any query errors.
+| Feature                         | Supported | Notes |
+| ------------------------------- | --------- | ----- |
+| Native Queries + Logical Models |    ✅     |       |
+| Simple Object Query             |    ✅     |       |
+| Filter / Search                 |    ✅     |       |
+| Simple Aggregation              |    ✅     |       |
+| Sort                            |    ✅     |       |
+| Paginate                        |    ✅     |       |
+| Table Relationships             |    ✅     |       |
+| Views                           |    ✅     |       |
+| Remote Relationships            |    ✅     |       |
+| Custom Fields                   |    ❌     |       |
+| Mutations                       |    ❌     |       |
+| Distinct                        |    ✅     |       |
+| Enums                           |    ❌     |       |
+| Naming Conventions              |    ❌     |       |
+| Default Values                  |    ❌     |       |
+| User-defined Functions          |    ❌     |       |
 
-## Build
+## Before you get Started
 
-### Prequisites
+1. Create a [Hasura Cloud account](https://console.hasura.io)
+2. Install the [CLI](https://hasura.io/docs/3.0/cli/installation/)
+3. Install the [Hasura VS Code extension](https://marketplace.visualstudio.com/items?itemName=HasuraHQ.hasura)
+4. [Create a project](https://hasura.io/docs/3.0/getting-started/create-a-project)
 
-1. Install [rustup](https://www.rust-lang.org/tools/install).
-2. Install additional tools:
-   - `cargo install cargo-watch cargo-insta`
-   - `rustup component add rust-analyzer`
-   - `rustup component add clippy`
-   - `rustup component add rustfmt`
-3. Install [just](https://github.com/casey/just)
-4. Install [Docker](https://www.docker.com/)
-5. Install protoc. Here are a few options:
-   - `brew install protobuf`
-   - `apt-get install protobuf-compiler`
-   - `dnf install protobuf-compiler`
-6. Clone [v3-engine](https://github.com/hasura/v3-engine) in a directory near this one:
-   ```
-   (cd .. && git clone git@github.com:hasura/v3-engine.git)
-   ```
+## Using the connector
 
-### Compile
+To use the SQL Server connector, follow these steps in a Hasura project:
 
-```
-cargo build
-```
+1. Add the connector:
 
-### Run
-
-Run the sqlserver agent with:
-
-```
-just run
-```
-
-### Develop
-
-1. Start the sample chinook sqlserver db, compile, run tests, and rerun server on file changes: `just dev`
-2. Query the connector via curl:
-   ```
-   curl -H "Content-Type: application/json" \
-     --data "@crates/ndc-sqlserver/tests/goldenfiles/select_where_variable.json" \
-    http://localhost:8080/query \
-    | jq
+   ```bash
+   ddn add connector-manifest sqlserver_connector --subgraph app --hub-connector hasura/sqlserver --type cloud
    ```
 
-Among the docker containers is a Jaeger instance for tracing/debugging, accessible at http://127.0.0.1:4002.
+   In the snippet above, we've used the subgraph `app` as it's available by default; however, you can change this value
+   to match any [subgraph](https://hasura.io/docs/3.0/project-configuration/subgraphs) which you've created in your
+   project.
 
-## Debug
+2. Add your connection URI:
 
-See [debugging.md](./debugging.md).
+   Open your project in your text editor and open the `/app/sqlserver_connector/connector/sqlserver_connector.build.hml`
+   file of your project. Then, add the `CONNECTION_URI` environment variable with the connection string:
 
-### Profile
-
-We can produce a flamegraph using `just flamegraph` using [flamegraph-rs](https://github.com/flamegraph-rs/flamegraph). Follow the installation instructions.
-
-### Benchmark
-
-See [./benchmarks/component/README.md](./benchmarks/component/README.md).
-
-A benchmark history can be viewed [here](https://hasura.github.io/sqlserver-ndc/dev/bench).
-
-## General structure
-
-See [architecture.md](./architecture.md).
-
-## Example
-
-1. Run `just dev` (or `just run`)
-2. Run `just run-engine`
-3. Connect to GraphiQL at http://localhost:3000 and run a query:
-
-   ```graphql
-   query {
-     AlbumByID(AlbumId: 35) {
-       Title
-     }
-   }
+   ```yaml
+   # other configuration above
+   CONNECTION_URI:
+     value: "<YOUR_CONNECTION_URI>"
    ```
 
-   (or `just test-integrated`)
+3. Update the connector manifest and the connector link
 
-## Write a database execution test
+   These two steps will (1) allow Hasura to introspect your data source and complete the configuration and (2) deploy
+   the connector to Hasura DDN:
 
-1. Create a new file under `crates/ndc-sqlserver/tests/goldenfiles/<your-test-name>.json`
-2. Create a new test in `crates/ndc-sqlserver/tests/tests.rs` that looks like this:
-   ```rs
-   #[tokio::test]
-   async fn select_5() {
-       let result = common::test_query("select_5").await;
-       insta::assert_json_snapshot!(result);
-   }
+   ```bash
+   ddn update connector-manifest sqlserver_connector
    ```
-3. Run the tests using `just dev`
-4. Review the results using `cargo insta review`
 
-## Write a SQL translation snapshot test
-
-1. Create a new folder under `crates/query-engine/tests/goldenfiles/<your-test-name>/`
-2. Create `request.json` and `tables.json` files in that folder to specify your
-   request
-3. Create a new test in `crates/query-engine/tests/tests.rs` that looks like this:
-   ```rs
-   #[tokio::test]
-   async fn select_5() {
-       let result = common::test_translation("select_5").await;
-       insta::assert_snapshot!(result);
-   }
+   ```bash
+   ddn update data-connector-link sqlserver_connector --add-all-resources
    ```
-4. Run the tests using `just dev`
-5. Review the results using `cargo insta review`
 
-## Testing metrics
+   `--add-all-resources` flag adds all the models and commands present in the database to the connector metadata.
 
-We have a Prometheus / Grafana set up in Docker. Run `just start-metrics` to
-start them, you can then navigation to `localhost:3001` for Grafana, or
-`localhost:9090` for Prometheus.
+4. Create a build
 
-## Linting
+   ```bash
+   ddn build supergraph-manifest
+   ```
 
-Run `just lint` to run clippy linter
+   This will return information about the build:
 
-run `just lint-apply` to attempt to autofix all linter suggestions
+   |               |                                                                                                   |
+   | ------------- | ------------------------------------------------------------------------------------------------- |
+   | Build Version | bd96bb221a                                                                                        |
+   | API URL       | https://<PROJECT_NAME>-bd96bb221a.ddn.hasura.app/graphql                                          |
+   | Console URL   | https://console.hasura.io/project/<PROJECT_NAME>/environment/default/build/bd96bb221a/graphql     |
+   | Project Name  | <PROJECT_NAME>                                                                                    |
+   | Description   |                                                                                                   |
 
-## Formatting
+   Follow the project configuration build [guide](https://hasura.io/docs/3.0/project-configuration/builds/) to apply
+   other actions on the build.
 
-Check your formatting is great with `just format-check`.
+5. Test the API
 
-Format all Rust code with `just format`.
+   The console URL in the build information cna be used to open the GraphiQL console to test out the API
+
+## Contributing
+
+ndc-sqlserver is still in early stages and we have some work actively underway, but we are always happy for any
+community contributions. Refer to our [development guide](./docs/development.md).
+
+## License
+
+The Hasura SQL Server connector is available under the [Apache License
+2.0](https://www.apache.org/licenses/LICENSE-2.0).
