@@ -168,12 +168,8 @@ fn convert_mutation_response_to_json(db_results: &[tiberius::Row]) -> Result<Str
         db_results_json.push(row_result_json);
     }
 
-    let db_results_json = serde_json::to_string_pretty(&db_results_json)
-        .map_err(|e| Error::Mutation(MutationError::JSONSerializationError(e)))?;
-
-    println!("DB Results of the mutation are {}", db_results_json);
-
-    Ok(db_results_json)
+    serde_json::to_string(&db_results_json)
+        .map_err(|e| Error::Mutation(MutationError::JSONSerializationError(e)))
 }
 
 pub async fn execute_mutations(
