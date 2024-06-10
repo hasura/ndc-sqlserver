@@ -1323,13 +1323,11 @@ dependencies = [
  "anyhow",
  "build-data",
  "clap",
- "insta",
  "ndc-sqlserver-configuration",
  "schemars",
  "serde",
  "serde_json",
  "serde_yaml",
- "tempfile",
  "thiserror",
  "tokio",
 ]
