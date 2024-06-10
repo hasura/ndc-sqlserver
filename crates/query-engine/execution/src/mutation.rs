@@ -52,6 +52,8 @@ async fn execute_mutations_transaction(
     Ok(buffer.freeze())
 }
 
+/// Convert the rows obtained after the mutation query that gets executed to
+/// a JSON value. Each column of a row is parsed according to its type in the DB.
 fn convert_mutation_response_to_json(db_results: &[tiberius::Row]) -> Result<String, Error> {
     // Each element of the vector corresponds to the results of a single SQL statement.
     let mut db_results_json: Vec<HashMap<String, Option<serde_json::Value>>> = Vec::new();
@@ -214,6 +216,7 @@ async fn execute_native_mutation(
 ) -> Result<(), Error> {
     let mutation_query = &native_mutation_plan.mutation_sql_query;
 
+    // User provided native mutation query.
     let mut mssql_query = tiberius::Query::new(mutation_query.sql.as_str());
 
     // bind parameters....
@@ -233,6 +236,7 @@ async fn execute_native_mutation(
         .await
         .map_err(Error::TiberiusError)?;
 
+    // Execute the native mutation and collect its response.
     let native_mutation_response = stream.into_results().await.map_err(Error::TiberiusError)?;
 
     // We expect each Native mutation to return exactly one row set.
@@ -249,6 +253,8 @@ async fn execute_native_mutation(
     let response_json =
         convert_mutation_response_to_json(native_mutation_response.first().unwrap_or(&Vec::new()))?;
 
+    // Create a CTE with the above obtained `response_json` which will make it
+    // suitable to query the JSON value through an SQL query.
     let mutation_response_cte = generate_native_mutation_response_cte(
         response_json,
         native_mutation_plan.response_selection.response_json_schema,
@@ -259,6 +265,7 @@ async fn execute_native_mutation(
 
     let mut response_selection_select = native_mutation_plan.response_selection.response_select;
 
+    // Add the CTE to the `response_selection_select`.
     response_selection_select.with = With {
         common_table_expressions: vec![mutation_response_cte],
     };
@@ -267,6 +274,7 @@ async fn execute_native_mutation(
 
     response_selection_select.to_sql(&mut response_selection_sql);
 
+    // Execute the SQL query and append the response obtained to the `buffer`.
     execute_query(
         connection,
         &response_selection_sql,

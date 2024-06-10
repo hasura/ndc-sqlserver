@@ -34,17 +34,21 @@ pub fn translate(
 
     let mut translated_mutation_operations = Vec::new();
 
+    // Translate all the mutation operations found in the request.
     for mutation_operation in mutation_request.operations {
         translated_mutation_operations
             .push(translate_mutation_operation(&env, mutation_operation)?);
     }
 
+    // Generate the mutation execution plan, with the translated mutation operations.
     generate_mutation_execution_plan(&env, state, translated_mutation_operations)
 }
 
+/// Validates the mutation operation and augments it with the data we have
+/// currently in our state to be able to carry out the execution of the
+/// mutation operation.
 fn translate_mutation_operation(
     env: &Env,
-
     mutation_operation: ndc_sdk::models::MutationOperation,
 ) -> Result<MutationOperation, Error> {
     match mutation_operation {
@@ -188,6 +192,10 @@ fn get_native_mutation_response_selection(
     })
 }
 
+/// Creates a SQL CTE that opens up the provided
+/// `response_json` value with the `json_schema`
+/// providing the schema of the JSON value. This CTE
+/// can now be queried as if it were a relational table.
 pub fn generate_native_mutation_response_cte(
     response_json: String,
     json_schema: WithJSONSchema,
@@ -232,6 +240,10 @@ fn generate_mutation_execution_plan(
             crate::translation::helpers::MutationOperation::NativeMutation(
                 native_mutation_info,
             ) => {
+                // Process the raw SQL statement that the user has provided.
+                // Processing involves substituting the parameters (if any),
+                // used in the query and generating a SQL statement, that
+                // can be run.
                 let raw_sql = generate_native_query_sql(
                     &native_mutation_info.info.arguments,
                     &native_mutation_info
@@ -250,6 +262,8 @@ fn generate_mutation_execution_plan(
 
                 raw_sql.to_sql(&mut mutation_sql_query);
 
+                // Parse the fields that were requested in the query, so that
+                // we can return the response querying those fields.
                 let (affected_rows, (returning_alias, returning)) =
                     parse_procedure_fields(native_mutation_info.fields.clone())?;
 

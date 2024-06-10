@@ -33,7 +33,7 @@ pub async fn mutation(
             .await?;
 
         let result = async {
-            execute_mutations_plan(state, plan)
+            execute_mutation_plan(state, plan)
                 .instrument(info_span!("Execute mutation"))
                 .await
         }
@@ -47,6 +47,8 @@ pub async fn mutation(
     timer.complete_with(result)
 }
 
+/// Given the `configuration`, `state` and `mutation_request`, construct
+/// the `MutationExecutionPlan`.
 fn plan_mutation(
     configuration: &configuration::Configuration,
     state: &configuration::State,
@@ -66,7 +68,8 @@ fn plan_mutation(
     timer.complete_with(result)
 }
 
-async fn execute_mutations_plan(
+/// Execute the `MutationExecutionPlan` and return the response back.
+async fn execute_mutation_plan(
     state: &configuration::State,
     plan: sql::execution_plan::MutationExecutionPlan,
 ) -> Result<JsonResponse<models::MutationResponse>, connector::MutationError> {
