@@ -10,6 +10,7 @@ members = [
   "crates/query-engine/metadata",
   "crates/query-engine/sql",
   "crates/query-engine/translation",
+  "crates/query-engine/metrics",
   "crates/cli",
 ]
 

@@ -1,9 +1,9 @@
 use crate::{
     helpers::{execute_statement, rollback_on_exception},
-    metrics,
     query::execute_query,
 };
 use bytes::{BufMut, Bytes, BytesMut};
+use query_engine_metrics::metrics;
 use query_engine_sql::sql::{
     self,
     ast::With,

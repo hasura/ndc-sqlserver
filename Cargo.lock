@@ -1341,8 +1341,8 @@ dependencies = [
  "bb8",
  "bb8-tiberius",
  "prometheus",
- "query-engine-execution",
  "query-engine-metadata",
+ "query-engine-metrics",
  "schemars",
  "serde",
  "serde_json",
@@ -1739,6 +1739,7 @@ dependencies = [
  "bb8-tiberius",
  "bytes",
  "prometheus",
+ "query-engine-metrics",
  "query-engine-sql",
  "query-engine-translation",
  "serde_json",
@@ -1755,6 +1756,22 @@ version = "0.1.1"
 dependencies = [
  "schemars",
  "serde",
+]
+
+[[package]]
+name = "query-engine-metrics"
+version = "0.1.1"
+dependencies = [
+ "bb8",
+ "bb8-tiberius",
+ "bytes",
+ "prometheus",
+ "serde_json",
+ "sqlformat",
+ "thiserror",
+ "tiberius",
+ "tokio-stream",
+ "tracing",
 ]
 
 [[package]]
