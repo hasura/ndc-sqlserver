@@ -26,7 +26,7 @@ fn column_to_type(column: &metadata::ColumnInfo) -> models::Type {
     }
 }
 /// Gets the schema of the native queries.
-/// Each native query creates creates an object named as the name
+/// Each native query creates an object named as the name
 /// of the native query with the fields of the object corresponding
 /// to the `columns` field.
 fn get_native_queries_schema(
