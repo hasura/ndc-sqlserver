@@ -1,7 +1,7 @@
 //! Execute a Query execution plan against the database.
 
-use crate::metrics;
 use bytes::{BufMut, Bytes, BytesMut};
+use query_engine_metrics::metrics;
 
 use crate::error::Error;
 use query_engine_sql::sql;
