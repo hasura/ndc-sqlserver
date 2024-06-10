@@ -1762,16 +1762,7 @@ dependencies = [
 name = "query-engine-metrics"
 version = "0.1.1"
 dependencies = [
- "bb8",
- "bb8-tiberius",
- "bytes",
  "prometheus",
- "serde_json",
- "sqlformat",
- "thiserror",
- "tiberius",
- "tokio-stream",
- "tracing",
 ]
 
 [[package]]
