@@ -253,7 +253,12 @@ pub fn translate_rows_query(
                         )?;
                     }
                     // Native mutations will not have limit or offset
-                    CollectionInfo::NativeMutation { .. } => {}
+                    CollectionInfo::NativeMutation { .. } => {
+                        return Err(Error::UnexpectedInternalError(
+                            "Unexpected: found native mutation query with a limit/offset clause"
+                                .to_string(),
+                        ))
+                    }
                 }
             }
 
