@@ -53,7 +53,9 @@ impl RawConfiguration {
     pub fn empty() -> Self {
         Self {
             version: CURRENT_VERSION,
-            mssql_connection_string: uri::ConnectionUri(Secret::Plain("".into())),
+            mssql_connection_string: uri::ConnectionUri(Secret::FromEnvironment {
+                variable: crate::DEFAULT_CONNECTION_URI_VARIABLE.into(),
+            }),
             metadata: query_engine_metadata::metadata::Metadata::default(),
         }
     }
@@ -129,9 +131,9 @@ pub async fn create_state(
 
 /// Create a connection pool with default settings.
 async fn create_mssql_pool(
-    configuration: &String,
+    configuration: &str,
 ) -> Result<bb8::Pool<bb8_tiberius::ConnectionManager>, bb8_tiberius::Error> {
-    let connection_string = configuration.clone();
+    let connection_string = configuration.to_owned();
     // let mssql_connection_string = match connection_string {
     //     uri::ConnectionUri(Secret::Plain(s)) => s,
     //     uri::ConnectionUri(Secret::FromEnvironment { variable }) => {

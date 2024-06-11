@@ -1,7 +1,7 @@
 {
   "version": 1,
   "mssql_connection_string": {
-      "variable": "CONNECTION_URI"
+    "variable": "CONNECTION_URI"
   },
   "metadata": {
     "tables": {
@@ -607,207 +607,7 @@
         "description": null
       }
     },
-    "nativeQueries": {
-      "album_by_title": {
-        "sql": "SELECT * FROM [dbo].[Album] WHERE [Title] LIKE {{title}} AND [AlbumId] < {{id}}",
-        "columns": {
-          "AlbumId": {
-            "name": "AlbumId",
-            "type": "int4",
-            "nullable": "nullable",
-            "description": null
-          },
-          "ArtistId": {
-            "name": "ArtistId",
-            "type": "int4",
-            "nullable": "nullable",
-            "description": null
-          },
-          "Title": {
-            "name": "Title",
-            "type": "varchar",
-            "nullable": "nullable",
-            "description": null
-          }
-        },
-        "arguments": {
-          "id": {
-            "name": "id",
-            "type": "int4",
-            "nullable": "nullable",
-            "description": null
-          },
-          "title": {
-            "name": "title",
-            "type": "varchar",
-            "nullable": "nullable",
-            "description": null
-          }
-        },
-        "description": null
-      },
-      "artist": {
-        "sql": "SELECT * FROM [dbo].[Artist]",
-        "columns": {
-          "ArtistId": {
-            "name": "ArtistId",
-            "type": "int4",
-            "nullable": "nullable",
-            "description": null
-          },
-          "Name": {
-            "name": "Name",
-            "type": "varchar",
-            "nullable": "nullable",
-            "description": null
-          }
-        },
-        "arguments": {},
-        "description": null
-      },
-      "artist_below_id": {
-        "sql": "SELECT * FROM [dbo].[Artist] WHERE [ArtistId] < {{id}}",
-        "columns": {
-          "ArtistId": {
-            "name": "ArtistId",
-            "type": "int4",
-            "nullable": "nullable",
-            "description": null
-          },
-          "Name": {
-            "name": "Name",
-            "type": "varchar",
-            "nullable": "nullable",
-            "description": null
-          }
-        },
-        "arguments": {
-          "id": {
-            "name": "id",
-            "type": "int4",
-            "nullable": "nullable",
-            "description": null
-          }
-        },
-        "description": null
-      },
-      "value_types": {
-        "sql": "SELECT {{bigint}} as bigint, {{char}} as char, {{date}} as date, {{float}} as float, {{int}} as int, {{numeric}} as numeric, {{text}} as text, {{time}} as time, {{timestamp}} as timestamp",
-        "columns": {
-          "bigint": {
-            "name": "bigint",
-            "type": "bigint",
-            "nullable": "nullable",
-            "description": null
-          },
-          "char": {
-            "name": "char",
-            "type": "char",
-            "nullable": "nullable",
-            "description": null
-          },
-          "date": {
-            "name": "date",
-            "type": "date",
-            "nullable": "nullable",
-            "description": null
-          },
-          "float": {
-            "name": "float",
-            "type": "float",
-            "nullable": "nullable",
-            "description": null
-          },
-          "int": {
-            "name": "int",
-            "type": "int",
-            "nullable": "nullable",
-            "description": null
-          },
-          "numeric": {
-            "name": "numeric",
-            "type": "numeric",
-            "nullable": "nullable",
-            "description": null
-          },
-          "text": {
-            "name": "text",
-            "type": "text",
-            "nullable": "nullable",
-            "description": null
-          },
-          "time": {
-            "name": "time",
-            "type": "time",
-            "nullable": "nullable",
-            "description": null
-          },
-          "timestamp": {
-            "name": "timestamp",
-            "type": "timestamp",
-            "nullable": "nullable",
-            "description": null
-          }
-        },
-        "arguments": {
-          "bigint": {
-            "name": "bigint",
-            "type": "bigint",
-            "nullable": "nullable",
-            "description": null
-          },
-          "char": {
-            "name": "char",
-            "type": "char",
-            "nullable": "nullable",
-            "description": null
-          },
-          "date": {
-            "name": "date",
-            "type": "date",
-            "nullable": "nullable",
-            "description": null
-          },
-          "float": {
-            "name": "float",
-            "type": "float",
-            "nullable": "nullable",
-            "description": null
-          },
-          "int": {
-            "name": "int",
-            "type": "int",
-            "nullable": "nullable",
-            "description": null
-          },
-          "numeric": {
-            "name": "numeric",
-            "type": "numeric",
-            "nullable": "nullable",
-            "description": null
-          },
-          "text": {
-            "name": "text",
-            "type": "text",
-            "nullable": "nullable",
-            "description": null
-          },
-          "time": {
-            "name": "time",
-            "type": "time",
-            "nullable": "nullable",
-            "description": null
-          },
-          "timestamp": {
-            "name": "timestamp",
-            "type": "timestamp",
-            "nullable": "nullable",
-            "description": null
-          }
-        },
-        "description": null
-      }
-    },
+    "nativeQueries": {},
     "aggregateFunctions": {
       "bigint": {
         "APPROX_COUNT_DISTINCT": {
@@ -1485,7 +1285,6 @@
           "operatorName": "IN",
           "argumentType": "binary",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1523,7 +1322,6 @@
           "operatorName": "IN",
           "argumentType": "bit",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1561,7 +1359,6 @@
           "operatorName": "IN",
           "argumentType": "char",
           "operatorKind": "in"
-          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -1609,7 +1406,6 @@
           "operatorName": "IN",
           "argumentType": "date",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1647,7 +1443,6 @@
           "operatorName": "IN",
           "argumentType": "datetime",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1685,7 +1480,6 @@
           "operatorName": "IN",
           "argumentType": "datetime2",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1723,7 +1517,6 @@
           "operatorName": "IN",
           "argumentType": "datetimeoffset",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1761,7 +1554,6 @@
           "operatorName": "IN",
           "argumentType": "decimal",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1799,7 +1591,6 @@
           "operatorName": "IN",
           "argumentType": "float",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1837,7 +1628,6 @@
           "operatorName": "IN",
           "argumentType": "geography",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1875,7 +1665,6 @@
           "operatorName": "IN",
           "argumentType": "geometry",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1913,7 +1702,6 @@
           "operatorName": "IN",
           "argumentType": "hierarchyid",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1963,7 +1751,6 @@
           "operatorName": "IN",
           "argumentType": "int",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2001,7 +1788,6 @@
           "operatorName": "IN",
           "argumentType": "money",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2039,7 +1825,6 @@
           "operatorName": "IN",
           "argumentType": "nchar",
           "operatorKind": "in"
-          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -2109,7 +1894,6 @@
           "operatorName": "IN",
           "argumentType": "numeric",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2147,7 +1931,6 @@
           "operatorName": "IN",
           "argumentType": "nvarchar",
           "operatorKind": "in"
-          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -2195,7 +1978,6 @@
           "operatorName": "IN",
           "argumentType": "real",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2233,7 +2015,6 @@
           "operatorName": "IN",
           "argumentType": "smalldatetime",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2271,7 +2052,6 @@
           "operatorName": "IN",
           "argumentType": "smallint",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2309,7 +2089,6 @@
           "operatorName": "IN",
           "argumentType": "smallmoney",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2347,7 +2126,6 @@
           "operatorName": "IN",
           "argumentType": "sql_variant",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2385,7 +2163,6 @@
           "operatorName": "IN",
           "argumentType": "sysname",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2445,7 +2222,6 @@
           "operatorName": "IN",
           "argumentType": "time",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2483,7 +2259,6 @@
           "operatorName": "IN",
           "argumentType": "timestamp",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2521,7 +2296,6 @@
           "operatorName": "IN",
           "argumentType": "tinyint",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2559,7 +2333,6 @@
           "operatorName": "IN",
           "argumentType": "uniqueidentifier",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2597,7 +2370,6 @@
           "operatorName": "IN",
           "argumentType": "varbinary",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2635,7 +2407,6 @@
           "operatorName": "IN",
           "argumentType": "varchar",
           "operatorKind": "in"
-          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -2683,7 +2454,6 @@
           "operatorName": "IN",
           "argumentType": "xml",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
