@@ -1,8 +1,11 @@
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use ndc_sqlserver_configuration as configuration;
 use similar_asserts::assert_eq;
+
+pub mod common;
+use common::configuration::*;
 
 const CONNECTION_STRING: &str =
     "Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true";
@@ -58,15 +61,4 @@ fn read_configuration(chinook_deployment_path: impl AsRef<Path>) -> serde_json::
     let file = fs::File::open(get_path_from_project_root(chinook_deployment_path))
         .expect("fs::File::open");
     serde_json::from_reader(file).expect("serde_json::from_reader")
-}
-
-/// Find the project root via the crate root provided by `cargo test`,
-/// and get our single static configuration file.
-/// This depends on the convention that all our crates live in `/crates/<name>`
-/// and will break in the unlikely case that we change this
-pub fn get_path_from_project_root(deployment_path: impl AsRef<Path>) -> PathBuf {
-    let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    d.push("../../");
-    d.push(deployment_path);
-    d
 }

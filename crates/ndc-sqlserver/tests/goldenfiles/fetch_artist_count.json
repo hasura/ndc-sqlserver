@@ -1,0 +1,12 @@
+{
+  "collection": "Artist",
+  "query": {
+    "aggregates": {
+      "artist_count": {
+        "type": "star_count"
+      }
+    }
+  },
+  "arguments": {},
+  "collection_relationships": {}
+}
