@@ -146,15 +146,19 @@ async fn update(context: Context<impl Environment>) -> anyhow::Result<()> {
         let raw_configuration: configuration::RawConfiguration = {
             let configuration_file_contents =
                 read_config_file_contents(&configuration_file_path).await?;
+            dbg!("configuration_file_contents", configuration_file_contents.clone());
             serde_json::from_str(&configuration_file_contents)?
         };
-        let input = validate_raw_configuration(
-            &configuration_file_path,
-            raw_configuration.clone(),
-            &context.environment,
-        )
-        .await?;
-        let output = configuration::configure(&input).await?;
+        dbg!("raw_configuration", &raw_configuration.mssql_connection_string);
+        // let input = validate_raw_configuration(
+        //     &configuration_file_path,
+        //     raw_configuration.clone(),
+        //     &context.environment,
+        // )
+        // .await?;
+        // dbg!("input", &input.mssql_connection_string);
+        let output = configuration::configure(&configuration_file_path, &raw_configuration, &context.environment).await?;
+        dbg!("output", &output.mssql_connection_string);
 
         // Check that the input file did not change since we started introspecting,
         let raw_configuration_before_write: configuration::RawConfiguration = {
@@ -167,7 +171,7 @@ async fn update(context: Context<impl Environment>) -> anyhow::Result<()> {
         if raw_configuration_before_write == raw_configuration {
             // If the introspection result is different than the current config,
             // change it. Otherwise, continue.
-            if input != output {
+            if raw_configuration != output {
                 fs::write(
                     &configuration_file_path,
                     serde_json::to_string_pretty(&output)? + "\n",
@@ -193,11 +197,11 @@ async fn read_config_file_contents(configuration_file_path: &PathBuf) -> anyhow:
         .map_err(|err| {
             if err.kind() == std::io::ErrorKind::NotFound {
                 anyhow::anyhow!(
-                    "{}: No such file or directory. Perhaps you meant to 'initialize' first?",
+                    "{}: No such file or directory.",
                     configuration_file_path.display()
                 )
             } else {
-                anyhow::anyhow!(err)
+                err.into()
             }
         })
 }

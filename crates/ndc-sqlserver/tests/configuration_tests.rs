@@ -38,14 +38,14 @@ pub async fn configure_is_idempotent(
     )]);
     let file_path = PathBuf::new();
 
-    let configuration = validate_raw_configuration(&file_path, args, environment)
-        .await
-        .unwrap();
+    // let configuration = validate_raw_configuration(&file_path, args, environment)
+    //     .await
+    //     .unwrap();
     // dbg!(&configuration);
 
     // args.mssql_connection_string = connection_string.to_string();
 
-    let actual = configuration::configure(&configuration)
+    let actual = configuration::configure(&file_path, &args, environment)
         .await
         .expect("configuration::configure");
 
@@ -57,12 +57,12 @@ pub async fn configure_is_idempotent(
 
 pub async fn configure_initial_configuration_is_unchanged(
     connection_string: &str,
-) -> configuration::Configuration {
+) -> configuration::RawConfiguration {
     let connection_uri_variable: Variable = "MAGIC_URI".into();
     let args = configuration::RawConfiguration {
-        mssql_connection_string: secret::Secret::FromEnvironment {
+        mssql_connection_string: ndc_sqlserver_configuration::ConnectionUri(secret::Secret::FromEnvironment {
             variable: connection_uri_variable.clone(),
-        },
+        }),
 
         ..configuration::RawConfiguration::empty()
     };
@@ -70,11 +70,11 @@ pub async fn configure_initial_configuration_is_unchanged(
     let environment = HashMap::from([(connection_uri_variable, connection_string.into())]);
     let file_path = PathBuf::new();
 
-    let configuration = validate_raw_configuration(&file_path, args, environment)
-        .await
-        .unwrap();
+    // let configuration = validate_raw_configuration(&file_path, args, environment)
+    //     .await
+    //     .unwrap();
 
-    configuration::configure(&configuration)
+    configuration::configure(&file_path, &args, environment)
         .await
         .expect("configuration::configure")
 }

@@ -4,8 +4,10 @@ mod error;
 pub mod introspection;
 pub mod secret;
 pub mod version1;
+pub mod uri;
 
 pub use error::Error;
+pub use uri::ConnectionUri;
 
 pub use configuration::{
     CONFIGURATION_FILENAME, CONFIGURATION_JSONSCHEMA_FILENAME, DEFAULT_CONNECTION_URI_VARIABLE,
