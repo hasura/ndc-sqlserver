@@ -1,10 +1,10 @@
 use ndc_sdk::models;
 
-use super::error::Error;
 use super::filtering;
-use super::helpers::{Env, RootAndCurrentTables, State, TableNameAndReference};
 use super::relationships;
 use super::root;
+use crate::translation::error::Error;
+use crate::translation::helpers::{Env, RootAndCurrentTables, State, TableNameAndReference};
 use query_engine_metadata::metadata;
 use query_engine_sql::sql;
 

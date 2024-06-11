@@ -83,6 +83,21 @@ pub struct ColumnInfo {
     pub description: Option<String>,
 }
 
+/// Information about a native mutation column.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct NativeMutationColumnInfo {
+    #[serde(flatten)]
+    pub column_info: ColumnInfo,
+    /// The database type that the column should be cast as.
+    /// For example, if a native mutation query returns a string
+    /// for the column 'foo'. Then, this field can be an indicator
+    /// to cast the value as an integer. When `cast_as` is `None`,
+    /// the value is casted to `r#type`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cast_as: Option<String>,
+}
+
 /// A mapping from the name of a unique constraint to its value.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]

@@ -17,9 +17,9 @@ pub struct NativeQueries(pub BTreeMap<String, NativeQueryInfo>);
 /// tracked as mutations.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct NativeMutations(pub BTreeMap<String, NativeQueryInfo>);
+pub struct NativeMutations(pub BTreeMap<String, NativeMutationInfo>);
 
-/// Information about a Native Query/Mutation.
+/// Information about a Native Query.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NativeQueryInfo {
@@ -27,6 +27,21 @@ pub struct NativeQueryInfo {
     pub sql: NativeQuerySql,
     /** Columns returned by the Native Query */
     pub columns: BTreeMap<String, ColumnInfo>,
+    #[serde(default)]
+    /** Names and types of arguments that can be passed to this Native Query */
+    pub arguments: BTreeMap<String, ColumnInfo>,
+    #[serde(default)]
+    pub description: Option<String>,
+}
+
+/// Information about a Native Mutation.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct NativeMutationInfo {
+    /** SQL expression to use for the Native Query. We can interpolate values using `{{variable_name}}` syntax, such as `SELECT * FROM authors WHERE name = {{author_name}}` */
+    pub sql: NativeQuerySql,
+    /** Columns returned by the Native Query */
+    pub columns: BTreeMap<String, NativeMutationColumnInfo>,
     #[serde(default)]
     /** Names and types of arguments that can be passed to this Native Query */
     pub arguments: BTreeMap<String, ColumnInfo>,

@@ -1299,7 +1299,6 @@ dependencies = [
  "env_logger",
  "hyper",
  "insta",
- "ndc-models 0.1.2 (git+https://github.com/hasura/ndc-spec.git?rev=c59f824ff95e6a376c34f85816e80164bc1f3894)",
  "ndc-sdk",
  "ndc-sqlserver-configuration",
  "ndc-test",
@@ -1310,7 +1309,6 @@ dependencies = [
  "query-engine-translation",
  "reqwest",
  "serde",
- "serde_derive",
  "serde_json",
  "similar-asserts",
  "tiberius",
@@ -1325,13 +1323,11 @@ dependencies = [
  "anyhow",
  "build-data",
  "clap",
- "insta",
  "ndc-sqlserver-configuration",
  "schemars",
  "serde",
  "serde_json",
  "serde_yaml",
- "tempfile",
  "thiserror",
  "tokio",
 ]
@@ -1343,8 +1339,8 @@ dependencies = [
  "bb8",
  "bb8-tiberius",
  "prometheus",
- "query-engine-execution",
  "query-engine-metadata",
+ "query-engine-metrics",
  "schemars",
  "serde",
  "serde_json",
@@ -1422,9 +1418,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.18.0"
+version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd8b5dd2ae5ed71462c540258bedcb51965123ad7e7ccf4b9a8cafaa4a63576d"
+checksum = "3fdb12b2476b595f9358c5161aa467c2438859caa136dec86c26fdd2efe17b92"
 
 [[package]]
 name = "openssl"
@@ -1741,9 +1737,12 @@ dependencies = [
  "bb8-tiberius",
  "bytes",
  "prometheus",
+ "query-engine-metrics",
  "query-engine-sql",
+ "query-engine-translation",
  "serde_json",
  "sqlformat",
+ "thiserror",
  "tiberius",
  "tokio-stream",
  "tracing",
@@ -1755,6 +1754,13 @@ version = "0.1.1"
 dependencies = [
  "schemars",
  "serde",
+]
+
+[[package]]
+name = "query-engine-metrics"
+version = "0.1.1"
+dependencies = [
+ "prometheus",
 ]
 
 [[package]]
@@ -2733,9 +2739,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-util"
-version = "0.7.10"
+version = "0.7.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5419f34732d9eb6ee4c3578b7989078579b7f039cbbb9ca2c4da015749371e15"
+checksum = "9cf6b47b3771c49ac75ad09a6162f53ad4b8088b76ac60e8ec1455b31a189fe1"
 dependencies = [
  "bytes",
  "futures-core",
@@ -2743,7 +2749,6 @@ dependencies = [
  "futures-sink",
  "pin-project-lite",
  "tokio",
- "tracing",
 ]
 
 [[package]]
@@ -3032,9 +3037,9 @@ checksum = "711b9620af191e0cdc7468a8d14e709c3dcdb115b36f838e601583af800a370a"
 
 [[package]]
 name = "uuid"
-version = "1.5.0"
+version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88ad59a7560b41a70d191093a945f0b87bc1deeda46fb237479708a1d6b6cdfc"
+checksum = "a183cf7feeba97b4dd1c0d46788634f6221d87fa961b305bed08c851829efcc0"
 
 [[package]]
 name = "valuable"

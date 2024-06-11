@@ -6,7 +6,8 @@ use ndc_sdk::connector;
 use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
 use ndc_sqlserver_configuration as configuration;
-use query_engine_execution::execution;
+use query_engine_execution::error;
+use query_engine_execution::query;
 use query_engine_sql::sql;
 use query_engine_translation::translation;
 use tracing::{info_span, Instrument};
@@ -57,7 +58,7 @@ fn plan_query(
         .map_err(|err| {
             tracing::error!("{}", err);
             match err {
-                translation::query::error::Error::NotSupported(_) => {
+                translation::error::Error::NotSupported(_) => {
                     connector::QueryError::UnsupportedOperation(err.to_string())
                 }
                 _ => connector::QueryError::InvalidRequest(err.to_string()),
@@ -70,19 +71,23 @@ async fn execute_query(
     state: &configuration::State,
     plan: sql::execution_plan::QueryExecutionPlan,
 ) -> Result<JsonResponse<models::QueryResponse>, connector::QueryError> {
-    execution::mssql_execute(&state.mssql_pool, &state.metrics, plan)
+    query::mssql_execute_query_plan(&state.mssql_pool, &state.metrics, plan)
         .await
         .map(JsonResponse::Serialized)
         .map_err(|err| match err {
-            execution::Error::Query(err) => {
+            error::Error::Query(err) => {
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }
-            execution::Error::ConnectionPool(err) => {
+            error::Error::ConnectionPool(err) => {
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }
-            execution::Error::TiberiusError(err) => {
+            error::Error::TiberiusError(err) => {
+                tracing::error!("{}", err);
+                connector::QueryError::Other(err.into())
+            }
+            error::Error::Mutation(err) => {
                 tracing::error!("{}", err);
                 connector::QueryError::Other(err.into())
             }

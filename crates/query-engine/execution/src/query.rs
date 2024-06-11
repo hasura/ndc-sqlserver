@@ -1,7 +1,9 @@
-//! Execute an execution plan against the database.
+//! Execute a Query execution plan against the database.
 
-use crate::metrics;
 use bytes::{BufMut, Bytes, BytesMut};
+use query_engine_metrics::metrics;
+
+use crate::error::Error;
 use query_engine_sql::sql;
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -10,7 +12,7 @@ use tokio_stream::StreamExt;
 use tracing::{info_span, Instrument};
 
 /// Execute a query against sqlserver.
-pub async fn mssql_execute(
+pub async fn mssql_execute_query_plan(
     mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
     metrics: &metrics::Metrics,
     plan: sql::execution_plan::QueryExecutionPlan,
@@ -69,7 +71,7 @@ async fn execute_queries(
 }
 
 /// Execute the query on one set of variables.
-async fn execute_query(
+pub(crate) async fn execute_query(
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
     query: &sql::string::SQL,
     variables: &BTreeMap<String, serde_json::Value>,
@@ -259,10 +261,4 @@ async fn execute_explain(
     let _ = connection.simple_query("SET SHOWPLAN_TEXT OFF").await;
 
     Ok(results)
-}
-
-pub enum Error {
-    Query(String),
-    ConnectionPool(bb8::RunError<bb8_tiberius::Error>),
-    TiberiusError(tiberius::error::Error),
 }

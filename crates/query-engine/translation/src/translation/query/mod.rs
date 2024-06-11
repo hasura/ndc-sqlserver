@@ -1,20 +1,17 @@
 //! Translate an incoming `QueryRequest`.
 
-pub mod error;
-
 mod aggregates;
 mod filtering;
-mod helpers;
 mod native_queries;
 mod relationships;
 mod root;
 mod sorting;
-mod values;
 
 use ndc_sdk::models;
 
-use error::Error;
-use helpers::{Env, State, TableNameAndReference};
+use super::error::Error;
+use super::helpers::{Env, State, TableNameAndReference};
+
 use query_engine_metadata::metadata;
 use query_engine_sql::sql;
 
@@ -56,7 +53,7 @@ pub fn translate(
 
     // add native queries if there are any
     json_select.with = sql::ast::With {
-        common_table_expressions: native_queries::translate(state)?,
+        common_table_expressions: native_queries::translate_native_queries(state)?,
     };
 
     // normalize ast

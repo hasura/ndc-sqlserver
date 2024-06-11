@@ -21,7 +21,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: "build" # share the cache across jobs
+          save-if: false
 
       - name: find unused dependencies
         run: |
-          cargo machete
+          cargo machete --with-metadata

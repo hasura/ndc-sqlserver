@@ -7,9 +7,12 @@ use indexmap::IndexMap;
 use ndc_sdk::models;
 
 use super::aggregates;
-use super::error::Error;
 use super::filtering;
-use super::helpers::{CollectionInfo, Env, RootAndCurrentTables, State, TableNameAndReference};
+use crate::translation::error::Error;
+use crate::translation::helpers::{
+    CollectionInfo, Env, RootAndCurrentTables, State, TableNameAndReference,
+};
+
 use super::relationships;
 use super::sorting;
 use query_engine_sql::sql;
@@ -249,6 +252,13 @@ pub fn translate_rows_query(
                             current_table.reference.clone(),
                         )?;
                     }
+                    // Native mutations will not have limit or offset
+                    CollectionInfo::NativeMutation { .. } => {
+                        return Err(Error::UnexpectedInternalError(
+                            "Unexpected: found native mutation query with a limit/offset clause"
+                                .to_string(),
+                        ))
+                    }
                 }
             }
 
@@ -373,5 +383,8 @@ fn make_from_clause(
                 alias: current_table_alias.clone(),
             })
         }
+        CollectionInfo::NativeMutation { .. } => Err(Error::UnexpectedInternalError(
+            "Native mutations can't have a `FROM` clause attached with them".into(),
+        )),
     }
 }

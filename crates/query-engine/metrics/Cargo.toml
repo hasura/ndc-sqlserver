@@ -1,6 +1,5 @@
 [package]
-name = "query-engine-sql"
-
+name = "query-engine-metrics"
 version.workspace = true
 edition.workspace = true
 
@@ -8,4 +7,4 @@ edition.workspace = true
 workspace = true
 
 [dependencies]
-serde_json = "1.0.116"
+prometheus = "0.13.3"
