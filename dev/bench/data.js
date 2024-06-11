@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1717513898781,
+  "lastUpdate": 1718096270768,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -3223,6 +3223,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.07970128069294243,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "karthikeyan@hasura.io",
+            "name": "Karthikeyan Chinnakonda",
+            "username": "codingkarthik"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "56bbb7d87bf91dd73cddf0f3c9df0486ef274a5d",
+          "message": "Native mutations execution incremental PR (Incremental PR - III) (#131)\n\n<!-- The PR description should answer 2 (maybe 3) important questions:\n-->\n\n### What\n\n<!-- What is this PR trying to accomplish (and why, if it's not\nobvious)? -->\n\nThis PR is the third incremental PR that follows\nhttps://github.com/hasura/ndc-sqlserver/pull/118 and\nhttps://github.com/hasura/ndc-sqlserver/pull/130. This PR adds the\nexecution logic of the native mutations. Please note that, tests will be\nadded in a separate PR because this PR as it is crosses 1000 lines diff,\nbut most of these changes are cosmetic changes and the core logic of\nthis PR should be around 500-600 LOC.\n\n\n\n### How\n\n<!-- How is it trying to accomplish it (what are the implementation\nsteps)? -->\n\nThis PR adds the execution logic of the native mutations in the\nfollowing manner:\n\n1. Parse a `MutationRequest` and then convert it into a\n`MutationExecutionPlan`.\n2. The `MutationExecutionPlan` contains a `NativeMutationExecutionPlan`\ncontaining relevant information for a native mutation to be executed.\n3. The native mutation query is run first and then the rows obtained\nfrom the database are converted into a JSON array of objects, where each\nobject represents a single row.\n4. A second query is made per mutation operation, where the JSON from\nstep 3 is provided as a parameter and the fields requested in the NDC\nquery are returned in the appropriate format.",
+          "timestamp": "2024-06-11T08:49:51Z",
+          "tree_id": "2e34a6196aa9177a82b78e3d3f0cf1beda48d4d6",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/56bbb7d87bf91dd73cddf0f3c9df0486ef274a5d"
+        },
+        "date": 1718096270241,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 58.228442,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 72.2177148,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 58.97456364417259,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.6127746393097198,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.09298045638048842,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 383.297972,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 406.79359999999997,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 369.121737197696,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 1.070925614269754,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.08130657413541992,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 129.548757,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 143.3155034,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 128.03987128670408,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.6082410296770036,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07117665511851289,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 129.426521,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 143.4681413,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 127.60632340929801,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.5708709382732451,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.06781642505556713,
             "unit": "ms"
           }
         ]
