@@ -5,7 +5,7 @@ use crate::environment::Environment;
 use crate::error::Error;
 use crate::secret::Secret;
 use crate::{uri, ConnectionUri};
-use bb8_tiberius::ConnectionManager;
+
 use query_engine_execution::metrics;
 use query_engine_metadata::metadata;
 use query_engine_metadata::metadata::{database, Nullable};
@@ -13,7 +13,6 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
-use std::env;
 
 use thiserror::Error;
 use tiberius::Query;
@@ -97,14 +96,12 @@ pub async fn validate_raw_configuration(
     }
     let mssql_connection_string = match config.mssql_connection_string {
         uri::ConnectionUri(Secret::Plain(s)) => s,
-        uri::ConnectionUri(Secret::FromEnvironment { variable }) => {
-            environment
-                .read(&variable)
-                .map_err(|err| Error::MissingEnvironmentVariable {
-                    file_path: file_path.to_path_buf(),
-                    message: format!("{err}"),
-                })?
-        }
+        uri::ConnectionUri(Secret::FromEnvironment { variable }) => environment
+            .read(&variable)
+            .map_err(|err| Error::MissingEnvironmentVariable {
+                file_path: file_path.to_path_buf(),
+                message: format!("{err}"),
+            })?,
     };
 
     Ok(Configuration {
@@ -170,16 +167,19 @@ async fn select_first_row(
 }
 
 /// Construct the deployment configuration by introspecting the database.
-pub async fn configure(file_path: &std::path::Path, configuration: &RawConfiguration, environment: impl Environment) -> Result<RawConfiguration, Error> {
+pub async fn configure(
+    file_path: &std::path::Path,
+    configuration: &RawConfiguration,
+    environment: impl Environment,
+) -> Result<RawConfiguration, Error> {
     let connection_string = match &configuration.mssql_connection_string {
         uri::ConnectionUri(Secret::Plain(s)) => s.to_owned(),
-        uri::ConnectionUri(Secret::FromEnvironment { variable }) => {
-            environment.read(&variable)
-                .map_err(|err| Error::MissingEnvironmentVariable {
-                    file_path: file_path.to_path_buf(),
-                    message: format!("{err}"),
-                })?
-        }
+        uri::ConnectionUri(Secret::FromEnvironment { variable }) => environment
+            .read(variable)
+            .map_err(|err| Error::MissingEnvironmentVariable {
+                file_path: file_path.to_path_buf(),
+                message: format!("{err}"),
+            })?,
     };
     let mssql_pool = create_mssql_pool(&connection_string).await.unwrap();
 

@@ -3,7 +3,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use configuration::environment::Variable;
-use configuration::validate_raw_configuration;
+
 use ndc_sqlserver_configuration as configuration;
 use ndc_sqlserver_configuration::secret;
 use similar_asserts::assert_eq;
@@ -60,9 +60,11 @@ pub async fn configure_initial_configuration_is_unchanged(
 ) -> configuration::RawConfiguration {
     let connection_uri_variable: Variable = "MAGIC_URI".into();
     let args = configuration::RawConfiguration {
-        mssql_connection_string: ndc_sqlserver_configuration::ConnectionUri(secret::Secret::FromEnvironment {
-            variable: connection_uri_variable.clone(),
-        }),
+        mssql_connection_string: ndc_sqlserver_configuration::ConnectionUri(
+            secret::Secret::FromEnvironment {
+                variable: connection_uri_variable.clone(),
+            },
+        ),
 
         ..configuration::RawConfiguration::empty()
     };

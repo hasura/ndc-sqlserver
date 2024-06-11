@@ -3,8 +3,8 @@ pub mod environment;
 mod error;
 pub mod introspection;
 pub mod secret;
-pub mod version1;
 pub mod uri;
+pub mod version1;
 
 pub use error::Error;
 pub use uri::ConnectionUri;
