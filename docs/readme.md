@@ -2,6 +2,7 @@
 
 `ndc-sqlserver` is a [Hasura](https://hasura.io/) connector for PostgreSQL.
 
-- [Usage](./usage.md)
+- [Usage](./usage/index.md)
+  - [Native mutations](./usage/native_mutations.md)
 - [Code of Conduct](./code-of-conduct.md)
 - [Debugging](./debugging.md)
