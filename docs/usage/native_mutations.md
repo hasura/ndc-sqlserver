@@ -24,7 +24,7 @@ and therefore must be specific values, not arbitrary SQL.
 A native mutation can be defined using the following fields:
 
 
-### Native Mutation Object {#native-mutation-object}
+### Native Mutation Object
 
 | Field name    | Type                                                                                              | Required | Notes                                                                      |
 |---------------|---------------------------------------------------------------------------------------------------|----------|----------------------------------------------------------------------------|
@@ -34,7 +34,7 @@ A native mutation can be defined using the following fields:
 | `description` | String                                                                                            | No       | Description of the native mutation.                                        |
 
 
-### Column Object {#column-object}
+### Column Object
 
 | Field name    | Type   | Required | Notes                                                                                                                                                       |
 |---------------|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -46,7 +46,7 @@ A native mutation can be defined using the following fields:
 |               |        |          | field called `Name` with type `VARCHAR(100)`, then the `type` should be `varchar` and `castAs` should be set as `VARCHAR(100)` to get the correct response. |
 
 
-### Argument Object {#argument-object}
+### Argument Object
 
 | Field name    | Type   | Required | Notes                                                                                                                                                       |
 |---------------|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
