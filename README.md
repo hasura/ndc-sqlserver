@@ -112,7 +112,7 @@ To use the SQL Server connector, follow these steps in a Hasura project:
 
 ## Documentation
 
-
+View the full documentation for the ndc-sqlserver connector [here](./docs/readme.md).
 
 ## Contributing
 
