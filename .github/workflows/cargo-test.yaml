@@ -40,7 +40,7 @@ jobs:
         run: |
           cargo test --release --workspace
         env:
-          POSTGRESQL_CONNECTION_STRING: sqlserverql://sqlserver:password@localhost:64002
+          POSTGRESQL_CONNECTION_STRING: Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true
           RUST_LOG: INFO
 
       # scream into Slack if something goes wrong
