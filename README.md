@@ -110,6 +110,10 @@ To use the SQL Server connector, follow these steps in a Hasura project:
 
    The console URL in the build information cna be used to open the GraphiQL console to test out the API
 
+## Documentation
+
+
+
 ## Contributing
 
 We're happy to receive any contributions from the community. Please refer to our [development guide](./docs/development.md).
