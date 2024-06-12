@@ -36,14 +36,16 @@ A native mutation can be defined using the following fields:
 
 ### Column Object
 
-| Field name    | Type   | Required | Notes                                                                                                                                                       |
-|---------------|--------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name`        | String | Yes      | Name of the column that will be returned in the SQL query's response                                                                                        |
-| `type`        | String | Yes      | Type of the column.                                                                                                                                         |
-| `nullable`    | String | Yes      | Nullability of the column.                                                                                                                                  |
-| `description` | String | No       | Description of the column.                                                                                                                                  |
-| `castAs`      | String | No       | If set, the column will be parsed into this type, otherwise would be parsed as `type`. For example, if you have a                                           |
-|               |        |          | field called `Name` with type `VARCHAR(100)`, then the `type` should be `varchar` and `castAs` should be set as `VARCHAR(100)` to get the correct response. |
+| Field name    | Type   | Required | Notes                                                                                                                                                            |
+|---------------|--------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`        | String | Yes      | Name of the column that will be returned in the SQL query's response                                                                                             |
+| `type`        | String | Yes      | Type of the column.                                                                                                                                              |
+| `nullable`    | String | Yes      | Nullability of the column.                                                                                                                                       |
+| `description` | String | No       | Description of the column.                                                                                                                                       |
+| `castAs`      | String | No       | If set, the column will be parsed into this type, otherwise would be parsed as `type`. For example, if you have a                                                |
+|               |        |          | field called `Name` with type `VARCHAR(100)`, then the `type` should be `varchar` and `castAs` should be set as `VARCHAR(100)` to get the correct response. This |
+|               |        |          | field can also be useful when you return a type as a string from the SQL query, but you want to cast it as some other type while selecting the field.            |
+
 
 
 ### Argument Object
