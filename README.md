@@ -21,24 +21,25 @@ the [Data Connector Spec](https://github.com/hasura/ndc-spec).
 
 Below, you'll find a matrix of all supported features for the SQL Server connector:
 
-| Feature                         | Supported | Notes |
-| ------------------------------- | --------- | ----- |
-| Native Queries + Logical Models |    ✅     |       |
-| Simple Object Query             |    ✅     |       |
-| Filter / Search                 |    ✅     |       |
-| Simple Aggregation              |    ✅     |       |
-| Sort                            |    ✅     |       |
-| Paginate                        |    ✅     |       |
-| Table Relationships             |    ✅     |       |
-| Views                           |    ✅     |       |
-| Remote Relationships            |    ✅     |       |
-| Custom Fields                   |    ❌     |       |
-| Mutations                       |    ❌     |       |
-| Distinct                        |    ✅     |       |
-| Enums                           |    ❌     |       |
-| Naming Conventions              |    ❌     |       |
-| Default Values                  |    ❌     |       |
-| User-defined Functions          |    ❌     |       |
+| Feature                         | Supported | Notes                                |
+|---------------------------------|-----------|--------------------------------------|
+| Native Queries + Logical Models | ✅        |                                      |
+| Native Mutations                | ✅        |                                      |
+| Simple Object Query             | ✅        |                                      |
+| Filter / Search                 | ✅        |                                      |
+| Simple Aggregation              | ✅        |                                      |
+| Sort                            | ✅        |                                      |
+| Paginate                        | ✅        |                                      |
+| Table Relationships             | ✅        |                                      |
+| Views                           | ✅        |                                      |
+| Remote Relationships            | ✅        |                                      |
+| Custom Fields                   | ❌        |                                      |
+| Mutations                       | ✅        | Only native mutations are suppported |
+| Distinct                        | ✅        |                                      |
+| Enums                           | ❌        |                                      |
+| Naming Conventions              | ❌        |                                      |
+| Default Values                  | ❌        |                                      |
+| User-defined Functions          | ❌        |                                      |
 
 ## Before you get Started
 
