@@ -32,7 +32,6 @@ if nc -z localhost 8080; then
   exit 1
 fi
 
-CONNECTION_URI="Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true" \
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT='http://localhost:4317' \
 OTEL_SERVICE_NAME='ndc-sqlserver' \
   cargo run -p ndc-sqlserver --quiet --release -- \
