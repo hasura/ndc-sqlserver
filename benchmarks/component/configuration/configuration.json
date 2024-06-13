@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "mssql_connection_string": "Server=sqlserver;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true",
+  "mssql_connection_string": "Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true",
   "metadata": {
     "tables": {
       "Album": {
