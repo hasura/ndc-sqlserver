@@ -146,30 +146,14 @@ async fn update(context: Context<impl Environment>) -> anyhow::Result<()> {
         let raw_configuration: configuration::RawConfiguration = {
             let configuration_file_contents =
                 read_config_file_contents(&configuration_file_path).await?;
-            dbg!(
-                "configuration_file_contents",
-                configuration_file_contents.clone()
-            );
             serde_json::from_str(&configuration_file_contents)?
         };
-        dbg!(
-            "raw_configuration",
-            &raw_configuration.mssql_connection_string
-        );
-        // let input = validate_raw_configuration(
-        //     &configuration_file_path,
-        //     raw_configuration.clone(),
-        //     &context.environment,
-        // )
-        // .await?;
-        // dbg!("input", &input.mssql_connection_string);
         let output = configuration::configure(
             &configuration_file_path,
             &raw_configuration,
             &context.environment,
         )
         .await?;
-        dbg!("output", &output.mssql_connection_string);
 
         // Check that the input file did not change since we started introspecting,
         let raw_configuration_before_write: configuration::RawConfiguration = {

@@ -41,19 +41,11 @@ pub async fn configure_is_idempotent(
     )]);
     let file_path = PathBuf::new();
 
-    // let configuration = validate_raw_configuration(&file_path, args, environment)
-    //     .await
-    //     .unwrap();
-    // dbg!(&configuration);
-
-    // args.mssql_connection_string = connection_string.to_string();
-
     let actual = configuration::configure(&file_path, &args, environment)
         .await
         .expect("configuration::configure");
 
     let actual_value = serde_json::to_value(actual).expect("serde_json::to_value");
-    dbg!(&actual_value);
 
     assert_eq!(expected_value, actual_value);
 }
@@ -74,10 +66,6 @@ pub async fn configure_initial_configuration_is_unchanged(
 
     let environment = HashMap::from([(connection_uri_variable, connection_string.into())]);
     let file_path = PathBuf::new();
-
-    // let configuration = validate_raw_configuration(&file_path, args, environment)
-    //     .await
-    //     .unwrap();
 
     configuration::configure(&file_path, &args, environment)
         .await
