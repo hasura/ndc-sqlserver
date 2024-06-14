@@ -134,17 +134,6 @@ async fn create_mssql_pool(
     configuration: &str,
 ) -> Result<bb8::Pool<bb8_tiberius::ConnectionManager>, bb8_tiberius::Error> {
     let connection_string = configuration.to_owned();
-    // let mssql_connection_string = match connection_string {
-    //     uri::ConnectionUri(Secret::Plain(s)) => s,
-    //     uri::ConnectionUri(Secret::FromEnvironment { variable }) => {
-    //         environment
-    //             .read(&variable)
-    //             .map_err(|err| Error::MissingEnvironmentVariable {
-    //                 file_path: file_path.to_path_buf(),
-    //                 message: format!("{err}"),
-    //             })?
-    //     }
-    // };
     let config = tiberius::Config::from_ado_string(&connection_string)?;
 
     let mgr = bb8_tiberius::ConnectionManager::new(config);

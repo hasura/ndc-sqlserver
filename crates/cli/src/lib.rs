@@ -69,10 +69,6 @@ async fn initialize(with_metadata: bool, context: Context<impl Environment>) -> 
         Err(Error::DirectoryIsNotEmpty)?;
     }
 
-    // let raw_configuration = match context.uri {
-    //     Some(uri) => configuration::RawConfiguration::with_mssql_connection_string(uri),
-    //     None => configuration::RawConfiguration::empty(),
-    // };
     // create the configuration file
     fs::write(
         configuration_file,
@@ -200,30 +196,3 @@ async fn read_config_file_contents(configuration_file_path: &PathBuf) -> anyhow:
             }
         })
 }
-
-// / Since the URI is not mandatory for `initialize`, we need to update it first. Please not that this will only update
-// / the URI if the raw configuration is empty.
-// async fn update_uri_from_context(context: &Context<impl Environment>) -> anyhow::Result<()> {
-//     let configuration_file_path = context
-//         .context_path
-//         .join(configuration::CONFIGURATION_FILENAME);
-//     let mut input: configuration::RawConfiguration = {
-//         let configuration_file_contents =
-//             read_config_file_contents(&configuration_file_path).await?;
-//         serde_json::from_str(&configuration_file_contents)?
-//     };
-//     if input.mssql_connection_string.is_empty() {
-//         if let Some(uri) = &context.uri {
-//             input.mssql_connection_string = uri.clone();
-//         } else {
-//             return Err(anyhow::anyhow!(
-//                 "Cannot introspect without a connection URI. Please provide one."
-//             ));
-//         }
-//         fs::write(
-//             &configuration_file_path,
-//             serde_json::to_string_pretty(&input)? + "\n",
-//         )?;
-//     }
-//     Ok(())
-// }
