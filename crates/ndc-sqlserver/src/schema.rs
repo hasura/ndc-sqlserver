@@ -206,7 +206,7 @@ fn get_native_mutations_schema(
 /// This function implements the [schema endpoint](https://hasura.github.io/ndc-spec/specification/schema/index.html)
 /// from the NDC specification.
 pub async fn get_schema(
-    configuration::Configuration { metadata }: &configuration::Configuration,
+    configuration::Configuration { metadata, .. }: &configuration::Configuration,
 ) -> Result<models::SchemaResponse, connector::SchemaError> {
     let mut scalar_types: BTreeMap<String, models::ScalarType> =
         configuration::occurring_scalar_types(metadata)
