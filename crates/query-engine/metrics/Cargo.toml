@@ -1,0 +1,10 @@
+[package]
+name = "query-engine-metrics"
+version.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+prometheus = "0.13.3"

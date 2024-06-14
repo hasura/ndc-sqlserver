@@ -6,9 +6,9 @@ use crate::error::Error;
 use crate::secret::Secret;
 use crate::{uri, ConnectionUri};
 
-use query_engine_execution::metrics;
 use query_engine_metadata::metadata;
 use query_engine_metadata::metadata::{database, Nullable};
+use query_engine_metrics::metrics;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -81,7 +81,7 @@ pub struct Configuration {
 #[derive(Debug)]
 pub struct State {
     pub mssql_pool: bb8::Pool<bb8_tiberius::ConnectionManager>,
-    pub metrics: query_engine_execution::metrics::Metrics,
+    pub metrics: query_engine_metrics::metrics::Metrics,
 }
 
 /// Validate the user configuration.
@@ -121,7 +121,7 @@ pub async fn create_state(
     let mssql_pool = create_mssql_pool(&configuration.mssql_connection_string)
         .await
         .map_err(InitializationError::UnableToCreateMSSQLPool)?;
-    let metrics = query_engine_execution::metrics::Metrics::initialize(metrics_registry)
+    let metrics = query_engine_metrics::metrics::Metrics::initialize(metrics_registry)
         .map_err(InitializationError::MetricsError)?;
     Ok(State {
         mssql_pool,
@@ -188,6 +188,7 @@ pub async fn configure(
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
 
     metadata.native_queries = configuration.metadata.native_queries.clone();
+    metadata.native_mutations = configuration.metadata.native_mutations.clone();
 
     let tables_row = select_first_row(&mssql_pool, TABLE_CONFIGURATION_QUERY).await;
 

@@ -1,6 +1,6 @@
-pub mod common;
+use crate::common::helpers::{is_contained_in_lines, run_explain};
 
-use crate::common::{is_contained_in_lines, run_explain};
+pub mod common;
 
 #[tokio::test]
 async fn select_by_pk() {

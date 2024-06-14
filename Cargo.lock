@@ -729,12 +729,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "futures"
+version = "0.3.29"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "da0290714b38af9b4a7b094b8a37086d1b4e61f2df9122c3cad2577669145335"
+dependencies = [
+ "futures-channel",
+ "futures-core",
+ "futures-executor",
+ "futures-io",
+ "futures-sink",
+ "futures-task",
+ "futures-util",
+]
+
+[[package]]
 name = "futures-channel"
 version = "0.3.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff4dd66668b557604244583e3e1e1eada8c5c2e96a6d0d6653ede395b78bbacb"
 dependencies = [
  "futures-core",
+ "futures-sink",
 ]
 
 [[package]]
@@ -1291,15 +1307,15 @@ dependencies = [
 
 [[package]]
 name = "ndc-sqlserver"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
+ "anyhow",
  "async-trait",
  "axum",
  "axum-test-helper",
  "env_logger",
  "hyper",
  "insta",
- "ndc-models 0.1.2 (git+https://github.com/hasura/ndc-spec.git?rev=c59f824ff95e6a376c34f85816e80164bc1f3894)",
  "ndc-sdk",
  "ndc-sqlserver-configuration",
  "ndc-test",
@@ -1310,41 +1326,41 @@ dependencies = [
  "query-engine-translation",
  "reqwest",
  "serde",
- "serde_derive",
  "serde_json",
+ "serial_test",
  "similar-asserts",
  "tiberius",
  "tokio",
+ "tokio-util",
  "tracing",
+ "uuid",
 ]
 
 [[package]]
 name = "ndc-sqlserver-cli"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "build-data",
  "clap",
- "insta",
  "ndc-sqlserver-configuration",
  "schemars",
  "serde",
  "serde_json",
  "serde_yaml",
- "tempfile",
  "thiserror",
  "tokio",
 ]
 
 [[package]]
 name = "ndc-sqlserver-configuration"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bb8",
  "bb8-tiberius",
  "prometheus",
- "query-engine-execution",
  "query-engine-metadata",
+ "query-engine-metrics",
  "schemars",
  "serde",
  "serde_json",
@@ -1422,9 +1438,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.18.0"
+version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd8b5dd2ae5ed71462c540258bedcb51965123ad7e7ccf4b9a8cafaa4a63576d"
+checksum = "3fdb12b2476b595f9358c5161aa467c2438859caa136dec86c26fdd2efe17b92"
 
 [[package]]
 name = "openssl"
@@ -1735,15 +1751,18 @@ checksum = "106dd99e98437432fed6519dedecfade6a06a73bb7b2a1e019fdd2bee5778d94"
 
 [[package]]
 name = "query-engine-execution"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bb8",
  "bb8-tiberius",
  "bytes",
  "prometheus",
+ "query-engine-metrics",
  "query-engine-sql",
+ "query-engine-translation",
  "serde_json",
  "sqlformat",
+ "thiserror",
  "tiberius",
  "tokio-stream",
  "tracing",
@@ -1751,22 +1770,29 @@ dependencies = [
 
 [[package]]
 name = "query-engine-metadata"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "schemars",
  "serde",
 ]
 
 [[package]]
+name = "query-engine-metrics"
+version = "0.1.1"
+dependencies = [
+ "prometheus",
+]
+
+[[package]]
 name = "query-engine-sql"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde_json",
 ]
 
 [[package]]
 name = "query-engine-translation"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "indexmap 2.2.6",
  "insta",
@@ -2174,6 +2200,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "scc"
+version = "2.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "76ad2bbb0ae5100a07b7a6f2ed7ab5fd0045551a4c507989b7a620046ea3efdc"
+dependencies = [
+ "sdd",
+]
+
+[[package]]
 name = "schannel"
 version = "0.1.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2224,6 +2259,12 @@ dependencies = [
  "ring 0.17.5",
  "untrusted 0.9.0",
 ]
+
+[[package]]
+name = "sdd"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b84345e4c9bd703274a082fb80caaa99b7612be48dfaa1dd9266577ec412309d"
 
 [[package]]
 name = "security-framework"
@@ -2358,6 +2399,31 @@ dependencies = [
  "ryu",
  "serde",
  "unsafe-libyaml",
+]
+
+[[package]]
+name = "serial_test"
+version = "3.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4b4b487fe2acf240a021cf57c6b2b4903b1e78ca0ecd862a71b71d2a51fed77d"
+dependencies = [
+ "futures",
+ "log",
+ "once_cell",
+ "parking_lot",
+ "scc",
+ "serial_test_derive",
+]
+
+[[package]]
+name = "serial_test_derive"
+version = "3.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82fe9db325bcef1fbcde82e078a5cc4efdf787e96b3b9cf45b50b529f2083d67"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.58",
 ]
 
 [[package]]
@@ -2733,9 +2799,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-util"
-version = "0.7.10"
+version = "0.7.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5419f34732d9eb6ee4c3578b7989078579b7f039cbbb9ca2c4da015749371e15"
+checksum = "9cf6b47b3771c49ac75ad09a6162f53ad4b8088b76ac60e8ec1455b31a189fe1"
 dependencies = [
  "bytes",
  "futures-core",
@@ -2743,7 +2809,6 @@ dependencies = [
  "futures-sink",
  "pin-project-lite",
  "tokio",
- "tracing",
 ]
 
 [[package]]
@@ -3032,9 +3097,12 @@ checksum = "711b9620af191e0cdc7468a8d14e709c3dcdb115b36f838e601583af800a370a"
 
 [[package]]
 name = "uuid"
-version = "1.5.0"
+version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88ad59a7560b41a70d191093a945f0b87bc1deeda46fb237479708a1d6b6cdfc"
+checksum = "a183cf7feeba97b4dd1c0d46788634f6221d87fa961b305bed08c851829efcc0"
+dependencies = [
+ "getrandom 0.2.11",
+]
 
 [[package]]
 name = "valuable"

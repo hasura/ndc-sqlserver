@@ -808,6 +808,41 @@
         "description": null
       }
     },
+    "nativeMutations": {
+      "insert_artist_and_return_id": {
+        "sql": "INSERT INTO [dbo].[Artist] (ArtistId, Name) OUTPUT inserted.*  VALUES ({{ArtistId}}, {{Name}})",
+        "columns": {
+          "ArtistId": {
+            "name": "ArtistId",
+            "type": "int",
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "Name": {
+            "name": "Name",
+            "type": "varchar",
+            "nullable": "nullable",
+            "description": null,
+            "castAs": "varchar(100)"
+          }
+        },
+        "arguments": {
+          "ArtistId": {
+            "name": "ArtistId",
+            "type": "int",
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "Name": {
+            "name": "Name",
+            "type": "varchar",
+            "nullable": "nullable",
+            "description": null
+          }
+        },
+        "description": null
+      }
+    },
     "aggregateFunctions": {
       "bigint": {
         "APPROX_COUNT_DISTINCT": {
@@ -1485,7 +1520,6 @@
           "operatorName": "IN",
           "argumentType": "binary",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1523,7 +1557,6 @@
           "operatorName": "IN",
           "argumentType": "bit",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1561,7 +1594,6 @@
           "operatorName": "IN",
           "argumentType": "char",
           "operatorKind": "in"
-          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -1609,7 +1641,6 @@
           "operatorName": "IN",
           "argumentType": "date",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1647,7 +1678,6 @@
           "operatorName": "IN",
           "argumentType": "datetime",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1685,7 +1715,6 @@
           "operatorName": "IN",
           "argumentType": "datetime2",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1723,7 +1752,6 @@
           "operatorName": "IN",
           "argumentType": "datetimeoffset",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1761,7 +1789,6 @@
           "operatorName": "IN",
           "argumentType": "decimal",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1799,7 +1826,6 @@
           "operatorName": "IN",
           "argumentType": "float",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1837,7 +1863,6 @@
           "operatorName": "IN",
           "argumentType": "geography",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1875,7 +1900,6 @@
           "operatorName": "IN",
           "argumentType": "geometry",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1913,7 +1937,6 @@
           "operatorName": "IN",
           "argumentType": "hierarchyid",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -1963,7 +1986,6 @@
           "operatorName": "IN",
           "argumentType": "int",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2001,7 +2023,6 @@
           "operatorName": "IN",
           "argumentType": "money",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2039,7 +2060,6 @@
           "operatorName": "IN",
           "argumentType": "nchar",
           "operatorKind": "in"
-          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -2109,7 +2129,6 @@
           "operatorName": "IN",
           "argumentType": "numeric",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2147,7 +2166,6 @@
           "operatorName": "IN",
           "argumentType": "nvarchar",
           "operatorKind": "in"
-          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -2195,7 +2213,6 @@
           "operatorName": "IN",
           "argumentType": "real",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2233,7 +2250,6 @@
           "operatorName": "IN",
           "argumentType": "smalldatetime",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2271,7 +2287,6 @@
           "operatorName": "IN",
           "argumentType": "smallint",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2309,7 +2324,6 @@
           "operatorName": "IN",
           "argumentType": "smallmoney",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2347,7 +2361,6 @@
           "operatorName": "IN",
           "argumentType": "sql_variant",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2385,7 +2398,6 @@
           "operatorName": "IN",
           "argumentType": "sysname",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2445,7 +2457,6 @@
           "operatorName": "IN",
           "argumentType": "time",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2483,7 +2494,6 @@
           "operatorName": "IN",
           "argumentType": "timestamp",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2521,7 +2531,6 @@
           "operatorName": "IN",
           "argumentType": "tinyint",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2559,7 +2568,6 @@
           "operatorName": "IN",
           "argumentType": "uniqueidentifier",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2597,7 +2605,6 @@
           "operatorName": "IN",
           "argumentType": "varbinary",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",
@@ -2635,7 +2642,6 @@
           "operatorName": "IN",
           "argumentType": "varchar",
           "operatorKind": "in"
-          
         },
         "_like": {
           "operatorName": "LIKE",
@@ -2683,7 +2689,6 @@
           "operatorName": "IN",
           "argumentType": "xml",
           "operatorKind": "in"
-          
         },
         "_lt": {
           "operatorName": "<",

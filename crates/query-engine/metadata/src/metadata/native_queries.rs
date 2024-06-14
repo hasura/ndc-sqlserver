@@ -13,7 +13,13 @@ use std::collections::BTreeMap;
 #[serde(rename_all = "camelCase")]
 pub struct NativeQueries(pub BTreeMap<String, NativeQueryInfo>);
 
-/// Information about a Native Query
+/// Metadata information of native mutations that are supposed to be
+/// tracked as mutations.
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct NativeMutations(pub BTreeMap<String, NativeMutationInfo>);
+
+/// Information about a Native Query.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct NativeQueryInfo {
@@ -21,6 +27,21 @@ pub struct NativeQueryInfo {
     pub sql: NativeQuerySql,
     /** Columns returned by the Native Query */
     pub columns: BTreeMap<String, ColumnInfo>,
+    #[serde(default)]
+    /** Names and types of arguments that can be passed to this Native Query */
+    pub arguments: BTreeMap<String, ColumnInfo>,
+    #[serde(default)]
+    pub description: Option<String>,
+}
+
+/// Information about a Native Mutation.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct NativeMutationInfo {
+    /** SQL expression to use for the Native Query. We can interpolate values using `{{variable_name}}` syntax, such as `SELECT * FROM authors WHERE name = {{author_name}}` */
+    pub sql: NativeQuerySql,
+    /** Columns returned by the Native Query */
+    pub columns: BTreeMap<String, NativeMutationColumnInfo>,
     #[serde(default)]
     /** Names and types of arguments that can be passed to this Native Query */
     pub arguments: BTreeMap<String, ColumnInfo>,
@@ -42,7 +63,6 @@ pub enum NativeQueryPart {
 pub struct NativeQuerySql(pub Vec<NativeQueryPart>);
 
 // Serialization
-
 impl Serialize for NativeQuerySql {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -104,7 +124,7 @@ impl JsonSchema for NativeQuerySql {
 
 /// Parse a native query into parts where variables have the
 /// syntax `{{<variable>}}`.
-fn parse_native_query(string: &str) -> Vec<NativeQueryPart> {
+pub fn parse_native_query(string: &str) -> Vec<NativeQueryPart> {
     let vec: Vec<Vec<NativeQueryPart>> = string
         .split("{{")
         .map(|part| match part.split_once("}}") {

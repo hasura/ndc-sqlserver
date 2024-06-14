@@ -10,7 +10,8 @@ use tracing::{info_span, Instrument};
 use ndc_sdk::connector;
 use ndc_sdk::models;
 use ndc_sqlserver_configuration as configuration;
-use query_engine_execution::execution;
+use query_engine_execution::error;
+use query_engine_execution::query;
 use query_engine_sql::sql;
 use query_engine_translation::translation;
 
@@ -35,21 +36,26 @@ pub async fn explain(
             .await?;
 
         // Execute an explain query.
-        let (query, plan) = execution::explain(&state.mssql_pool, plan)
+        let (query, plan) = query::explain(&state.mssql_pool, plan)
             .instrument(info_span!("Explain query"))
             .await
             .map_err(|err| match err {
-                execution::Error::Query(err) => {
+                error::Error::Query(err) => {
                     tracing::error!("{}", err);
 
                     connector::ExplainError::Other(err.to_string().into())
                 }
-                execution::Error::ConnectionPool(err) => {
+                error::Error::ConnectionPool(err) => {
                     tracing::error!("{}", err);
 
                     connector::ExplainError::Other(err.to_string().into())
                 }
-                execution::Error::TiberiusError(err) => {
+                error::Error::TiberiusError(err) => {
+                    tracing::error!("{}", err);
+
+                    connector::ExplainError::Other(err.to_string().into())
+                }
+                error::Error::Mutation(err) => {
                     tracing::error!("{}", err);
 
                     connector::ExplainError::Other(err.to_string().into())
@@ -73,13 +79,13 @@ fn plan_query(
     configuration: &configuration::Configuration,
     state: &configuration::State,
     query_request: models::QueryRequest,
-) -> Result<sql::execution_plan::ExecutionPlan, connector::ExplainError> {
+) -> Result<sql::execution_plan::QueryExecutionPlan, connector::ExplainError> {
     let timer = state.metrics.time_query_plan();
     let result =
         translation::query::translate(&configuration.metadata, query_request).map_err(|err| {
             tracing::error!("{}", err);
             match err {
-                translation::query::error::Error::CapabilityNotSupported(_) => {
+                translation::error::Error::CapabilityNotSupported(_) => {
                     state.metrics.error_metrics.record_unsupported_capability();
                     connector::ExplainError::UnsupportedOperation(err.to_string())
                 }

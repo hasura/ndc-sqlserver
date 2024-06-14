@@ -2,10 +2,11 @@
 
 use std::collections::BTreeMap;
 
-use ndc_sdk::models;
+use ndc_sdk::models::{self, NestedField};
 
 use super::error::Error;
-use query_engine_metadata::metadata;
+use crate::translation::values;
+use query_engine_metadata::metadata::{self, NativeQuerySql};
 use query_engine_sql::sql;
 
 #[derive(Debug)]
@@ -19,6 +20,7 @@ pub struct Env<'a> {
 /// Stateful information changed throughout the translation process.
 pub struct State {
     native_queries: NativeQueries,
+    mutations: Vec<MutationOperation>,
     global_table_index: TableAliasIndex,
 }
 
@@ -35,12 +37,34 @@ struct NativeQueries {
     native_queries: Vec<NativeQueryInfo>,
 }
 
+impl NativeQueries {
+    fn new() -> NativeQueries {
+        NativeQueries {
+            native_queries: vec![],
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum MutationOperation {
+    NativeMutation(NativeMutationInfo),
+}
+
 #[derive(Debug)]
 /// Information we store about a native query call.
 pub struct NativeQueryInfo {
     pub info: metadata::NativeQueryInfo,
     pub arguments: BTreeMap<String, models::Argument>,
     pub alias: sql::ast::TableAlias,
+}
+
+#[derive(Debug)]
+pub struct NativeMutationInfo {
+    /// Name of the native mutation
+    pub name: String,
+    pub info: metadata::NativeMutationInfo,
+    pub arguments: BTreeMap<String, serde_json::Value>,
+    pub fields: Option<models::NestedField>,
 }
 
 /// For the root table in the query, and for the current table we are processing,
@@ -84,6 +108,55 @@ pub enum CollectionInfo {
         name: String,
         info: metadata::NativeQueryInfo,
     },
+    NativeMutation {
+        name: String,
+        info: metadata::NativeMutationInfo,
+    },
+}
+
+#[derive(Debug)]
+/// Metadata information about a procedure.
+pub enum ProcedureInfo {
+    NativeMutation {
+        name: String,
+        info: metadata::NativeMutationInfo,
+    },
+}
+
+/// Substitutes the value of the arguments
+/// in the parameterized SQL statement and returns
+/// a SQL statement that can be run in the DB.
+pub fn generate_native_query_sql(
+    type_arguments: &BTreeMap<String, query_engine_metadata::metadata::ColumnInfo>,
+    native_query_arguments: &BTreeMap<String, ndc_sdk::models::Argument>,
+    native_query_sql: &NativeQuerySql,
+) -> Result<Vec<sql::ast::RawSql>, Error> {
+    native_query_sql
+        .0
+        .iter()
+        .map(|part| match part {
+            metadata::NativeQueryPart::Text(text) => Ok(sql::ast::RawSql::RawText(text.clone())),
+            metadata::NativeQueryPart::Parameter(param) => {
+                let typ = match type_arguments.get(param) {
+                    None => Err(Error::ArgumentNotFound(param.clone())),
+                    Some(argument) => Ok(argument.r#type.clone()),
+                }?;
+
+                let exp = match native_query_arguments.get(param) {
+                    None => Err(Error::ArgumentNotFound(param.clone())),
+                    Some(argument) => match argument {
+                        models::Argument::Literal { value } => {
+                            values::translate_json_value(value, &typ)
+                        }
+                        models::Argument::Variable { name } => {
+                            Ok(values::translate_variable(name.clone(), &typ))
+                        }
+                    },
+                }?;
+                Ok(sql::ast::RawSql::Expression(exp))
+            }
+        })
+        .collect()
 }
 
 impl<'a> Env<'a> {
@@ -97,6 +170,19 @@ impl<'a> Env<'a> {
             relationships,
         }
     }
+
+    pub fn lookup_procedure(&self, procedure_name: &str) -> Result<ProcedureInfo, Error> {
+        self.metadata
+            .native_mutations
+            .0
+            .get(procedure_name)
+            .ok_or(Error::ProcedureNotFound(procedure_name.to_string()))
+            .map(|native_mutation_info| ProcedureInfo::NativeMutation {
+                name: procedure_name.to_string(),
+                info: native_mutation_info.clone(),
+            })
+    }
+
     /// Lookup a collection's information in the metadata.
     pub fn lookup_collection(&self, collection_name: &str) -> Result<CollectionInfo, Error> {
         let table = self
@@ -111,16 +197,31 @@ impl<'a> Env<'a> {
 
         match table {
             Some(table) => Ok(table),
-            None => self
-                .metadata
-                .native_queries
-                .0
-                .get(collection_name)
-                .map(|nq| CollectionInfo::NativeQuery {
-                    name: collection_name.to_string(),
-                    info: nq.clone(),
-                })
-                .ok_or(Error::CollectionNotFound(collection_name.to_string())),
+            None => {
+                let native_query = self
+                    .metadata
+                    .native_queries
+                    .0
+                    .get(collection_name)
+                    .map(|nq| CollectionInfo::NativeQuery {
+                        name: collection_name.to_string(),
+                        info: nq.clone(),
+                    });
+                // FIXME(KC): THis is terrible. Please refactor this.
+                match native_query {
+                    Some(native_query) => Ok(native_query),
+                    None => self
+                        .metadata
+                        .native_mutations
+                        .0
+                        .get(collection_name)
+                        .map(|nq| CollectionInfo::NativeMutation {
+                            name: collection_name.to_string(),
+                            info: nq.clone(),
+                        })
+                        .ok_or(Error::CollectionNotFound(collection_name.to_string())),
+                }
+            }
         }
     }
 
@@ -174,6 +275,17 @@ impl CollectionInfo {
                     column_name.to_string(),
                     name.clone(),
                 )),
+            CollectionInfo::NativeMutation { name, info } => info
+                .columns
+                .get(column_name)
+                .map(|column_info| ColumnInfo {
+                    name: sql::ast::ColumnName(column_info.column_info.name.clone()),
+                    r#type: column_info.column_info.r#type.clone(),
+                })
+                .ok_or(Error::ColumnNotFoundInCollection(
+                    column_name.to_string(),
+                    name.clone(),
+                )),
         }
     }
 }
@@ -182,6 +294,7 @@ impl Default for State {
     fn default() -> State {
         State {
             native_queries: NativeQueries::new(),
+            mutations: Vec::new(),
             global_table_index: TableAliasIndex(0),
         }
     }
@@ -209,9 +322,30 @@ impl State {
         sql::ast::TableReference::AliasedTable(alias)
     }
 
+    /// Introduce a new native mutation to the state.
+    pub fn insert_native_mutation(
+        &mut self,
+        name: &str,
+        info: metadata::NativeMutationInfo,
+        arguments: BTreeMap<String, serde_json::Value>,
+        fields: Option<NestedField>,
+    ) {
+        self.mutations
+            .push(MutationOperation::NativeMutation(NativeMutationInfo {
+                name: name.to_string(),
+                info,
+                arguments,
+                fields,
+            }));
+    }
+
     /// Fetch the tracked native queries used in the query plan and their table alias.
     pub fn get_native_queries(self) -> Vec<NativeQueryInfo> {
         self.native_queries.native_queries
+    }
+
+    pub fn get_mutation_operations(self) -> Vec<MutationOperation> {
+        self.mutations
     }
 
     /// increment the table index and return the current one.
@@ -280,13 +414,5 @@ impl State {
         source_table_name: &String,
     ) -> sql::ast::TableAlias {
         self.make_table_alias(format!("BOOLEXP_{}", source_table_name))
-    }
-}
-
-impl NativeQueries {
-    fn new() -> NativeQueries {
-        NativeQueries {
-            native_queries: vec![],
-        }
     }
 }

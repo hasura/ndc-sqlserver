@@ -16,6 +16,7 @@ use ndc_sdk::models;
 use tokio::fs;
 
 use super::explain;
+use super::mutation;
 use super::query;
 use super::schema;
 use ndc_sqlserver_configuration as configuration;
@@ -229,11 +230,11 @@ impl connector::Connector for SQLServer {
     /// This function implements the [mutation endpoint](https://hasura.github.io/ndc-spec/specification/mutations/index.html)
     /// from the NDC specification.
     async fn mutation(
-        _configuration: &Self::Configuration,
-        _state: &Self::State,
-        _request: models::MutationRequest,
+        configuration: &Self::Configuration,
+        state: &Self::State,
+        request: models::MutationRequest,
     ) -> Result<JsonResponse<models::MutationResponse>, connector::MutationError> {
-        todo!("mutations are currently not implemented")
+        mutation::mutation(configuration, state, request).await
     }
 
     /// Execute a query
