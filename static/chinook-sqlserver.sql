@@ -222,6 +222,82 @@ CREATE INDEX [IFK_TrackMediaTypeId] ON [dbo].[Track] ([MediaTypeId]);
 GO
 
 /*******************************************************************************
+   Create Functions
+********************************************************************************/
+CREATE FUNCTION dbo.GetCustomerFullName (@CustomerId INT)
+  RETURNS NVARCHAR(100)
+AS
+BEGIN
+  DECLARE @FullName NVARCHAR(100)
+  SELECT @FullName = FirstName + ' ' + LastName
+  FROM Customer
+  WHERE CustomerId = @CustomerId
+  RETURN @FullName
+END;
+GO
+
+CREATE FUNCTION dbo.GetInvoiceDetailsByCustomer (@CustomerId INT)
+RETURNS TABLE
+AS
+RETURN
+(
+  SELECT
+    I.InvoiceId,
+    I.InvoiceDate,
+    I.BillingAddress,
+    I.BillingCity,
+    I.BillingState,
+    I.BillingCountry,
+    I.BillingPostalCode,
+    I.Total
+    FROM
+      Invoice I
+   WHERE
+     I.CustomerId = @CustomerId
+);
+GO
+
+CREATE PROCEDURE dbo.GetCustomerDetailsWithTotalPurchases @CustomerId INT
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  SELECT
+    C.CustomerId,
+    C.FirstName,
+    C.LastName,
+    C.Company,
+    C.Address,
+    C.City,
+    C.State,
+    C.Country,
+    C.PostalCode,
+    C.Phone,
+    C.Email,
+    ISNULL(SUM(I.Total), 0) AS TotalPurchases
+    FROM
+      Customer C
+      LEFT JOIN
+      Invoice I ON C.CustomerId = I.CustomerId
+   WHERE
+     C.CustomerId = @CustomerId
+   GROUP BY
+     C.CustomerId,
+     C.FirstName,
+     C.LastName,
+     C.Company,
+     C.Address,
+     C.City,
+     C.State,
+     C.Country,
+     C.PostalCode,
+     C.Phone,
+     C.Email
+END;
+GO
+
+
+/*******************************************************************************
    Populate Tables
 ********************************************************************************/
 
