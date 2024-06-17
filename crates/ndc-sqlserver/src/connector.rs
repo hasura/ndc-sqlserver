@@ -109,6 +109,9 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
             configuration::Error::IoErrorButStringified(inner) => {
                 connector::ParseError::Other(inner.into())
             }
+            configuration::Error::ConnectionPoolError(inner) => {
+                connector::ParseError::Other(inner.into())
+            }
         })
     }
 

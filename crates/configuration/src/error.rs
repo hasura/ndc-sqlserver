@@ -30,4 +30,7 @@ pub enum Error {
 
     #[error("I/O error: {0}")]
     IoError(#[from] std::io::Error),
+
+    #[error("Error creating connection pool while introspecting the database: {0}")]
+    ConnectionPoolError(#[from] bb8_tiberius::Error),
 }

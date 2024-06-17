@@ -172,7 +172,9 @@ pub async fn configure(
                 message: format!("{err}"),
             })?,
     };
-    let mssql_pool = create_mssql_pool(&connection_string).await.unwrap();
+    let mssql_pool = create_mssql_pool(&connection_string)
+        .await
+        .map_err(Error::ConnectionPoolError)?;
 
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
 
