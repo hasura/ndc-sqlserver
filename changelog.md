@@ -12,6 +12,7 @@
 
 ### Added
 
+- Support for native mutations
 - Support for reading the MSSQL connection string from an environment variable
 
 ## [v0.1.1] - 2024-05-15
