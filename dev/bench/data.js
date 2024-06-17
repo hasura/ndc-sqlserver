@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1718198876920,
+  "lastUpdate": 1718617694062,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -3595,6 +3595,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.07510692422508533,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "85474619+pranshi06@users.noreply.github.com",
+            "name": "pranshi06",
+            "username": "pranshi06"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "876ac93402edf2178022b47c9ebc321530bb4397",
+          "message": "read connection string from environment variable (#122)\n\n<!-- The PR description should answer 2 (maybe 3) important questions:\n-->\n\n### What\n\nThe PR add the ability to use an Env Var to read the MSSQL connection\nstring, instead of hard-coding the value in the config file (now the\nconfig file can contain the name of the env var, which can be provided\nwhile starting the server)\n\nBy default, the CLI will add the env var `CONNECTION_URI` for the\nstring.\n\n<!-- What is this PR trying to accomplish (and why, if it's not\nobvious)? -->\n\n### How\n\n<!-- How is it trying to accomplish it (what are the implementation\nsteps)? -->",
+          "timestamp": "2024-06-17T09:41:05Z",
+          "tree_id": "e555d71b596fb8f6765c798cfdddf326848def34",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/876ac93402edf2178022b47c9ebc321530bb4397"
+        },
+        "date": 1718617692980,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 57.3357285,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 70.162649,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 57.48466411274083,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.5781783809892715,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.08684740186923388,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 376.416,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 399.3639826,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 364.12429385210964,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 0.9924574711934042,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.08093344256862166,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 127.996807,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 144.83347185,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 127.19735874024954,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.6490270575926615,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.06948665782679486,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 129.141926,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 143.83136894999998,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 127.52352110323267,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.6181681840456861,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.07213274713229198,
             "unit": "ms"
           }
         ]
