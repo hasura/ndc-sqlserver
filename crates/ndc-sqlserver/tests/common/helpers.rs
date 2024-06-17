@@ -11,7 +11,7 @@ use serde::Deserialize;
 
 use ndc_sqlserver::connector;
 
-pub const POSTGRESQL_CONNECTION_STRING: &str =
+pub const SQLSERVER_CONNECTION_STRING: &str =
     "Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true";
 
 /// Create a test client from a router.
@@ -21,21 +21,21 @@ pub fn create_client(router: axum::Router) -> TestClient {
 
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_query(testname: &str) -> serde_json::Value {
-    let router = create_router(POSTGRESQL_CONNECTION_STRING).await;
+    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
     let client = create_client(router);
     run_against_server(&client, "query", testname, StatusCode::OK).await
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_mutation(testname: &str) -> serde_json::Value {
-    let router = create_router(POSTGRESQL_CONNECTION_STRING).await;
+    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
     let client = create_client(router);
     run_against_server(&client, "mutation", testname, StatusCode::OK).await
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_mutation_fail(testname: &str, expected_status: StatusCode) -> serde_json::Value {
-    let router = create_router(POSTGRESQL_CONNECTION_STRING).await;
+    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
     let client = create_client(router);
     run_against_server(&client, "mutation", testname, expected_status).await
 }
@@ -56,7 +56,7 @@ pub struct ExplainDetails {
 // TODO(PY): add run_explain_mutation
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_explain(testname: &str) -> ExactExplainResponse {
-    let router = create_router(POSTGRESQL_CONNECTION_STRING).await;
+    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
     let client = create_client(router);
     run_against_server(&client, "query/explain", testname, StatusCode::OK).await
 }

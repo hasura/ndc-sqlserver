@@ -9,7 +9,7 @@ mod ndc_tests {
     #[tokio::test]
     async fn test_connector() -> Result<(), Vec<ndc_test::reporter::FailedTest>> {
         let router =
-            common::helpers::create_router(common::helpers::POSTGRESQL_CONNECTION_STRING).await;
+            common::helpers::create_router(common::helpers::SQLSERVER_CONNECTION_STRING).await;
         let server = hyper::Server::bind(&net::SocketAddr::new(
             net::IpAddr::V4(net::Ipv4Addr::LOCALHOST),
             0,
