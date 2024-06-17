@@ -1,5 +1,6 @@
 //! Common functions used across test cases.
 
+use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
 
@@ -10,6 +11,9 @@ use serde::Deserialize;
 
 use ndc_sqlserver::connector;
 
+pub const SQLSERVER_CONNECTION_STRING: &str =
+    "Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true";
+
 /// Create a test client from a router.
 pub fn create_client(router: axum::Router) -> TestClient {
     TestClient::new(router)
@@ -17,21 +21,21 @@ pub fn create_client(router: axum::Router) -> TestClient {
 
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_query(testname: &str) -> serde_json::Value {
-    let router = create_router().await;
+    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
     let client = create_client(router);
     run_against_server(&client, "query", testname, StatusCode::OK).await
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_mutation(testname: &str) -> serde_json::Value {
-    let router = create_router().await;
+    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
     let client = create_client(router);
     run_against_server(&client, "mutation", testname, StatusCode::OK).await
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_mutation_fail(testname: &str, expected_status: StatusCode) -> serde_json::Value {
-    let router = create_router().await;
+    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
     let client = create_client(router);
     run_against_server(&client, "mutation", testname, expected_status).await
 }
@@ -52,7 +56,7 @@ pub struct ExplainDetails {
 // TODO(PY): add run_explain_mutation
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_explain(testname: &str) -> ExactExplainResponse {
-    let router = create_router().await;
+    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
     let client = create_client(router);
     run_against_server(&client, "query/explain", testname, StatusCode::OK).await
 }
@@ -91,21 +95,24 @@ async fn run_against_server<Response: for<'a> serde::Deserialize<'a>>(
     .await
 }
 
-pub async fn create_router() -> axum::Router {
+pub async fn create_router(connection_uri: &str) -> axum::Router {
     let _ = env_logger::builder().is_test(true).try_init();
 
     // work out where the deployment configs live
     let test_deployment_file = get_deployment_file();
 
-    let setup = connector::SQLServer::default();
+    // Initialize server state with the configuration above, injecting the URI.
+    let environment = HashMap::from([(
+        ndc_sqlserver_configuration::DEFAULT_CONNECTION_URI_VARIABLE.into(),
+        connection_uri.to_string(),
+    )]);
+
+    let setup = connector::SQLServerSetup::new(environment);
 
     // initialise server state with the static configuration.
-    let state = ndc_sdk::default_main::init_server_state::<connector::SQLServer>(
-        setup,
-        test_deployment_file,
-    )
-    .await
-    .unwrap();
+    let state = ndc_sdk::default_main::init_server_state(setup, test_deployment_file)
+        .await
+        .unwrap();
 
     // create a fresh client
     ndc_sdk::default_main::create_router(state, None)

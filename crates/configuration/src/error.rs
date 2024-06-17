@@ -14,6 +14,11 @@ pub enum Error {
         column: usize,
         message: String,
     },
+    #[error("missing environment variable in {file_path}: {message}")]
+    MissingEnvironmentVariable {
+        file_path: std::path::PathBuf,
+        message: String,
+    },
     #[error("invalid configuration version, expected 1, got {version} in {file_path}")]
     InvalidConfigVersion {
         version: u32,
@@ -25,4 +30,7 @@ pub enum Error {
 
     #[error("I/O error: {0}")]
     IoError(#[from] std::io::Error),
+
+    #[error("Error creating connection pool while introspecting the database: {0}")]
+    ConnectionPoolError(#[from] bb8_tiberius::Error),
 }

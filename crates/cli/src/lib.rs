@@ -6,16 +6,18 @@ use std::path::PathBuf;
 
 use clap::Subcommand;
 
+use configuration::environment::Environment;
+
 use ndc_sqlserver_configuration as configuration;
 
 const UPDATE_ATTEMPTS: u8 = 3;
 
 /// The various contextual bits and bobs we need to run.
 #[derive(Debug)]
-pub struct Context {
+pub struct Context<Env: Environment> {
     pub context_path: PathBuf,
     pub release_version: Option<&'static str>,
-    pub uri: Option<String>,
+    pub environment: Env,
 }
 
 /// The command invoked by the user.
@@ -39,7 +41,7 @@ pub enum Error {
 }
 
 /// Run a command in a given directory.
-pub async fn run(command: Command, context: Context) -> anyhow::Result<()> {
+pub async fn run(command: Command, context: Context<impl Environment>) -> anyhow::Result<()> {
     match command {
         Command::Initialize { with_metadata } => initialize(with_metadata, context).await?,
         Command::Update => update(context).await?,
@@ -55,7 +57,7 @@ pub async fn run(command: Command, context: Context) -> anyhow::Result<()> {
 ///
 /// Optionally, this can also create the connector metadata, which is used by the Hasura CLI to
 /// automatically work with this CLI as a plugin.
-async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()> {
+async fn initialize(with_metadata: bool, context: Context<impl Environment>) -> anyhow::Result<()> {
     let configuration_file = context
         .context_path
         .join(configuration::CONFIGURATION_FILENAME);
@@ -67,14 +69,10 @@ async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()>
         Err(Error::DirectoryIsNotEmpty)?;
     }
 
-    let raw_configuration = match context.uri {
-        Some(uri) => configuration::RawConfiguration::with_mssql_connection_string(uri),
-        None => configuration::RawConfiguration::empty(),
-    };
     // create the configuration file
     fs::write(
         configuration_file,
-        serde_json::to_string_pretty(&raw_configuration)? + "\n",
+        serde_json::to_string_pretty(&configuration::RawConfiguration::empty())? + "\n",
     )?;
 
     // create the jsonschema file
@@ -132,34 +130,39 @@ async fn initialize(with_metadata: bool, context: Context) -> anyhow::Result<()>
 /// Update the configuration in the current directory by introspecting the database.
 ///
 /// This expects a configuration with a valid connection URI.
-async fn update(context: Context) -> anyhow::Result<()> {
+async fn update(context: Context<impl Environment>) -> anyhow::Result<()> {
     // It is possible to change the file in the middle of introspection.
     // We want to detect this scenario and retry, or fail if we are unable to.
     // We do that with a few attempts.
-    update_uri_from_context(&context).await?;
+    // update_uri_from_context(&context).await?;
     for _attempt in 1..=UPDATE_ATTEMPTS {
         let configuration_file_path = context
             .context_path
             .join(configuration::CONFIGURATION_FILENAME);
-        let input: configuration::RawConfiguration = {
+        let raw_configuration: configuration::RawConfiguration = {
             let configuration_file_contents =
                 read_config_file_contents(&configuration_file_path).await?;
             serde_json::from_str(&configuration_file_contents)?
         };
-        let output = configuration::configure(&input).await?;
+        let output = configuration::configure(
+            &configuration_file_path,
+            &raw_configuration,
+            &context.environment,
+        )
+        .await?;
 
         // Check that the input file did not change since we started introspecting,
-        let input_again_before_write: configuration::RawConfiguration = {
+        let raw_configuration_before_write: configuration::RawConfiguration = {
             let configuration_file_contents =
                 read_config_file_contents(&configuration_file_path).await?;
             serde_json::from_str(&configuration_file_contents)?
         };
 
         // and skip this attempt if it has.
-        if input_again_before_write == input {
+        if raw_configuration_before_write == raw_configuration {
             // If the introspection result is different than the current config,
             // change it. Otherwise, continue.
-            if input != output {
+            if raw_configuration != output {
                 fs::write(
                     &configuration_file_path,
                     serde_json::to_string_pretty(&output)? + "\n",
@@ -185,38 +188,11 @@ async fn read_config_file_contents(configuration_file_path: &PathBuf) -> anyhow:
         .map_err(|err| {
             if err.kind() == std::io::ErrorKind::NotFound {
                 anyhow::anyhow!(
-                    "{}: No such file or directory. Perhaps you meant to 'initialize' first?",
+                    "{}: No such file or directory.",
                     configuration_file_path.display()
                 )
             } else {
-                anyhow::anyhow!(err)
+                err.into()
             }
         })
-}
-
-/// Since the URI is not mandatory for `initialize`, we need to update it first. Please not that this will only update
-/// the URI if the raw configuration is empty.
-async fn update_uri_from_context(context: &Context) -> anyhow::Result<()> {
-    let configuration_file_path = context
-        .context_path
-        .join(configuration::CONFIGURATION_FILENAME);
-    let mut input: configuration::RawConfiguration = {
-        let configuration_file_contents =
-            read_config_file_contents(&configuration_file_path).await?;
-        serde_json::from_str(&configuration_file_contents)?
-    };
-    if input.mssql_connection_string.is_empty() {
-        if let Some(uri) = &context.uri {
-            input.mssql_connection_string = uri.clone();
-        } else {
-            return Err(anyhow::anyhow!(
-                "Cannot introspect without a connection URI. Please provide one."
-            ));
-        }
-        fs::write(
-            &configuration_file_path,
-            serde_json::to_string_pretty(&input)? + "\n",
-        )?;
-    }
-    Ok(())
 }
