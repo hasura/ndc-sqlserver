@@ -90,8 +90,8 @@ subgraph's `.env.my_subgraph` file. Each key is prefixed by the subgraph name, a
 connector. Ensure the port value matches what is published in your connector's docker compose file.
 
 ```env title="my_subgraph/.env.my_subgraph"
-MY_SUBGRAPH_MY_SQL_READ_URL=http://local.hasura.dev:8082
-MY_SUBGRAPH_MY_SQL_WRITE_URL=http://local.hasura.dev:8082
+MY_SUBGRAPH_MY_SQL_READ_URL=http://local.hasura.dev:8081
+MY_SUBGRAPH_MY_SQL_WRITE_URL=http://local.hasura.dev:8081
 ```
 
 ### 5. Start the connector's docker compose
@@ -106,7 +106,7 @@ This starts our SQL Server connector on the specified port. We can navigate to t
 modified, to see the schema of our SQL Server data source:
 
 ```bash
-http://localhost:8082/schema
+http://localhost:8081/schema
 ```
 
 ### 6. Include the connector in your docker compose
