@@ -236,7 +236,7 @@ BEGIN
 END;
 GO
 
-CREATE FUNCTION dbo.GetInvoiceDetailsByCustomer (@CustomerId INT)
+CREATE FUNCTION dbo.GetInvoiceDetailsByCustomer (@CustomerId INT, @MinTotal Int)
 RETURNS TABLE
 AS
 RETURN
@@ -253,11 +253,13 @@ RETURN
     FROM
       Invoice I
    WHERE
-     I.CustomerId = @CustomerId
+     I.CustomerId = @CustomerId AND I.Total > @MinTotal
 );
 GO
 
-CREATE PROCEDURE dbo.GetCustomerDetailsWithTotalPurchases @CustomerId INT
+CREATE PROCEDURE dbo.GetCustomerDetailsWithTotalPurchases
+  @CustomerId INT,
+  @Phone VARCHAR(10)
 AS
 BEGIN
   SET NOCOUNT ON;
@@ -15955,4 +15957,3 @@ INSERT INTO [dbo].[PlaylistTrack] ([PlaylistId], [TrackId]) VALUES
     (17, 2096),
     (17, 3290),
     (18, 597);
-
