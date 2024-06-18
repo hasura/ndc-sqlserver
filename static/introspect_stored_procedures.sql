@@ -5,7 +5,8 @@ SELECT ISNULL(
      (
        SELECT
          pr.parameter_id,
-         pr.name,
+         /* Remove the '@' prefix from every argument name */
+         SUBSTRING(pr.name, 2, LEN(pr.name) - 1) as name,
          t.name AS [type],
          pr.max_length,
          pr.is_output,

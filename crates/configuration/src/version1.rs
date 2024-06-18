@@ -6,7 +6,7 @@ use query_engine_metadata::metadata;
 use query_engine_metadata::metadata::stored_procedures::{
     StoredProcedureArgumentInfo, StoredProcedureInfo, StoredProcedures,
 };
-use query_engine_metadata::metadata::{database, stored_procedures, Nullable};
+use query_engine_metadata::metadata::{database, Nullable};
 
 use query_engine_metrics::metrics;
 use schemars::JsonSchema;
@@ -17,6 +17,8 @@ use std::path::PathBuf;
 use thiserror::Error;
 use tiberius::Query;
 
+// TODO(KC): Move the `table_configuration.sql` to the `static` folder present
+// in the root of this repo.
 const TABLE_CONFIGURATION_QUERY: &str = include_str!("table_configuration.sql");
 
 const STORED_PROCS_CONFIGURATION_QUERY: &str =
@@ -200,11 +202,10 @@ fn get_stored_procedures(
                 .into_iter()
                 .map(|sp| -> (String, StoredProcedureArgumentInfo) {
                     // The first character is `@`, so, we skip it.
-                    let sanitized_proc_arg_name: String = sp.name.chars().skip(1).collect();
                     (
-                        sanitized_proc_arg_name.clone(),
+                        sp.name.clone(),
                         StoredProcedureArgumentInfo {
-                            name: sanitized_proc_arg_name,
+                            name: sp.name,
                             r#type: query_engine_metadata::metadata::ScalarType(sp.r#type),
                             is_nullable: match sp.is_nullable {
                                 true => Nullable::Nullable,
