@@ -1,0 +1,22 @@
+{
+    "operations": [
+        {
+          "type": "procedure",
+          "name": "ReturnOne",
+          "arguments": {},
+          "fields": {
+            "type": "array",
+            "fields": {
+              "type": "object",
+              "fields": {
+                "ReturnOneResult": {
+                  "type": "column",
+                  "column": "result"
+                }
+              }
+            }
+          }
+        }
+    ],
+  "collection_relationships": {}
+}

@@ -25,6 +25,9 @@ use crate::translation::{
     query,
 };
 
+use super::helpers::MutationOperationKind;
+mod stored_procedures;
+
 pub fn translate(
     metadata: &metadata::Metadata,
     mutation_request: models::MutationRequest,
@@ -57,17 +60,29 @@ fn translate_mutation_operation(
             arguments,
             fields,
         } => {
-            let procedure_info: ProcedureInfo = env.lookup_procedure(&name)?;
-            match procedure_info {
+            let procedure_info: ProcedureInfo = env
+                .lookup_procedure(&name)
+                .ok_or_else(|| Error::ProcedureNotFound(name.clone()))?;
+            let mutation_operation_kind = match procedure_info {
                 ProcedureInfo::NativeMutation { info, .. } => {
-                    Ok(MutationOperation::NativeMutation(NativeMutationInfo {
-                        name: name.to_string(),
+                    MutationOperationKind::NativeMutation(NativeMutationInfo {
+                        name: name.clone(),
                         info,
-                        arguments,
-                        fields,
-                    }))
+                    })
                 }
-            }
+                ProcedureInfo::StoredProcedure { name, info } => {
+                    MutationOperationKind::StoredProcedure(super::helpers::StoredProcedureInfo {
+                        name: name.clone(),
+                        info,
+                    })
+                }
+            };
+            Ok(MutationOperation {
+                name,
+                arguments,
+                fields,
+                kind: mutation_operation_kind,
+            })
         }
     }
 }
@@ -169,6 +184,7 @@ fn get_native_mutation_response_selection(
                 table: sql::ast::TableReference::AliasedTable(TableAlias {
                     unique_index: 0,
                     name: "open_json".to_string(),
+                    is_temporary_table: false,
                 }),
                 name: ColumnName(col_name.to_string()),
             }),
@@ -236,8 +252,8 @@ fn generate_mutation_execution_plan(
     // Traverse over the mutation operations and compute the SQL statements that need to
     // be run.
     for mutation_operation in mutation_operations {
-        match mutation_operation {
-            crate::translation::helpers::MutationOperation::NativeMutation(
+        match mutation_operation.kind {
+            crate::translation::helpers::MutationOperationKind::NativeMutation(
                 native_mutation_info,
             ) => {
                 // Process the raw SQL statement that the user has provided.
@@ -246,7 +262,7 @@ fn generate_mutation_execution_plan(
                 // can be run.
                 let raw_sql = generate_native_query_sql(
                     &native_mutation_info.info.arguments,
-                    &native_mutation_info
+                    &mutation_operation
                         .arguments
                         .clone()
                         .into_iter()
@@ -265,7 +281,7 @@ fn generate_mutation_execution_plan(
                 // Parse the fields that were requested in the query, so that
                 // we can return the response querying those fields.
                 let (affected_rows, (returning_alias, returning)) =
-                    parse_procedure_fields(native_mutation_info.fields.clone())?;
+                    parse_procedure_fields(mutation_operation.fields)?;
 
                 let query = ndc_sdk::models::Query {
                     aggregates: affected_rows.1,
@@ -279,6 +295,7 @@ fn generate_mutation_execution_plan(
                 let json_response_cte_alias = TableAlias {
                     unique_index: 0,
                     name: "json_response_cte_alias".to_string(),
+                    is_temporary_table: false,
                 };
 
                 let json_response_table_alias = TableNameAndReference {
@@ -295,9 +312,12 @@ fn generate_mutation_execution_plan(
                     alias: json_response_cte_alias.clone(),
                 };
 
+                let procedure_info = env.lookup_collection(&native_mutation_info.name)?;
+
                 let select_set = query::translate_query(
                     env,
                     &mut state,
+                    &procedure_info,
                     &json_response_table_alias,
                     &from_clause,
                     &query,
@@ -315,6 +335,7 @@ fn generate_mutation_execution_plan(
                         state.make_table_alias("rows".to_string()),
                         sql::helpers::make_column_alias(returning_alias),
                     ),
+                    vec![],
                     state.make_table_alias("aggregates".to_string()),
                     make_column_alias(affected_rows.0),
                     select_set,
@@ -339,6 +360,17 @@ fn generate_mutation_execution_plan(
                 mutations.push(MutationOperationExecutionPlan::NativeMutation(
                     native_mutation_exec_plan,
                 ));
+            }
+
+            MutationOperationKind::StoredProcedure(stored_proc_info) => {
+                let exec_plan = stored_procedures::generate_execution_plan(
+                    env,
+                    &mut state,
+                    stored_proc_info,
+                    mutation_operation.fields,
+                    &mutation_operation.arguments,
+                )?;
+                mutations.push(MutationOperationExecutionPlan::StoredProcedure(exec_plan));
             }
         }
     }

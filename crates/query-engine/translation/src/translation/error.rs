@@ -7,6 +7,7 @@ use query_engine_metadata::metadata::database;
 pub enum Error {
     CollectionNotFound(String),
     ColumnNotFoundInCollection(String, String),
+    ColumnNotFoundInProcedure(String, String),
     RelationshipNotFound(String),
     ArgumentNotFound(String),
     OperatorNotFound {
@@ -51,6 +52,12 @@ impl std::fmt::Display for Error {
                 "Column '{}' not found in collection '{}'.",
                 column_name, collection_name
             ),
+            Error::ColumnNotFoundInProcedure(column_name, procedure_name) => write!(
+                f,
+                "Column '{}' not found in procedure '{}'.",
+                column_name, procedure_name
+            ),
+
             Error::NoConstraintsForOrdering(table_name) => {
                 write!(f, "No constraints found for ordering. An order by clause or a primary key on the table '{}' is required for queries with a limit or offset clause.", table_name)
             }

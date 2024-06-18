@@ -12,7 +12,7 @@ pub fn translate_json_value(
     scalar_type: &database::ScalarType,
 ) -> Result<sql::ast::Expression, Error> {
     let (exp, should_cast) = match value {
-        serde_json::Value::Null => Ok((Expression::Value(Value::Null), true)),
+        serde_json::Value::Null => Ok((Expression::Value(Value::Null), false)),
         serde_json::Value::Bool(b) => Ok((Expression::Value(Value::Bool(*b)), false)),
         serde_json::Value::Number(n) => {
             let lit = n.as_f64().ok_or(Error::NotSupported(format!(

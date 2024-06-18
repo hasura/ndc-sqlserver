@@ -46,10 +46,13 @@ pub fn translate_joins(
                 &table_alias,
             )?;
 
+            let target_collection_info = env.lookup_collection(&target_collection.name)?;
+
             // process inner query and get the SELECTs for the 'rows' and 'aggregates' fields.
             let select_set = super::translate_query(
                 env,
                 state,
+                &target_collection_info,
                 &target_collection,
                 &from_clause,
                 &join_field.query,
