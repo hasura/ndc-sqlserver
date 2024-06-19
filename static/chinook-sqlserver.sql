@@ -236,7 +236,7 @@ BEGIN
 END;
 GO
 
-CREATE FUNCTION dbo.GetInvoiceDetailsByCustomer (@CustomerId INT, @MinTotal Int)
+CREATE FUNCTION dbo.GetInvoiceDetailsByCustomer (@CustomerId INT)
 RETURNS TABLE
 AS
 RETURN
@@ -253,7 +253,7 @@ RETURN
     FROM
       Invoice I
    WHERE
-     I.CustomerId = @CustomerId AND I.Total > @MinTotal
+     I.CustomerId = @CustomerId
 );
 GO
 
@@ -266,16 +266,7 @@ BEGIN
 
   SELECT
     C.CustomerId,
-    C.FirstName,
-    C.LastName,
-    C.Company,
-    C.Address,
-    C.City,
-    C.State,
-    C.Country,
-    C.PostalCode,
     C.Phone,
-    C.Email,
     ISNULL(SUM(I.Total), 0) AS TotalPurchases
     FROM
       Customer C
@@ -298,6 +289,15 @@ BEGIN
 END;
 GO
 
+CREATE PROCEDURE dbo.ReturnOne
+AS
+BEGIN
+  SET NOCOUNT ON;
+  BEGIN TRANSACTION;
+  SELECT 1 AS Result;
+  COMMIT;
+END;
+GO
 
 /*******************************************************************************
    Populate Tables

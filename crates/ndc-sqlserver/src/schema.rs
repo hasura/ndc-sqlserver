@@ -215,7 +215,7 @@ fn get_stored_procedure_argument(
     stored_procedure_arg_info: StoredProcedureArgumentInfo,
 ) -> ndc_sdk::models::ArgumentInfo {
     let argument_type = scalar_type_to_type(
-        stored_procedure_arg_info.name,
+        stored_procedure_arg_info.r#type.0,
         stored_procedure_arg_info.nullable,
     );
     models::ArgumentInfo {
@@ -444,6 +444,7 @@ pub fn get_schema(
 
 #[cfg(test)]
 mod tests {
+
     use ndc_sdk::models::{ObjectField, ObjectType, ProcedureInfo};
     use query_engine_metadata::metadata::{
         parse_native_query, ColumnInfo, NativeMutationColumnInfo, NativeMutationInfo,
@@ -585,5 +586,158 @@ mod tests {
         );
 
         assert_eq!(object_types, expected_object_types);
+    }
+
+    mod stored_procedures {
+        use super::*;
+
+        #[test]
+        fn test_stored_procedure_without_returns() {
+            let stored_proc_config = r#"
+     {
+      "GetCustomerDetailsWithTotalPurchases": {
+        "name": "GetCustomerDetailsWithTotalPurchases",
+        "schema": "dbo",
+        "arguments": {
+          "CustomerId": {
+            "name": "CustomerId",
+            "type": "int",
+            "nullable": "nullable",
+            "isOutput": false,
+            "description": null
+          },
+          "Phone": {
+            "name": "Phone",
+            "type": "varchar",
+            "nullable": "nullable",
+            "isOutput": false,
+            "description": null
+          }
+        },
+        "returns": null,
+        "description": null
+      }
+    }"#;
+            let stored_procedures: StoredProcedures =
+                serde_json::from_str(&stored_proc_config).unwrap();
+
+            let mut object_types = BTreeMap::new();
+
+            let schema =
+                get_stored_procedures_schema(&stored_procedures, &mut object_types).unwrap();
+
+            // Check that we have skipped generating schema for a stored procedure
+            // without a return type.
+            assert!(schema.is_empty());
+            assert!(object_types.is_empty());
+        }
+
+        #[test]
+        fn test_stored_procedure_with_returns() {
+            let stored_proc_config = r#"
+     {
+      "GetCustomerDetailsWithTotalPurchases": {
+        "name": "GetCustomerDetailsWithTotalPurchases",
+        "schema": "dbo",
+        "arguments": {
+          "CustomerId": {
+            "name": "CustomerId",
+            "type": "int",
+            "nullable": "nonNullable",
+            "isOutput": false,
+            "description": null
+          },
+          "Phone": {
+            "name": "Phone",
+            "type": "varchar",
+            "nullable": "nullable",
+            "isOutput": false,
+            "description": null
+          }
+        },
+        "returns": {
+           "result": {
+              "name": "result",
+              "type": "int",
+              "description": null,
+              "nullable": "nonNullable"
+           }
+        },
+        "description": null
+      }
+    }"#;
+            let stored_procedures: StoredProcedures =
+                serde_json::from_str(&stored_proc_config).unwrap();
+
+            let mut object_types = BTreeMap::new();
+
+            let schema =
+                get_stored_procedures_schema(&stored_procedures, &mut object_types).unwrap();
+
+            let proc_schema = schema.get(0).unwrap();
+
+            let mut expected_args = BTreeMap::new();
+
+            expected_args.insert(
+                "CustomerId".to_string(),
+                models::ArgumentInfo {
+                    description: None,
+                    argument_type: models::Type::Named {
+                        name: "int".to_string(),
+                    },
+                },
+            );
+
+            expected_args.insert(
+                "Phone".to_string(),
+                models::ArgumentInfo {
+                    description: None,
+                    argument_type: models::Type::Nullable {
+                        underlying_type: Box::new(models::Type::Named {
+                            name: "varchar".to_string(),
+                        }),
+                    },
+                },
+            );
+
+            let expected_result_type = models::Type::Array {
+                element_type: Box::new(models::Type::Named {
+                    name: "GetCustomerDetailsWithTotalPurchases_response".to_string(),
+                }),
+            };
+
+            // Check the `ProcedureInfo` generated.
+            assert_eq!(
+                proc_schema,
+                &ProcedureInfo {
+                    name: "GetCustomerDetailsWithTotalPurchases".to_string(),
+                    description: None,
+                    arguments: expected_args,
+                    result_type: expected_result_type
+                }
+            );
+
+            let mut expected_obj_type_fields = BTreeMap::new();
+
+            expected_obj_type_fields.insert(
+                "result".to_string(),
+                models::ObjectField {
+                    description: None,
+                    r#type: (models::Type::Named {
+                        name: "int".to_string(),
+                    }),
+                },
+            );
+
+            assert_eq!(
+                object_types
+                    .get("GetCustomerDetailsWithTotalPurchases_response")
+                    .unwrap(),
+                &models::ObjectType {
+                    description: None,
+                    fields: expected_obj_type_fields
+                }
+            );
+        }
     }
 }
