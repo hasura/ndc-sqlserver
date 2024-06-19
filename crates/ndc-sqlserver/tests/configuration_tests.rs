@@ -10,7 +10,7 @@ use common::configuration::*;
 const CONNECTION_STRING: &str =
     "Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true";
 
-const CHINOOK_DEPLOYMENT_PATH: &str = "static/configuration.json";
+const CHINOOK_DEPLOYMENT_PATH: &str = "static/tests/configuration.json";
 
 #[tokio::test]
 async fn test_configure_is_idempotent() {

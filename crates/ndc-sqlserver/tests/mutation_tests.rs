@@ -12,7 +12,7 @@ mod native_mutations {
     #[serial]
     async fn native_mutation_insert_artist_and_return_id() {
         let original_db_config = MSSQLDatabaseConfig::original_db_config();
-        let _ndc_metadata = FreshDeployment::create(original_db_config, "static")
+        let _ndc_metadata = FreshDeployment::create(original_db_config, "static/tests", vec![])
             .await
             .unwrap();
 
@@ -26,7 +26,7 @@ mod native_mutations {
     /// Native mutation that selects a relationship.
     async fn native_mutation_insert_artist_and_return_artist() {
         let original_db_config = MSSQLDatabaseConfig::original_db_config();
-        let _ndc_metadata = FreshDeployment::create(original_db_config, "static")
+        let _ndc_metadata = FreshDeployment::create(original_db_config, "static/tests", vec![])
             .await
             .unwrap();
 
@@ -51,7 +51,7 @@ mod negative_native_mutations_test {
     #[serial]
     async fn test_atomicity_native_mutations() {
         let original_db_config = MSSQLDatabaseConfig::original_db_config();
-        let _ndc_metadata = FreshDeployment::create(original_db_config, "static")
+        let _ndc_metadata = FreshDeployment::create(original_db_config, "static/tests", vec![])
             .await
             .unwrap();
 

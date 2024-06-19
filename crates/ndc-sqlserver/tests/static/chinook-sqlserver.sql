@@ -158,7 +158,7 @@ CREATE TABLE [dbo].[Track]
 GO
 
   /*******************************************************************************
-  Create Functions
+                                                                                  Create Functions
    ********************************************************************************/
 
   CREATE PROCEDURE dbo.GetCustomerDetailsWithTotalPurchases

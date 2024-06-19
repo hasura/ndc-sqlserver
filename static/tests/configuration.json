@@ -841,63 +841,6 @@
         "description": null
       }
     },
-    "storedProcedures": {
-      "GetCustomerDetailsWithTotalPurchases": {
-        "name": "GetCustomerDetailsWithTotalPurchases",
-        "schema": "dbo",
-        "arguments": {
-          "CustomerId": {
-            "name": "CustomerId",
-            "type": "int",
-            "nullable": "nullable",
-            "isOutput": false,
-            "description": null
-          },
-          "Phone": {
-            "name": "Phone",
-            "type": "varchar",
-            "nullable": "nullable",
-            "isOutput": false,
-            "description": null
-          }
-        },
-        "returns": {
-          "CustomerId": {
-            "name": "CustomerId",
-            "type": "varchar",
-            "nullable": "nonNullable",
-            "description": null
-          },
-          "Phone": {
-            "name": "CustomerId",
-            "type": "varchar",
-            "nullable": "nonNullable",
-            "description": null
-          },
-          "TotalPurchases": {
-            "name": "TotalPurchases",
-            "type": "int",
-            "nullable": "nonNullable",
-            "description": null
-          }
-        },
-        "description": null
-      },
-      "ReturnOne": {
-        "name": "ReturnOne",
-        "schema": "dbo",
-        "arguments": {},
-        "returns": {
-          "result": {
-            "name": "result",
-            "type": "int",
-            "description": null,
-            "nullable": "nullable"
-          }
-        },
-        "description": null
-      }
-    },
     "aggregateFunctions": {
       "bigint": {
         "APPROX_COUNT_DISTINCT": {
@@ -1517,6 +1460,7 @@
         }
       }
     },
+    "storedProcedures": {},
     "comparisonOperators": {
       "bigint": {
         "_eq": {
@@ -2760,37 +2704,6 @@
           "argumentType": "xml",
           "operatorKind": "custom"
         }
-      }
-    },
-    "storedProcedures": {
-      "GetCustomerDetailsWithTotalPurchases": {
-        "name": "GetCustomerDetailsWithTotalPurchases",
-        "schema": "dbo",
-        "arguments": {
-          "CustomerId": {
-            "name": "CustomerId",
-            "type": "int",
-            "nullable": "nullable",
-            "isOutput": false,
-            "description": null
-          },
-          "Phone": {
-            "name": "Phone",
-            "type": "varchar",
-            "nullable": "nullable",
-            "isOutput": false,
-            "description": null
-          }
-        },
-        "returns": null,
-        "description": null
-      },
-      "ReturnOne": {
-        "name": "ReturnOne",
-        "schema": "dbo",
-        "arguments": {},
-        "returns": null,
-        "description": null
       }
     }
   }
