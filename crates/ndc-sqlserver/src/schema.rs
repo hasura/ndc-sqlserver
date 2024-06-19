@@ -11,19 +11,29 @@ use ndc_sdk::models::TypeRepresentation;
 use query_engine_metadata::metadata;
 
 use ndc_sqlserver_configuration as configuration;
+use query_engine_metadata::metadata::stored_procedures::{
+    StoredProcedureArgumentInfo, StoredProcedures,
+};
+use thiserror::Error;
+
+#[derive(Error, Debug)]
+enum SchemaError {
+    #[error("Trying to create duplicate object with name: {0}")]
+    DuplicateObject(String),
+}
+
+fn scalar_type_to_type(type_name: String, nullability: metadata::Nullable) -> models::Type {
+    match nullability {
+        metadata::Nullable::NonNullable => models::Type::Named { name: type_name },
+        metadata::Nullable::Nullable => models::Type::Nullable {
+            underlying_type: Box::new(models::Type::Named { name: type_name }),
+        },
+    }
+}
 
 /// Extract the models::Type representation of a readonly column.
 fn column_to_type(column: &metadata::ColumnInfo) -> models::Type {
-    match &column.nullable {
-        metadata::Nullable::NonNullable => models::Type::Named {
-            name: column.r#type.0.clone(),
-        },
-        metadata::Nullable::Nullable => models::Type::Nullable {
-            underlying_type: Box::new(models::Type::Named {
-                name: column.r#type.0.clone(),
-            }),
-        },
-    }
+    scalar_type_to_type(column.r#type.0.clone(), column.nullable.clone())
 }
 /// Gets the schema of the native queries.
 /// Each native query creates an object named as the name
@@ -201,11 +211,81 @@ fn get_native_mutations_schema(
     Ok(native_mutations)
 }
 
+fn get_stored_procedure_argument(
+    stored_procedure_arg_info: StoredProcedureArgumentInfo,
+) -> ndc_sdk::models::ArgumentInfo {
+    let argument_type = scalar_type_to_type(
+        stored_procedure_arg_info.name,
+        stored_procedure_arg_info.nullable,
+    );
+    models::ArgumentInfo {
+        description: stored_procedure_arg_info.description,
+        argument_type,
+    }
+}
+
+fn get_stored_procedures_schema(
+    stored_procedures: &StoredProcedures,
+    object_types: &mut BTreeMap<String, models::ObjectType>,
+) -> Result<Vec<models::ProcedureInfo>, connector::SchemaError> {
+    let mut stored_procedures_schema = Vec::new();
+    let _ = stored_procedures.0.iter().map(|(proc_name, proc_info)| {
+        if let Some(returns) = &proc_info.returns {
+            let proc_args: BTreeMap<String, models::ArgumentInfo> = proc_info
+                .arguments
+                .iter()
+                .map(|(arg_name, arg_info)| {
+                    (
+                        arg_name.clone(),
+                        get_stored_procedure_argument(arg_info.clone()),
+                    )
+                })
+                .collect();
+            let stored_proc_object_type = models::ObjectType {
+                description: proc_info.description.clone(),
+                fields: BTreeMap::from_iter(returns.iter().map(|(column_name, column)| {
+                    (
+                        column_name.clone(),
+                        models::ObjectField {
+                            description: column.description.clone(),
+                            r#type: column_to_type(&column),
+                        },
+                    )
+                })),
+            };
+            let object_type_name = format!("{proc_name}_response");
+            if object_types
+                .insert(object_type_name.clone(), stored_proc_object_type)
+                .is_some()
+            {
+                return Err(connector::SchemaError::Other(Box::new(
+                    SchemaError::DuplicateObject(object_type_name),
+                )));
+            };
+
+            let stored_proc_schema = models::ProcedureInfo {
+                name: proc_name.to_string(),
+                description: proc_info.description.clone(),
+                arguments: proc_args,
+                result_type: models::Type::Array {
+                    element_type: Box::new(models::Type::Named {
+                        name: object_type_name,
+                    }),
+                },
+            };
+
+            stored_procedures_schema.push(stored_proc_schema);
+        };
+        Ok(())
+    });
+    Ok(stored_procedures_schema)
+}
+
 /// Get the connector's schema.
 ///
 /// This function implements the [schema endpoint](https://hasura.github.io/ndc-spec/specification/schema/index.html)
 /// from the NDC specification.
-pub async fn get_schema(
+pub fn get_schema(
     configuration::Configuration { config }: &configuration::Configuration,
 ) -> Result<models::SchemaResponse, connector::SchemaError> {
     let configuration::RawConfiguration { metadata, .. } = config;
@@ -345,7 +425,14 @@ pub async fn get_schema(
     let mut collections = tables;
     collections.extend(native_queries);
 
-    let procedures = native_mutations;
+    let mut procedures = Vec::new();
+
+    procedures.extend(native_mutations);
+
+    let stored_procedures_schema =
+        get_stored_procedures_schema(&metadata.stored_procedures, &mut object_types)?;
+
+    procedures.extend(stored_procedures_schema);
 
     Ok(models::SchemaResponse {
         collections,

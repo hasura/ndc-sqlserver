@@ -13,25 +13,13 @@ pub struct StoredProcedureArgumentInfo {
     /// Type of the argument
     pub r#type: ScalarType,
     /// Nullability of the argument
-    pub is_nullable: Nullable,
+    pub nullable: Nullable,
     /// Indicator, if the argument is an `OUTPUT` argument
     /// of the stored procedure.
     #[serde(default)]
     pub is_output: bool,
     #[serde(default)]
     pub description: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
-#[serde(rename_all = "camelCase")]
-pub enum StoredProcedureReturnType {
-    // TODO(KC): check if this is feasible?
-    // Table {
-    //     schema: String,
-    //     table: String,
-    // },
-    /// Columns that are expected to be returned by the stored procedure.
-    Columns(BTreeMap<String, ColumnInfo>),
 }
 
 /// Information about a stored procedure.
@@ -45,11 +33,11 @@ pub struct StoredProcedureInfo {
     /// Arguments to the stored procedure
     pub arguments: BTreeMap<String, StoredProcedureArgumentInfo>,
     #[serde(default)]
-    /// Return type of the stored procedure. This should be
-    /// filled in by the user, because the return type of a
-    /// stored procedure can't be deduced by introspecting the
-    /// database.
-    pub returns: Option<StoredProcedureReturnType>,
+    /// Columns returned by the stored procedure.
+    /// This is set as optional because during the introspection,
+    /// we won't know the return type of the stored procedure. We
+    /// expect the user to fill this detail manually.
+    pub returns: Option<BTreeMap<String, ColumnInfo>>,
     /// Description of the stored procedure.
     pub description: Option<String>,
 }
