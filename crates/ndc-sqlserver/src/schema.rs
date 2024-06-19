@@ -229,7 +229,8 @@ fn get_stored_procedures_schema(
     object_types: &mut BTreeMap<String, models::ObjectType>,
 ) -> Result<Vec<models::ProcedureInfo>, connector::SchemaError> {
     let mut stored_procedures_schema = Vec::new();
-    let _ = stored_procedures.0.iter().map(|(proc_name, proc_info)| {
+
+    for (proc_name, proc_info) in stored_procedures.0.iter() {
         if let Some(returns) = &proc_info.returns {
             let proc_args: BTreeMap<String, models::ArgumentInfo> = proc_info
                 .arguments
@@ -273,11 +274,9 @@ fn get_stored_procedures_schema(
                     }),
                 },
             };
-
             stored_procedures_schema.push(stored_proc_schema);
-        };
-        Ok(())
-    });
+        }
+    }
     Ok(stored_procedures_schema)
 }
 
