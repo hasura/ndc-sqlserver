@@ -1460,7 +1460,6 @@
         }
       }
     },
-    "storedProcedures": {},
     "comparisonOperators": {
       "bigint": {
         "_eq": {
@@ -2705,6 +2704,7 @@
           "operatorKind": "custom"
         }
       }
-    }
+    },
+    "storedProcedures": {}
   }
 }
