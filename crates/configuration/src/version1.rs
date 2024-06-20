@@ -207,9 +207,10 @@ fn get_stored_procedures(
                         StoredProcedureArgumentInfo {
                             name: sp.name,
                             r#type: query_engine_metadata::metadata::ScalarType(sp.r#type),
-                            nullable: match sp.is_nullable {
-                                true => Nullable::Nullable,
-                                false => Nullable::NonNullable,
+                            nullable: if sp.is_nullable {
+                                Nullable::Nullable
+                            } else {
+                                Nullable::NonNullable
                             },
                             is_output: sp.is_output,
                             description: None,

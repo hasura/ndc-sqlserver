@@ -22,7 +22,7 @@ enum SchemaError {
     DuplicateObject(String),
 }
 
-fn scalar_type_to_type(type_name: String, nullability: metadata::Nullable) -> models::Type {
+fn scalar_type_to_type(type_name: String, nullability: &metadata::Nullable) -> models::Type {
     match nullability {
         metadata::Nullable::NonNullable => models::Type::Named { name: type_name },
         metadata::Nullable::Nullable => models::Type::Nullable {
@@ -33,7 +33,7 @@ fn scalar_type_to_type(type_name: String, nullability: metadata::Nullable) -> mo
 
 /// Extract the models::Type representation of a readonly column.
 fn column_to_type(column: &metadata::ColumnInfo) -> models::Type {
-    scalar_type_to_type(column.r#type.0.clone(), column.nullable.clone())
+    scalar_type_to_type(column.r#type.0.clone(), &column.nullable)
 }
 /// Gets the schema of the native queries.
 /// Each native query creates an object named as the name
@@ -216,7 +216,7 @@ fn get_stored_procedure_argument(
 ) -> ndc_sdk::models::ArgumentInfo {
     let argument_type = scalar_type_to_type(
         stored_procedure_arg_info.r#type.0,
-        stored_procedure_arg_info.nullable,
+        &stored_procedure_arg_info.nullable,
     );
     models::ArgumentInfo {
         description: stored_procedure_arg_info.description,
@@ -249,7 +249,7 @@ fn get_stored_procedures_schema(
                         column_name.clone(),
                         models::ObjectField {
                             description: column.description.clone(),
-                            r#type: column_to_type(&column),
+                            r#type: column_to_type(column),
                         },
                     )
                 })),
