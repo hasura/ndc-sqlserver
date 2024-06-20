@@ -284,10 +284,9 @@ fn get_stored_procedures_schema(
 ///
 /// This function implements the [schema endpoint](https://hasura.github.io/ndc-spec/specification/schema/index.html)
 /// from the NDC specification.
-pub fn get_schema(
-    configuration::Configuration { config }: &configuration::Configuration,
+pub async fn get_schema(
+    configuration::Configuration { metadata, .. }: &configuration::Configuration,
 ) -> Result<models::SchemaResponse, connector::SchemaError> {
-    let configuration::RawConfiguration { metadata, .. } = config;
     let mut scalar_types: BTreeMap<String, models::ScalarType> =
         configuration::occurring_scalar_types(metadata)
             .iter()

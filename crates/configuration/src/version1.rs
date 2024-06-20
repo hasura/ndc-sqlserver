@@ -1,7 +1,11 @@
 //! Configuration and state for our connector.
 
 use super::introspection;
+use crate::environment::Environment;
 use crate::error::Error;
+use crate::secret::Secret;
+use crate::{uri, ConnectionUri};
+
 use query_engine_metadata::metadata;
 use query_engine_metadata::metadata::stored_procedures::{
     StoredProcedureArgumentInfo, StoredProcedureInfo, StoredProcedures,
@@ -13,7 +17,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
-use std::path::PathBuf;
+
 use thiserror::Error;
 use tiberius::Query;
 
@@ -47,10 +51,10 @@ const NOT_COUNTABLE: [&str; 3] = ["image", "ntext", "text"];
 const NOT_APPROX_COUNTABLE: [&str; 4] = ["image", "sql_variant", "ntext", "text"];
 
 /// User configuration.
-#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, JsonSchema)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, JsonSchema, Clone)]
 pub struct RawConfiguration {
     pub version: u32,
-    pub mssql_connection_string: String,
+    pub mssql_connection_string: ConnectionUri,
     pub metadata: query_engine_metadata::metadata::Metadata,
 }
 
@@ -58,25 +62,28 @@ impl RawConfiguration {
     pub fn empty() -> Self {
         Self {
             version: CURRENT_VERSION,
-            mssql_connection_string: "".into(),
+            mssql_connection_string: uri::ConnectionUri(Secret::FromEnvironment {
+                variable: crate::DEFAULT_CONNECTION_URI_VARIABLE.into(),
+            }),
             metadata: query_engine_metadata::metadata::Metadata::default(),
         }
     }
 
-    pub fn with_mssql_connection_string(mssql_connection_string: String) -> Self {
+    pub fn with_mssql_connection_string(mssql_connection_string: Secret) -> Self {
         Self {
             version: CURRENT_VERSION,
-            mssql_connection_string,
+            mssql_connection_string: uri::ConnectionUri(mssql_connection_string),
             metadata: query_engine_metadata::metadata::Metadata::default(),
         }
     }
 }
 
 /// User configuration, elaborated from a 'RawConfiguration'.
-#[derive(Debug, Deserialize, Serialize, JsonSchema)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, JsonSchema)]
 pub struct Configuration {
-    pub config: RawConfiguration,
+    pub version: u32,
+    pub mssql_connection_string: String,
+    pub metadata: query_engine_metadata::metadata::Metadata,
 }
 
 /// State for our connector.
@@ -88,16 +95,31 @@ pub struct State {
 
 /// Validate the user configuration.
 pub async fn validate_raw_configuration(
-    file_path: PathBuf,
+    file_path: &std::path::Path,
     config: RawConfiguration,
+    environment: impl Environment,
 ) -> Result<Configuration, Error> {
     if config.version != 1 {
         return Err(Error::InvalidConfigVersion {
             version: config.version,
-            file_path: file_path.clone(),
+            file_path: file_path.to_path_buf(),
         });
     }
-    Ok(Configuration { config })
+    let mssql_connection_string = match config.mssql_connection_string {
+        uri::ConnectionUri(Secret::Plain(s)) => s,
+        uri::ConnectionUri(Secret::FromEnvironment { variable }) => environment
+            .read(&variable)
+            .map_err(|err| Error::MissingEnvironmentVariable {
+                file_path: file_path.to_path_buf(),
+                message: format!("{err}"),
+            })?,
+    };
+
+    Ok(Configuration {
+        version: config.version,
+        mssql_connection_string,
+        metadata: config.metadata,
+    })
 }
 
 /// Create a connection pool and wrap it inside a connector State.
@@ -105,7 +127,7 @@ pub async fn create_state(
     configuration: &Configuration,
     metrics_registry: &mut prometheus::Registry,
 ) -> Result<State, InitializationError> {
-    let mssql_pool = create_mssql_pool(&configuration.config)
+    let mssql_pool = create_mssql_pool(&configuration.mssql_connection_string)
         .await
         .map_err(InitializationError::UnableToCreateMSSQLPool)?;
     let metrics = query_engine_metrics::metrics::Metrics::initialize(metrics_registry)
@@ -118,9 +140,10 @@ pub async fn create_state(
 
 /// Create a connection pool with default settings.
 async fn create_mssql_pool(
-    configuration: &RawConfiguration,
+    configuration: &str,
 ) -> Result<bb8::Pool<bb8_tiberius::ConnectionManager>, bb8_tiberius::Error> {
-    let config = tiberius::Config::from_ado_string(&configuration.mssql_connection_string)?;
+    let connection_string = configuration.to_owned();
+    let config = tiberius::Config::from_ado_string(&connection_string)?;
 
     let mgr = bb8_tiberius::ConnectionManager::new(config);
 
@@ -144,8 +167,23 @@ async fn select_first_row(
 }
 
 /// Construct the deployment configuration by introspecting the database.
-pub async fn configure(configuration: &RawConfiguration) -> Result<RawConfiguration, Error> {
-    let mssql_pool = create_mssql_pool(configuration).await.unwrap();
+pub async fn configure(
+    file_path: &std::path::Path,
+    configuration: &RawConfiguration,
+    environment: impl Environment,
+) -> Result<RawConfiguration, Error> {
+    let connection_string = match &configuration.mssql_connection_string {
+        uri::ConnectionUri(Secret::Plain(s)) => s.to_owned(),
+        uri::ConnectionUri(Secret::FromEnvironment { variable }) => environment
+            .read(variable)
+            .map_err(|err| Error::MissingEnvironmentVariable {
+                file_path: file_path.to_path_buf(),
+                message: format!("{err}"),
+            })?,
+    };
+    let mssql_pool = create_mssql_pool(&connection_string)
+        .await
+        .map_err(Error::ConnectionPoolError)?;
 
     let mut metadata = query_engine_metadata::metadata::Metadata::default();
 

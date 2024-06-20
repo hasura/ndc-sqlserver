@@ -1,7 +1,11 @@
+use std::collections::HashMap;
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+
+use configuration::environment::Variable;
 
 use ndc_sqlserver_configuration as configuration;
+use ndc_sqlserver_configuration::secret;
 use similar_asserts::assert_eq;
 
 pub mod common;
@@ -29,12 +33,15 @@ pub async fn configure_is_idempotent(
 ) {
     let expected_value = read_configuration(chinook_deployment_path);
 
-    let mut args: configuration::RawConfiguration = serde_json::from_value(expected_value.clone())
+    let args: configuration::RawConfiguration = serde_json::from_value(expected_value.clone())
         .expect("Unable to deserialize as RawConfiguration");
+    let environment = HashMap::from([(
+        configuration::DEFAULT_CONNECTION_URI_VARIABLE.into(),
+        connection_string.into(),
+    )]);
+    let file_path = PathBuf::new();
 
-    args.mssql_connection_string = connection_string.to_string();
-
-    let actual = configuration::configure(&args)
+    let actual = configuration::configure(&file_path, &args, environment)
         .await
         .expect("configuration::configure");
 
@@ -46,13 +53,21 @@ pub async fn configure_is_idempotent(
 pub async fn configure_initial_configuration_is_unchanged(
     connection_string: &str,
 ) -> configuration::RawConfiguration {
+    let connection_uri_variable: Variable = "MAGIC_URI".into();
     let args = configuration::RawConfiguration {
-        mssql_connection_string: connection_string.to_string(),
+        mssql_connection_string: ndc_sqlserver_configuration::ConnectionUri(
+            secret::Secret::FromEnvironment {
+                variable: connection_uri_variable.clone(),
+            },
+        ),
 
         ..configuration::RawConfiguration::empty()
     };
 
-    configuration::configure(&args)
+    let environment = HashMap::from([(connection_uri_variable, connection_string.into())]);
+    let file_path = PathBuf::new();
+
+    configuration::configure(&file_path, &args, environment)
         .await
         .expect("configuration::configure")
 }

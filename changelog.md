@@ -8,6 +8,13 @@
 
 ### Fixed
 
+## [v0.1.2] - 2024-06-17
+
+### Added
+
+- Support for native mutations
+- Support for reading the MSSQL connection string from an environment variable
+
 ## [v0.1.1] - 2024-05-15
 
 ### Added
@@ -25,5 +32,6 @@
 <!-- end -->
 
 [Unreleased]: https://github.com/hasura/ndc-sqlserver/compare/v0.6.0...HEAD
+[v0.1.2]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.1.2
 [v0.1.1]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.1.1
 [v0.1.0]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.1.0

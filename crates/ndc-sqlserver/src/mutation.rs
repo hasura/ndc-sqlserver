@@ -55,7 +55,7 @@ fn plan_mutation(
     mutation_request: models::MutationRequest,
 ) -> Result<sql::execution_plan::MutationExecutionPlan, connector::MutationError> {
     let timer = state.metrics.time_mutation_plan();
-    let result = translation::mutation::translate(&configuration.config.metadata, mutation_request)
+    let result = translation::mutation::translate(&configuration.metadata, mutation_request)
         .map_err(|err| {
             tracing::error!("{}", err);
             match err {
