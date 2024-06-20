@@ -1,0 +1,35 @@
+{
+  "insert_artist_and_return_id": {
+    "sql": "INSERT INTO [dbo].[Artist] (ArtistId, Name) OUTPUT inserted.*  VALUES ({{ArtistId}}, {{Name}})",
+    "columns": {
+      "ArtistId": {
+        "name": "ArtistId",
+        "type": "int",
+        "nullable": "nonNullable",
+        "description": null
+      },
+      "Name": {
+        "name": "Name",
+        "type": "varchar",
+        "nullable": "nullable",
+        "description": null,
+        "castAs": "varchar(100)"
+      }
+    },
+    "arguments": {
+      "ArtistId": {
+        "name": "ArtistId",
+        "type": "int",
+        "nullable": "nonNullable",
+        "description": null
+      },
+      "Name": {
+        "name": "Name",
+        "type": "varchar",
+        "nullable": "nullable",
+        "description": null
+      }
+    },
+    "description": null
+  }
+}

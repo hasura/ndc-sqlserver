@@ -6,6 +6,9 @@ use configuration::environment::Variable;
 
 use ndc_sqlserver_configuration as configuration;
 use ndc_sqlserver_configuration::secret;
+use query_engine_metadata::metadata::{NativeMutations, NativeQueries};
+use serde::de::DeserializeOwned;
+use serde_json::from_value;
 use similar_asserts::assert_eq;
 
 pub mod common;
@@ -14,7 +17,7 @@ use common::configuration::*;
 const CONNECTION_STRING: &str =
     "Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true";
 
-const CHINOOK_DEPLOYMENT_PATH: &str = "static/tests/configuration.json";
+const CHINOOK_DEPLOYMENT_PATH: &str = "static/configuration.json";
 
 #[tokio::test]
 async fn test_configure_is_idempotent() {
@@ -41,9 +44,21 @@ pub async fn configure_is_idempotent(
     )]);
     let file_path = PathBuf::new();
 
-    let actual = configuration::configure(&file_path, &args, environment)
+    let mut actual = configuration::configure(&file_path, &args, environment)
         .await
         .expect("configuration::configure");
+
+    // Native queries and native mutations are defined by the user and cannot
+    // be obtained by introspecting the database. So, add the native queries and
+    // mutations back manually.
+    let native_queries_config: NativeQueries =
+        read_configuration_as("static/chinook-native-queries.json").unwrap();
+
+    let native_mutations_config: NativeMutations =
+        read_configuration_as("static/chinook-native-mutations.json").unwrap();
+
+    actual.metadata.native_mutations = native_mutations_config;
+    actual.metadata.native_queries = native_queries_config;
 
     let actual_value = serde_json::to_value(actual).expect("serde_json::to_value");
 
@@ -76,4 +91,11 @@ fn read_configuration(chinook_deployment_path: impl AsRef<Path>) -> serde_json::
     let file = fs::File::open(get_path_from_project_root(chinook_deployment_path))
         .expect("fs::File::open");
     serde_json::from_reader(file).expect("serde_json::from_reader")
+}
+
+fn read_configuration_as<T: DeserializeOwned>(
+    chinook_deployment_path: impl AsRef<Path>,
+) -> Result<T, serde_json::Error> {
+    let v = read_configuration(chinook_deployment_path);
+    from_value(v)
 }
