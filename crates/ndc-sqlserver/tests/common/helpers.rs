@@ -162,6 +162,6 @@ pub fn is_contained_in_lines(keywords: Vec<&str>, lines: String) {
 /// and get our single static configuration file.
 pub fn get_deployment_file() -> PathBuf {
     let mut d = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    d.push("../../static/");
+    d.push("../../static/tests/");
     d
 }

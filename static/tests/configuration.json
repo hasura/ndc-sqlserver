@@ -1,8 +1,6 @@
 {
   "version": 1,
-  "mssql_connection_string": {
-    "variable": "CONNECTION_URI"
-  },
+  "mssql_connection_string": "Server=localhost,64003;Uid=SA;Database=Chinook;Pwd=Password!;TrustServerCertificate=true",
   "metadata": {
     "tables": {
       "Album": {
@@ -838,63 +836,6 @@
             "type": "varchar",
             "nullable": "nullable",
             "description": null
-          }
-        },
-        "description": null
-      }
-    },
-    "storedProcedures": {
-      "GetCustomerDetailsWithTotalPurchases": {
-        "name": "GetCustomerDetailsWithTotalPurchases",
-        "schema": "dbo",
-        "arguments": {
-          "CustomerId": {
-            "name": "CustomerId",
-            "type": "int",
-            "nullable": "nullable",
-            "isOutput": false,
-            "description": null
-          },
-          "Phone": {
-            "name": "Phone",
-            "type": "varchar",
-            "nullable": "nullable",
-            "isOutput": false,
-            "description": null
-          }
-        },
-        "returns": {
-          "CustomerId": {
-            "name": "CustomerId",
-            "type": "varchar",
-            "nullable": "nonNullable",
-            "description": null
-          },
-          "Phone": {
-            "name": "CustomerId",
-            "type": "varchar",
-            "nullable": "nonNullable",
-            "description": null
-          },
-          "TotalPurchases": {
-            "name": "TotalPurchases",
-            "type": "int",
-            "nullable": "nonNullable",
-            "description": null
-          }
-        },
-        "description": null
-      },
-      "ReturnOne": {
-        "name": "ReturnOne",
-        "schema": "dbo",
-        "arguments": {},
-        "returns": {
-          "result": {
-            "name": "result",
-            "type": "int",
-            "description": null,
-            "nullable": "nullable"
           }
         },
         "description": null
@@ -2763,6 +2704,7 @@
           "operatorKind": "custom"
         }
       }
-    }
+    },
+    "storedProcedures": {}
   }
 }

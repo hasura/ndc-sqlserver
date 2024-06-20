@@ -20,11 +20,12 @@ impl FreshDeployment {
     pub async fn create(
         original_connection_db_config: MSSQLDatabaseConfig,
         ndc_metadata_path: impl AsRef<Path>,
+        data_setup_file_paths: Vec<PathBuf>,
     ) -> anyhow::Result<FreshDeployment> {
         let db_config =
             database::create_fresh_database(original_connection_db_config.clone()).await;
 
-        let temp_deploys_path = PathBuf::from("static/temp-deploys");
+        let temp_deploys_path = PathBuf::from("static/tests/temp-deploys");
 
         let new_connection_uri = db_config.construct_uri();
 
@@ -36,22 +37,30 @@ impl FreshDeployment {
         )
         .await?;
 
-        let new_ndc_metadata_path = PathBuf::from("static/temp-deploys").join(&db_config.db_name);
+        let new_ndc_metadata_path =
+            PathBuf::from("static/tests/temp-deploys").join(&db_config.db_name);
 
-        let init_db_sql_file_path = get_path_from_project_root("static/chinook-sqlserver.sql");
+        let init_db_sql_file_path =
+            get_path_from_project_root("static/tests/chinook-sqlserver.sql");
 
         // The `chinook-sqlserver.sql` file contains `GO` after every statement. Running, it as it
         // is leads to syntax errors. So, just replacing all `GO`s with an empty string. This works!
-        let init_db_sql = fs::read_to_string(init_db_sql_file_path)
-            .unwrap()
-            .replace("GO", "");
+        let init_db_sql = fs::read_to_string(init_db_sql_file_path).unwrap();
 
         let mut new_db_connection = create_mssql_connection(&db_config).await;
 
         new_db_connection
-            .execute(init_db_sql, &[])
+            .simple_query(init_db_sql)
             .await
             .expect("Error initializing the newly created DB");
+
+        for file_path in data_setup_file_paths.into_iter() {
+            let query = fs::read_to_string(file_path.clone()).unwrap();
+
+            new_db_connection.simple_query(query).await.expect(
+                format!("Error in running the query present in the file: {file_path:#?}").as_str(),
+            );
+        }
 
         Ok(FreshDeployment {
             db_name: db_config.db_name,
