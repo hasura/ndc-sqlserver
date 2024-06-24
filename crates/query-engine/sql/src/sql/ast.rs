@@ -1,5 +1,7 @@
 //! Type definitions of a SQL AST representation.
 
+use std::collections::BTreeMap;
+
 use super::string::Param;
 
 /// An EXPLAIN clause
@@ -12,6 +14,28 @@ pub enum Explain<'a> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct With {
     pub common_table_expressions: Vec<CommonTableExpression>,
+}
+
+/// Execution of a stored procedure
+#[derive(Debug, Clone, PartialEq)]
+pub struct ExecProcedure {
+    /// Arguments to the procedure
+    pub arguments: BTreeMap<String, Expression>,
+    /// Name of the stored procedure
+    pub procedure_name: String,
+    /// Schema of the stored procedure
+    pub procedure_schema: String,
+}
+
+/// Execute a stored procedure and insert the response
+/// into a temp table
+#[derive(Debug, Clone, PartialEq)]
+pub struct ExecProcedureInsertIntoTempTable {
+    /// The target temp table where the stored procedure's
+    /// results needs to be stored in.
+    pub temp_table_name: String,
+    /// Info about the stored procedure.
+    pub exec_procedure: ExecProcedure,
 }
 
 /// A single Common Table Expression

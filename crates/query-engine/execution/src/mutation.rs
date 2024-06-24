@@ -205,6 +205,9 @@ async fn execute_mutation(
         MutationOperationExecutionPlan::NativeMutation(native_mutation_plan) => {
             execute_native_mutation(connection, native_mutation_plan, buffer).await
         }
+        MutationOperationExecutionPlan::StoredProcedure(stored_procedure_plan) => {
+            todo!()
+        }
     }
 }
 

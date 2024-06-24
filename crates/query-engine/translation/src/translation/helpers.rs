@@ -46,8 +46,17 @@ impl NativeQueries {
 }
 
 #[derive(Debug)]
-pub enum MutationOperation {
+pub struct MutationOperation {
+    pub name: String,
+    pub arguments: BTreeMap<String, serde_json::Value>,
+    pub fields: Option<models::NestedField>,
+    pub kind: MutationOperationKind,
+}
+
+#[derive(Debug)]
+pub enum MutationOperationKind {
     NativeMutation(NativeMutationInfo),
+    StoredProcedure(StoredProcedureInfo),
 }
 
 #[derive(Debug)]
@@ -63,8 +72,13 @@ pub struct NativeMutationInfo {
     /// Name of the native mutation
     pub name: String,
     pub info: metadata::NativeMutationInfo,
-    pub arguments: BTreeMap<String, serde_json::Value>,
-    pub fields: Option<models::NestedField>,
+}
+
+#[derive(Debug)]
+pub struct StoredProcedureInfo {
+    /// Name of the stored procedure
+    pub name: String,
+    pub info: metadata::stored_procedures::StoredProcedureInfo,
 }
 
 /// For the root table in the query, and for the current table we are processing,
@@ -121,6 +135,10 @@ pub enum ProcedureInfo {
         name: String,
         info: metadata::NativeMutationInfo,
     },
+    StoredProcedure {
+        name: String,
+        info: metadata::stored_procedures::StoredProcedureInfo,
+    },
 }
 
 /// Substitutes the value of the arguments
@@ -171,16 +189,34 @@ impl<'a> Env<'a> {
         }
     }
 
+    // TODO(KC): Modify the `lookup` functions to not lookup twice. This can be
+    // done by creating a schema from the metadata and collecting all the `procedure`
+    // `query` together.
+
     pub fn lookup_procedure(&self, procedure_name: &str) -> Result<ProcedureInfo, Error> {
-        self.metadata
-            .native_mutations
-            .0
-            .get(procedure_name)
-            .ok_or(Error::ProcedureNotFound(procedure_name.to_string()))
-            .map(|native_mutation_info| ProcedureInfo::NativeMutation {
-                name: procedure_name.to_string(),
-                info: native_mutation_info.clone(),
-            })
+        let native_mutation =
+            self.metadata
+                .native_mutations
+                .0
+                .get(procedure_name)
+                .map(|native_mutation_info| ProcedureInfo::NativeMutation {
+                    name: procedure_name.to_string(),
+                    info: native_mutation_info.clone(),
+                });
+
+        match native_mutation {
+            None => self
+                .metadata
+                .stored_procedures
+                .0
+                .get(procedure_name)
+                .ok_or(Error::ProcedureNotFound(procedure_name.to_string()))
+                .map(|stored_procedure_info| ProcedureInfo::StoredProcedure {
+                    name: procedure_name.to_string(),
+                    info: stored_procedure_info.clone(),
+                }),
+            Some(native_mutation) => Ok(native_mutation),
+        }
     }
 
     /// Lookup a collection's information in the metadata.
@@ -330,13 +366,16 @@ impl State {
         arguments: BTreeMap<String, serde_json::Value>,
         fields: Option<NestedField>,
     ) {
-        self.mutations
-            .push(MutationOperation::NativeMutation(NativeMutationInfo {
-                name: name.to_string(),
-                info,
-                arguments,
-                fields,
-            }));
+        let native_mutation_op_kind = MutationOperationKind::NativeMutation(NativeMutationInfo {
+            name: name.to_string(),
+            info,
+        });
+        self.mutations.push(MutationOperation {
+            name: name.to_string(),
+            arguments,
+            fields,
+            kind: native_mutation_op_kind,
+        });
     }
 
     /// Fetch the tracked native queries used in the query plan and their table alias.
