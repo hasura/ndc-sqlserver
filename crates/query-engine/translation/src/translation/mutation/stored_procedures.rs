@@ -152,6 +152,7 @@ pub(crate) fn generate_execution_plan(
             state.make_table_alias("rows".to_string()),
             sql::helpers::make_column_alias("rows".to_string()),
         ),
+        vec![make_column_alias("rows".to_string())],
         state.make_table_alias("aggregates".to_string()),
         make_column_alias("aggs".to_string()),
         select_set,

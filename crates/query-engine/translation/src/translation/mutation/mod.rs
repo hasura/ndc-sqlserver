@@ -335,6 +335,7 @@ fn generate_mutation_execution_plan(
                         state.make_table_alias("rows".to_string()),
                         sql::helpers::make_column_alias(returning_alias),
                     ),
+                    vec![],
                     state.make_table_alias("aggregates".to_string()),
                     make_column_alias(affected_rows.0),
                     select_set,
