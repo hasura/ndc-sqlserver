@@ -54,6 +54,8 @@ pub struct ExecProcedureInsertIntoTempTable {
     pub temp_table: TemporaryTable,
     /// Info about the stored procedure.
     pub exec_procedure: ExecProcedure,
+    /// Response to be selected from the temporary table.
+    pub response_selection: Select,
 }
 
 /// A single Common Table Expression

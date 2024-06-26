@@ -170,8 +170,10 @@ impl ExecProcedureInsertIntoTempTable {
                 sql.append_syntax(", ");
             }
         }
-        sql.append_syntax(")");
+        sql.append_syntax(") ");
         self.exec_procedure.to_sql(sql);
+        sql.append_syntax(";");
+        self.response_selection.to_sql(sql);
     }
 }
 

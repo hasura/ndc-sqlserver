@@ -103,15 +103,6 @@ pub(crate) fn generate_execution_plan(
         },
     };
 
-    let exec_proc_sql = ExecProcedureInsertIntoTempTable {
-        temp_table,
-        exec_procedure: ExecProcedure {
-            arguments: args,
-            procedure_name: stored_proc_info.info.name,
-            procedure_schema: stored_proc_info.info.schema,
-        },
-    };
-
     // Response selection
 
     let query = models::Query {
@@ -166,9 +157,18 @@ pub(crate) fn generate_execution_plan(
         select_set,
     );
 
+    let exec_proc_sql = ExecProcedureInsertIntoTempTable {
+        temp_table,
+        exec_procedure: ExecProcedure {
+            arguments: args,
+            procedure_name: stored_proc_info.info.name,
+            procedure_schema: stored_proc_info.info.schema,
+        },
+        response_selection: json_select,
+    };
+
     Ok(StoredProcedureExecutionPlan {
         temp_table_name: temp_table_alias.name,
         stored_procedure_sql_query: exec_proc_sql,
-        response_selection: json_select,
     })
 }

@@ -46,8 +46,6 @@ pub struct StoredProcedureExecutionPlan {
     /// the results of the stored procedure into the
     /// temporary table with name: `temp_table_name`
     pub stored_procedure_sql_query: sql::ast::ExecProcedureInsertIntoTempTable,
-    /// Select query that will run on the temp table `temp_table_name`
-    pub response_selection: Select,
 }
 
 #[derive(Debug)]
