@@ -60,7 +60,9 @@ fn translate_mutation_operation(
             arguments,
             fields,
         } => {
-            let procedure_info: ProcedureInfo = env.lookup_procedure(&name)?;
+            let procedure_info: ProcedureInfo = env
+                .lookup_procedure(&name)
+                .ok_or_else(|| Error::ProcedureNotFound(name.clone()))?;
             let mutation_operation_kind = match procedure_info {
                 ProcedureInfo::NativeMutation { info, .. } => {
                     MutationOperationKind::NativeMutation(NativeMutationInfo {
@@ -182,6 +184,7 @@ fn get_native_mutation_response_selection(
                 table: sql::ast::TableReference::AliasedTable(TableAlias {
                     unique_index: 0,
                     name: "open_json".to_string(),
+                    is_temporary_table: false,
                 }),
                 name: ColumnName(col_name.to_string()),
             }),
@@ -292,6 +295,7 @@ fn generate_mutation_execution_plan(
                 let json_response_cte_alias = TableAlias {
                     unique_index: 0,
                     name: "json_response_cte_alias".to_string(),
+                    is_temporary_table: false,
                 };
 
                 let json_response_table_alias = TableNameAndReference {
@@ -308,9 +312,12 @@ fn generate_mutation_execution_plan(
                     alias: json_response_cte_alias.clone(),
                 };
 
+                let procedure_info = env.lookup_collection(&native_mutation_info.name)?;
+
                 let select_set = query::translate_query(
                     env,
                     &mut state,
+                    &procedure_info,
                     &json_response_table_alias,
                     &from_clause,
                     &query,

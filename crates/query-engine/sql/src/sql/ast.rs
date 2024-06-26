@@ -27,13 +27,31 @@ pub struct ExecProcedure {
     pub procedure_schema: String,
 }
 
+/// Type of a DB column.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ColumnType(pub String);
+
+/// Name of a temporary table.
+#[derive(Debug, Clone, PartialEq)]
+pub struct TemporaryTableName(pub TableAlias);
+
+/// Given a name and a set of columns, create a temporary
+/// table.
+#[derive(Debug, Clone, PartialEq)]
+pub struct TemporaryTable {
+    /// Name of the temporary table.
+    pub name: TemporaryTableName,
+    /// Columns in the temporary table.
+    pub columns: BTreeMap<String, ColumnType>,
+}
+
 /// Execute a stored procedure and insert the response
 /// into a temp table
 #[derive(Debug, Clone, PartialEq)]
 pub struct ExecProcedureInsertIntoTempTable {
     /// The target temp table where the stored procedure's
     /// results needs to be stored in.
-    pub temp_table_name: String,
+    pub temp_table: TemporaryTable,
     /// Info about the stored procedure.
     pub exec_procedure: ExecProcedure,
 }
@@ -370,6 +388,7 @@ pub enum ColumnReference {
 pub struct TableAlias {
     pub unique_index: u64,
     pub name: String,
+    pub is_temporary_table: bool,
 }
 
 /// aliases that we give to columns

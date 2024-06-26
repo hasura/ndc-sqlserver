@@ -141,6 +141,12 @@ pub enum ProcedureInfo {
     },
 }
 
+#[derive(Debug)]
+pub enum CollectionOrProcedureInfo {
+    Collection(CollectionInfo),
+    Procedure(ProcedureInfo),
+}
+
 /// Substitutes the value of the arguments
 /// in the parameterized SQL statement and returns
 /// a SQL statement that can be run in the DB.
@@ -193,7 +199,7 @@ impl<'a> Env<'a> {
     // done by creating a schema from the metadata and collecting all the `procedure`
     // `query` together.
 
-    pub fn lookup_procedure(&self, procedure_name: &str) -> Result<ProcedureInfo, Error> {
+    pub fn lookup_procedure(&self, procedure_name: &str) -> Option<ProcedureInfo> {
         let native_mutation =
             self.metadata
                 .native_mutations
@@ -205,22 +211,25 @@ impl<'a> Env<'a> {
                 });
 
         match native_mutation {
-            None => self
-                .metadata
-                .stored_procedures
-                .0
-                .get(procedure_name)
-                .ok_or(Error::ProcedureNotFound(procedure_name.to_string()))
-                .map(|stored_procedure_info| ProcedureInfo::StoredProcedure {
-                    name: procedure_name.to_string(),
-                    info: stored_procedure_info.clone(),
-                }),
-            Some(native_mutation) => Ok(native_mutation),
+            None => {
+                self.metadata
+                    .stored_procedures
+                    .0
+                    .get(procedure_name)
+                    .map(|stored_procedure_info| ProcedureInfo::StoredProcedure {
+                        name: procedure_name.to_string(),
+                        info: stored_procedure_info.clone(),
+                    })
+            }
+            Some(native_mutation) => Some(native_mutation),
         }
     }
 
     /// Lookup a collection's information in the metadata.
-    pub fn lookup_collection(&self, collection_name: &str) -> Result<CollectionInfo, Error> {
+    pub fn lookup_collection(
+        &self,
+        collection_name: &str,
+    ) -> Result<CollectionOrProcedureInfo, Error> {
         let table = self
             .metadata
             .tables
@@ -232,30 +241,40 @@ impl<'a> Env<'a> {
             });
 
         match table {
-            Some(table) => Ok(table),
+            Some(table) => Ok(CollectionOrProcedureInfo::Collection(table)),
             None => {
-                let native_query = self
-                    .metadata
-                    .native_queries
-                    .0
-                    .get(collection_name)
-                    .map(|nq| CollectionInfo::NativeQuery {
-                        name: collection_name.to_string(),
-                        info: nq.clone(),
-                    });
-                // FIXME(KC): THis is terrible. Please refactor this.
-                match native_query {
-                    Some(native_query) => Ok(native_query),
-                    None => self
-                        .metadata
-                        .native_mutations
-                        .0
-                        .get(collection_name)
-                        .map(|nq| CollectionInfo::NativeMutation {
-                            name: collection_name.to_string(),
-                            info: nq.clone(),
-                        })
-                        .ok_or(Error::CollectionNotFound(collection_name.to_string())),
+                let proc_maybe = self.lookup_procedure(collection_name);
+
+                match proc_maybe {
+                    Some(proc_info) => Ok(CollectionOrProcedureInfo::Procedure(proc_info)),
+                    None => {
+                        let native_query =
+                            self.metadata
+                                .native_queries
+                                .0
+                                .get(collection_name)
+                                .map(|nq| CollectionInfo::NativeQuery {
+                                    name: collection_name.to_string(),
+                                    info: nq.clone(),
+                                });
+                        // FIXME(KC): THis is terrible. Please refactor this.
+                        match native_query {
+                            Some(native_query) => {
+                                Ok(CollectionOrProcedureInfo::Collection(native_query))
+                            }
+                            None => self
+                                .metadata
+                                .native_mutations
+                                .0
+                                .get(collection_name)
+                                .map(|nq| CollectionInfo::NativeMutation {
+                                    name: collection_name.to_string(),
+                                    info: nq.clone(),
+                                })
+                                .map(|nq| CollectionOrProcedureInfo::Collection(nq))
+                                .ok_or(Error::CollectionNotFound(collection_name.to_string())),
+                        }
+                    }
                 }
             }
         }
@@ -267,7 +286,7 @@ impl<'a> Env<'a> {
             .ok_or(Error::RelationshipNotFound(name.to_string()))
     }
 
-    /// Looks up the binary comparison operator's PostgreSQL name and arguments' type in the metadata.
+    /// Looks up the binary comparison operator's MSSQL name and arguments' type in the metadata.
     pub fn lookup_comparison_operator(
         &self,
         scalar_type: &metadata::ScalarType,
@@ -285,6 +304,46 @@ impl<'a> Env<'a> {
     }
 }
 
+impl CollectionOrProcedureInfo {
+    pub fn lookup_column(&self, column_name: &str) -> Result<ColumnInfo, Error> {
+        match &self {
+            CollectionOrProcedureInfo::Collection(collection_info) => {
+                collection_info.lookup_column(column_name)
+            }
+            CollectionOrProcedureInfo::Procedure(procedure_info) => {
+                procedure_info.lookup_column(column_name)
+            }
+        }
+    }
+}
+
+impl ProcedureInfo {
+    pub fn lookup_column(&self, column_name: &str) -> Result<ColumnInfo, Error> {
+        match self {
+            ProcedureInfo::NativeMutation { name, info } => todo!(),
+            ProcedureInfo::StoredProcedure { name, info } => info
+                .returns
+                .clone()
+                .unwrap_or_default()
+                .get(column_name)
+                .ok_or(Error::ColumnNotFoundInCollection(
+                    column_name.to_string(),
+                    name.to_string(),
+                ))
+                .map(|c| column_info_to_sql_column_info(c)),
+        }
+    }
+}
+
+fn column_info_to_sql_column_info(
+    column_info: &query_engine_metadata::metadata::ColumnInfo,
+) -> ColumnInfo {
+    ColumnInfo {
+        name: sql::ast::ColumnName(column_info.name.clone()),
+        r#type: column_info.r#type.clone(),
+    }
+}
+
 impl CollectionInfo {
     /// Lookup a column in a collection.
     pub fn lookup_column(&self, column_name: &str) -> Result<ColumnInfo, Error> {
@@ -292,10 +351,7 @@ impl CollectionInfo {
             CollectionInfo::Table { name, info } => info
                 .columns
                 .get(column_name)
-                .map(|column_info| ColumnInfo {
-                    name: sql::ast::ColumnName(column_info.name.clone()),
-                    r#type: column_info.r#type.clone(),
-                })
+                .map(|column_info| column_info_to_sql_column_info(column_info))
                 .ok_or(Error::ColumnNotFoundInCollection(
                     column_name.to_string(),
                     name.clone(),
@@ -303,14 +359,12 @@ impl CollectionInfo {
             CollectionInfo::NativeQuery { name, info } => info
                 .columns
                 .get(column_name)
-                .map(|column_info| ColumnInfo {
-                    name: sql::ast::ColumnName(column_info.name.clone()),
-                    r#type: column_info.r#type.clone(),
-                })
+                .map(|column_info| column_info_to_sql_column_info(column_info))
                 .ok_or(Error::ColumnNotFoundInCollection(
                     column_name.to_string(),
                     name.clone(),
                 )),
+            // TODO(KC): Remove this, once we refactor lookup_collection.
             CollectionInfo::NativeMutation { name, info } => info
                 .columns
                 .get(column_name)
@@ -358,26 +412,6 @@ impl State {
         sql::ast::TableReference::AliasedTable(alias)
     }
 
-    /// Introduce a new native mutation to the state.
-    pub fn insert_native_mutation(
-        &mut self,
-        name: &str,
-        info: metadata::NativeMutationInfo,
-        arguments: BTreeMap<String, serde_json::Value>,
-        fields: Option<NestedField>,
-    ) {
-        let native_mutation_op_kind = MutationOperationKind::NativeMutation(NativeMutationInfo {
-            name: name.to_string(),
-            info,
-        });
-        self.mutations.push(MutationOperation {
-            name: name.to_string(),
-            arguments,
-            fields,
-            kind: native_mutation_op_kind,
-        });
-    }
-
     /// Fetch the tracked native queries used in the query plan and their table alias.
     pub fn get_native_queries(self) -> Vec<NativeQueryInfo> {
         self.native_queries.native_queries
@@ -401,6 +435,16 @@ impl State {
         sql::ast::TableAlias {
             unique_index: self.next_global_table_index().0,
             name,
+            is_temporary_table: false,
+        }
+    }
+
+    /// Create table aliases using this function so they get a unique index.
+    pub fn make_temporary_table_alias(&mut self, name: String) -> sql::ast::TableAlias {
+        sql::ast::TableAlias {
+            unique_index: self.next_global_table_index().0,
+            name,
+            is_temporary_table: true,
         }
     }
 
@@ -443,6 +487,10 @@ impl State {
 
     pub fn make_native_query_table_alias(&mut self, name: &str) -> sql::ast::TableAlias {
         self.make_table_alias(format!("NATIVE_QUERY_{}", name))
+    }
+
+    pub fn make_stored_procedure_table_alias(&mut self, name: &str) -> sql::ast::TableAlias {
+        self.make_temporary_table_alias(format!("STORED_PROCEDURE_{}", name))
     }
 
     /// Create a table alias for boolean expressions.

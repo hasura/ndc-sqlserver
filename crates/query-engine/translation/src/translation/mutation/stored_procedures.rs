@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use super::Error;
 use crate::translation::{
-    helpers::{Env, State, StoredProcedureInfo, TableNameAndReference},
+    helpers::{CollectionOrProcedureInfo, Env, State, StoredProcedureInfo, TableNameAndReference},
     query::translate_query,
     values::translate_json_value,
 };
@@ -11,7 +11,10 @@ use ndc_sdk::models;
 use query_engine_metadata::metadata::{ColumnInfo, Nullable};
 use query_engine_sql::sql::{
     self,
-    ast::{ExecProcedure, ExecProcedureInsertIntoTempTable, SchemaName, TableName},
+    ast::{
+        ColumnType, ExecProcedure, ExecProcedureInsertIntoTempTable, SchemaName, TableAlias,
+        TableName, TemporaryTable, TemporaryTableName,
+    },
     execution_plan::StoredProcedureExecutionPlan,
     helpers::make_column_alias,
 };
@@ -58,7 +61,7 @@ pub(crate) fn generate_execution_plan(
 ) -> Result<StoredProcedureExecutionPlan, Error> {
     // Compute the fields that need to be returned.
     let parsed_fields = parse_stored_procedure_fields(requested_fields)?.unwrap_or(
-        get_all_procedure_fields(stored_proc_info.info.returns.ok_or(
+        get_all_procedure_fields(stored_proc_info.info.returns.clone().ok_or(
             Error::UnexpectedInternalError(
                 "Found stored procedure without a return type".to_string(),
             ),
@@ -84,10 +87,24 @@ pub(crate) fn generate_execution_plan(
         }
     }
 
-    let temp_table_name = format!("hasura_sp_{}", stored_proc_info.name);
+    let temp_table_alias: TableAlias =
+        state.make_stored_procedure_table_alias(&stored_proc_info.name);
+
+    let temp_table = TemporaryTable {
+        name: TemporaryTableName(temp_table_alias.clone()),
+        columns: {
+            stored_proc_info
+                .info
+                .returns
+                .unwrap_or_default()
+                .iter()
+                .map(|(_, col_info)| (col_info.name.clone(), ColumnType(col_info.r#type.0.clone())))
+                .collect()
+        },
+    };
 
     let exec_proc_sql = ExecProcedureInsertIntoTempTable {
-        temp_table_name: temp_table_name.clone(),
+        temp_table,
         exec_procedure: ExecProcedure {
             arguments: args,
             procedure_name: stored_proc_info.info.name,
@@ -106,27 +123,31 @@ pub(crate) fn generate_execution_plan(
         predicate: None,
     };
 
-    let table_alias = state.make_table_alias(temp_table_name.clone());
-
-    let table_ref = sql::ast::TableReference::AliasedTable(table_alias.clone());
+    let table_ref = sql::ast::TableReference::AliasedTable(temp_table_alias.clone());
 
     let table_name_and_ref = TableNameAndReference {
-        name: temp_table_name.clone(),
-        reference: sql::ast::TableReference::AliasedTable(table_alias.clone()),
+        name: stored_proc_info.name.clone(),
+        reference: sql::ast::TableReference::AliasedTable(temp_table_alias.clone()),
     };
 
     let from_clause = sql::ast::From::Table {
         reference: table_ref,
-        alias: table_alias.clone(),
+        alias: temp_table_alias.clone(),
     };
+
+    let collection_info = env
+        .lookup_procedure(&stored_proc_info.name)
+        .map(CollectionOrProcedureInfo::Procedure)
+        .ok_or(Error::ProcedureNotFound(stored_proc_info.name))?;
 
     let select_set = translate_query(
         env,
         state,
+        &collection_info,
         &table_name_and_ref,
         &from_clause,
         &query,
-        &table_alias,
+        &temp_table_alias,
     )?;
 
     // form a single JSON item shaped `{ type: "procedure", result: "<mutation_operation_result>" }`
@@ -138,7 +159,7 @@ pub(crate) fn generate_execution_plan(
         ),
         (
             state.make_table_alias("rows".to_string()),
-            sql::helpers::make_column_alias("random".to_string()),
+            sql::helpers::make_column_alias("rows".to_string()),
         ),
         state.make_table_alias("aggregates".to_string()),
         make_column_alias("aggs".to_string()),
@@ -146,7 +167,7 @@ pub(crate) fn generate_execution_plan(
     );
 
     Ok(StoredProcedureExecutionPlan {
-        temp_table_name,
+        temp_table_name: temp_table_alias.name,
         stored_procedure_sql_query: exec_proc_sql,
         response_selection: json_select,
     })

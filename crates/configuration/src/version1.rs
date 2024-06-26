@@ -635,6 +635,8 @@ pub fn occurring_scalar_types(metadata: &metadata::Metadata) -> BTreeSet<metadat
         .values()
         .flat_map(|v| v.arguments.values().map(|c| c.r#type.clone()));
 
+    // TODO(KC): Include the types from native mutations and stored procedures
+
     let aggregate_types = metadata
         .aggregate_functions
         .0

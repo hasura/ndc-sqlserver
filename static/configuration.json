@@ -871,7 +871,7 @@
             "description": null
           },
           "Phone": {
-            "name": "CustomerId",
+            "name": "Phone",
             "type": "varchar",
             "nullable": "nonNullable",
             "description": null

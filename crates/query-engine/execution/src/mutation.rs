@@ -7,11 +7,15 @@ use query_engine_metrics::metrics;
 use query_engine_sql::sql::{
     self,
     ast::With,
-    execution_plan::{MutationOperationExecutionPlan, NativeMutationOperationExecutionPlan},
+    execution_plan::{
+        MutationOperationExecutionPlan, NativeMutationOperationExecutionPlan,
+        StoredProcedureExecutionPlan,
+    },
     string::SQL,
 };
 use query_engine_translation::translation::mutation::generate_native_mutation_response_cte;
 use std::collections::{BTreeMap, HashMap};
+use tiberius::ExecuteResult;
 
 use crate::error::{Error, MutationError, NativeMutationResponseParseError};
 
@@ -206,9 +210,56 @@ async fn execute_mutation(
             execute_native_mutation(connection, native_mutation_plan, buffer).await
         }
         MutationOperationExecutionPlan::StoredProcedure(stored_procedure_plan) => {
-            todo!()
+            execute_stored_procedure(connection, stored_procedure_plan, buffer).await
         }
     }
+}
+
+async fn execute_stored_procedure(
+    connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
+    plan: StoredProcedureExecutionPlan,
+    buffer: &mut (impl BufMut + Send),
+) -> Result<(), Error> {
+    let mut sql = SQL::new();
+
+    plan.stored_procedure_sql_query.to_sql(&mut sql);
+
+    // User provided native mutation query.
+    let mut mssql_query = tiberius::Query::new(sql.sql);
+
+    // bind parameters....
+    for param in sql.params.clone().into_iter() {
+        match param {
+            sql::string::Param::String(string) => {
+                mssql_query.bind(string);
+            }
+            // Variables are not used with mutations.
+            sql::string::Param::Variable(_) => {}
+        }
+    }
+
+    // go!
+    let _ = mssql_query
+        .execute(connection)
+        .await
+        .map_err(Error::TiberiusError)?;
+
+    let mut response_selection_sql = SQL::new();
+
+    plan.response_selection.to_sql(&mut response_selection_sql);
+
+    println!("response selection SQL is {}", response_selection_sql.sql);
+
+    // Execute the SQL query and append the response obtained to the `buffer`.
+    execute_query(
+        connection,
+        &response_selection_sql,
+        &BTreeMap::new(),
+        buffer,
+    )
+    .await?;
+
+    Ok(())
 }
 
 /// Execute the mutation query.
