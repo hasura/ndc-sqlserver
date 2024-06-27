@@ -57,7 +57,7 @@ pub(crate) fn generate_execution_plan(
     state: &mut State,
     stored_proc_info: StoredProcedureInfo,
     requested_fields: Option<ndc_sdk::models::NestedField>,
-    provided_args: BTreeMap<String, serde_json::Value>,
+    provided_args: &BTreeMap<String, serde_json::Value>,
 ) -> Result<StoredProcedureExecutionPlan, Error> {
     // Compute the fields that need to be returned.
     let parsed_fields = parse_stored_procedure_fields(requested_fields)?.unwrap_or(
@@ -96,7 +96,9 @@ pub(crate) fn generate_execution_plan(
             stored_proc_info
                 .info
                 .returns
-                .unwrap_or_default().values().map(|col_info| (col_info.name.clone(), ColumnType(col_info.r#type.0.clone())))
+                .unwrap_or_default()
+                .values()
+                .map(|col_info| (col_info.name.clone(), ColumnType(col_info.r#type.0.clone())))
                 .collect()
         },
     };

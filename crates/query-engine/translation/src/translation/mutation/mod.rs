@@ -368,7 +368,7 @@ fn generate_mutation_execution_plan(
                     &mut state,
                     stored_proc_info,
                     mutation_operation.fields,
-                    mutation_operation.arguments,
+                    &mutation_operation.arguments,
                 )?;
                 mutations.push(MutationOperationExecutionPlan::StoredProcedure(exec_plan));
             }
