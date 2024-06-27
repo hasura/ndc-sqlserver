@@ -618,7 +618,7 @@ mod tests {
       }
     }"#;
             let stored_procedures: StoredProcedures =
-                serde_json::from_str(&stored_proc_config).unwrap();
+                serde_json::from_str(stored_proc_config).unwrap();
 
             let mut object_types = BTreeMap::new();
 
@@ -666,14 +666,14 @@ mod tests {
       }
     }"#;
             let stored_procedures: StoredProcedures =
-                serde_json::from_str(&stored_proc_config).unwrap();
+                serde_json::from_str(stored_proc_config).unwrap();
 
             let mut object_types = BTreeMap::new();
 
             let schema =
                 get_stored_procedures_schema(&stored_procedures, &mut object_types).unwrap();
 
-            let proc_schema = schema.get(0).unwrap();
+            let proc_schema = schema.first().unwrap();
 
             let mut expected_args = BTreeMap::new();
 

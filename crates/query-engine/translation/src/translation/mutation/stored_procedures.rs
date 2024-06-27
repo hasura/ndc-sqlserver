@@ -96,9 +96,7 @@ pub(crate) fn generate_execution_plan(
             stored_proc_info
                 .info
                 .returns
-                .unwrap_or_default()
-                .iter()
-                .map(|(_, col_info)| (col_info.name.clone(), ColumnType(col_info.r#type.0.clone())))
+                .unwrap_or_default().values().map(|col_info| (col_info.name.clone(), ColumnType(col_info.r#type.0.clone())))
                 .collect()
         },
     };

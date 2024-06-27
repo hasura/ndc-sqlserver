@@ -245,7 +245,7 @@ pub fn translate_rows_query(
                         match collection_info {
                     CollectionInfo::Table { info, .. } => {
                         select.order_by = sorting::default_table_order_by(
-                            &info,
+                            info,
                             current_table.reference.clone(),
                         )?;
                     }

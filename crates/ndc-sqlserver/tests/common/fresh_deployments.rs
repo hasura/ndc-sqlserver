@@ -55,9 +55,7 @@ impl FreshDeployment {
         for file_path in data_setup_file_paths.into_iter() {
             let query = fs::read_to_string(file_path.clone()).unwrap();
 
-            new_db_connection.simple_query(query).await.expect(
-                format!("Error in running the query present in the file: {file_path:#?}").as_str(),
-            );
+            new_db_connection.simple_query(query).await.unwrap_or_else(|_| panic!("Error in running the query present in the file: {file_path:#?}"));
         }
 
         Ok(FreshDeployment {

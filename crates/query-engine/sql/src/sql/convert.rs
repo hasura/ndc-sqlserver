@@ -120,7 +120,7 @@ impl TemporaryTable {
         for (index, (col_name, col_type)) in self.columns.iter().enumerate() {
             let col_type = match col_type.0.as_str() {
                 "varchar" => "VARCHAR(MAX)",
-                anything_else => &anything_else,
+                anything_else => anything_else,
             };
             sql.append_syntax(format!("{col_name} {}", col_type).as_str());
             if index < (self.columns.len() - 1) {

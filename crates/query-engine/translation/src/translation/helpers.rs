@@ -271,7 +271,7 @@ impl<'a> Env<'a> {
                                     name: collection_name.to_string(),
                                     info: nq.clone(),
                                 })
-                                .map(|nq| CollectionOrProcedureInfo::Collection(nq))
+                                .map(CollectionOrProcedureInfo::Collection)
                                 .ok_or(Error::CollectionNotFound(collection_name.to_string())),
                         }
                     }
@@ -337,7 +337,7 @@ impl ProcedureInfo {
                     column_name.to_string(),
                     name.to_string(),
                 ))
-                .map(|c| column_info_to_sql_column_info(c)),
+                .map(column_info_to_sql_column_info),
         }
     }
 }
@@ -358,7 +358,7 @@ impl CollectionInfo {
             CollectionInfo::Table { name, info } => info
                 .columns
                 .get(column_name)
-                .map(|column_info| column_info_to_sql_column_info(column_info))
+                .map(column_info_to_sql_column_info)
                 .ok_or(Error::ColumnNotFoundInCollection(
                     column_name.to_string(),
                     name.clone(),
@@ -366,7 +366,7 @@ impl CollectionInfo {
             CollectionInfo::NativeQuery { name, info } => info
                 .columns
                 .get(column_name)
-                .map(|column_info| column_info_to_sql_column_info(column_info))
+                .map(column_info_to_sql_column_info)
                 .ok_or(Error::ColumnNotFoundInCollection(
                     column_name.to_string(),
                     name.clone(),
