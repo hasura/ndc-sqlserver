@@ -2734,7 +2734,14 @@
         "name": "ReturnOne",
         "schema": "dbo",
         "arguments": {},
-        "returns": null,
+        "returns": {
+          "result": {
+            "name": "result",
+            "type": "int",
+            "description": null,
+            "nullable": "nullable"
+          }
+        },
         "description": null
       }
     }

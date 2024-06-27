@@ -84,3 +84,39 @@ mod native_mutations {
         }
     }
 }
+
+mod stored_procedures {
+    use crate::common::{
+        configuration::get_path_from_project_root, database::MSSQLDatabaseConfig,
+        helpers::run_mutation,
+    };
+
+    use super::common::fresh_deployments::FreshDeployment;
+
+    use serial_test::serial;
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[serial]
+    async fn basic_stored_procedure_execution() {
+        let original_db_config = MSSQLDatabaseConfig::original_db_config();
+
+        let stored_procs_setup_file_path =
+            get_path_from_project_root("static/tests/chinook-stored-procedures.sql");
+
+        let fresh_deployment = FreshDeployment::create(
+            original_db_config,
+            "static/tests",
+            vec![stored_procs_setup_file_path],
+        )
+        .await
+        .unwrap();
+
+        let result = run_mutation(
+            "mutations/stored_procedures/return_one",
+            fresh_deployment.connection_uri.clone(),
+        )
+        .await;
+
+        insta::assert_json_snapshot!(result);
+    }
+}
