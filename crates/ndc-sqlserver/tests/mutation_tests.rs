@@ -42,44 +42,45 @@ mod native_mutations {
 
         insta::assert_json_snapshot!(result);
     }
-}
 
-mod negative_native_mutations_test {
-    use crate::common::{
-        database::MSSQLDatabaseConfig,
-        helpers::{run_mutation_fail, run_query_with_connection_uri},
-    };
+    mod negative_native_mutations_test {
+        use crate::common::{
+            database::MSSQLDatabaseConfig,
+            helpers::{run_mutation_fail, run_query_with_connection_uri},
+        };
 
-    use super::common::fresh_deployments::FreshDeployment;
+        use super::*;
 
-    use hyper::StatusCode;
-    use serial_test::serial;
+        use hyper::StatusCode;
+        use serial_test::serial;
 
-    #[tokio::test(flavor = "multi_thread")]
-    #[serial]
-    async fn test_atomicity_native_mutations() {
-        let original_db_config = MSSQLDatabaseConfig::original_db_config();
-        let fresh_deployment = FreshDeployment::create(original_db_config, "static/tests", vec![])
-            .await
-            .unwrap();
+        #[tokio::test(flavor = "multi_thread")]
+        #[serial]
+        async fn test_atomicity_native_mutations() {
+            let original_db_config = MSSQLDatabaseConfig::original_db_config();
+            let fresh_deployment =
+                FreshDeployment::create(original_db_config, "static/tests", vec![])
+                    .await
+                    .unwrap();
 
-        // Mutation that tries to insert two records with the same primary key
-        // So, the second mutation is expected to fail. Since, we run the whole
-        // thing in a transaction, we expect the whole transaction to be rolled
-        // back.
-        let _ = run_mutation_fail(
-            "fail_insert_artist_and_return_id",
-            fresh_deployment.connection_uri.clone(),
-            StatusCode::INTERNAL_SERVER_ERROR,
-        )
-        .await;
+            // Mutation that tries to insert two records with the same primary key
+            // So, the second mutation is expected to fail. Since, we run the whole
+            // thing in a transaction, we expect the whole transaction to be rolled
+            // back.
+            let _ = run_mutation_fail(
+                "fail_insert_artist_and_return_id",
+                fresh_deployment.connection_uri.clone(),
+                StatusCode::INTERNAL_SERVER_ERROR,
+            )
+            .await;
 
-        let result = run_query_with_connection_uri(
-            "fetch_artist_count",
-            &fresh_deployment.connection_uri.clone(),
-        )
-        .await;
+            let result = run_query_with_connection_uri(
+                "fetch_artist_count",
+                &fresh_deployment.connection_uri.clone(),
+            )
+            .await;
 
-        insta::assert_json_snapshot!(result);
+            insta::assert_json_snapshot!(result);
+        }
     }
 }
