@@ -320,13 +320,20 @@ impl CollectionOrProcedureInfo {
 impl ProcedureInfo {
     pub fn lookup_column(&self, column_name: &str) -> Result<ColumnInfo, Error> {
         match self {
-            ProcedureInfo::NativeMutation { name, info } => todo!(),
+            ProcedureInfo::NativeMutation { name, info } => info
+                .columns
+                .get(column_name)
+                .ok_or(Error::ColumnNotFoundInProcedure(
+                    column_name.to_string(),
+                    name.to_string(),
+                ))
+                .map(|c| column_info_to_sql_column_info(&c.column_info)),
             ProcedureInfo::StoredProcedure { name, info } => info
                 .returns
                 .clone()
                 .unwrap_or_default()
                 .get(column_name)
-                .ok_or(Error::ColumnNotFoundInCollection(
+                .ok_or(Error::ColumnNotFoundInProcedure(
                     column_name.to_string(),
                     name.to_string(),
                 ))
