@@ -21,21 +21,33 @@ pub fn create_client(router: axum::Router) -> TestClient {
 
 /// Run a query against the server, get the result, and compare against the snapshot.
 pub async fn run_query(testname: &str) -> serde_json::Value {
-    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
+    run_query_with_connection_uri(testname, SQLSERVER_CONNECTION_STRING).await
+}
+
+/// Run a query against the server, get the result, and compare against the snapshot.
+pub async fn run_query_with_connection_uri(
+    testname: &str,
+    connection_string: &str,
+) -> serde_json::Value {
+    let router = create_router(connection_string).await;
     let client = create_client(router);
     run_against_server(&client, "query", testname, StatusCode::OK).await
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
-pub async fn run_mutation(testname: &str) -> serde_json::Value {
-    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
+pub async fn run_mutation(testname: &str, db_connection_string: String) -> serde_json::Value {
+    let router = create_router(&db_connection_string).await;
     let client = create_client(router);
     run_against_server(&client, "mutation", testname, StatusCode::OK).await
 }
 
 /// Run a query against the server, get the result, and compare against the snapshot.
-pub async fn run_mutation_fail(testname: &str, expected_status: StatusCode) -> serde_json::Value {
-    let router = create_router(SQLSERVER_CONNECTION_STRING).await;
+pub async fn run_mutation_fail(
+    testname: &str,
+    db_connection_string: String,
+    expected_status: StatusCode,
+) -> serde_json::Value {
+    let router = create_router(&db_connection_string).await;
     let client = create_client(router);
     run_against_server(&client, "mutation", testname, expected_status).await
 }
