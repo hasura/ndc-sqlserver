@@ -87,12 +87,14 @@ mod native_mutations {
 
 mod stored_procedures {
     use crate::common::{
-        configuration::get_path_from_project_root, database::MSSQLDatabaseConfig,
-        helpers::run_mutation,
+        configuration::get_path_from_project_root,
+        database::MSSQLDatabaseConfig,
+        helpers::{run_mutation, run_mutation_fail},
     };
 
     use super::common::fresh_deployments::FreshDeployment;
 
+    use hyper::StatusCode;
     use serial_test::serial;
 
     #[tokio::test(flavor = "multi_thread")]
@@ -101,7 +103,7 @@ mod stored_procedures {
         let original_db_config = MSSQLDatabaseConfig::original_db_config();
 
         let stored_procs_setup_file_path =
-            get_path_from_project_root("static/tests/chinook-stored-procedures.sql");
+            get_path_from_project_root("static/tests/stored_procedures_sql/return_one.sql");
 
         let fresh_deployment = FreshDeployment::create(
             original_db_config,
@@ -114,6 +116,33 @@ mod stored_procedures {
         let result = run_mutation(
             "mutations/stored_procedures/return_one",
             fresh_deployment.connection_uri.clone(),
+        )
+        .await;
+
+        insta::assert_json_snapshot!(result);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    #[serial]
+    async fn execute_stored_procedure_without_providing_arguments() {
+        let original_db_config = MSSQLDatabaseConfig::original_db_config();
+
+        let stored_procs_setup_file_path = get_path_from_project_root(
+            "static/tests/stored_procedures_sql/get_customer_details.sql",
+        );
+
+        let fresh_deployment = FreshDeployment::create(
+            original_db_config,
+            "static/tests",
+            vec![stored_procs_setup_file_path],
+        )
+        .await
+        .unwrap();
+
+        let result = run_mutation_fail(
+            "mutations/stored_procedures/get_customer_details_without_arguments",
+            fresh_deployment.connection_uri.clone(),
+            StatusCode::BAD_REQUEST,
         )
         .await;
 

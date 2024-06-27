@@ -2715,7 +2715,7 @@
           "CustomerId": {
             "name": "CustomerId",
             "type": "int",
-            "nullable": "nullable",
+            "nullable": "nonNullable",
             "isOutput": false,
             "description": null
           },
@@ -2727,7 +2727,26 @@
             "description": null
           }
         },
-        "returns": null,
+        "returns": {
+          "CustomerId": {
+            "name": "CustomerId",
+            "type": "varchar",
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "Phone": {
+            "name": "Phone",
+            "type": "varchar",
+            "nullable": "nonNullable",
+            "description": null
+          },
+          "TotalPurchases": {
+            "name": "TotalPurchases",
+            "type": "int",
+            "nullable": "nonNullable",
+            "description": null
+          }
+        },
         "description": null
       },
       "ReturnOne": {

@@ -2984,6 +2984,28 @@ expression: result
         }
       }
     },
+    "GetCustomerDetailsWithTotalPurchases_response": {
+      "fields": {
+        "CustomerId": {
+          "type": {
+            "type": "named",
+            "name": "varchar"
+          }
+        },
+        "Phone": {
+          "type": {
+            "type": "named",
+            "name": "varchar"
+          }
+        },
+        "TotalPurchases": {
+          "type": {
+            "type": "named",
+            "name": "int"
+          }
+        }
+      }
+    },
     "Invoice": {
       "fields": {
         "BillingAddress": {
@@ -3812,6 +3834,33 @@ expression: result
       "result_type": {
         "type": "named",
         "name": "insert_artist_and_return_id_response"
+      }
+    },
+    {
+      "name": "GetCustomerDetailsWithTotalPurchases",
+      "arguments": {
+        "CustomerId": {
+          "type": {
+            "type": "named",
+            "name": "int"
+          }
+        },
+        "Phone": {
+          "type": {
+            "type": "nullable",
+            "underlying_type": {
+              "type": "named",
+              "name": "varchar"
+            }
+          }
+        }
+      },
+      "result_type": {
+        "type": "array",
+        "element_type": {
+          "type": "named",
+          "name": "GetCustomerDetailsWithTotalPurchases_response"
+        }
       }
     },
     {
