@@ -397,6 +397,10 @@ fn make_from_clause(
                 "Native mutations can't have a `FROM` clause attached with them".into(),
             )),
         },
-        CollectionOrProcedureInfo::Procedure(procedure_info) => todo!("Throw an error here"),
+        CollectionOrProcedureInfo::Procedure(_procedure_info) => {
+            Err(Error::UnexpectedInternalError(
+                "Procedures can't have a `FROM` clause attached with them".into(),
+            ))
+        }
     }
 }

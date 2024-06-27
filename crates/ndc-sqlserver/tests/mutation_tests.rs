@@ -47,7 +47,7 @@ mod native_mutations {
 mod negative_native_mutations_test {
     use crate::common::{
         database::MSSQLDatabaseConfig,
-        helpers::{run_mutation_fail, run_query, run_query_with_connection_uri},
+        helpers::{run_mutation_fail, run_query_with_connection_uri},
     };
 
     use super::common::fresh_deployments::FreshDeployment;

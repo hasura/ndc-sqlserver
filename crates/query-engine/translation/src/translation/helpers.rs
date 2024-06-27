@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-use ndc_sdk::models::{self, NestedField};
+use ndc_sdk::models;
 
 use super::error::Error;
 use crate::translation::values;

@@ -12,8 +12,8 @@ use query_engine_metadata::metadata::{ColumnInfo, Nullable};
 use query_engine_sql::sql::{
     self,
     ast::{
-        ColumnType, ExecProcedure, ExecProcedureInsertIntoTempTable, SchemaName, TableAlias,
-        TableName, TemporaryTable, TemporaryTableName,
+        ColumnType, ExecProcedure, ExecProcedureInsertIntoTempTable, TableAlias, TemporaryTable,
+        TemporaryTableName,
     },
     execution_plan::StoredProcedureExecutionPlan,
     helpers::make_column_alias,
