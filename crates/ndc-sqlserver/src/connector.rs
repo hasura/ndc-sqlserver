@@ -202,7 +202,7 @@ impl connector::Connector for SQLServer {
     async fn get_schema(
         configuration: &Self::Configuration,
     ) -> Result<JsonResponse<models::SchemaResponse>, connector::SchemaError> {
-        schema::get_schema(configuration).map(Into::into)
+        schema::get_schema(configuration).await.map(Into::into)
     }
 
     /// Explain a query by creating an execution plan

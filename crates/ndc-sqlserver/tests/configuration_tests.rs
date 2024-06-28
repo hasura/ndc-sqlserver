@@ -6,7 +6,6 @@ use configuration::environment::Variable;
 
 use ndc_sqlserver_configuration as configuration;
 use ndc_sqlserver_configuration::secret;
-use query_engine_metadata::metadata::stored_procedures::StoredProcedures;
 use query_engine_metadata::metadata::{NativeMutations, NativeQueries};
 use serde::de::DeserializeOwned;
 use serde_json::from_value;
@@ -58,17 +57,8 @@ pub async fn configure_is_idempotent(
     let native_mutations_config: NativeMutations =
         read_configuration_as("static/chinook-native-mutations.json").unwrap();
 
-    // Although, the introspection of the database includes the stored procedures
-    // it doesn't include the return type of the stored procedures, this is because
-    // stored procedures don't have a return type tied to them. So, we depend on the
-    // user to provide us with the return type of each stored procedure. So, in this
-    // case, we include the stored procedures with their return types artificially.
-    let stored_procedures_config: StoredProcedures =
-        read_configuration_as("static/chinook-stored-procedures.json").unwrap();
-
     actual.metadata.native_mutations = native_mutations_config;
     actual.metadata.native_queries = native_queries_config;
-    actual.metadata.stored_procedures = stored_procedures_config;
 
     let actual_value = serde_json::to_value(actual).expect("serde_json::to_value");
 
