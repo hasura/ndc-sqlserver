@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1719562598662,
+  "lastUpdate": 1719573741554,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -4091,6 +4091,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.07445948447670513,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "karthikeyan@hasura.io",
+            "name": "Karthikeyan Chinnakonda",
+            "username": "codingkarthik"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7f7efa739191469caa912d57de4c3c4c2c163719",
+          "message": "Fix mutation tests (#140)\n\n<!-- The PR description should answer 2 (maybe 3) important questions:\n-->\n\n### What\n\n<!-- What is this PR trying to accomplish (and why, if it's not\nobvious)? -->\nThis PR separates the testing configuration with the sample\nconfiguration to enable mutation tests to run without any dependency on\nthe sample configuration.\n\n### How\n\n<!-- How is it trying to accomplish it (what are the implementation\nsteps)? -->",
+          "timestamp": "2024-06-28T11:15:24Z",
+          "tree_id": "1d258892b9ba02bfc844eedc2fd0539e0ce00863",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/7f7efa739191469caa912d57de4c3c4c2c163719"
+        },
+        "date": 1719573740424,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 58.602974,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 73.2134113,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 59.62571362377778,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.6485947076907692,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.09487832556757607,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 387.642974,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 459.0807563999999,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 378.4389519406619,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 0.9992861011794503,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.07875379003467288,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 133.03391800000003,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 146.95795329999999,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 131.0269359274627,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.6890981520342621,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07814772698029979,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 132.031967,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 143.47576750000002,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 129.3067690837407,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.6686773867387785,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.07825355091746045,
             "unit": "ms"
           }
         ]
