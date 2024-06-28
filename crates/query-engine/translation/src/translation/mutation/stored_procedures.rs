@@ -78,8 +78,15 @@ pub(crate) fn generate_execution_plan(
             Some(arg_val) if *arg_val != serde_json::Value::Null => {
                 args.insert(arg_name, translate_json_value(arg_val, &arg_info.r#type)?);
             }
+            Some(arg_val) => {
+                if arg_info.nullable == Nullable::NonNullable {
+                    return Err(Error::ArgumentNotFound(arg_name));
+                } else {
+                    args.insert(arg_name, translate_json_value(arg_val, &arg_info.r#type)?);
+                }
+            }
             // Throw error if we recieve a `null` or undefined value for a required argument
-            _ => {
+            None => {
                 if arg_info.nullable == Nullable::NonNullable {
                     return Err(Error::ArgumentNotFound(arg_name));
                 }
