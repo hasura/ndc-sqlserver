@@ -2989,7 +2989,7 @@ expression: result
         "CustomerId": {
           "type": {
             "type": "named",
-            "name": "varchar"
+            "name": "int"
           }
         },
         "Phone": {

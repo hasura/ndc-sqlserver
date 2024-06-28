@@ -866,7 +866,7 @@
         "returns": {
           "CustomerId": {
             "name": "CustomerId",
-            "type": "varchar",
+            "type": "int",
             "nullable": "nonNullable",
             "description": null
           },
