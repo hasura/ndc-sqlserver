@@ -7,7 +7,11 @@ use crate::secret::Secret;
 use crate::{uri, ConnectionUri};
 
 use query_engine_metadata::metadata;
+use query_engine_metadata::metadata::stored_procedures::{
+    StoredProcedureArgumentInfo, StoredProcedureInfo, StoredProcedures,
+};
 use query_engine_metadata::metadata::{database, Nullable};
+
 use query_engine_metrics::metrics;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -17,7 +21,12 @@ use std::collections::BTreeSet;
 use thiserror::Error;
 use tiberius::Query;
 
+// TODO(KC): Move the `table_configuration.sql` to the `static` folder present
+// in the root of this repo.
 const TABLE_CONFIGURATION_QUERY: &str = include_str!("table_configuration.sql");
+
+const STORED_PROCS_CONFIGURATION_QUERY: &str =
+    include_str!("../../../static/introspect_stored_procedures.sql");
 
 const TYPES_QUERY: &str = "SELECT name FROM sys.types FOR JSON PATH";
 
@@ -192,9 +201,17 @@ pub async fn configure(
 
     let type_names: Vec<TypeItem> = serde_json::from_str(types_row.get(0).unwrap()).unwrap();
 
-    metadata.comparison_operators = get_comparison_operators(&type_names).await;
+    metadata.comparison_operators = get_comparison_operators(&type_names);
 
-    metadata.aggregate_functions = get_aggregate_functions(&type_names).await;
+    metadata.aggregate_functions = get_aggregate_functions(&type_names);
+
+    let stored_procedures_row =
+        select_first_row(&mssql_pool, STORED_PROCS_CONFIGURATION_QUERY).await;
+
+    let stored_procedures: Vec<introspection::IntrospectStoredProcedure> =
+        serde_json::from_str(stored_procedures_row.get(0).unwrap()).unwrap();
+
+    metadata.stored_procedures = get_stored_procedures(stored_procedures);
 
     Ok(RawConfiguration {
         version: 1,
@@ -208,9 +225,48 @@ struct TypeItem {
     name: database::ScalarType,
 }
 
+fn get_stored_procedures(
+    introspected_stored_procedures: Vec<introspection::IntrospectStoredProcedure>,
+) -> query_engine_metadata::metadata::stored_procedures::StoredProcedures {
+    let mut metadata_stored_procs = BTreeMap::new();
+    for stored_procedure in introspected_stored_procedures.into_iter() {
+        //metadata_stored_procs.insert(stored_procedure.name, quer)
+
+        let metadata_stored_procedure = StoredProcedureInfo {
+            name: stored_procedure.name.clone(),
+            schema: stored_procedure.schema,
+            arguments: stored_procedure
+                .arguments
+                .into_iter()
+                .map(|sp| -> (String, StoredProcedureArgumentInfo) {
+                    // The first character is `@`, so, we skip it.
+                    (
+                        sp.name.clone(),
+                        StoredProcedureArgumentInfo {
+                            name: sp.name,
+                            r#type: query_engine_metadata::metadata::ScalarType(sp.r#type),
+                            nullable: if sp.is_nullable {
+                                Nullable::Nullable
+                            } else {
+                                Nullable::NonNullable
+                            },
+                            is_output: sp.is_output,
+                            description: None,
+                        },
+                    )
+                })
+                .collect(),
+            returns: None,
+            description: None,
+        };
+        metadata_stored_procs.insert(stored_procedure.name, metadata_stored_procedure);
+    }
+    StoredProcedures(metadata_stored_procs)
+}
+
 // we lookup all types in sys.types, then use our hardcoded ideas about each one to attach
 // aggregate functions
-async fn get_aggregate_functions(type_names: &Vec<TypeItem>) -> database::AggregateFunctions {
+fn get_aggregate_functions(type_names: &Vec<TypeItem>) -> database::AggregateFunctions {
     let mut aggregate_functions = BTreeMap::new();
 
     for type_name in type_names {
@@ -337,7 +393,7 @@ fn get_aggregate_functions_for_type(
 
 // we lookup all types in sys.types, then use our hardcoded ideas about each one to attach
 // comparison operators
-async fn get_comparison_operators(type_names: &Vec<TypeItem>) -> database::ComparisonOperators {
+fn get_comparison_operators(type_names: &Vec<TypeItem>) -> database::ComparisonOperators {
     let mut comparison_operators = BTreeMap::new();
 
     for type_name in type_names {
@@ -578,6 +634,8 @@ pub fn occurring_scalar_types(metadata: &metadata::Metadata) -> BTreeSet<metadat
         .0
         .values()
         .flat_map(|v| v.arguments.values().map(|c| c.r#type.clone()));
+
+    // TODO(KC): Include the types from native mutations and stored procedures
 
     let aggregate_types = metadata
         .aggregate_functions
