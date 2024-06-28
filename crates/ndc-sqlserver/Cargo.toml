@@ -34,7 +34,6 @@ serde_json = { version = "1.0.116", features = ["raw_value"] }
 tokio = { version = "1.37.0", features = ["full"] }
 tracing = "0.1.40"
 prometheus = "0.13.3"
-thiserror = "1.0.59"
 
 [dev-dependencies]
 ndc-test = { workspace = true }

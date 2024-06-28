@@ -1312,7 +1312,6 @@ dependencies = [
  "serde",
  "serde_json",
  "similar-asserts",
- "thiserror",
  "tiberius",
  "tokio",
  "tokio-util",
