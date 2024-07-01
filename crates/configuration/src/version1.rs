@@ -230,8 +230,6 @@ fn get_stored_procedures(
 ) -> query_engine_metadata::metadata::stored_procedures::StoredProcedures {
     let mut metadata_stored_procs = BTreeMap::new();
     for stored_procedure in introspected_stored_procedures.into_iter() {
-        //metadata_stored_procs.insert(stored_procedure.name, quer)
-
         let metadata_stored_procedure = StoredProcedureInfo {
             name: stored_procedure.name.clone(),
             schema: stored_procedure.schema,
@@ -239,7 +237,6 @@ fn get_stored_procedures(
                 .arguments
                 .into_iter()
                 .map(|sp| -> (String, StoredProcedureArgumentInfo) {
-                    // The first character is `@`, so, we skip it.
                     (
                         sp.name.clone(),
                         StoredProcedureArgumentInfo {
