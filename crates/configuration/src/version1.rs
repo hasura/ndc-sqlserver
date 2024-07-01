@@ -635,7 +635,20 @@ pub fn occurring_scalar_types(metadata: &metadata::Metadata) -> BTreeSet<metadat
         .values()
         .flat_map(|v| v.arguments.values().map(|c| c.r#type.clone()));
 
-    // TODO(KC): Include the types from native mutations and stored procedures
+    // TODO(KC): include types of the native mutations
+
+    let stored_procedures_argument_types = metadata
+        .stored_procedures
+        .0
+        .values()
+        .flat_map(|v| v.arguments.values().map(|c| c.r#type.clone()));
+
+    let stored_procedures_column_types = metadata
+        .stored_procedures
+        .0
+        .values()
+        .filter_map(|v| v.returns.as_ref())
+        .flat_map(|v| v.values().map(|c| c.r#type.clone()));
 
     let aggregate_types = metadata
         .aggregate_functions
@@ -652,6 +665,8 @@ pub fn occurring_scalar_types(metadata: &metadata::Metadata) -> BTreeSet<metadat
     tables_column_types
         .chain(native_queries_column_types)
         .chain(native_queries_arguments_types)
+        .chain(stored_procedures_argument_types)
+        .chain(stored_procedures_column_types)
         .chain(aggregate_types)
         .chain(comparison_operator_types)
         .collect::<BTreeSet<metadata::ScalarType>>()
