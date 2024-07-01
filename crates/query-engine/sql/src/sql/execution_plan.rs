@@ -38,8 +38,20 @@ pub struct NativeMutationOperationExecutionPlan {
 }
 
 #[derive(Debug)]
+pub struct StoredProcedureExecutionPlan {
+    /// Name of the temporary table in which the response
+    /// of the stored procedure will be written to.
+    pub temp_table_name: String,
+    /// SQL query that will run the stored procedure and insert
+    /// the results of the stored procedure into the
+    /// temporary table with name: `temp_table_name`
+    pub stored_procedure_sql_query: sql::ast::ExecProcedureInsertIntoTempTable,
+}
+
+#[derive(Debug)]
 pub enum MutationOperationExecutionPlan {
     NativeMutation(NativeMutationOperationExecutionPlan),
+    StoredProcedure(StoredProcedureExecutionPlan),
 }
 
 #[derive(Debug)]

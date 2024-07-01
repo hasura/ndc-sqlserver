@@ -1,0 +1,11 @@
+---
+source: crates/ndc-sqlserver/tests/mutation_tests.rs
+expression: result
+---
+[
+  {
+    "aggregates": {
+      "artist_count": 275
+    }
+  }
+]

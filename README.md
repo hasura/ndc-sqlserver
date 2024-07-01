@@ -101,7 +101,6 @@ MY_SUBGRAPH_MY_SQL_WRITE_URL=http://local.hasura.dev:8081
 ### 5. Start the connector's docker compose
 
 Let's start our connector's docker compose file. Run the following from the connector's subdirectory inside a subgraph:
-
 ```bash title="Run the following from the connector's subdirectory inside a subgraph:"
 docker compose -f docker-compose.my_sql.yaml up
 ```

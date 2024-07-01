@@ -10,7 +10,7 @@ mod sorting;
 use ndc_sdk::models;
 
 use super::error::Error;
-use super::helpers::{Env, State, TableNameAndReference};
+use super::helpers::{CollectionOrProcedureInfo, Env, State, TableNameAndReference};
 
 use query_engine_metadata::metadata;
 use query_engine_sql::sql;
@@ -34,6 +34,7 @@ pub fn translate(
     let select_set = translate_query(
         &env,
         &mut state,
+        &env.lookup_collection(&query_request.collection)?,
         &current_table,
         &from_clause,
         &query_request.query,
@@ -71,14 +72,23 @@ pub fn translate(
 pub fn translate_query(
     env: &Env,
     state: &mut State,
+    collection_info: &CollectionOrProcedureInfo,
+
     current_table: &TableNameAndReference,
     from_clause: &sql::ast::From,
     query: &models::Query,
     table_alias: &sql::ast::TableAlias,
 ) -> Result<sql::helpers::SelectSet, Error> {
     // translate rows query. if there are no fields, make this a None
-    let row_select =
-        root::translate_rows_query(env, state, current_table, from_clause, query, table_alias)?;
+    let row_select = root::translate_rows_query(
+        env,
+        state,
+        collection_info,
+        current_table,
+        from_clause,
+        query,
+        table_alias,
+    )?;
 
     // translate aggregate select. if there are no fields, make this a None
     let aggregate_select =

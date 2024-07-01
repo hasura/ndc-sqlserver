@@ -1,0 +1,52 @@
+{
+  "operations": [
+    {
+      "type": "procedure",
+      "name": "GetCustomerDetailsWithTotalPurchases",
+      "arguments": {
+        "CustomerId": 1,
+        "Phone": "123"
+      },
+      "fields": {
+        "type": "array",
+        "fields": {
+          "type": "object",
+          "fields": {
+            "CustomerId": {
+              "type": "column",
+              "column": "CustomerId"
+            },
+            "Invoices": {
+              "type": "relationship",
+              "arguments": {},
+              "column": "CustomerId",
+              "relationship": "GetInvoice",
+              "query": {
+                "fields": {
+                  "InvoiceId": {
+                    "type": "column",
+                    "column": "InvoiceId"
+                  },
+                  "Total": {
+                    "type": "column",
+                    "column": "Total"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "collection_relationships": {
+    "GetInvoice": {
+      "column_mapping": {
+        "CustomerId": "CustomerId"
+      },
+      "relationship_type": "array",
+      "target_collection": "Invoice",
+      "arguments": {}
+    }
+  }
+}

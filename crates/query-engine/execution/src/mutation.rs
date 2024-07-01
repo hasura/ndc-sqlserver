@@ -7,7 +7,10 @@ use query_engine_metrics::metrics;
 use query_engine_sql::sql::{
     self,
     ast::With,
-    execution_plan::{MutationOperationExecutionPlan, NativeMutationOperationExecutionPlan},
+    execution_plan::{
+        MutationOperationExecutionPlan, NativeMutationOperationExecutionPlan,
+        StoredProcedureExecutionPlan,
+    },
     string::SQL,
 };
 use query_engine_translation::translation::mutation::generate_native_mutation_response_cte;
@@ -205,7 +208,25 @@ async fn execute_mutation(
         MutationOperationExecutionPlan::NativeMutation(native_mutation_plan) => {
             execute_native_mutation(connection, native_mutation_plan, buffer).await
         }
+        MutationOperationExecutionPlan::StoredProcedure(stored_procedure_plan) => {
+            execute_stored_procedure(connection, stored_procedure_plan, buffer).await
+        }
     }
+}
+
+async fn execute_stored_procedure(
+    connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
+    plan: StoredProcedureExecutionPlan,
+    buffer: &mut (impl BufMut + Send),
+) -> Result<(), Error> {
+    let mut sql = SQL::new();
+
+    plan.stored_procedure_sql_query.to_sql(&mut sql);
+
+    // Execute the SQL query and append the response obtained to the `buffer`.
+    execute_query(connection, &sql, &BTreeMap::new(), buffer).await?;
+
+    Ok(())
 }
 
 /// Execute the mutation query.

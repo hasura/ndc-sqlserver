@@ -105,6 +105,78 @@ impl RawSQLQuery {
     }
 }
 
+impl TemporaryTableName {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        sql.append_identifier(&self.0.format());
+    }
+}
+
+impl TemporaryTable {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        sql.append_syntax("CREATE TABLE ");
+        self.name.to_sql(sql);
+        sql.append_syntax(" (");
+
+        for (index, (col_name, col_type)) in self.columns.iter().enumerate() {
+            let col_type = match col_type.0.as_str() {
+                "varchar" => "VARCHAR(MAX)",
+                anything_else => anything_else,
+            };
+            sql.append_syntax(format!("{col_name} {}", col_type).as_str());
+            if index < (self.columns.len() - 1) {
+                sql.append_syntax(", ");
+            }
+        }
+        sql.append_syntax(");");
+    }
+
+    pub fn drop_temp_table(&self, sql: &mut SQL) {
+        sql.append_syntax("DROP TABLE ");
+        self.name.to_sql(sql);
+        sql.append_syntax(";");
+    }
+}
+
+impl ExecProcedure {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        sql.append_syntax("EXEC ");
+        sql.append_identifier(&self.procedure_schema);
+        sql.append_syntax(".");
+        sql.append_identifier(&self.procedure_name);
+
+        if !self.arguments.is_empty() {
+            for (index, (arg_name, arg_value)) in self.arguments.iter().enumerate() {
+                sql.append_syntax(format!("@{arg_name} ").as_str());
+                sql.append_syntax(" = ");
+                arg_value.to_sql(sql);
+                if index < (self.arguments.len() - 1) {
+                    sql.append_syntax(", ");
+                }
+            }
+        }
+    }
+}
+
+impl ExecProcedureInsertIntoTempTable {
+    pub fn to_sql(&self, sql: &mut SQL) {
+        self.temp_table.to_sql(sql);
+        sql.append_syntax("\n");
+        sql.append_syntax("INSERT INTO ");
+        self.temp_table.name.to_sql(sql);
+        sql.append_syntax("( ");
+        for (index, (col_name, _)) in self.temp_table.columns.iter().enumerate() {
+            sql.append_identifier(col_name);
+            if index < (self.temp_table.columns.len() - 1) {
+                sql.append_syntax(", ");
+            }
+        }
+        sql.append_syntax(") ");
+        self.exec_procedure.to_sql(sql);
+        sql.append_syntax(";");
+        self.response_selection.to_sql(sql);
+    }
+}
+
 impl Explain<'_> {
     pub fn to_sql(&self, sql: &mut SQL) {
         sql.append_syntax("EXPLAIN ");
@@ -527,8 +599,16 @@ impl TableReference {
 }
 
 impl TableAlias {
+    fn format(&self) -> String {
+        if self.is_temporary_table {
+            format!("#{}_{}", self.unique_index, self.name)
+        } else {
+            format!("{}_{}", self.unique_index, self.name)
+        }
+    }
+
     pub fn to_sql(&self, sql: &mut SQL) {
-        let name = format!("{}_{}", self.unique_index, self.name);
+        let name = self.format();
         sql.append_identifier(&name);
     }
 }
