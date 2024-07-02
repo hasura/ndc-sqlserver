@@ -68,10 +68,10 @@ async fn create_database_copy(
 ) -> MSSQLDatabaseConfig {
     let mut connection = create_mssql_connection(&connection_config).await;
 
-    let create_db_sql = format!("CREATE DATABASE \"{new_db_name}\";");
+    let create_db_sql = format!("CREATE DATABASE [{new_db_name}]");
 
     connection
-        .simple_query(create_db_sql.as_str())
+        .execute(create_db_sql.as_str(), &[])
         .await
         .unwrap();
 
@@ -85,8 +85,6 @@ pub async fn drop_database(db_name: &str, connection_uri: String) -> Result<(), 
 
     let tcp = TcpStream::connect(config.get_addr()).await.unwrap();
     tcp.set_nodelay(true).unwrap();
-
-    println!("Connection config is {config:#?}");
 
     let mut connection = Client::connect(config, tcp.compat_write()).await.unwrap();
 

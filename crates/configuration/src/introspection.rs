@@ -2,6 +2,23 @@
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
+pub struct IntrospectStoredProcedureArgument {
+    pub name: String,
+    pub r#type: String,
+    pub is_nullable: bool,
+    pub max_length: u8,
+    pub is_output: bool,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct IntrospectStoredProcedure {
+    pub schema: String,
+    pub name: String,
+    #[serde(default)]
+    pub arguments: Vec<IntrospectStoredProcedureArgument>,
+}
+
+#[derive(Deserialize, Debug)]
 pub struct IntrospectionTable {
     pub name: String,
     pub type_desc: String,
