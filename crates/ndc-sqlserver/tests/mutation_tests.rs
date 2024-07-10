@@ -201,6 +201,7 @@ mod stored_procedures {
             .await
         });
 
+        // If either of the results are `Err`, then this will panic and the test will fail.
         let (_result1, _result2) = tokio::try_join!(result1, result2).unwrap();
     }
 }
