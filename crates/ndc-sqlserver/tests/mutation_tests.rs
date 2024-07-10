@@ -164,4 +164,43 @@ mod stored_procedures {
 
         insta::assert_json_snapshot!(result);
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn execute_stored_procedures_concurrently() {
+        let original_db_config = MSSQLDatabaseConfig::original_db_config();
+
+        let stored_procs_setup_file_path = get_path_from_project_root(
+            "static/tests/stored_procedures_sql/get_customer_details.sql",
+        );
+
+        let fresh_deployment = FreshDeployment::create(
+            original_db_config,
+            "static/tests",
+            vec![stored_procs_setup_file_path],
+        )
+        .await
+        .unwrap();
+
+        let fresh_deployment_1 = fresh_deployment.connection_uri.clone();
+
+        let result1 = tokio::spawn(async move {
+            let connection_uri = fresh_deployment_1.clone();
+
+            run_mutation(
+                "mutations/stored_procedures/get_customer_details_with_invoices",
+                connection_uri.clone(),
+            )
+            .await
+        });
+
+        let result2 = tokio::spawn(async move {
+            run_mutation(
+                "mutations/stored_procedures/get_customer_details_with_invoices",
+                fresh_deployment.connection_uri.clone(),
+            )
+            .await
+        });
+
+        let (_result1, _result2) = tokio::try_join!(result1, result2).unwrap();
+    }
 }

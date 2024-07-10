@@ -265,7 +265,9 @@ pub fn translate_rows_query(
                 }
                     }
                     crate::translation::helpers::CollectionOrProcedureInfo::Procedure(_) => {
-                        todo!("Throw error here")
+                        return Err(Error::UnexpectedInternalError(
+                            "Unexpected: found procedure with limit/offset".to_string(),
+                        ))
                     }
                 }
             }
