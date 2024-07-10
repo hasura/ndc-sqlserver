@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1719919063304,
+  "lastUpdate": 1720599801341,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -4339,6 +4339,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.07349798839120027,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "karthikeyan@hasura.io",
+            "name": "Karthikeyan Chinnakonda",
+            "username": "codingkarthik"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "5d2f334d510c39f349cf022cd1d2690db8c48341",
+          "message": "Stored procedures execution (Incremental PR - II) (#141)\n\n<!-- The PR description should answer 2 (maybe 3) important questions:\n-->\n\n### What\n\n<!-- What is this PR trying to accomplish (and why, if it's not\nobvious)? -->\n\nThis PR is the second incremental PR towards adding stored procedures\nsupport and this PR adds the execution logic of the same. The actual PR\nlogic is not very large but due to the tests, the lines diff is around\n18k.\n\n### How\n\n<!-- How is it trying to accomplish it (what are the implementation\nsteps)? -->\n\nSteps:\n\n1. Identify whether the procedure name in the mutation request is a\nstored procedure.\n2. Fetch the metadata of the stored procedure.\n3. Arguments and field validation, throw error if any required argument\nis not provided in the request.\n4. Create a temporary table, the schema of the temporary table is\ndetermined by the `returns` field of the stored procedure. The temporary\ntable is used to write the results of the stored procedure into.\n5. The SQL query is generated in the following format:\n\n```sql\nINSERT INTO #TempTable (col1, col2) EXEC <stored_procedure_name> @arg1_name = arg_value \n```\n\n6. Make another SQL query to query from the temporary table with the\nfields requested and return the response.",
+          "timestamp": "2024-07-10T08:14:26Z",
+          "tree_id": "6105c204830ae98271df6697179eb177150f3f5a",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/5d2f334d510c39f349cf022cd1d2690db8c48341"
+        },
+        "date": 1720599800923,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 59.3324855,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 73.81345465,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 60.74041306901292,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.7216590476575675,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.10039512362253589,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 388.646923,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 407.5612432,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 373.29500626238666,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 1.022360799925707,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.08669448385974474,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 130.982644,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 149.257579,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 130.18945133838605,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.617250228958909,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07081481850850074,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 132.322084,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 145.5666986,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 130.19305705141494,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.6371150304238427,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.071861440680279,
             "unit": "ms"
           }
         ]
