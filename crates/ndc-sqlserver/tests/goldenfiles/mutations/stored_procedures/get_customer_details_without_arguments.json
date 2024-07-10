@@ -1,0 +1,22 @@
+{
+    "operations": [
+        {
+          "type": "procedure",
+          "name": "GetCustomerDetailsWithTotalPurchases",
+          "arguments": {},
+          "fields": {
+            "type": "array",
+            "fields": {
+              "type": "object",
+              "fields": {
+                "CustomerId": {
+                  "type": "column",
+                  "column": "CustomerId"
+                }
+              }
+            }
+          }
+        }
+    ],
+  "collection_relationships": {}
+}

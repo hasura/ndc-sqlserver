@@ -119,10 +119,13 @@ pub(crate) async fn execute_query(
     }
 
     // go!
-    let mut stream = mssql_query.query(connection).await.unwrap();
+    let mut stream = mssql_query
+        .query(connection)
+        .await
+        .map_err(Error::TiberiusError)?;
 
     // stream it out and collect it here:
-    while let Some(item) = stream.try_next().await.unwrap() {
+    while let Some(item) = stream.try_next().await.map_err(Error::TiberiusError)? {
         match item {
             // ignore these
             QueryItem::Metadata(_meta) => {

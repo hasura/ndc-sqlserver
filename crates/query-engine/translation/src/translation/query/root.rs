@@ -9,6 +9,7 @@ use ndc_sdk::models;
 use super::aggregates;
 use super::filtering;
 use crate::translation::error::Error;
+use crate::translation::helpers::CollectionOrProcedureInfo;
 use crate::translation::helpers::{
     CollectionInfo, Env, RootAndCurrentTables, State, TableNameAndReference,
 };
@@ -155,14 +156,12 @@ pub fn make_no_fields_select_query(
 pub fn translate_rows_query(
     env: &Env,
     state: &mut State,
+    collection_info: &CollectionOrProcedureInfo,
     current_table: &TableNameAndReference,
     from_clause: &sql::ast::From,
     query: &models::Query,
     table_alias: &sql::ast::TableAlias,
 ) -> Result<Option<sql::ast::Select>, Error> {
-    // find the table according to the metadata.
-    let collection_info = env.lookup_collection(&current_table.name)?;
-
     // join aliases
     let mut join_fields: Vec<relationships::JoinFieldInfo> = vec![];
 
@@ -240,15 +239,19 @@ pub fn translate_rows_query(
 
             if has_limit_or_offset && select.order_by.elements.is_empty() {
                 match collection_info {
+                    crate::translation::helpers::CollectionOrProcedureInfo::Collection(
+                        collection_info,
+                    ) => {
+                        match collection_info {
                     CollectionInfo::Table { info, .. } => {
                         select.order_by = sorting::default_table_order_by(
-                            &info,
+                            info,
                             current_table.reference.clone(),
                         )?;
                     }
                     CollectionInfo::NativeQuery { info, .. } => {
                         select.order_by = sorting::default_native_query_order_by(
-                            info,
+                            info.clone(),
                             current_table.reference.clone(),
                         )?;
                     }
@@ -257,6 +260,13 @@ pub fn translate_rows_query(
                         return Err(Error::UnexpectedInternalError(
                             "Unexpected: found native mutation query with a limit/offset clause"
                                 .to_string(),
+                        ))
+                    }
+                }
+                    }
+                    crate::translation::helpers::CollectionOrProcedureInfo::Procedure(_) => {
+                        return Err(Error::UnexpectedInternalError(
+                            "Unexpected: found procedure with limit/offset".to_string(),
                         ))
                     }
                 }
@@ -360,31 +370,39 @@ pub fn make_from_clause_and_reference(
 fn make_from_clause(
     state: &mut State,
     current_table_alias: &sql::ast::TableAlias,
-    collection_info: &CollectionInfo,
+    collection_info: &CollectionOrProcedureInfo,
     arguments: &BTreeMap<String, models::Argument>,
 ) -> Result<sql::ast::From, Error> {
     match &collection_info {
-        CollectionInfo::Table { info, .. } => {
-            let db_table = sql::ast::TableReference::DBTable {
-                schema: sql::ast::SchemaName(info.schema_name.clone()),
-                table: sql::ast::TableName(info.table_name.clone()),
-            };
+        CollectionOrProcedureInfo::Collection(collection_info) => match collection_info {
+            CollectionInfo::Table { info, .. } => {
+                let db_table = sql::ast::TableReference::DBTable {
+                    schema: sql::ast::SchemaName(info.schema_name.clone()),
+                    table: sql::ast::TableName(info.table_name.clone()),
+                };
 
-            Ok(sql::ast::From::Table {
-                reference: db_table,
-                alias: current_table_alias.clone(),
-            })
-        }
+                Ok(sql::ast::From::Table {
+                    reference: db_table,
+                    alias: current_table_alias.clone(),
+                })
+            }
 
-        CollectionInfo::NativeQuery { name, info } => {
-            let aliased_table = state.insert_native_query(name, info.clone(), arguments.clone());
-            Ok(sql::ast::From::Table {
-                reference: aliased_table,
-                alias: current_table_alias.clone(),
-            })
+            CollectionInfo::NativeQuery { name, info } => {
+                let aliased_table =
+                    state.insert_native_query(name, info.clone(), arguments.clone());
+                Ok(sql::ast::From::Table {
+                    reference: aliased_table,
+                    alias: current_table_alias.clone(),
+                })
+            }
+            CollectionInfo::NativeMutation { .. } => Err(Error::UnexpectedInternalError(
+                "Native mutations can't have a `FROM` clause attached with them".into(),
+            )),
+        },
+        CollectionOrProcedureInfo::Procedure(_procedure_info) => {
+            Err(Error::UnexpectedInternalError(
+                "Procedures can't have a `FROM` clause attached with them".into(),
+            ))
         }
-        CollectionInfo::NativeMutation { .. } => Err(Error::UnexpectedInternalError(
-            "Native mutations can't have a `FROM` clause attached with them".into(),
-        )),
     }
 }

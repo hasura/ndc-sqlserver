@@ -296,6 +296,7 @@ pub fn select_rowset(
 pub fn select_mutation_rowset(
     (result_table_alias, result_column_alias): (TableAlias, ColumnAlias),
     (row_table_alias, row_column_alias): (TableAlias, ColumnAlias),
+    rows_json_path: Vec<ColumnAlias>,
     aggregate_table_alias: TableAlias,
     affected_rows_column_alias: ColumnAlias,
     select_set: SelectSet,
@@ -351,7 +352,7 @@ pub fn select_mutation_rowset(
 
             row_select_subquery.for_json = ForJson::ForJsonPathWithoutArrayWrapper;
 
-            let mut final_select = simple_select(row(vec![]));
+            let mut final_select = simple_select(row(rows_json_path));
 
             final_select.from = Some(From::Select {
                 select: Box::new(row_select_subquery),
