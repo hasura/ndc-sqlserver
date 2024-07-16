@@ -55,19 +55,19 @@ To use the SQL Server connector, follow these steps in a Hasura project:
 (Note: for more information on the following steps, please refer to the Postgres connector documentation [here](https://hasura.io/docs/3.0/getting-started/connect-to-data/connect-a-source))
 
 ### 1. Init the connector
-(Note: here and following we are naming the subgraph "my_subgraph" and the connector "my_sql")
+(Note: here and following we are naming the subgraph "my_subgraph" and the connector "ms_sql")
 
    ```bash
-   ddn connector init my_sql --subgraph my_subgraph --hub-connector hasura/sqlserver
+   ddn connector init ms_sql --subgraph my_subgraph/subgraph.yaml --hub-connector hasura/sqlserver
    ```
 
 ### 2. Add your SQLServer credentials
 
-Add your credentials to `my_subgraph/connector/my_sql/.env.local`
+Add your credentials to `my_subgraph/connector/ms_sql/.env.local`
 
-```env title="my_subgraph/connector/my_sql/.env.local"
+```env title="my_subgraph/connector/ms_sql/.env.local"
 OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://local.hasura.dev:4317
-OTEL_SERVICE_NAME=my_subgraph_my_sql
+OTEL_SERVICE_NAME=my_subgraph_ms_sql
 CONNECTION_URI=<YOUR_SQLSERVER_URL>
 ```
 
@@ -76,7 +76,7 @@ CONNECTION_URI=<YOUR_SQLSERVER_URL>
 From the root of your project run:
 
 ```bash title="From the root of your project run:"
-ddn connector introspect --connector my_subgraph/connector/my_sql/connector.yaml
+ddn connector introspect --connector my_subgraph/connector/ms_sql/connector.yaml
 ```
 
 If you look at the `configuration.json` for your connector, you'll see metadata describing your SQL Server mappings.
@@ -86,7 +86,7 @@ If you look at the `configuration.json` for your connector, you'll see metadata 
 Run the following from the root of your project:
 
 ```bash title="Run the following from the root of your project:"
-ddn connector-link add my_sql --subgraph my_subgraph
+ddn connector-link add ms_sql --subgraph my_subgraph/subgraph.yaml
 ```
 
 The generated file has two environment variables — one for reads and one for writes — that you'll need to add to your
@@ -94,15 +94,15 @@ subgraph's `.env.my_subgraph` file. Each key is prefixed by the subgraph name, a
 connector. Ensure the port value matches what is published in your connector's docker compose file.
 
 ```env title="my_subgraph/.env.my_subgraph"
-MY_SUBGRAPH_MY_SQL_READ_URL=http://local.hasura.dev:8081
-MY_SUBGRAPH_MY_SQL_WRITE_URL=http://local.hasura.dev:8081
+MY_SUBGRAPH_MS_SQL_READ_URL=http://local.hasura.dev:8081
+MY_SUBGRAPH_MS_SQL_WRITE_URL=http://local.hasura.dev:8081
 ```
 
 ### 5. Start the connector's docker compose
 
 Let's start our connector's docker compose file. Run the following from the connector's subdirectory inside a subgraph:
 ```bash title="Run the following from the connector's subdirectory inside a subgraph:"
-docker compose -f docker-compose.my_sql.yaml up
+docker compose -f docker-compose.ms_sql.yaml up
 ```
 
 This starts our SQL Server connector on the specified port. We can navigate to the following address, with the port
@@ -121,14 +121,14 @@ subgraph's name.
 
 ```yaml title="docker-compose.hasura.yaml"
 include:
-  - path: my_subgraph/connector/my_sql/docker-compose.my_sql.yaml
+  - path: my_subgraph/connector/ms_sql/docker-compose.ms_sql.yaml
 ```
 
 Now, whenever running the following, you'll bring up the GraphQL engine, observability tools, and any connectors you've
 included. From your project's root directory, run:
 
 ```bash title="From the root of your project, run:"
-HASURA_DDN_PAT=$(ddn auth print-pat) docker compose -f docker-compose.hasura.yaml watch
+HASURA_DDN_PAT=$(ddn auth print-pat) docker compose -f docker-compose.hasura.yaml --build --watch
 ```
 
 ### 7. Update the new DataConnectorLink object
@@ -138,10 +138,10 @@ we can run the update command to have the CLI look at the configuration JSON and
 schema in `hml` format. In a new terminal tab from your project's root directory run:
 
 ```bash title="From the root of your project, run:"
-ddn connector-link update my_sql --subgraph my_subgraph
+ddn connector-link update ms_sql --subgraph my_subgraph/subgraph.yaml
 ```
 
-After this command runs, you can open your `my_subgraph/metadata/my_sql.hml` file and see your metadata completely
+After this command runs, you can open your `my_subgraph/metadata/ms_sql.hml` file and see your metadata completely
 scaffolded out for you 🎉
 
 ### 8. Import _all_ your indices
@@ -149,7 +149,7 @@ scaffolded out for you 🎉
 You can do this with just one command. From your project's root directory, run:
 
 ```bash title="From the root of your project, run:"
-ddn connector-link update my_sql --subgraph my_subgraph --add-all-resources
+ddn connector-link update ms_sql --subgraph my_subgraph/subgraph.yaml --add-all-resources
 ```
 
 ### 9. Create a supergraph build
@@ -158,7 +158,7 @@ Pass the `local` subcommand along with specifying the output directory as `./eng
 directory is used by the docker-compose file to serve the engine locally. From your project's root directory, run:
 
 ```bash title="From the root of your project, run:"
-ddn supergraph build local --output-dir ./engine
+ddn supergraph build local --output-dir ./engine --subgraph-env-file my_subgraph:my_subgraph/.env.my_subgraph.local
 ```
 
 You can now navigate to
