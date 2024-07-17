@@ -58,7 +58,7 @@ To use the SQL Server connector, follow these steps in a Hasura project:
 (Note: here and following we are naming the subgraph "my_subgraph" and the connector "ms_sql")
 
    ```bash
-   ddn connector init ms_sql --subgraph my_subgraph/subgraph.yaml --hub-connector hasura/sqlserver
+   ddn connector init ms_sql --subgraph my_subgraph/subgraph.yaml --hub-connector hasura/sqlserver --configure-port 8081 --add-to-compose-file compose.yaml
    ```
 
 ### 2. Add your SQLServer credentials
@@ -71,12 +71,12 @@ OTEL_SERVICE_NAME=my_subgraph_ms_sql
 CONNECTION_URI=<YOUR_SQLSERVER_URL>
 ```
 
-### 3. Introspect your indices
+### 3. Introspect your Database
 
 From the root of your project run:
 
 ```bash title="From the root of your project run:"
-ddn connector introspect --connector my_subgraph/connector/ms_sql/connector.yaml
+ddn connector introspect --connector my_subgraph/connector/ms_sql/connector.local.yaml
 ```
 
 If you look at the `configuration.json` for your connector, you'll see metadata describing your SQL Server mappings.
@@ -86,7 +86,7 @@ If you look at the `configuration.json` for your connector, you'll see metadata 
 Run the following from the root of your project:
 
 ```bash title="Run the following from the root of your project:"
-ddn connector-link add ms_sql --subgraph my_subgraph/subgraph.yaml
+ddn connector-link add ms_sql --subgraph my_subgraph/subgraph.yaml --configure-host http://local.hasura.dev:8081 --target-env-file sql_subgraph/.env.sql_subgraph.local
 ```
 
 The generated file has two environment variables — one for reads and one for writes — that you'll need to add to your
