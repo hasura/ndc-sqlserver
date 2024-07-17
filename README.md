@@ -86,17 +86,20 @@ If you look at the `configuration.json` for your connector, you'll see metadata 
 Run the following from the root of your project:
 
 ```bash title="Run the following from the root of your project:"
-ddn connector-link add ms_sql --subgraph my_subgraph/subgraph.yaml --configure-host http://local.hasura.dev:8081 --target-env-file sql_subgraph/.env.sql_subgraph.local
+ddn connector-link add ms_sql --subgraph my_subgraph/subgraph.yaml --configure-host http://local.hasura.dev:8081 --target-env-file sql_subgraph/.env.my_subgraph.local
 ```
 
-The generated file has two environment variables — one for reads and one for writes — that you'll need to add to your
-subgraph's `.env.my_subgraph` file. Each key is prefixed by the subgraph name, an underscore, and the name of the
-connector. Ensure the port value matches what is published in your connector's docker compose file.
+The above step will add the following env vars to the `.env.my_subgraph.local` file.
 
-```env title="my_subgraph/.env.my_subgraph"
+```env title="my_subgraph/.env.my_subgraph.local"
 MY_SUBGRAPH_MS_SQL_READ_URL=http://local.hasura.dev:8081
 MY_SUBGRAPH_MS_SQL_WRITE_URL=http://local.hasura.dev:8081
 ```
+
+The generated file has two environment variables — one for reads and one for writes.
+Each key is prefixed by the subgraph name, an underscore, and the name of the
+connector.
+
 
 ### 5. Start the connector's docker compose
 
