@@ -86,7 +86,7 @@ If you look at the `configuration.json` for your connector, you'll see metadata 
 Run the following from the root of your project:
 
 ```bash title="Run the following from the root of your project:"
-ddn connector-link add ms_sql --subgraph my_subgraph/subgraph.yaml --configure-host http://local.hasura.dev:8081 --target-env-file sql_subgraph/.env.my_subgraph.local
+ddn connector-link add ms_sql --subgraph my_subgraph/subgraph.yaml --configure-host http://local.hasura.dev:8081 --target-env-file my_subgraph/.env.my_subgraph.local
 ```
 
 The above step will add the following env vars to the `.env.my_subgraph.local` file.
