@@ -101,8 +101,8 @@ MY_SUBGRAPH_MS_SQL_WRITE_URL=http://local.hasura.dev:8081
 ### 5. Start the connector's docker compose
 
 Let's start our connector's docker compose file. Run the following from the connector's subdirectory inside a subgraph:
-```bash title="Run the following from the connector's subdirectory inside a subgraph:"
-docker compose -f docker-compose.ms_sql.yaml up
+```bash title="Run the following from the root of your project:"
+docker compose -f my_subgraph/connector/ms_sql/compose.yaml up -d
 ```
 
 This starts our SQL Server connector on the specified port. We can navigate to the following address, with the port
@@ -115,14 +115,6 @@ http://localhost:8081/schema
 ### 6. Include the connector in your docker compose
 
 Kill the connector by pressing `CTRL+C` in the terminal tab in which the connector is running.
-
-Then, add the following inclusion to the docker compose `docker-compose.hasura.yaml` in your project's root directory, taking care to modify the
-subgraph's name.
-
-```yaml title="docker-compose.hasura.yaml"
-include:
-  - path: my_subgraph/connector/ms_sql/docker-compose.ms_sql.yaml
-```
 
 Now, whenever running the following, you'll bring up the GraphQL engine, observability tools, and any connectors you've
 included. From your project's root directory, run:
@@ -138,7 +130,7 @@ we can run the update command to have the CLI look at the configuration JSON and
 schema in `hml` format. In a new terminal tab from your project's root directory run:
 
 ```bash title="From the root of your project, run:"
-ddn connector-link update ms_sql --subgraph my_subgraph/subgraph.yaml
+ddn connector-link update ms_sql --subgraph my_subgraph/subgraph.yaml --env-file my_subgraph/.env.my_subgraph.local
 ```
 
 After this command runs, you can open your `my_subgraph/metadata/ms_sql.hml` file and see your metadata completely
@@ -149,7 +141,7 @@ scaffolded out for you 🎉
 You can do this with just one command. From your project's root directory, run:
 
 ```bash title="From the root of your project, run:"
-ddn connector-link update ms_sql --subgraph my_subgraph/subgraph.yaml --add-all-resources
+ddn connector-link update ms_sql --subgraph my_subgraph/subgraph.yaml --env-file my_subgraph/.env.my_subgraph.local --add-all-resources
 ```
 
 ### 9. Create a supergraph build
