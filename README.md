@@ -89,8 +89,6 @@ Let's restart the docker compose services. Run the folowing from the root of you
 HASURA_DDN_PAT=$(ddn auth print-pat) docker compose up --build --watch
 ```
 
-The schema of the database can be viewed at http://localhost:8081/schema.
-
 ### 5. Create the Hasura metadata
 
 In a new terminal tab from your project's root directory run:
@@ -122,6 +120,8 @@ ddn connector-link update ms_sql --subgraph my_subgraph/subgraph.yaml --env-file
 
 After this command runs, you can open your `my_subgraph/metadata/ms_sql.hml` file and see your metadata completely
 scaffolded out for you 🎉
+
+The schema of the database can be viewed at http://localhost:8081/schema.
 
 ### 7. Import _all_ your indices
 
