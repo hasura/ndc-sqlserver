@@ -77,9 +77,9 @@ default suggested port.
 
 #### Step 2.3: Provide the env vars for the connector
 
-| Name          | Description                                      | Required | Default |
-|---------------|--------------------------------------------------|----------|---------|
-| ConnectionURI | The connection string of the SQL Server database | Yes      | N/A     |
+| Name           | Description                                      | Required | Default |
+|----------------|--------------------------------------------------|----------|---------|
+| CONNECTION_URI | The connection string of the SQL Server database | Yes      | N/A     |
   
 ## Step 3: Introspect the connector
 
