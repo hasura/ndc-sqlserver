@@ -119,13 +119,13 @@ A stored procedure can be defined using the following fields:
 
 ### Column Object
 
-| Field name    | Type   | Required | Notes                                                                                                                                                            |
-|---------------|--------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name`        | String | Yes      | Name of the column that will be returned in the SQL query's response                                                                                             |
-| `type`        | String | Yes      | Type of the column.                                                                                                                                              |
-| `description` | String | No       | Description of the column.                                                                                                                                       |
-| `nullable`    | String | Yes      | Nullability of the column.                                                                                                                                       |
-| `description` | String | No       | Description of the column.                                                                                                                                       |
+| Field name    | Type   | Required | Notes                                                                |
+|---------------|--------|----------|----------------------------------------------------------------------|
+| `name`        | String | Yes      | Name of the column that will be returned in the SQL query's response |
+| `type`        | String | Yes      | Type of the column.                                                  |
+| `description` | String | No       | Description of the column.                                           |
+| `nullable`    | String | Yes      | Nullability of the column.                                           |
+| `description` | String | No       | Description of the column.                                           |
 
 
 ### Argument Object
