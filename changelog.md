@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+### Fixed
+
 ## [v0.2.0]
 
 ### Added
