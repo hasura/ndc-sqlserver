@@ -25,10 +25,11 @@ services:
         source: ./docker
         target: /docker
     healthcheck:
+        # We need to use the mssql-tools18 version of sqlcmd (ref: https://github.com/microsoft/mssql-docker/issues/892#issuecomment-2248045546)
       test:
         - CMD-SHELL
         - |
-          /opt/mssql-tools/bin/sqlcmd -U SA -P "$$SA_PASSWORD" -d 'Chinook'
+          /opt/mssql-tools18/bin/sqlcmd -C -U SA -P "$$SA_PASSWORD" -d 'Chinook'
       start_period: 5s
       interval: 5s
       timeout: 10s

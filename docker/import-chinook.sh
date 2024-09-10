@@ -4,8 +4,9 @@ set -e
 set -u
 
 # do something on the database
+# We need to use the mssql-tools18 version of sqlcmd (ref: https://github.com/microsoft/mssql-docker/issues/892#issuecomment-2248045546)
 function sqlcmd {
-  /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "${SA_PASSWORD}" "$@"
+  /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U SA -P "${SA_PASSWORD}" "$@"
 }
 
 # wait up to 60s for the database to start
