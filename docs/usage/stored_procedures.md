@@ -108,13 +108,14 @@ A stored procedure can be defined using the following fields:
 
 ### Native Mutation Object
 
-| Field name      | Type                                                                             | Required | Notes                                                                                                                                                                         |
-|-----------------|----------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `name`          | Name of the stored procedure                                                     | Yes      |                                                                                                                                                                               |
-| `schema`        | Name of the schema of the stored procedure                                       | Yes      |                                                                                                                                                                               |
-| `arguments`     | JSON Object <K: Identifier of the column, V: [ArgumentObject](#argument-object)> | Yes      | Schema of the arguments that will be passed to the stored procedure `sql` query.                                                                                              |
-| `returns`       | JSON Object <K: Identifier of the column, V: [ColumnObject](#column-object)>     | No       | Schema of the columns that will be returned by the stored procedure. Note that if this key is not present, the stored procedure won't be added to the schema of the connector |
-| ```description` | String                                                                           | No       | Description of the stored procedure.                                                                                                                                          |
+| Field name    | Type                                                                             | Required | Notes                                                                                                                                                                         |
+|---------------|----------------------------------------------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`        | Name of the stored procedure                                                     | Yes      |                                                                                                                                                                               |
+| `schema`      | Name of the schema of the stored procedure                                       | Yes      |                                                                                                                                                                               |
+| `arguments`   | JSON Object <K: Identifier of the column, V: [ArgumentObject](#argument-object)> | Yes      | Schema of the arguments that will be passed to the stored procedure `sql` query.                                                                                              |
+| `returns`     | JSON Object <K: Identifier of the column, V: [ColumnObject](#column-object)>     | No       | Schema of the columns that will be returned by the stored procedure. Note that if this key is not present, the stored procedure won't be added to the schema of the connector |
+| `description` | String                                                                           | No       | Description of the stored procedure.                                                                                                                                          |
+
 
 
 ### Column Object
