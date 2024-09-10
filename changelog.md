@@ -8,6 +8,12 @@
 
 ### Fixed
 
+## [v0.2.0]
+
+### Added
+
+- Support for stored procedures
+
 ## [v0.1.2] - 2024-06-17
 
 ### Added
@@ -24,14 +30,15 @@
 ## [v0.1.0] - 2024-04-30
 
 - Initial release with support of ndc-spec v0.1.2 (beta)
-  - Support for CLI plugin for Hasura v3 CLI, which allows the CLI to 
+  - Support for CLI plugin for Hasura v3 CLI, which allows the CLI to
     introspect the database on demand.
   - Query explain endpoint has been changed from `/explain` to `/query/explain`.
   - The default port was changed from 8100 to 8080.
 
 <!-- end -->
 
-[Unreleased]: https://github.com/hasura/ndc-sqlserver/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/hasura/ndc-sqlserver/compare/v0.2.0...HEAD
+[v0.2.0]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.2.0
 [v0.1.2]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.1.2
 [v0.1.1]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.1.1
 [v0.1.0]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.1.0
