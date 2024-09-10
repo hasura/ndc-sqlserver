@@ -33,8 +33,9 @@ Below, you'll find a matrix of all supported features for the SQL Server connect
 | Table Relationships             | ✅        |                                      |
 | Views                           | ✅        |                                      |
 | Remote Relationships            | ✅        |                                      |
+| Stored Procedures               | ✅        |                                      |
 | Custom Fields                   | ❌        |                                      |
-| Mutations                       | ✅        | Only native mutations are suppported |
+| Mutations                       | ❌        | Only native mutations are suppported |
 | Distinct                        | ✅        |                                      |
 | Enums                           | ❌        |                                      |
 | Naming Conventions              | ❌        |                                      |
@@ -61,7 +62,7 @@ ddn auth login
 
 ### Step 2: Configure the connector
 
-Once you have an initialized supergraph and subgraph, run the initialization command in interactive mode while 
+Once you have an initialized supergraph and subgraph, run the initialization command in interactive mode while
 providing a name for the connector in the prompt:
 
 ```bash
@@ -72,7 +73,7 @@ ddn connector init <connector-name> -i
 
 #### Step 2.2: Choose a port for the connector
 
-The CLI will ask for a specific port to run the connector on. Choose a port that is not already in use or use the 
+The CLI will ask for a specific port to run the connector on. Choose a port that is not already in use or use the
 default suggested port.
 
 #### Step 2.3: Provide the env vars for the connector
@@ -80,7 +81,7 @@ default suggested port.
 | Name           | Description                                      | Required | Default |
 |----------------|--------------------------------------------------|----------|---------|
 | CONNECTION_URI | The connection string of the SQL Server database | Yes      | N/A     |
-  
+
 ## Step 3: Introspect the connector
 
 ```bash
