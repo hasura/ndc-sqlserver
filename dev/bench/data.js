@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1725975894405,
+  "lastUpdate": 1726492164518,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -5083,6 +5083,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.07095232148101155,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "karthikeyan@hasura.io",
+            "name": "Karthikeyan Chinnakonda",
+            "username": "codingkarthik"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6b3073473f0c1a4e0b2cea5fe32d077dad44ec6a",
+          "message": "Add a subcommand to introspect stored procedures (#148)\n\n<!-- The PR description should answer 2 (maybe 3) important questions:\n-->\n\n### What\n\n<!-- What is this PR trying to accomplish (and why, if it's not\nobvious)? -->\n\nThis PR adds a subcommand `stored-procedures` to the CLI `update`\ncommand to introspect stored procedures separately. This is because the\nstored procedures introspection doesn't include any return type and a\nstored procedure without any return type is not added to the connector's\nschema. After the introspection, the user needs to manually add the\nreturn types of the stored procedures and this information should be\nretained, that's why the introspection of stored procedures is decoupled\nfrom the introspection of the `tables` , `types` etc.\n\n### How\n\n<!-- How is it trying to accomplish it (what are the implementation\nsteps)? -->",
+          "timestamp": "2024-09-16T13:03:09Z",
+          "tree_id": "972258dfba53bcf8eca6acb4150a8dd6139dade0",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/6b3073473f0c1a4e0b2cea5fe32d077dad44ec6a"
+        },
+        "date": 1726492164073,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 57.563221,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 65.95289834999998,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 57.12988549923473,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.5868080658036661,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.08844526462641407,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 383.466517,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 408.1157715,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 371.07857104553943,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 0.9726193911908467,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.07970450130667898,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 132.36925,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 148.32566855,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 130.2507818321803,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.735379051104303,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07717278440208278,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 131.76128749999998,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 147.01042875000002,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 129.34519377072354,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.6481170450099398,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.0748861012403812,
             "unit": "ms"
           }
         ]
