@@ -2708,35 +2708,6 @@
       }
     },
     "storedProcedures": {
-      "GetArtistsByName1": {
-        "name": "GetArtistsByName1",
-        "schema": "dbo",
-        "arguments": {
-          "Name": {
-            "name": "Name",
-            "type": "varchar",
-            "nullable": "nullable",
-            "isOutput": false,
-            "description": null
-          },
-          "blah": {
-            "name": "blah",
-            "type": "varchar",
-            "nullable": "nullable",
-            "isOutput": false,
-            "description": null
-          }
-        },
-          "returns": {
-              "Artist": {
-                "name": "Artist",
-                "type": "varchar",
-                "nullable": "nonNullable",
-                "description": null
-              }
-          },
-        "description": null
-      },
       "GetCustomerDetailsWithTotalPurchases": {
         "name": "GetCustomerDetailsWithTotalPurchases",
         "schema": "dbo",
@@ -2751,7 +2722,7 @@
           "Phone": {
             "name": "Phone",
             "type": "varchar",
-            "nullable": "nonNullable",
+            "nullable": "nullable",
             "isOutput": false,
             "description": null
           }
@@ -2782,7 +2753,14 @@
         "name": "ReturnOne",
         "schema": "dbo",
         "arguments": {},
-        "returns": null,
+          "returns": {
+              "result": {
+                "name": "result",
+                "type": "int",
+                "description": null,
+                "nullable": "nullable"
+            }
+          },
         "description": null
       }
     }
