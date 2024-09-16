@@ -8,6 +8,13 @@
 
 ### Fixed
 
+## [v0.2.1]
+
+### Added
+
+- Add subcommand `stored-procedures` to the `update` command to introspect stored procedures.
+
+
 ## [v0.2.0]
 
 ### Added
