@@ -2728,24 +2728,24 @@
           }
         },
         "returns": {
-          "CustomerId": {
-            "name": "CustomerId",
-            "type": "int",
-            "nullable": "nonNullable",
-            "description": null
-          },
-          "Phone": {
-            "name": "Phone",
-            "type": "varchar",
-            "nullable": "nonNullable",
-            "description": null
-          },
-          "TotalPurchases": {
-            "name": "TotalPurchases",
-            "type": "int",
-            "nullable": "nonNullable",
-            "description": null
-          }
+            "CustomerId": {
+                "name": "CustomerId",
+                "type": "int",
+                "nullable": "nonNullable",
+                "description": null
+            },
+            "Phone": {
+                "name": "Phone",
+                "type": "varchar",
+                "nullable": "nonNullable",
+                "description": null
+            },
+            "TotalPurchases": {
+                "name": "TotalPurchases",
+                "type": "int",
+                "nullable": "nonNullable",
+                "description": null
+            }
         },
         "description": null
       },

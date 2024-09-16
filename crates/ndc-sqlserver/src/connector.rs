@@ -112,6 +112,9 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
             configuration::Error::ConnectionPoolError(inner) => {
                 connector::ParseError::Other(inner.into())
             }
+            configuration::Error::StoredProcedureIntrospectionError(inner) => {
+                connector::ParseError::Other(inner.into())
+            }
         })
     }
 
