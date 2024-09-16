@@ -37,5 +37,4 @@ pub enum Error {
     // error while parsing stored procedure introspection
     #[error("Error parsing stored procedure introspection: {0}")]
     StoredProcedureIntrospectionError(serde_json::Error),
-
 }

@@ -41,7 +41,7 @@ pub enum Command {
     Update {
         #[command(subcommand)]
         subcommand: Option<UpdateCommand>,
-    }
+    },
 }
 
 /// The set of errors that can go wrong _in addition to_ generic I/O or parsing errors.
@@ -55,8 +55,7 @@ pub enum Error {
 pub async fn run(command: Command, context: Context<impl Environment>) -> anyhow::Result<()> {
     match command {
         Command::Initialize { with_metadata } => initialize(with_metadata, context).await?,
-        Command::Update { subcommand } => update(context, subcommand).await?
-
+        Command::Update { subcommand } => update(context, subcommand).await?,
     };
     Ok(())
 }
@@ -142,7 +141,10 @@ async fn initialize(with_metadata: bool, context: Context<impl Environment>) -> 
 /// Update the configuration in the current directory by introspecting the database.
 ///
 /// This expects a configuration with a valid connection URI.
-async fn update(context: Context<impl Environment>, subcommand: Option<UpdateCommand>) -> anyhow::Result<()> {
+async fn update(
+    context: Context<impl Environment>,
+    subcommand: Option<UpdateCommand>,
+) -> anyhow::Result<()> {
     // It is possible to change the file in the middle of introspection.
     // We want to detect this scenario and retry, or fail if we are unable to.
     // We do that with a few attempts.
@@ -157,7 +159,9 @@ async fn update(context: Context<impl Environment>, subcommand: Option<UpdateCom
             serde_json::from_str(&configuration_file_contents)?
         };
         let stored_procs_config = subcommand.clone().map(|sub_cmd| match sub_cmd {
-            UpdateCommand::StoredProcedures { overwrite: r#override } => configuration::version1::StoredProceduresConfigurationOptions {
+            UpdateCommand::StoredProcedures {
+                overwrite: r#override,
+            } => configuration::version1::StoredProceduresConfigurationOptions {
                 overwrite_existing_stored_procedures: r#override,
             },
         });

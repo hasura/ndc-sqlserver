@@ -83,7 +83,6 @@ impl RawConfiguration {
     }
 }
 
-
 /// User configuration, elaborated from a 'RawConfiguration'.
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, JsonSchema)]
 pub struct Configuration {
@@ -181,39 +180,34 @@ async fn configure_stored_procedures(
 ) -> Result<StoredProcedures, Error> {
     match config_options {
         Some(config_options) => {
-        let stored_procedures_row =
-            select_first_row(&mssql_pool, STORED_PROCS_CONFIGURATION_QUERY).await;
-        let introspected_stored_procedures: Vec<introspection::IntrospectStoredProcedure> =
-            serde_json::from_str(stored_procedures_row.get(0).unwrap()).map_err(Error::StoredProcedureIntrospectionError)?;
-        let new_stored_procedures = get_stored_procedures(introspected_stored_procedures);
+            let stored_procedures_row =
+                select_first_row(&mssql_pool, STORED_PROCS_CONFIGURATION_QUERY).await;
+            let introspected_stored_procedures: Vec<introspection::IntrospectStoredProcedure> =
+                serde_json::from_str(stored_procedures_row.get(0).unwrap())
+                    .map_err(Error::StoredProcedureIntrospectionError)?;
+            let new_stored_procedures = get_stored_procedures(introspected_stored_procedures);
 
-        // traverse the new stored procedures and add them to the existing stored procedures
-        let mut merged_stored_procedures = existing_stored_procedures.0.clone();
-        for (name, stored_procedure) in new_stored_procedures.0 {
-            // check if the stored procedure already exists
-            if merged_stored_procedures.contains_key(&name) {
-                if config_options.overwrite_existing_stored_procedures {
-                    merged_stored_procedures.insert(name, stored_procedure);
+            // traverse the new stored procedures and add them to the existing stored procedures
+            let mut merged_stored_procedures = existing_stored_procedures.0.clone();
+            for (name, stored_procedure) in new_stored_procedures.0 {
+                // check if the stored procedure already exists
+                if merged_stored_procedures.contains_key(&name) {
+                    if config_options.overwrite_existing_stored_procedures {
+                        merged_stored_procedures.insert(name, stored_procedure);
+                    } else {
+                        // do not overwrite the existing stored procedure
+                        continue;
+                    }
                 } else {
-                    // do not overwrite the existing stored procedure
-                    continue;
+                    merged_stored_procedures.insert(name, stored_procedure);
                 }
-
-            } else {
-                merged_stored_procedures.insert(name, stored_procedure);
             }
 
+            Ok(StoredProcedures(merged_stored_procedures))
         }
-
-        Ok(StoredProcedures(merged_stored_procedures))
-
-        }
-        None => Ok(existing_stored_procedures)
+        None => Ok(existing_stored_procedures),
     }
-
 }
-
-
 
 /// Construct the deployment configuration by introspecting the database.
 pub async fn configure(
@@ -255,8 +249,12 @@ pub async fn configure(
 
     metadata.aggregate_functions = get_aggregate_functions(&type_names);
 
-    metadata.stored_procedures =
-        configure_stored_procedures(&mssql_pool, configuration.metadata.stored_procedures.clone(), stored_procedure_configuration_options).await?;
+    metadata.stored_procedures = configure_stored_procedures(
+        &mssql_pool,
+        configuration.metadata.stored_procedures.clone(),
+        stored_procedure_configuration_options,
+    )
+    .await?;
 
     Ok(RawConfiguration {
         version: 1,
