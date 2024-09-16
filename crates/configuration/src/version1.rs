@@ -181,7 +181,7 @@ async fn configure_stored_procedures(
     match config_options {
         Some(config_options) => {
             let stored_procedures_row =
-                select_first_row(&mssql_pool, STORED_PROCS_CONFIGURATION_QUERY).await;
+                select_first_row(mssql_pool, STORED_PROCS_CONFIGURATION_QUERY).await;
             let introspected_stored_procedures: Vec<introspection::IntrospectStoredProcedure> =
                 serde_json::from_str(stored_procedures_row.get(0).unwrap())
                     .map_err(Error::StoredProcedureIntrospectionError)?;
@@ -191,15 +191,18 @@ async fn configure_stored_procedures(
             let mut merged_stored_procedures = existing_stored_procedures.0.clone();
             for (name, stored_procedure) in new_stored_procedures.0 {
                 // check if the stored procedure already exists
-                if merged_stored_procedures.contains_key(&name) {
-                    if config_options.overwrite_existing_stored_procedures {
-                        merged_stored_procedures.insert(name, stored_procedure);
-                    } else {
-                        // do not overwrite the existing stored procedure
-                        continue;
+                match merged_stored_procedures.entry(name) {
+                    std::collections::btree_map::Entry::Occupied(mut e) => {
+                        if config_options.overwrite_existing_stored_procedures {
+                            e.insert(stored_procedure);
+                        } else {
+                            // do not overwrite the existing stored procedure
+                            continue;
+                        }
                     }
-                } else {
-                    merged_stored_procedures.insert(name, stored_procedure);
+                    std::collections::btree_map::Entry::Vacant(e) => {
+                        e.insert(stored_procedure);
+                    }
                 }
             }
 

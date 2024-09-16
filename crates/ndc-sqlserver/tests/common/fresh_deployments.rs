@@ -53,10 +53,8 @@ impl FreshDeployment {
             .expect("Error initializing the newly created DB");
 
         for file_path in data_setup_file_paths.into_iter() {
-            let query = fs::read_to_string(file_path.clone()).expect(&format!(
-                "Failed to read file from {}",
-                file_path.to_str().unwrap()
-            ));
+            let query = fs::read_to_string(file_path.clone()).unwrap_or_else(|_| panic!("Failed to read file from {}",
+                file_path.to_str().unwrap()));
 
             new_db_connection
                 .simple_query(query)
