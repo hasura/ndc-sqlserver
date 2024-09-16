@@ -58,6 +58,11 @@ pub struct RawConfiguration {
     pub metadata: query_engine_metadata::metadata::Metadata,
 }
 
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, JsonSchema, Clone)]
+pub struct StoredProceduresConfigurationOptions {
+    pub overwrite_existing_stored_procedures: bool,
+}
+
 impl RawConfiguration {
     pub fn empty() -> Self {
         Self {
@@ -166,11 +171,53 @@ async fn select_first_row(
     stream.into_row().await.unwrap().unwrap()
 }
 
+// get_stored_procedures fetches the stored procedures from the database and returns them as a
+// vector of introspection::IntrospectStoredProcedure.
+async fn configure_stored_procedures(
+    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
+    existing_stored_procedures: StoredProcedures,
+    config_options: Option<StoredProceduresConfigurationOptions>,
+) -> Result<StoredProcedures, Error> {
+    match config_options {
+        Some(config_options) => {
+            let stored_procedures_row =
+                select_first_row(mssql_pool, STORED_PROCS_CONFIGURATION_QUERY).await;
+            let introspected_stored_procedures: Vec<introspection::IntrospectStoredProcedure> =
+                serde_json::from_str(stored_procedures_row.get(0).unwrap())
+                    .map_err(Error::StoredProcedureIntrospectionError)?;
+            let new_stored_procedures = get_stored_procedures(introspected_stored_procedures);
+
+            // traverse the new stored procedures and add them to the existing stored procedures
+            let mut merged_stored_procedures = existing_stored_procedures.0.clone();
+            for (name, stored_procedure) in new_stored_procedures.0 {
+                // check if the stored procedure already exists
+                match merged_stored_procedures.entry(name) {
+                    std::collections::btree_map::Entry::Occupied(mut e) => {
+                        if config_options.overwrite_existing_stored_procedures {
+                            e.insert(stored_procedure);
+                        } else {
+                            // do not overwrite the existing stored procedure
+                            continue;
+                        }
+                    }
+                    std::collections::btree_map::Entry::Vacant(e) => {
+                        e.insert(stored_procedure);
+                    }
+                }
+            }
+
+            Ok(StoredProcedures(merged_stored_procedures))
+        }
+        None => Ok(existing_stored_procedures),
+    }
+}
+
 /// Construct the deployment configuration by introspecting the database.
 pub async fn configure(
     file_path: &std::path::Path,
     configuration: &RawConfiguration,
     environment: impl Environment,
+    stored_procedure_configuration_options: Option<StoredProceduresConfigurationOptions>,
 ) -> Result<RawConfiguration, Error> {
     let connection_string = match &configuration.mssql_connection_string {
         uri::ConnectionUri(Secret::Plain(s)) => s.to_owned(),
@@ -205,13 +252,12 @@ pub async fn configure(
 
     metadata.aggregate_functions = get_aggregate_functions(&type_names);
 
-    let stored_procedures_row =
-        select_first_row(&mssql_pool, STORED_PROCS_CONFIGURATION_QUERY).await;
-
-    let stored_procedures: Vec<introspection::IntrospectStoredProcedure> =
-        serde_json::from_str(stored_procedures_row.get(0).unwrap()).unwrap();
-
-    metadata.stored_procedures = get_stored_procedures(stored_procedures);
+    metadata.stored_procedures = configure_stored_procedures(
+        &mssql_pool,
+        configuration.metadata.stored_procedures.clone(),
+        stored_procedure_configuration_options,
+    )
+    .await?;
 
     Ok(RawConfiguration {
         version: 1,

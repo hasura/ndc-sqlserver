@@ -50,7 +50,7 @@
         "type": "int",
         "description": null,
         "nullable": "nullable"
-      }
+    }
     },
     "description": null
   }

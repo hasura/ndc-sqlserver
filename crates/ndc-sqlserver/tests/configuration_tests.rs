@@ -45,7 +45,7 @@ pub async fn configure_is_idempotent(
     )]);
     let file_path = PathBuf::new();
 
-    let mut actual = configuration::configure(&file_path, &args, environment)
+    let mut actual = configuration::configure(&file_path, &args, environment, None)
         .await
         .expect("configuration::configure");
 
@@ -92,7 +92,7 @@ pub async fn configure_initial_configuration_is_unchanged(
     let environment = HashMap::from([(connection_uri_variable, connection_string.into())]);
     let file_path = PathBuf::new();
 
-    configuration::configure(&file_path, &args, environment)
+    configuration::configure(&file_path, &args, environment, None)
         .await
         .expect("configuration::configure")
 }

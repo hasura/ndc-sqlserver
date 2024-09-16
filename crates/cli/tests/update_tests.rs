@@ -39,7 +39,7 @@ async fn test_update_configuration() -> anyhow::Result<()> {
         environment,
         release_version: None,
     };
-    run(Command::Update, context).await?;
+    run(Command::Update { subcommand: None }, context).await?;
 
     let configuration_file_path = dir.path().join("configuration.json");
     assert!(configuration_file_path.exists());
