@@ -24,7 +24,7 @@ pub struct Context<Env: Environment> {
 pub enum UpdateCommand {
     StoredProcedures {
         #[arg(long)]
-        r#override: bool,
+        overwrite: bool,
     },
 }
 
@@ -157,7 +157,7 @@ async fn update(context: Context<impl Environment>, subcommand: Option<UpdateCom
             serde_json::from_str(&configuration_file_contents)?
         };
         let stored_procs_config = subcommand.clone().map(|sub_cmd| match sub_cmd {
-            UpdateCommand::StoredProcedures { r#override } => configuration::version1::StoredProceduresConfigurationOptions {
+            UpdateCommand::StoredProcedures { overwrite: r#override } => configuration::version1::StoredProceduresConfigurationOptions {
                 overwrite_existing_stored_procedures: r#override,
             },
         });
