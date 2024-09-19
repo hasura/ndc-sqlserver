@@ -190,7 +190,7 @@ pub fn translate_rows_query(
                         Ok(sql::helpers::make_column(
                             current_table.reference.clone(),
                             column_info.name.clone(),
-                            sql::helpers::make_column_alias(alias),
+                            sql::helpers::make_column_alias(alias.to_string()),
                         ))
                     }
                     models::Field::Relationship {
@@ -198,8 +198,8 @@ pub fn translate_rows_query(
                         relationship,
                         arguments,
                     } => {
-                        let table_alias = state.make_relationship_table_alias(&alias);
-                        let column_alias = sql::helpers::make_column_alias(alias);
+                        let table_alias = state.make_relationship_table_alias(&alias.clone().into());
+                        let column_alias = sql::helpers::make_column_alias(alias.to_string());
                         let json_column_alias = sql::helpers::make_json_column_alias();
                         let column_name = sql::ast::ColumnReference::AliasedColumn {
                             table: sql::ast::TableReference::AliasedTable(table_alias.clone()),
@@ -208,7 +208,7 @@ pub fn translate_rows_query(
                         join_fields.push(relationships::JoinFieldInfo {
                             table_alias,
                             column_alias: column_alias.clone(),
-                            relationship_name: relationship,
+                            relationship_name: relationship.to_string(),
                             arguments,
                             query: *query,
                         });
@@ -346,8 +346,8 @@ fn translate_query_part(
 
 /// Create a from clause from a collection name and its reference.
 pub fn make_from_clause_and_reference(
-    collection_name: &str,
-    arguments: &BTreeMap<String, models::Argument>,
+    collection_name: &models::CollectionName,
+    arguments: &BTreeMap<models::ArgumentName, models::Argument>,
     env: &Env,
     state: &mut State,
     collection_alias: &sql::ast::TableAlias,
@@ -371,7 +371,7 @@ fn make_from_clause(
     state: &mut State,
     current_table_alias: &sql::ast::TableAlias,
     collection_info: &CollectionOrProcedureInfo,
-    arguments: &BTreeMap<String, models::Argument>,
+    arguments: &BTreeMap<models::ArgumentName, models::Argument>,
 ) -> Result<sql::ast::From, Error> {
     match &collection_info {
         CollectionOrProcedureInfo::Collection(collection_info) => match collection_info {

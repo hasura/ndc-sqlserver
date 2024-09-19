@@ -8,4 +8,5 @@ edition.workspace = true
 workspace = true
 
 [dependencies]
+ndc-models = { workspace = true }
 serde_json = "1.0.116"

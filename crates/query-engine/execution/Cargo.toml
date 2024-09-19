@@ -7,6 +7,7 @@ edition.workspace = true
 workspace = true
 
 [dependencies]
+ndc-models = { workspace = true }
 query-engine-sql = { path = "../sql" }
 query-engine-translation = { path = "../translation" }
 query-engine-metrics = { path = "../metrics" }

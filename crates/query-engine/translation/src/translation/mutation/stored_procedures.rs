@@ -21,7 +21,7 @@ use query_engine_sql::sql::{
 
 fn parse_stored_procedure_fields(
     fields: Option<models::NestedField>,
-) -> Result<Option<IndexMap<String, models::Field>>, Error> {
+) -> Result<Option<IndexMap<models::FieldName, models::Field>>, Error> {
     match fields {
         None => Ok(None),
         Some(models::NestedField::Object(_)) => Err(Error::UnexpectedStructure(
@@ -38,13 +38,14 @@ fn parse_stored_procedure_fields(
 
 fn get_all_procedure_fields(
     proc_fields: BTreeMap<String, ColumnInfo>,
-) -> IndexMap<String, models::Field> {
+) -> IndexMap<models::FieldName, models::Field> {
     let mut fields = IndexMap::new();
     for (proc_field_name, proc_field_col_info) in proc_fields {
         fields.insert(
-            proc_field_name,
+            proc_field_name.into(),
             models::Field::Column {
-                column: proc_field_col_info.name,
+                arguments: BTreeMap::new(),
+                column: proc_field_col_info.name.into(),
                 fields: None,
             },
         );
@@ -57,7 +58,7 @@ pub(crate) fn generate_execution_plan(
     state: &mut State,
     stored_proc_info: StoredProcedureInfo,
     requested_fields: Option<ndc_sdk::models::NestedField>,
-    provided_args: &BTreeMap<String, serde_json::Value>,
+    provided_args: &BTreeMap<models::ArgumentName, serde_json::Value>,
 ) -> Result<StoredProcedureExecutionPlan, Error> {
     // Compute the fields that need to be returned.
     let parsed_fields = parse_stored_procedure_fields(requested_fields)?.unwrap_or(
@@ -72,7 +73,7 @@ pub(crate) fn generate_execution_plan(
     // Process the arguments provided and convert it into
     // an `Expression`
     for (arg_name, arg_info) in stored_proc_info.info.arguments {
-        let arg_val = provided_args.get(&arg_name);
+        let arg_val: Option<&serde_json::Value> = provided_args.get::<models::ArgumentName>(&arg_name.clone().into());
 
         match arg_val {
             Some(arg_val) if *arg_val != serde_json::Value::Null => {

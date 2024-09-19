@@ -22,7 +22,7 @@ pub fn translate(
 ) -> Result<sql::execution_plan::QueryExecutionPlan, Error> {
     let env = Env::new(metadata, query_request.collection_relationships);
     let mut state = State::new();
-    let table_alias = state.make_table_alias(query_request.collection.clone());
+    let table_alias = state.make_table_alias(query_request.collection.to_string());
     let (current_table, from_clause) = root::make_from_clause_and_reference(
         &query_request.collection,
         &query_request.arguments,
@@ -62,7 +62,7 @@ pub fn translate(
 
     Ok(sql::execution_plan::simple_exec_plan(
         query_request.variables,
-        query_request.collection,
+        query_request.collection.to_string(),
         json_select,
     ))
 }

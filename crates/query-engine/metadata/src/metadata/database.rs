@@ -2,6 +2,7 @@
 
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use ndc_models as models;
 use std::collections::{BTreeMap, BTreeSet};
 
 /// The scalar types supported by the Engine.

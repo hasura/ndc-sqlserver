@@ -13,7 +13,7 @@ pub struct JoinFieldInfo {
     pub table_alias: sql::ast::TableAlias,
     pub column_alias: sql::ast::ColumnAlias,
     pub relationship_name: String,
-    pub arguments: BTreeMap<String, models::RelationshipArgument>,
+    pub arguments: BTreeMap<models::ArgumentName, models::RelationshipArgument>,
     pub query: models::Query,
 }
 
@@ -29,13 +29,13 @@ pub fn translate_joins(
     join_fields
         .into_iter()
         .map(|join_field| {
-            let relationship = env.lookup_relationship(&join_field.relationship_name)?;
+            let relationship = env.lookup_relationship(&join_field.relationship_name.into())?;
             let arguments = make_relationship_arguments(MakeRelationshipArguments {
                 caller_arguments: join_field.arguments,
                 relationship_arguments: relationship.arguments.clone(),
             })?;
 
-            let table_alias = state.make_table_alias(relationship.target_collection.clone());
+            let table_alias = state.make_table_alias(relationship.target_collection.to_string());
 
             // create a from clause and get a reference of inner query.
             let (target_collection, from_clause) = root::make_from_clause_and_reference(
@@ -46,7 +46,7 @@ pub fn translate_joins(
                 &table_alias,
             )?;
 
-            let target_collection_info = env.lookup_collection(&target_collection.name)?;
+            let target_collection_info = env.lookup_collection(&target_collection.name.clone().into())?;
 
             // process inner query and get the SELECTs for the 'rows' and 'aggregates' fields.
             let select_set = super::translate_query(
@@ -154,7 +154,7 @@ pub fn translate_column_mapping(
     expr: sql::ast::Expression,
     relationship: &models::Relationship,
 ) -> Result<sql::ast::Expression, Error> {
-    let table_info = env.lookup_collection(&current_table.name)?;
+    let table_info = env.lookup_collection(&current_table.name.clone().into())?;
 
     let target_collection_info = env.lookup_collection(&relationship.target_collection)?;
 
@@ -192,8 +192,8 @@ pub fn translate_column_mapping(
 #[derive(Debug)]
 /// Used in `make_relationship_arguments()` below.
 pub struct MakeRelationshipArguments {
-    pub relationship_arguments: BTreeMap<String, models::RelationshipArgument>,
-    pub caller_arguments: BTreeMap<String, models::RelationshipArgument>,
+    pub relationship_arguments: BTreeMap<models::ArgumentName, models::RelationshipArgument>,
+    pub caller_arguments: BTreeMap<models::ArgumentName, models::RelationshipArgument>,
 }
 
 /// Combine the caller arguments and the relationship arguments into a single map.
@@ -202,20 +202,20 @@ pub struct MakeRelationshipArguments {
 /// and throw an error on the column case. Will be fixed in the future.
 pub fn make_relationship_arguments(
     arguments: MakeRelationshipArguments,
-) -> Result<BTreeMap<String, models::Argument>, Error> {
+) -> Result<BTreeMap<models::ArgumentName, models::Argument>, Error> {
     // these are arguments defined in the relationship definition.
-    let relationship_arguments: BTreeMap<String, models::Argument> = arguments
+    let relationship_arguments: BTreeMap<models::ArgumentName, models::Argument> = arguments
         .relationship_arguments
         .into_iter()
         .map(|(key, argument)| Ok((key, relationship_argument_to_argument(argument)?)))
-        .collect::<Result<BTreeMap<String, models::Argument>, Error>>()?;
+        .collect::<Result<BTreeMap<models::ArgumentName, models::Argument>, Error>>()?;
 
     // these are arguments defined when calling the relationship.
-    let caller_arguments: BTreeMap<String, models::Argument> = arguments
+    let caller_arguments: BTreeMap<models::ArgumentName, models::Argument> = arguments
         .caller_arguments
         .into_iter()
         .map(|(key, argument)| Ok((key, relationship_argument_to_argument(argument)?)))
-        .collect::<Result<BTreeMap<String, models::Argument>, Error>>()?;
+        .collect::<Result<BTreeMap<models::ArgumentName, models::Argument>, Error>>()?;
 
     let mut arguments = relationship_arguments;
 
@@ -225,7 +225,7 @@ pub fn make_relationship_arguments(
     for (key, value) in caller_arguments {
         match arguments.insert(key.clone(), value) {
             None => Ok(()),
-            Some(_) => Err(Error::RelationshipArgumentWasOverriden(key)),
+            Some(_) => Err(Error::RelationshipArgumentWasOverriden(key.to_string())),
         }?;
     }
 

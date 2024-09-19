@@ -338,12 +338,12 @@ fn translate_comparison_target(
     column: &models::ComparisonTarget,
 ) -> Result<(sql::ast::Expression, Vec<sql::ast::Join>), Error> {
     match column {
-        models::ComparisonTarget::Column { name, path } => {
+        models::ComparisonTarget::Column { name, path, field_path } => {
             let (table_ref, joins) =
                 translate_comparison_pathelements(env, state, root_and_current_tables, path)?;
 
             // get the unrelated table information from the metadata.
-            let collection_info = env.lookup_collection(&table_ref.name)?;
+            let collection_info = env.lookup_collection(&table_ref.name.into())?;
             let ColumnInfo { name, .. } = collection_info.lookup_column(name)?;
 
             Ok((
@@ -356,10 +356,10 @@ fn translate_comparison_target(
         }
 
         // Compare a column from the root table.
-        models::ComparisonTarget::RootCollectionColumn { name } => {
+        models::ComparisonTarget::RootCollectionColumn { name, field_path } => {
             let RootAndCurrentTables { root_table, .. } = root_and_current_tables;
             // get the unrelated table information from the metadata.
-            let collection_info = env.lookup_collection(&root_table.name)?;
+            let collection_info = env.lookup_collection(&root_table.name.clone().into())?;
 
             // find the requested column in the tables columns.
             let ColumnInfo { name, .. } = collection_info.lookup_column(name)?;
@@ -407,6 +407,7 @@ pub fn translate_exists_in_collection(
     predicate: &models::Expression,
 ) -> Result<sql::ast::Expression, Error> {
     match in_collection {
+        models::ExistsInCollection::NestedCollection { column_name, arguments, field_path } => todo!("Not implemented"),
         models::ExistsInCollection::Unrelated {
             collection,
             arguments,
@@ -418,7 +419,7 @@ pub fn translate_exists_in_collection(
                 },
             )?;
 
-            let table_alias = state.make_table_alias(collection.clone());
+            let table_alias = state.make_table_alias(collection.to_string());
 
             // create a from clause and get a reference of inner query.
             let (table, from_clause) = root::make_from_clause_and_reference(
@@ -477,7 +478,7 @@ pub fn translate_exists_in_collection(
                 },
             )?;
 
-            let table_alias = state.make_table_alias(relationship.target_collection.clone());
+            let table_alias = state.make_table_alias(relationship.target_collection.to_string());
 
             // create a from clause and get a reference of inner query.
             let (table, from_clause) = root::make_from_clause_and_reference(
@@ -540,16 +541,16 @@ fn get_comparison_target_type(
     column: &models::ComparisonTarget,
 ) -> Result<database::ScalarType, Error> {
     match column {
-        models::ComparisonTarget::RootCollectionColumn { name } => {
+        models::ComparisonTarget::RootCollectionColumn { name, field_path: _ } => {
             let column = env
-                .lookup_collection(&root_and_current_tables.root_table.name)?
+                .lookup_collection(&root_and_current_tables.root_table.name.clone().into())?
                 .lookup_column(name)?;
             Ok(column.r#type)
         }
-        models::ComparisonTarget::Column { name, path } => match path.last() {
+        models::ComparisonTarget::Column { name, path, field_path: _ } => match path.last() {
             None => {
                 let column = env
-                    .lookup_collection(&root_and_current_tables.current_table.name)?
+                    .lookup_collection(&root_and_current_tables.current_table.name.clone().into())?
                     .lookup_column(name)?;
                 Ok(column.r#type)
             }

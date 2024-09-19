@@ -13,7 +13,7 @@ use query_engine_sql::sql;
 /// Static information from the query and metadata.
 pub struct Env<'a> {
     metadata: &'a metadata::Metadata,
-    relationships: BTreeMap<String, models::Relationship>,
+    relationships: BTreeMap<models::RelationshipName, models::Relationship>,
 }
 
 #[derive(Debug)]
@@ -48,7 +48,7 @@ impl NativeQueries {
 #[derive(Debug)]
 pub struct MutationOperation {
     pub name: String,
-    pub arguments: BTreeMap<String, serde_json::Value>,
+    pub arguments: BTreeMap<models::ArgumentName, serde_json::Value>,
     pub fields: Option<models::NestedField>,
     pub kind: MutationOperationKind,
 }
@@ -63,7 +63,7 @@ pub enum MutationOperationKind {
 /// Information we store about a native query call.
 pub struct NativeQueryInfo {
     pub info: metadata::NativeQueryInfo,
-    pub arguments: BTreeMap<String, models::Argument>,
+    pub arguments: BTreeMap<models::ArgumentName, models::Argument>,
     pub alias: sql::ast::TableAlias,
 }
 
@@ -152,7 +152,7 @@ pub enum CollectionOrProcedureInfo {
 /// a SQL statement that can be run in the DB.
 pub fn generate_native_query_sql(
     type_arguments: &BTreeMap<String, query_engine_metadata::metadata::ColumnInfo>,
-    native_query_arguments: &BTreeMap<String, ndc_sdk::models::Argument>,
+    native_query_arguments: &BTreeMap<models::ArgumentName, ndc_sdk::models::Argument>,
     native_query_sql: &NativeQuerySql,
 ) -> Result<Vec<sql::ast::RawSql>, Error> {
     native_query_sql
@@ -166,7 +166,7 @@ pub fn generate_native_query_sql(
                     Some(argument) => Ok(argument.r#type.clone()),
                 }?;
 
-                let exp = match native_query_arguments.get(param) {
+                let exp = match native_query_arguments.get(param.as_str().into()) {
                     None => Err(Error::ArgumentNotFound(param.clone())),
                     Some(argument) => match argument {
                         models::Argument::Literal { value } => {
@@ -187,7 +187,7 @@ impl<'a> Env<'a> {
     /// Create a new Env by supplying the metadata and relationships.
     pub fn new(
         metadata: &'a metadata::Metadata,
-        relationships: BTreeMap<String, models::Relationship>,
+        relationships: BTreeMap<models::RelationshipName, models::Relationship>,
     ) -> Env {
         Env {
             metadata,
@@ -228,13 +228,13 @@ impl<'a> Env<'a> {
     /// Lookup a collection's information in the metadata.
     pub fn lookup_collection(
         &self,
-        collection_name: &str,
+        collection_name: &models::CollectionName,
     ) -> Result<CollectionOrProcedureInfo, Error> {
         let table = self
             .metadata
             .tables
             .0
-            .get(collection_name)
+            .get(collection_name.as_str())
             .map(|t| CollectionInfo::Table {
                 name: collection_name.to_string(),
                 info: t.clone(),
@@ -243,7 +243,7 @@ impl<'a> Env<'a> {
         match table {
             Some(table) => Ok(CollectionOrProcedureInfo::Collection(table)),
             None => {
-                let proc_maybe = self.lookup_procedure(collection_name);
+                let proc_maybe = self.lookup_procedure(collection_name.as_str().into());
 
                 match proc_maybe {
                     Some(proc_info) => Ok(CollectionOrProcedureInfo::Procedure(proc_info)),
@@ -252,7 +252,7 @@ impl<'a> Env<'a> {
                             self.metadata
                                 .native_queries
                                 .0
-                                .get(collection_name)
+                                .get(collection_name.as_str())
                                 .map(|nq| CollectionInfo::NativeQuery {
                                     name: collection_name.to_string(),
                                     info: nq.clone(),
@@ -266,7 +266,7 @@ impl<'a> Env<'a> {
                                 .metadata
                                 .native_mutations
                                 .0
-                                .get(collection_name)
+                                .get(collection_name.as_str())
                                 .map(|nq| CollectionInfo::NativeMutation {
                                     name: collection_name.to_string(),
                                     info: nq.clone(),
@@ -280,9 +280,9 @@ impl<'a> Env<'a> {
         }
     }
 
-    pub fn lookup_relationship(&self, name: &str) -> Result<&models::Relationship, Error> {
+    pub fn lookup_relationship(&self, name: &models::RelationshipName) -> Result<&models::Relationship, Error> {
         self.relationships
-            .get(name)
+            .get(name.as_str())
             .ok_or(Error::RelationshipNotFound(name.to_string()))
     }
 
@@ -290,28 +290,28 @@ impl<'a> Env<'a> {
     pub fn lookup_comparison_operator(
         &self,
         scalar_type: &metadata::ScalarType,
-        name: &String,
+        name: &models::ComparisonOperatorName,
     ) -> Result<&'a metadata::ComparisonOperator, Error> {
         self.metadata
             .comparison_operators
             .0
             .get(scalar_type)
-            .and_then(|ops| ops.get(name))
+             .and_then(|ops| ops.get(name.as_str()))
             .ok_or(Error::OperatorNotFound {
-                operator_name: name.clone(),
+                operator_name: name.to_string(),
                 type_name: scalar_type.clone(),
             })
     }
 }
 
 impl CollectionOrProcedureInfo {
-    pub fn lookup_column(&self, column_name: &str) -> Result<ColumnInfo, Error> {
+    pub fn lookup_column(&self, column_name: &models::FieldName) -> Result<ColumnInfo, Error> {
         match &self {
             CollectionOrProcedureInfo::Collection(collection_info) => {
-                collection_info.lookup_column(column_name)
+                collection_info.lookup_column(column_name.as_str())
             }
             CollectionOrProcedureInfo::Procedure(procedure_info) => {
-                procedure_info.lookup_column(column_name)
+                procedure_info.lookup_column(column_name.as_str())
             }
         }
     }
@@ -408,7 +408,7 @@ impl State {
         &mut self,
         name: &str,
         info: metadata::NativeQueryInfo,
-        arguments: BTreeMap<String, models::Argument>,
+        arguments: BTreeMap<models::ArgumentName, models::Argument>,
     ) -> sql::ast::TableReference {
         let alias = self.make_native_query_table_alias(name);
         self.native_queries.native_queries.push(NativeQueryInfo {
@@ -467,7 +467,7 @@ impl State {
     /// and get an alias.
     pub fn make_order_path_part_table_alias(
         &mut self,
-        table_name: &String,
+        table_name: String,
     ) -> sql::ast::TableAlias {
         self.make_table_alias(format!("ORDER_PART_{}", table_name))
     }
