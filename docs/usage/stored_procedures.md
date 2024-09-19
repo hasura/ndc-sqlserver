@@ -19,13 +19,13 @@ The ndc-sqlserver connector can track stored procedures in a SQL Server database
 The stored procedures present in the database can be added by running the following command:
 
 ```
-ddn connector plugin --connector app/sqlserver/connector.yaml -- stored-procedures
+ddn connector plugin --connector app/sqlserver/connector.yaml -- update stored-procedures
 ```
 
 If you want to overwrite the existing stored procedures,
 
 ```
-ddn connector plugin --connector app/sqlserver/connector.yaml -- stored-procedures --overwrite
+ddn connector plugin --connector app/sqlserver/connector.yaml -- update stored-procedures --overwrite
 ```
 
 
