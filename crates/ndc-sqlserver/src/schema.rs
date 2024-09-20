@@ -24,9 +24,9 @@ enum SchemaError {
 
 fn scalar_type_to_type(type_name: String, nullability: &metadata::Nullable) -> models::Type {
     match nullability {
-        metadata::Nullable::NonNullable => models::Type::Named { name: type_name },
+        metadata::Nullable::NonNullable => models::Type::Named { name: type_name.into() },
         metadata::Nullable::Nullable => models::Type::Nullable {
-            underlying_type: Box::new(models::Type::Named { name: type_name }),
+            underlying_type: Box::new(models::Type::Named { name: type_name.into() }),
         },
     }
 }
@@ -42,7 +42,7 @@ fn column_to_type(column: &metadata::ColumnInfo) -> models::Type {
 fn get_native_queries_schema(
     native_queries: &query_engine_metadata::metadata::NativeQueries,
     object_types: &mut BTreeMap<String, models::ObjectType>,
-) -> Result<Vec<models::CollectionInfo>, connector::SchemaError> {
+) -> Vec<models::CollectionInfo> {
     let mut read_only_native_queries = Vec::new();
 
     native_queries.0.iter().for_each(|(name, info)| {
@@ -54,6 +54,7 @@ fn get_native_queries_schema(
                     models::ObjectField {
                         description: column.description.clone(),
                         r#type: column_to_type(column),
+                        arguments: BTreeMap::new(),
                     },
                 )
             })),
@@ -61,14 +62,14 @@ fn get_native_queries_schema(
         object_types.insert(name.clone(), native_query_object_type);
 
         let native_query_collection_info = models::CollectionInfo {
-            name: name.clone(),
+            name: name.as_str().into(),
             description: info.description.clone(),
             arguments: info
                 .arguments
                 .iter()
                 .map(|(name, column_info)| {
                     (
-                        name.clone(),
+                        name.as_str().into(),
                         models::ArgumentInfo {
                             description: column_info.description.clone(),
                             argument_type: column_to_type(column_info),
@@ -76,14 +77,14 @@ fn get_native_queries_schema(
                     )
                 })
                 .collect(),
-            collection_type: name.clone(),
+            collection_type: name.as_str().into(),
             uniqueness_constraints: BTreeMap::new(),
             foreign_keys: BTreeMap::new(),
         };
         read_only_native_queries.push(native_query_collection_info);
     });
 
-    Ok(read_only_native_queries)
+    read_only_native_queries
 }
 
 /// Build a `ProcedureInfo` type from the given parameters.
@@ -122,8 +123,9 @@ fn make_procedure_type(
         models::ObjectField {
             description: Some("The number of rows affected by the mutation".to_string()),
             r#type: models::Type::Named {
-                name: "int".to_string(),
+                name: "int".into(),
             },
+            arguments: BTreeMap::new(),
         },
     );
 
@@ -134,6 +136,7 @@ fn make_procedure_type(
             r#type: models::Type::Array {
                 element_type: Box::from(result_type),
             },
+            arguments: BTreeMap::new(),
         },
     );
 
@@ -168,7 +171,7 @@ fn get_native_mutations_schema(
     native_mutations_metadata: &query_engine_metadata::metadata::NativeMutations,
     object_types: &mut BTreeMap<String, models::ObjectType>,
     scalar_types: &mut BTreeMap<String, models::ScalarType>,
-) -> Result<Vec<models::ProcedureInfo>, connector::SchemaError> {
+) -> Result<Vec<models::ProcedureInfo>, connector::ErrorResponse> {
     let mut native_mutations = Vec::new();
 
     native_mutations_metadata.0.iter().for_each(|(name, info)| {
@@ -180,6 +183,7 @@ fn get_native_mutations_schema(
                     models::ObjectField {
                         description: column.column_info.description.clone(),
                         r#type: column_to_type(&column.column_info),
+                        arguments: BTreeMap::new(),
                     },
                 )
             })),
@@ -227,7 +231,7 @@ fn get_stored_procedure_argument(
 fn get_stored_procedures_schema(
     stored_procedures: &StoredProcedures,
     object_types: &mut BTreeMap<String, models::ObjectType>,
-) -> Result<Vec<models::ProcedureInfo>, connector::SchemaError> {
+) -> Result<Vec<models::ProcedureInfo>, connector::ErrorResponse> {
     let mut stored_procedures_schema = Vec::new();
 
     for (proc_name, proc_info) in stored_procedures.0.iter() {
@@ -250,6 +254,7 @@ fn get_stored_procedures_schema(
                         models::ObjectField {
                             description: column.description.clone(),
                             r#type: column_to_type(column),
+                            arguments: BTreeMap::new()
                         },
                     )
                 })),
@@ -259,7 +264,7 @@ fn get_stored_procedures_schema(
                 .insert(object_type_name.clone(), stored_proc_object_type)
                 .is_some()
             {
-                return Err(connector::SchemaError::Other(Box::new(
+                return Err(connector::ErrorResponse::Other(Box::new(
                     SchemaError::DuplicateObject(object_type_name),
                 )));
             };
@@ -286,7 +291,7 @@ fn get_stored_procedures_schema(
 /// from the NDC specification.
 pub fn get_schema(
     configuration::Configuration { metadata, .. }: &configuration::Configuration,
-) -> Result<models::SchemaResponse, connector::SchemaError> {
+) -> Result<models::SchemaResponse, connector::ErrorResponse> {
     let mut scalar_types: BTreeMap<String, models::ScalarType> =
         configuration::occurring_scalar_types(metadata)
             .iter()
@@ -403,6 +408,7 @@ pub fn get_schema(
                     models::ObjectField {
                         description: column.description.clone(),
                         r#type: column_to_type(column),
+                        arguments: BTreeMap::new(),
                     },
                 )
             })),
@@ -412,7 +418,7 @@ pub fn get_schema(
 
     let mut object_types = table_types;
 
-    let native_queries = get_native_queries_schema(&metadata.native_queries, &mut object_types)?;
+    let native_queries = get_native_queries_schema(&metadata.native_queries, &mut object_types);
 
     let native_mutations = get_native_mutations_schema(
         &metadata.native_mutations,
@@ -530,6 +536,7 @@ mod tests {
             r#type: models::Type::Named {
                 name: "int".to_string(),
             },
+            arguments: BTreeMap::new()
         };
 
         let expected_object_field_name = ObjectField {
@@ -537,6 +544,7 @@ mod tests {
             r#type: models::Type::Named {
                 name: "varchar".to_string(),
             },
+            arguments: BTreeMap::new()
         };
 
         let expected_object_field_affected_rows = ObjectField {
@@ -544,6 +552,7 @@ mod tests {
             r#type: models::Type::Named {
                 name: "int".to_string(),
             },
+            arguments: BTreeMap::new()
         };
 
         let expected_native_mutation_object_type = ObjectType {
@@ -561,6 +570,7 @@ mod tests {
                     name: "insert_user_native_mutation".into(),
                 }),
             },
+            arguments: BTreeMap::new()
         };
 
         let expected_native_mutation_response_object_type = ObjectType {
@@ -725,6 +735,7 @@ mod tests {
                     r#type: (models::Type::Named {
                         name: "int".to_string(),
                     }),
+                    arguments: BTreeMap::new(),
                 },
             );
 

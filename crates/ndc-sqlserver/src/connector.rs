@@ -11,6 +11,7 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use configuration::environment::Environment;
 use ndc_sdk::connector;
+use ndc_sdk::connector::{Connector, ConnectorSetup, Result};
 use ndc_sdk::json_response::JsonResponse;
 use ndc_sdk::models;
 use tokio::fs;
@@ -43,7 +44,7 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
     async fn parse_configuration(
         &self,
         configuration_dir: impl AsRef<Path> + Send,
-    ) -> Result<<Self::Connector as connector::Connector>::Configuration, connector::ParseError>
+    ) -> Result<<Self::Connector as connector::Connector>::Configuration>
     {
         let configuration_file = configuration_dir
             .as_ref()
@@ -52,8 +53,7 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
             fs::read_to_string(&configuration_file)
                 .await
                 .map_err(|err| {
-                    connector::ParseError::Other(
-                        format!("{}: {}", &configuration_file.display(), err).into(),
+                    connector::ParseError::CouldNotFindConfiguration(configuration_file
                     )
                 })?;
         let configuration: configuration::RawConfiguration =

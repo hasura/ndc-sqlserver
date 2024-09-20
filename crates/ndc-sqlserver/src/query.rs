@@ -70,26 +70,8 @@ fn plan_query(
 async fn execute_query(
     state: &configuration::State,
     plan: sql::execution_plan::QueryExecutionPlan,
-) -> Result<JsonResponse<models::QueryResponse>, connector::QueryError> {
+) -> Result<JsonResponse<models::QueryResponse>, query_engine_execution::error::Error> {
     query::mssql_execute_query_plan(&state.mssql_pool, &state.metrics, plan)
         .await
         .map(JsonResponse::Serialized)
-        .map_err(|err| match err {
-            error::Error::Query(err) => {
-                tracing::error!("{}", err);
-                connector::QueryError::Other(err.into())
-            }
-            error::Error::ConnectionPool(err) => {
-                tracing::error!("{}", err);
-                connector::QueryError::Other(err.into())
-            }
-            error::Error::TiberiusError(err) => {
-                tracing::error!("{}", err);
-                connector::QueryError::Other(err.into())
-            }
-            error::Error::Mutation(err) => {
-                tracing::error!("{}", err);
-                connector::QueryError::Other(err.into())
-            }
-        })
 }
