@@ -16,7 +16,9 @@ pub fn translate(
         .into_iter()
         .map(|(alias, aggregation)| {
             let expression = match aggregation {
-                models::Aggregate::ColumnCount { column, distinct, .. } => {
+                models::Aggregate::ColumnCount {
+                    column, distinct, ..
+                } => {
                     let count_column_alias = sql::helpers::make_column_alias(column.to_string());
                     if *distinct {
                         sql::ast::Expression::Count(sql::ast::CountType::Distinct(
@@ -34,7 +36,11 @@ pub fn translate(
                         ))
                     }
                 }
-                models::Aggregate::SingleColumn { column, function, field_path } => {
+                models::Aggregate::SingleColumn {
+                    column,
+                    function,
+                    field_path: _,
+                } => {
                     let column_ref_expression = sql::ast::Expression::ColumnReference(
                         sql::ast::ColumnReference::AliasedColumn {
                             table: table.clone(),
@@ -59,7 +65,10 @@ pub fn translate(
                     sql::ast::Expression::Count(sql::ast::CountType::Star)
                 }
             };
-            Ok((sql::helpers::make_column_alias(alias.to_string()), expression))
+            Ok((
+                sql::helpers::make_column_alias(alias.to_string()),
+                expression,
+            ))
         })
         .collect::<Result<Vec<_>, Error>>()
 }

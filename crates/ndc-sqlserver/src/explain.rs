@@ -10,10 +10,12 @@ use tracing::{info_span, Instrument};
 use ndc_sdk::connector;
 use ndc_sdk::models;
 use ndc_sqlserver_configuration as configuration;
-use query_engine_execution::error;
 use query_engine_execution::query;
 use query_engine_sql::sql;
 use query_engine_translation::translation;
+
+use crate::error::convert;
+use crate::error::record;
 
 /// Explain a query by creating an execution plan
 ///
@@ -23,7 +25,7 @@ pub async fn explain(
     configuration: &configuration::Configuration,
     state: &configuration::State,
     query_request: models::QueryRequest,
-) -> Result<models::ExplainResponse, connector::ExplainError> {
+) -> Result<models::ExplainResponse, connector::ErrorResponse> {
     async move {
         tracing::info!(
             query_request_json = serde_json::to_string(&query_request).unwrap(),
@@ -31,36 +33,26 @@ pub async fn explain(
         );
 
         // Compile the query.
-        let plan = async { plan_query(configuration, state, query_request) }
-            .instrument(info_span!("Plan query"))
-            .await?;
+        let plan = async {
+            plan_query(configuration, state, query_request).map_err(|err| {
+                record::translation_error(&err, &state.metrics);
+                convert::translation_error_to_response(&err)
+            })
+        }
+        .instrument(info_span!("Plan query"))
+        .await?;
 
         // Execute an explain query.
-        let (query, plan) = query::explain(&state.mssql_pool, plan)
-            .instrument(info_span!("Explain query"))
-            .await
-            .map_err(|err| match err {
-                error::Error::Query(err) => {
-                    tracing::error!("{}", err);
-
-                    connector::ExplainError::Other(err.to_string().into())
-                }
-                error::Error::ConnectionPool(err) => {
-                    tracing::error!("{}", err);
-
-                    connector::ExplainError::Other(err.to_string().into())
-                }
-                error::Error::TiberiusError(err) => {
-                    tracing::error!("{}", err);
-
-                    connector::ExplainError::Other(err.to_string().into())
-                }
-                error::Error::Mutation(err) => {
-                    tracing::error!("{}", err);
-
-                    connector::ExplainError::Other(err.to_string().into())
-                }
-            })?;
+        let (query, plan) = async {
+            query::explain(&state.mssql_pool, plan)
+                .await
+                .map_err(|err| {
+                    record::execution_error(&err, &state.metrics);
+                    convert::execution_error_to_response(err)
+                })
+        }
+        .instrument(info_span!("Explain query"))
+        .await?;
 
         state.metrics.record_successful_explain();
 
@@ -79,21 +71,8 @@ fn plan_query(
     configuration: &configuration::Configuration,
     state: &configuration::State,
     query_request: models::QueryRequest,
-) -> Result<sql::execution_plan::QueryExecutionPlan, connector::ExplainError> {
+) -> Result<sql::execution_plan::QueryExecutionPlan, translation::error::Error> {
     let timer = state.metrics.time_query_plan();
-    let result =
-        translation::query::translate(&configuration.metadata, query_request).map_err(|err| {
-            tracing::error!("{}", err);
-            match err {
-                translation::error::Error::CapabilityNotSupported(_) => {
-                    state.metrics.error_metrics.record_unsupported_capability();
-                    connector::ExplainError::UnsupportedOperation(err.to_string())
-                }
-                _ => {
-                    state.metrics.error_metrics.record_invalid_request();
-                    connector::ExplainError::InvalidRequest(err.to_string())
-                }
-            }
-        });
+    let result = translation::query::translate(&configuration.metadata, query_request);
     timer.complete_with(result)
 }

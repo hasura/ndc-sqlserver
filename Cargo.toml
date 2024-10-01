@@ -52,3 +52,5 @@ unused_async = "allow"
 ndc-models = { git = "https://github.com/hasura/ndc-spec.git", tag = "v0.1.6" }
 ndc-sdk = { git = "https://github.com/hasura/ndc-sdk-rs.git", tag = "v0.4.0" }
 ndc-test = { git = "https://github.com/hasura/ndc-spec.git", tag = "v0.1.6" }
+
+smol_str = "0.1"

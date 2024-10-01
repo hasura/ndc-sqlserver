@@ -6,6 +6,7 @@ use crate::error::Error;
 use crate::secret::Secret;
 use crate::{uri, ConnectionUri};
 
+use ndc_models::{AggregateFunctionName, CollectionName, ComparisonOperatorName, FieldName};
 use query_engine_metadata::metadata;
 use query_engine_metadata::metadata::stored_procedures::{
     StoredProcedureArgumentInfo, StoredProcedureInfo, StoredProcedures,
@@ -326,12 +327,12 @@ fn get_aggregate_functions(type_names: &Vec<TypeItem>) -> database::AggregateFun
 // taken from https://learn.microsoft.com/en-us/sql/t-sql/functions/aggregate-functions-transact-sql?view=sql-server-ver16
 fn get_aggregate_functions_for_type(
     type_name: &database::ScalarType,
-) -> BTreeMap<String, database::AggregateFunction> {
+) -> BTreeMap<AggregateFunctionName, database::AggregateFunction> {
     let mut aggregate_functions = BTreeMap::new();
 
     if !NOT_APPROX_COUNTABLE.contains(&type_name.0.as_str()) {
         aggregate_functions.insert(
-            "APPROX_COUNT_DISTINCT".to_string(),
+            AggregateFunctionName::new("APPROX_COUNT_DISTINCT".to_string().into()),
             database::AggregateFunction {
                 return_type: metadata::ScalarType("bigint".to_string()),
             },
@@ -340,7 +341,7 @@ fn get_aggregate_functions_for_type(
 
     if !NOT_COUNTABLE.contains(&type_name.0.as_str()) {
         aggregate_functions.insert(
-            "COUNT".to_string(),
+            AggregateFunctionName::new("COUNT".to_string().into()),
             database::AggregateFunction {
                 return_type: metadata::ScalarType("int".to_string()),
             },
@@ -355,13 +356,13 @@ fn get_aggregate_functions_for_type(
             || type_name.0.as_str() == "uniqueidentifier")
     {
         aggregate_functions.insert(
-            "MIN".to_string(),
+            AggregateFunctionName::new("MIN".to_string().into()),
             database::AggregateFunction {
                 return_type: type_name.clone(),
             },
         );
         aggregate_functions.insert(
-            "MAX".to_string(),
+            AggregateFunctionName::new("MAX".to_string().into()),
             database::AggregateFunction {
                 return_type: type_name.clone(),
             },
@@ -373,25 +374,25 @@ fn get_aggregate_functions_for_type(
             || APPROX_NUMERICS.contains(&type_name.0.as_str()))
     {
         aggregate_functions.insert(
-            "STDEV".to_string(),
+            AggregateFunctionName::new("STDEV".to_string().into()),
             database::AggregateFunction {
                 return_type: database::ScalarType("float".to_string()),
             },
         );
         aggregate_functions.insert(
-            "STDEVP".to_string(),
+            AggregateFunctionName::new("STDEVP".to_string().into()),
             database::AggregateFunction {
                 return_type: database::ScalarType("float".to_string()),
             },
         );
         aggregate_functions.insert(
-            "VAR".to_string(),
+            AggregateFunctionName::new("VAR".to_string().into()),
             database::AggregateFunction {
                 return_type: database::ScalarType("float".to_string()),
             },
         );
         aggregate_functions.insert(
-            "VARP".to_string(),
+            AggregateFunctionName::new("VARP".to_string().into()),
             database::AggregateFunction {
                 return_type: database::ScalarType("float".to_string()),
             },
@@ -411,13 +412,13 @@ fn get_aggregate_functions_for_type(
         _ => None,
     } {
         aggregate_functions.insert(
-            "AVG".to_string(),
+            AggregateFunctionName::new("AVG".to_string().into()),
             database::AggregateFunction {
                 return_type: metadata::ScalarType(precise_return_type.to_string()),
             },
         );
         aggregate_functions.insert(
-            "SUM".to_string(),
+            AggregateFunctionName::new("SUM".to_string().into()),
             database::AggregateFunction {
                 return_type: metadata::ScalarType(precise_return_type.to_string()),
             },
@@ -425,7 +426,7 @@ fn get_aggregate_functions_for_type(
     };
 
     aggregate_functions.insert(
-        "COUNT_BIG".to_string(),
+        AggregateFunctionName::new("COUNT_BIG".to_string().into()),
         database::AggregateFunction {
             return_type: metadata::ScalarType("bigint".to_string()),
         },
@@ -454,12 +455,12 @@ fn get_comparison_operators(type_names: &Vec<TypeItem>) -> database::ComparisonO
 // categories taken from https://learn.microsoft.com/en-us/sql/t-sql/data-types/data-types-transact-sql
 fn get_comparison_operators_for_type(
     type_name: &database::ScalarType,
-) -> BTreeMap<String, database::ComparisonOperator> {
+) -> BTreeMap<ComparisonOperatorName, database::ComparisonOperator> {
     let mut comparison_operators = BTreeMap::new();
 
     // in ndc-spec, all things can be `==`
     comparison_operators.insert(
-        "_eq".to_string(),
+        ComparisonOperatorName::new("_eq".to_string().into()),
         database::ComparisonOperator {
             operator_name: "=".to_string(),
             argument_type: type_name.clone(),
@@ -468,7 +469,7 @@ fn get_comparison_operators_for_type(
     );
 
     comparison_operators.insert(
-        "_in".to_string(),
+        ComparisonOperatorName::new("_in".to_string().into()),
         database::ComparisonOperator {
             operator_name: "IN".to_string(),
             argument_type: type_name.clone(),
@@ -481,7 +482,7 @@ fn get_comparison_operators_for_type(
         || UNICODE_CHARACTER_STRINGS.contains(&type_name.0.as_str())
     {
         comparison_operators.insert(
-            "_like".to_string(),
+            ComparisonOperatorName::new("_like".to_string().into()),
             database::ComparisonOperator {
                 operator_name: "LIKE".to_string(),
                 argument_type: type_name.clone(),
@@ -489,7 +490,7 @@ fn get_comparison_operators_for_type(
             },
         );
         comparison_operators.insert(
-            "_nlike".to_string(),
+            ComparisonOperatorName::new("_nlike".to_string().into()),
             database::ComparisonOperator {
                 operator_name: "NOT LIKE".to_string(),
                 argument_type: type_name.clone(),
@@ -502,7 +503,7 @@ fn get_comparison_operators_for_type(
     // https://learn.microsoft.com/en-us/sql/t-sql/language-elements/comparison-operators-transact-sql?view=sql-server-ver16
     if !CANNOT_COMPARE.contains(&type_name.0.as_str()) {
         comparison_operators.insert(
-            "_neq".to_string(),
+            ComparisonOperatorName::new("_neq".to_string().into()),
             database::ComparisonOperator {
                 operator_name: "!=".to_string(),
                 argument_type: type_name.clone(),
@@ -510,7 +511,7 @@ fn get_comparison_operators_for_type(
             },
         );
         comparison_operators.insert(
-            "_lt".to_string(),
+            ComparisonOperatorName::new("_lt".to_string().into()),
             database::ComparisonOperator {
                 operator_name: "<".to_string(),
                 argument_type: type_name.clone(),
@@ -518,7 +519,7 @@ fn get_comparison_operators_for_type(
             },
         );
         comparison_operators.insert(
-            "_gt".to_string(),
+            ComparisonOperatorName::new("_gt".to_string().into()),
             database::ComparisonOperator {
                 operator_name: ">".to_string(),
                 argument_type: type_name.clone(),
@@ -527,7 +528,7 @@ fn get_comparison_operators_for_type(
         );
 
         comparison_operators.insert(
-            "_gte".to_string(),
+            ComparisonOperatorName::new("_gte".to_string().into()),
             database::ComparisonOperator {
                 operator_name: ">=".to_string(),
                 argument_type: type_name.clone(),
@@ -535,7 +536,7 @@ fn get_comparison_operators_for_type(
             },
         );
         comparison_operators.insert(
-            "_lte".to_string(),
+            ComparisonOperatorName::new("_lte".to_string().into()),
             database::ComparisonOperator {
                 operator_name: "<=".to_string(),
                 argument_type: type_name.clone(),
@@ -560,7 +561,7 @@ fn get_tables_info(
         for introspection_column in introspection_table.joined_sys_column {
             let column_name = introspection_column.name.clone();
             let (column, new_foreign_relations) = get_column_info(introspection_column);
-            columns.insert(column_name, column);
+            columns.insert(FieldName::new(column_name.into()), column);
             foreign_relations_inner.extend(new_foreign_relations);
         }
 
@@ -575,7 +576,7 @@ fn get_tables_info(
             ),
         };
 
-        tables.insert(table_name, table_info);
+        tables.insert(CollectionName::new(table_name.into()), table_info);
     }
 
     database::TablesInfo(tables)
@@ -586,7 +587,10 @@ fn get_foreign_relation(
     foreign_key: introspection::IntrospectionForeignKeyColumn,
 ) -> database::ForeignRelation {
     let mut column_mapping = BTreeMap::new();
-    column_mapping.insert(local_column, foreign_key.joined_referenced_column_name);
+    column_mapping.insert(
+        local_column.into(),
+        foreign_key.joined_referenced_column_name.into(),
+    );
 
     database::ForeignRelation {
         foreign_table: foreign_key.joined_referenced_table_name,
@@ -606,7 +610,7 @@ fn get_uniqueness_constraints(
             .columns
             .iter()
             .fold(BTreeSet::new(), |mut set, part| {
-                set.insert(part.name.clone());
+                set.insert(part.name.clone().into());
                 set
             });
 

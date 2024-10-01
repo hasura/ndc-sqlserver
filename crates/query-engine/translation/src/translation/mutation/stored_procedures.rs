@@ -73,7 +73,8 @@ pub(crate) fn generate_execution_plan(
     // Process the arguments provided and convert it into
     // an `Expression`
     for (arg_name, arg_info) in stored_proc_info.info.arguments {
-        let arg_val: Option<&serde_json::Value> = provided_args.get::<models::ArgumentName>(&arg_name.clone().into());
+        let arg_val: Option<&serde_json::Value> =
+            provided_args.get::<models::ArgumentName>(&arg_name.clone().into());
 
         match arg_val {
             Some(arg_val) if *arg_val != serde_json::Value::Null => {

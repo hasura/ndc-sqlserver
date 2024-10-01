@@ -1291,6 +1291,7 @@ dependencies = [
  "prometheus",
  "query-engine-execution",
  "query-engine-metadata",
+ "query-engine-metrics",
  "query-engine-sql",
  "query-engine-translation",
  "reqwest",
@@ -1328,6 +1329,7 @@ version = "0.2.1"
 dependencies = [
  "bb8",
  "bb8-tiberius",
+ "ndc-models",
  "prometheus",
  "query-engine-metadata",
  "query-engine-metrics",
@@ -1747,6 +1749,7 @@ dependencies = [
  "ndc-models",
  "schemars",
  "serde",
+ "smol_str",
 ]
 
 [[package]]

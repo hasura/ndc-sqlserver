@@ -338,7 +338,11 @@ fn translate_comparison_target(
     column: &models::ComparisonTarget,
 ) -> Result<(sql::ast::Expression, Vec<sql::ast::Join>), Error> {
     match column {
-        models::ComparisonTarget::Column { name, path, field_path } => {
+        models::ComparisonTarget::Column {
+            name,
+            path,
+            field_path: _,
+        } => {
             let (table_ref, joins) =
                 translate_comparison_pathelements(env, state, root_and_current_tables, path)?;
 
@@ -356,7 +360,10 @@ fn translate_comparison_target(
         }
 
         // Compare a column from the root table.
-        models::ComparisonTarget::RootCollectionColumn { name, field_path } => {
+        models::ComparisonTarget::RootCollectionColumn {
+            name,
+            field_path: _,
+        } => {
             let RootAndCurrentTables { root_table, .. } = root_and_current_tables;
             // get the unrelated table information from the metadata.
             let collection_info = env.lookup_collection(&root_table.name.clone().into())?;
@@ -391,7 +398,7 @@ fn translate_comparison_value(
             Ok((values::translate_json_value(json_value, typ)?, vec![]))
         }
         models::ComparisonValue::Variable { name: var } => {
-            Ok((values::translate_variable(var.clone(), typ), vec![]))
+            Ok((values::translate_variable(&var, typ), vec![]))
         }
     }
 }
@@ -407,7 +414,11 @@ pub fn translate_exists_in_collection(
     predicate: &models::Expression,
 ) -> Result<sql::ast::Expression, Error> {
     match in_collection {
-        models::ExistsInCollection::NestedCollection { column_name, arguments, field_path } => todo!("Not implemented"),
+        models::ExistsInCollection::NestedCollection {
+            column_name: _,
+            arguments: _,
+            field_path: _,
+        } => todo!("Not implemented"),
         models::ExistsInCollection::Unrelated {
             collection,
             arguments,
@@ -541,13 +552,20 @@ fn get_comparison_target_type(
     column: &models::ComparisonTarget,
 ) -> Result<database::ScalarType, Error> {
     match column {
-        models::ComparisonTarget::RootCollectionColumn { name, field_path: _ } => {
+        models::ComparisonTarget::RootCollectionColumn {
+            name,
+            field_path: _,
+        } => {
             let column = env
                 .lookup_collection(&root_and_current_tables.root_table.name.clone().into())?
                 .lookup_column(name)?;
             Ok(column.r#type)
         }
-        models::ComparisonTarget::Column { name, path, field_path: _ } => match path.last() {
+        models::ComparisonTarget::Column {
+            name,
+            path,
+            field_path: _,
+        } => match path.last() {
             None => {
                 let column = env
                     .lookup_collection(&root_and_current_tables.current_table.name.clone().into())?

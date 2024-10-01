@@ -198,7 +198,8 @@ pub fn translate_rows_query(
                         relationship,
                         arguments,
                     } => {
-                        let table_alias = state.make_relationship_table_alias(&alias.clone().into());
+                        let table_alias =
+                            state.make_relationship_table_alias(&alias.clone().into());
                         let column_alias = sql::helpers::make_column_alias(alias.to_string());
                         let json_column_alias = sql::helpers::make_json_column_alias();
                         let column_name = sql::ast::ColumnReference::AliasedColumn {

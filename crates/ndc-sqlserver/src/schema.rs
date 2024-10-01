@@ -7,6 +7,10 @@ use std::collections::BTreeMap;
 
 use ndc_sdk::connector;
 use ndc_sdk::models;
+use ndc_sdk::models::ArgumentName;
+use ndc_sdk::models::ObjectTypeName;
+use ndc_sdk::models::ProcedureName;
+use ndc_sdk::models::ScalarTypeName;
 use ndc_sdk::models::TypeRepresentation;
 use query_engine_metadata::metadata;
 
@@ -24,9 +28,13 @@ enum SchemaError {
 
 fn scalar_type_to_type(type_name: String, nullability: &metadata::Nullable) -> models::Type {
     match nullability {
-        metadata::Nullable::NonNullable => models::Type::Named { name: type_name.into() },
+        metadata::Nullable::NonNullable => models::Type::Named {
+            name: type_name.into(),
+        },
         metadata::Nullable::Nullable => models::Type::Nullable {
-            underlying_type: Box::new(models::Type::Named { name: type_name.into() }),
+            underlying_type: Box::new(models::Type::Named {
+                name: type_name.into(),
+            }),
         },
     }
 }
@@ -41,7 +49,7 @@ fn column_to_type(column: &metadata::ColumnInfo) -> models::Type {
 /// to the `columns` field.
 fn get_native_queries_schema(
     native_queries: &query_engine_metadata::metadata::NativeQueries,
-    object_types: &mut BTreeMap<String, models::ObjectType>,
+    object_types: &mut BTreeMap<ObjectTypeName, models::ObjectType>,
 ) -> Vec<models::CollectionInfo> {
     let mut read_only_native_queries = Vec::new();
 
@@ -59,7 +67,7 @@ fn get_native_queries_schema(
                 )
             })),
         };
-        object_types.insert(name.clone(), native_query_object_type);
+        object_types.insert(name.clone().into(), native_query_object_type);
 
         let native_query_collection_info = models::CollectionInfo {
             name: name.as_str().into(),
@@ -95,15 +103,15 @@ fn get_native_queries_schema(
 /// in the schema). So, this function creates that object type, optionally adds that scalar type,
 /// and then returns a `ProcedureInfo` that points to the correct object type.
 fn make_procedure_type(
-    name: String,
+    name: ProcedureName,
     description: Option<String>,
-    arguments: BTreeMap<String, models::ArgumentInfo>,
+    arguments: BTreeMap<ArgumentName, models::ArgumentInfo>,
     result_type: models::Type,
-    object_types: &mut BTreeMap<String, models::ObjectType>,
-    scalar_types: &mut BTreeMap<String, models::ScalarType>,
+    object_types: &mut BTreeMap<ObjectTypeName, models::ObjectType>,
+    scalar_types: &mut BTreeMap<ScalarTypeName, models::ScalarType>,
 ) -> models::ProcedureInfo {
     let mut fields = BTreeMap::new();
-    let object_type_name = format!("{name}_response");
+    let object_type_name: models::ObjectTypeName = format!("{name}_response").into();
 
     // If int doesn't exist anywhere else in the schema, we need to add it here. However, a user
     // can't filter or aggregate based on the affected rows of a procedure, so we don't need to add
@@ -111,7 +119,7 @@ fn make_procedure_type(
     // schema and has already been added, it will also already contain these functions and
     // operators.
     scalar_types
-        .entry("int".to_string())
+        .entry("int".into())
         .or_insert(models::ScalarType {
             aggregate_functions: BTreeMap::new(),
             comparison_operators: BTreeMap::new(),
@@ -119,18 +127,16 @@ fn make_procedure_type(
         });
 
     fields.insert(
-        "affected_rows".to_string(),
+        "affected_rows".into(),
         models::ObjectField {
             description: Some("The number of rows affected by the mutation".to_string()),
-            r#type: models::Type::Named {
-                name: "int".into(),
-            },
+            r#type: models::Type::Named { name: "int".into() },
             arguments: BTreeMap::new(),
         },
     );
 
     fields.insert(
-        "returning".to_string(),
+        "returning".into(),
         models::ObjectField {
             description: Some("Data from rows affected by the mutation".to_string()),
             r#type: models::Type::Array {
@@ -153,7 +159,7 @@ fn make_procedure_type(
         description,
         arguments,
         result_type: models::Type::Named {
-            name: object_type_name,
+            name: object_type_name.into(),
         },
     }
 }
@@ -169,8 +175,8 @@ fn make_procedure_type(
 ///    contain the fields specified in the `columns`.
 fn get_native_mutations_schema(
     native_mutations_metadata: &query_engine_metadata::metadata::NativeMutations,
-    object_types: &mut BTreeMap<String, models::ObjectType>,
-    scalar_types: &mut BTreeMap<String, models::ScalarType>,
+    object_types: &mut BTreeMap<ObjectTypeName, models::ObjectType>,
+    scalar_types: &mut BTreeMap<ScalarTypeName, models::ScalarType>,
 ) -> Result<Vec<models::ProcedureInfo>, connector::ErrorResponse> {
     let mut native_mutations = Vec::new();
 
@@ -188,7 +194,8 @@ fn get_native_mutations_schema(
                 )
             })),
         };
-        object_types.insert(name.clone(), native_query_object_type);
+        //TODO(PY): check if converting ProcedureName to ObjectTypeName is correct
+        object_types.insert(name.to_string().into(), native_query_object_type);
 
         let procedure_info = make_procedure_type(
             name.clone(),
@@ -197,7 +204,7 @@ fn get_native_mutations_schema(
                 .iter()
                 .map(|(column_name, column_info)| {
                     (
-                        column_name.clone(),
+                        column_name.clone().into(),
                         models::ArgumentInfo {
                             description: column_info.description.clone(),
                             argument_type: column_to_type(column_info),
@@ -205,7 +212,10 @@ fn get_native_mutations_schema(
                     )
                 })
                 .collect(),
-            models::Type::Named { name: name.clone() },
+            // TODO(PY): check if this is correct
+            models::Type::Named {
+                name: name.to_string().into(),
+            },
             object_types,
             scalar_types,
         );
@@ -230,18 +240,18 @@ fn get_stored_procedure_argument(
 
 fn get_stored_procedures_schema(
     stored_procedures: &StoredProcedures,
-    object_types: &mut BTreeMap<String, models::ObjectType>,
+    object_types: &mut BTreeMap<ObjectTypeName, models::ObjectType>,
 ) -> Result<Vec<models::ProcedureInfo>, connector::ErrorResponse> {
     let mut stored_procedures_schema = Vec::new();
 
     for (proc_name, proc_info) in stored_procedures.0.iter() {
         if let Some(returns) = &proc_info.returns {
-            let proc_args: BTreeMap<String, models::ArgumentInfo> = proc_info
+            let proc_args: BTreeMap<ArgumentName, models::ArgumentInfo> = proc_info
                 .arguments
                 .iter()
                 .map(|(arg_name, arg_info)| {
                     (
-                        arg_name.clone(),
+                        arg_name.clone().into(),
                         get_stored_procedure_argument(arg_info.clone()),
                     )
                 })
@@ -250,32 +260,32 @@ fn get_stored_procedures_schema(
                 description: proc_info.description.clone(),
                 fields: BTreeMap::from_iter(returns.iter().map(|(column_name, column)| {
                     (
-                        column_name.clone(),
+                        column_name.clone().into(),
                         models::ObjectField {
                             description: column.description.clone(),
                             r#type: column_to_type(column),
-                            arguments: BTreeMap::new()
+                            arguments: BTreeMap::new(),
                         },
                     )
                 })),
             };
             let object_type_name = format!("{proc_name}_response");
             if object_types
-                .insert(object_type_name.clone(), stored_proc_object_type)
+                .insert(object_type_name.clone().into(), stored_proc_object_type)
                 .is_some()
             {
-                return Err(connector::ErrorResponse::Other(Box::new(
+                return Err(connector::ErrorResponse::from_error(Box::new(
                     SchemaError::DuplicateObject(object_type_name),
                 )));
             };
 
             let stored_proc_schema = models::ProcedureInfo {
-                name: proc_name.to_string(),
+                name: proc_name.to_string().into(),
                 description: proc_info.description.clone(),
                 arguments: proc_args,
                 result_type: models::Type::Array {
                     element_type: Box::new(models::Type::Named {
-                        name: object_type_name,
+                        name: object_type_name.into(),
                     }),
                 },
             };
@@ -292,12 +302,12 @@ fn get_stored_procedures_schema(
 pub fn get_schema(
     configuration::Configuration { metadata, .. }: &configuration::Configuration,
 ) -> Result<models::SchemaResponse, connector::ErrorResponse> {
-    let mut scalar_types: BTreeMap<String, models::ScalarType> =
+    let mut scalar_types: BTreeMap<ScalarTypeName, models::ScalarType> =
         configuration::occurring_scalar_types(metadata)
             .iter()
             .map(|scalar_type| {
                 (
-                    scalar_type.0.clone(),
+                    scalar_type.0.clone().into(),
                     models::ScalarType {
                         // TODO(PY): Add representation for beta
                         representation: None,
@@ -309,10 +319,10 @@ pub fn get_schema(
                             .iter()
                             .map(|(function_name, function_definition)| {
                                 (
-                                    function_name.clone(),
+                                    function_name.clone().into(),
                                     models::AggregateFunctionDefinition {
                                         result_type: models::Type::Named {
-                                            name: function_definition.return_type.0.clone(),
+                                            name: function_definition.return_type.0.clone().into(),
                                         },
                                     },
                                 )
@@ -326,7 +336,7 @@ pub fn get_schema(
                             .iter()
                             .map(|(op_name, op_def)| {
                                 (
-                                    op_name.clone(),
+                                    op_name.clone().into(),
                                     match op_def.operator_kind {
                                         metadata::OperatorKind::Equal => {
                                             models::ComparisonOperatorDefinition::Equal
@@ -337,7 +347,7 @@ pub fn get_schema(
                                         metadata::OperatorKind::Custom => {
                                             models::ComparisonOperatorDefinition::Custom {
                                                 argument_type: models::Type::Named {
-                                                    name: op_def.argument_type.0.clone(),
+                                                    name: op_def.argument_type.0.clone().into(),
                                                 },
                                             }
                                         }
@@ -355,10 +365,11 @@ pub fn get_schema(
         .0
         .iter()
         .map(|(table_name, table)| models::CollectionInfo {
-            name: table_name.clone(),
+            name: table_name.clone().into(),
             description: table.description.clone(),
             arguments: BTreeMap::new(),
-            collection_type: table_name.clone(),
+            // TODO(PY): check if converting CollectionName to ObjectTypeName is correct
+            collection_type: table_name.to_string().into(),
             uniqueness_constraints: table
                 .uniqueness_constraints
                 .0
@@ -389,8 +400,8 @@ pub fn get_schema(
                         (
                             constraint_name.clone(),
                             models::ForeignKeyConstraint {
-                                foreign_collection: foreign_table.clone(),
-                                column_mapping: column_mapping.clone(),
+                                foreign_collection: foreign_table.clone().into(),
+                                column_mapping: column_mapping.clone().into(),
                             },
                         )
                     },
@@ -404,7 +415,7 @@ pub fn get_schema(
             description: table.description.clone(),
             fields: BTreeMap::from_iter(table.columns.values().map(|column| {
                 (
-                    column.name.clone(),
+                    column.name.clone().into(),
                     models::ObjectField {
                         description: column.description.clone(),
                         r#type: column_to_type(column),
@@ -413,7 +424,7 @@ pub fn get_schema(
                 )
             })),
         };
-        (table_name.clone(), object_type)
+        (table_name.as_str().into(), object_type)
     }));
 
     let mut object_types = table_types;
@@ -480,14 +491,14 @@ mod tests {
         let mut columns = BTreeMap::new();
 
         columns.insert(
-            "id".to_owned(),
+            "id".to_owned().into(),
             NativeMutationColumnInfo {
                 column_info: id_col_info,
                 cast_as: None,
             },
         );
         columns.insert(
-            "name".to_owned(),
+            "name".to_owned().into(),
             NativeMutationColumnInfo {
                 column_info: name_col_info,
                 cast_as: None,
@@ -504,7 +515,7 @@ mod tests {
         let mut native_mutations = BTreeMap::new();
 
         native_mutations.insert(
-            "insert_user_native_mutation".to_string(),
+            "insert_user_native_mutation".to_string().into(),
             native_mutation_info,
         );
 
@@ -518,7 +529,7 @@ mod tests {
                 .unwrap();
 
         let expected_mutation_procedure_info = ProcedureInfo {
-            name: "insert_user_native_mutation".to_string(),
+            name: "insert_user_native_mutation".to_string().into(),
             description: None,
             arguments: BTreeMap::new(),
             result_type: ndc_sdk::models::Type::Named {
@@ -534,32 +545,32 @@ mod tests {
         let expected_object_field_id = ObjectField {
             description: None,
             r#type: models::Type::Named {
-                name: "int".to_string(),
+                name: "int".to_string().into(),
             },
-            arguments: BTreeMap::new()
+            arguments: BTreeMap::new(),
         };
 
         let expected_object_field_name = ObjectField {
             description: None,
             r#type: models::Type::Named {
-                name: "varchar".to_string(),
+                name: "varchar".to_string().into(),
             },
-            arguments: BTreeMap::new()
+            arguments: BTreeMap::new(),
         };
 
         let expected_object_field_affected_rows = ObjectField {
             description: Some("The number of rows affected by the mutation".into()),
             r#type: models::Type::Named {
-                name: "int".to_string(),
+                name: "int".to_string().into(),
             },
-            arguments: BTreeMap::new()
+            arguments: BTreeMap::new(),
         };
 
         let expected_native_mutation_object_type = ObjectType {
             description: None,
             fields: BTreeMap::from([
-                ("id".to_owned(), expected_object_field_id),
-                ("name".to_owned(), expected_object_field_name),
+                ("id".to_owned().into(), expected_object_field_id),
+                ("name".to_owned().into(), expected_object_field_name),
             ]),
         };
 
@@ -570,27 +581,30 @@ mod tests {
                     name: "insert_user_native_mutation".into(),
                 }),
             },
-            arguments: BTreeMap::new()
+            arguments: BTreeMap::new(),
         };
 
         let expected_native_mutation_response_object_type = ObjectType {
             description: Some("Responses from the 'insert_user_native_mutation' procedure".into()),
             fields: BTreeMap::from([
                 (
-                    "affected_rows".to_owned(),
+                    "affected_rows".to_owned().into(),
                     expected_object_field_affected_rows,
                 ),
-                ("returning".to_owned(), expected_object_field_returning),
+                (
+                    "returning".to_owned().into(),
+                    expected_object_field_returning,
+                ),
             ]),
         };
 
-        let mut expected_object_types = BTreeMap::new();
+        let mut expected_object_types: BTreeMap<ObjectTypeName, ObjectType> = BTreeMap::new();
         expected_object_types.insert(
             "insert_user_native_mutation".into(),
             expected_native_mutation_object_type,
         );
         expected_object_types.insert(
-            "insert_user_native_mutation_response".to_string(),
+            "insert_user_native_mutation_response".into(),
             expected_native_mutation_response_object_type,
         );
 
@@ -688,22 +702,22 @@ mod tests {
             let mut expected_args = BTreeMap::new();
 
             expected_args.insert(
-                "CustomerId".to_string(),
+                "CustomerId".to_string().into(),
                 models::ArgumentInfo {
                     description: None,
                     argument_type: models::Type::Named {
-                        name: "int".to_string(),
+                        name: "int".to_string().into(),
                     },
                 },
             );
 
             expected_args.insert(
-                "Phone".to_string(),
+                "Phone".to_string().into(),
                 models::ArgumentInfo {
                     description: None,
                     argument_type: models::Type::Nullable {
                         underlying_type: Box::new(models::Type::Named {
-                            name: "varchar".to_string(),
+                            name: "varchar".to_string().into(),
                         }),
                     },
                 },
@@ -711,7 +725,9 @@ mod tests {
 
             let expected_result_type = models::Type::Array {
                 element_type: Box::new(models::Type::Named {
-                    name: "GetCustomerDetailsWithTotalPurchases_response".to_string(),
+                    name: "GetCustomerDetailsWithTotalPurchases_response"
+                        .to_string()
+                        .into(),
                 }),
             };
 
@@ -719,7 +735,7 @@ mod tests {
             assert_eq!(
                 proc_schema,
                 &ProcedureInfo {
-                    name: "GetCustomerDetailsWithTotalPurchases".to_string(),
+                    name: "GetCustomerDetailsWithTotalPurchases".to_string().into(),
                     description: None,
                     arguments: expected_args,
                     result_type: expected_result_type
@@ -729,11 +745,11 @@ mod tests {
             let mut expected_obj_type_fields = BTreeMap::new();
 
             expected_obj_type_fields.insert(
-                "result".to_string(),
+                "result".to_string().into(),
                 models::ObjectField {
                     description: None,
                     r#type: (models::Type::Named {
-                        name: "int".to_string(),
+                        name: "int".to_string().into(),
                     }),
                     arguments: BTreeMap::new(),
                 },

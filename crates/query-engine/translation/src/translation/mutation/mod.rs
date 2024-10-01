@@ -61,7 +61,7 @@ fn translate_mutation_operation(
             fields,
         } => {
             let procedure_info: ProcedureInfo = env
-                .lookup_procedure(&name.as_str())
+                .lookup_procedure(name.as_str())
                 .ok_or_else(|| Error::ProcedureNotFound(name.to_string()))?;
             let mutation_operation_kind = match procedure_info {
                 ProcedureInfo::NativeMutation { info, .. } => {
@@ -98,8 +98,14 @@ pub fn parse_procedure_fields(
     fields: Option<models::NestedField>,
 ) -> Result<
     (
-        (models::FieldName, Option<IndexMap<models::FieldName, models::Aggregate>>), // Contains "affected_rows"
-        (models::FieldName, Option<IndexMap<models::FieldName, models::Field>>),     // Contains "returning"
+        (
+            models::FieldName,
+            Option<IndexMap<models::FieldName, models::Aggregate>>,
+        ), // Contains "affected_rows"
+        (
+            models::FieldName,
+            Option<IndexMap<models::FieldName, models::Field>>,
+        ), // Contains "returning"
     ),
     Error,
 > {
@@ -110,13 +116,21 @@ pub fn parse_procedure_fields(
 
             for (alias, field) in fields {
                 match field {
-                    models::Field::Column { column, fields: _, arguments: _ } if column.as_str() == "affected_rows" => {
+                    models::Field::Column {
+                        column,
+                        fields: _,
+                        arguments: _,
+                    } if column.as_str() == "affected_rows" => {
                         affected_rows = (
                             alias.clone(),
                             Some(indexmap!(alias => models::Aggregate::StarCount {})),
                         );
                     }
-                    models::Field::Column { column, fields, arguments: _ } if column.as_str() == "returning" => {
+                    models::Field::Column {
+                        column,
+                        fields,
+                        arguments: _,
+                    } if column.as_str() == "returning" => {
                         returning = match fields {
                             Some(nested_fields) => match nested_fields {
                                 models::NestedField::Object(models::NestedObject { .. }) => {
@@ -313,7 +327,8 @@ fn generate_mutation_execution_plan(
                     alias: json_response_cte_alias.clone(),
                 };
 
-                let procedure_info = env.lookup_collection(&native_mutation_info.name.clone().into())?;
+                let procedure_info =
+                    env.lookup_collection(&native_mutation_info.name.clone().into())?;
 
                 let select_set = query::translate_query(
                     env,

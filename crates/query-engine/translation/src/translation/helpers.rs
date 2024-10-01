@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-use ndc_sdk::models;
+use ndc_sdk::models::{self, ArgumentName};
 
 use super::error::Error;
 use crate::translation::values;
@@ -151,7 +151,7 @@ pub enum CollectionOrProcedureInfo {
 /// in the parameterized SQL statement and returns
 /// a SQL statement that can be run in the DB.
 pub fn generate_native_query_sql(
-    type_arguments: &BTreeMap<String, query_engine_metadata::metadata::ColumnInfo>,
+    type_arguments: &BTreeMap<ArgumentName, query_engine_metadata::metadata::ColumnInfo>,
     native_query_arguments: &BTreeMap<models::ArgumentName, ndc_sdk::models::Argument>,
     native_query_sql: &NativeQuerySql,
 ) -> Result<Vec<sql::ast::RawSql>, Error> {
@@ -162,18 +162,18 @@ pub fn generate_native_query_sql(
             metadata::NativeQueryPart::Text(text) => Ok(sql::ast::RawSql::RawText(text.clone())),
             metadata::NativeQueryPart::Parameter(param) => {
                 let typ = match type_arguments.get(param) {
-                    None => Err(Error::ArgumentNotFound(param.clone())),
+                    None => Err(Error::ArgumentNotFound(param.to_string())),
                     Some(argument) => Ok(argument.r#type.clone()),
                 }?;
 
-                let exp = match native_query_arguments.get(param.as_str().into()) {
-                    None => Err(Error::ArgumentNotFound(param.clone())),
+                let exp = match native_query_arguments.get(param.as_str()) {
+                    None => Err(Error::ArgumentNotFound(param.to_string())),
                     Some(argument) => match argument {
                         models::Argument::Literal { value } => {
                             values::translate_json_value(value, &typ)
                         }
                         models::Argument::Variable { name } => {
-                            Ok(values::translate_variable(name.clone(), &typ))
+                            Ok(values::translate_variable(&name, &typ))
                         }
                     },
                 }?;
@@ -243,20 +243,20 @@ impl<'a> Env<'a> {
         match table {
             Some(table) => Ok(CollectionOrProcedureInfo::Collection(table)),
             None => {
-                let proc_maybe = self.lookup_procedure(collection_name.as_str().into());
+                let proc_maybe = self.lookup_procedure(collection_name.as_str());
 
                 match proc_maybe {
                     Some(proc_info) => Ok(CollectionOrProcedureInfo::Procedure(proc_info)),
                     None => {
-                        let native_query =
-                            self.metadata
-                                .native_queries
-                                .0
-                                .get(collection_name.as_str())
-                                .map(|nq| CollectionInfo::NativeQuery {
-                                    name: collection_name.to_string(),
-                                    info: nq.clone(),
-                                });
+                        let native_query = self
+                            .metadata
+                            .native_queries
+                            .0
+                            .get(collection_name.as_str())
+                            .map(|nq| CollectionInfo::NativeQuery {
+                                name: collection_name.to_string(),
+                                info: nq.clone(),
+                            });
                         // FIXME(KC): THis is terrible. Please refactor this.
                         match native_query {
                             Some(native_query) => {
@@ -280,7 +280,10 @@ impl<'a> Env<'a> {
         }
     }
 
-    pub fn lookup_relationship(&self, name: &models::RelationshipName) -> Result<&models::Relationship, Error> {
+    pub fn lookup_relationship(
+        &self,
+        name: &models::RelationshipName,
+    ) -> Result<&models::Relationship, Error> {
         self.relationships
             .get(name.as_str())
             .ok_or(Error::RelationshipNotFound(name.to_string()))
@@ -296,7 +299,7 @@ impl<'a> Env<'a> {
             .comparison_operators
             .0
             .get(scalar_type)
-             .and_then(|ops| ops.get(name.as_str()))
+            .and_then(|ops| ops.get(name.as_str()))
             .ok_or(Error::OperatorNotFound {
                 operator_name: name.to_string(),
                 type_name: scalar_type.clone(),
@@ -465,10 +468,7 @@ impl State {
     /// Create a table alias for order by target part.
     /// Provide an index and a source table name (to disambiguate the table being queried),
     /// and get an alias.
-    pub fn make_order_path_part_table_alias(
-        &mut self,
-        table_name: String,
-    ) -> sql::ast::TableAlias {
+    pub fn make_order_path_part_table_alias(&mut self, table_name: &str) -> sql::ast::TableAlias {
         self.make_table_alias(format!("ORDER_PART_{}", table_name))
     }
 

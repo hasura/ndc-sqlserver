@@ -87,7 +87,11 @@ pub fn translate_order_by(
                 .iter()
                 .map(|order_by| {
                     let target = match &order_by.target {
-                        models::OrderByTarget::Column { name, path, field_path } => translate_order_by_target(
+                        models::OrderByTarget::Column {
+                            name,
+                            path,
+                            field_path: _,
+                        } => translate_order_by_target(
                             env,
                             state,
                             root_and_current_tables,
@@ -100,7 +104,7 @@ pub fn translate_order_by(
                             column,
                             function,
                             path,
-                            field_path
+                            field_path: _,
                         } => translate_order_by_target(
                             env,
                             state,
@@ -342,7 +346,8 @@ fn translate_order_by_target_for_column(
 
     if path.is_empty() {
         // if there were no relationship columns, we don't need to build a query, just return the column.
-        let table = env.lookup_collection(&root_and_current_tables.current_table.name.clone().into())?;
+        let table =
+            env.lookup_collection(&root_and_current_tables.current_table.name.clone().into())?;
         let selected_column = table.lookup_column(&column_name.into())?;
 
         let selected_column_name = sql::ast::ColumnReference::AliasedColumn {
@@ -440,7 +445,7 @@ fn process_path_element_for_order_by_target_for_column(
     }?;
 
     let target_collection_alias =
-        state.make_order_path_part_table_alias(relationship.target_collection.to_string());
+        state.make_order_path_part_table_alias(relationship.target_collection.as_str());
 
     let (table, from_clause) = from_for_path_element(
         env,
