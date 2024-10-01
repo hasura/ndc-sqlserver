@@ -173,7 +173,7 @@ pub fn generate_native_query_sql(
                             values::translate_json_value(value, &typ)
                         }
                         models::Argument::Variable { name } => {
-                            Ok(values::translate_variable(&name, &typ))
+                            Ok(values::translate_variable(name, &typ))
                         }
                     },
                 }?;

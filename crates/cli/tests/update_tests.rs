@@ -46,16 +46,15 @@ async fn test_update_configuration() -> anyhow::Result<()> {
     let contents = fs::read_to_string(configuration_file_path).await?;
     common::assert_ends_with_newline(&contents);
     let output: RawConfiguration = serde_json::from_str(&contents)?;
-    match output {
-        configuration::RawConfiguration {
-            mssql_connection_string,
-            metadata,
-            ..
-        } => {
-            assert_eq!(mssql_connection_string, connection_uri);
-            let some_table_metadata = metadata.tables.0.get("Artist");
-            assert!(some_table_metadata.is_some());
-        }
+    let configuration::RawConfiguration {
+        mssql_connection_string,
+        metadata,
+        ..
+    } = output;
+    {
+        assert_eq!(mssql_connection_string, connection_uri);
+        let some_table_metadata = metadata.tables.0.get("Artist");
+        assert!(some_table_metadata.is_some());
     }
 
     Ok(())

@@ -91,11 +91,8 @@ pub async fn drop_database(db_name: &str, connection_uri: String) -> Result<(), 
     let drop_db_sql = format!("USE master; ALTER DATABASE  \"{db_name}\" SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE \"{db_name}\" ");
 
     // we don't mind if this fails
-    match connection.simple_query(drop_db_sql).await {
-        Err(e) => {
-            println!("Dropping DB {} failed with error: {}", db_name, e);
-        }
-        Ok(_) => {}
+    if let Err(e) = connection.simple_query(drop_db_sql).await {
+        println!("Dropping DB {} failed with error: {}", db_name, e);
     }
     Ok(())
 }

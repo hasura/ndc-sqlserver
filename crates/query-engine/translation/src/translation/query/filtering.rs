@@ -398,7 +398,7 @@ fn translate_comparison_value(
             Ok((values::translate_json_value(json_value, typ)?, vec![]))
         }
         models::ComparisonValue::Variable { name: var } => {
-            Ok((values::translate_variable(&var, typ), vec![]))
+            Ok((values::translate_variable(var, typ), vec![]))
         }
     }
 }

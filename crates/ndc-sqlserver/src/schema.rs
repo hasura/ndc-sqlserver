@@ -204,7 +204,7 @@ fn get_native_mutations_schema(
                 .iter()
                 .map(|(column_name, column_info)| {
                     (
-                        column_name.clone().into(),
+                        column_name.clone(),
                         models::ArgumentInfo {
                             description: column_info.description.clone(),
                             argument_type: column_to_type(column_info),
@@ -319,7 +319,7 @@ pub fn get_schema(
                             .iter()
                             .map(|(function_name, function_definition)| {
                                 (
-                                    function_name.clone().into(),
+                                    function_name.clone(),
                                     models::AggregateFunctionDefinition {
                                         result_type: models::Type::Named {
                                             name: function_definition.return_type.0.clone().into(),
@@ -336,7 +336,7 @@ pub fn get_schema(
                             .iter()
                             .map(|(op_name, op_def)| {
                                 (
-                                    op_name.clone().into(),
+                                    op_name.clone(),
                                     match op_def.operator_kind {
                                         metadata::OperatorKind::Equal => {
                                             models::ComparisonOperatorDefinition::Equal
@@ -365,7 +365,7 @@ pub fn get_schema(
         .0
         .iter()
         .map(|(table_name, table)| models::CollectionInfo {
-            name: table_name.clone().into(),
+            name: table_name.clone(),
             description: table.description.clone(),
             arguments: BTreeMap::new(),
             // TODO(PY): check if converting CollectionName to ObjectTypeName is correct
@@ -401,7 +401,7 @@ pub fn get_schema(
                             constraint_name.clone(),
                             models::ForeignKeyConstraint {
                                 foreign_collection: foreign_table.clone().into(),
-                                column_mapping: column_mapping.clone().into(),
+                                column_mapping: column_mapping.clone(),
                             },
                         )
                     },
