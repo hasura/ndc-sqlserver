@@ -48,9 +48,10 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
         let configuration_file = configuration_dir
             .as_ref()
             .join(configuration::CONFIGURATION_FILENAME);
-        let configuration_file_contents = fs::read_to_string(&configuration_file)
-            .await
-            .map_err(|err| connector::ParseError::CouldNotFindConfiguration(configuration_file))?;
+        let configuration_file_contents =
+            fs::read_to_string(&configuration_file).await.map_err(|_| {
+                connector::ParseError::CouldNotFindConfiguration(configuration_file.clone())
+            })?;
         let configuration: configuration::RawConfiguration =
             serde_json::from_str(&configuration_file_contents).map_err(|error| {
                 connector::ParseError::ParseError(connector::LocatedError {
@@ -101,9 +102,18 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
                 ]))
             }
             configuration::Error::IoError(inner) => connector::ParseError::IoError(inner),
-            configuration::Error::IoErrorButStringified(inner) => inner.into(),
-            configuration::Error::ConnectionPoolError(inner) => inner.into(),
-            configuration::Error::StoredProcedureIntrospectionError(inner) => inner.into(),
+            configuration::Error::IoErrorButStringified(inner) => {
+                std::io::Error::new(std::io::ErrorKind::Other, inner).into()
+            }
+            configuration::Error::ConnectionPoolError(inner) => {
+                std::io::Error::new(std::io::ErrorKind::Other, inner.to_string()).into()
+            }
+            configuration::Error::StoredProcedureIntrospectionError(inner) => {
+                connector::ParseError::from(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    inner.to_string(),
+                ))
+            }
         })?;
 
         Ok(configuration)
@@ -124,7 +134,7 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
         configuration::create_state(configuration, metrics)
             .await
             .map(Arc::new)
-            .map_err(|err| connector::ErrorResponse::from_error(err))
+            .map_err(connector::ErrorResponse::from_error)
     }
 }
 

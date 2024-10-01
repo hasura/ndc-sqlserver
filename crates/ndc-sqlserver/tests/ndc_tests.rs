@@ -36,6 +36,9 @@ mod ndc_tests {
 
         ndc_test::test_connector(
             &ndc_test::configuration::TestConfiguration {
+                options: ndc_test::configuration::TestOptions {
+                    validate_responses: true,
+                },
                 seed: None,
                 snapshots_dir: None,
                 gen_config: Default::default(),
