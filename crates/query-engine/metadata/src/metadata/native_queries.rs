@@ -2,6 +2,7 @@
 
 use super::database::*;
 
+use ndc_models::{ArgumentName, FieldName, ProcedureName};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -17,7 +18,7 @@ pub struct NativeQueries(pub BTreeMap<String, NativeQueryInfo>);
 /// tracked as mutations.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct NativeMutations(pub BTreeMap<String, NativeMutationInfo>);
+pub struct NativeMutations(pub BTreeMap<ProcedureName, NativeMutationInfo>);
 
 /// Information about a Native Query.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -26,10 +27,10 @@ pub struct NativeQueryInfo {
     /** SQL expression to use for the Native Query. We can interpolate values using `{{variable_name}}` syntax, such as `SELECT * FROM authors WHERE name = {{author_name}}` */
     pub sql: NativeQuerySql,
     /** Columns returned by the Native Query */
-    pub columns: BTreeMap<String, ColumnInfo>,
+    pub columns: BTreeMap<ndc_models::FieldName, ColumnInfo>,
     #[serde(default)]
     /** Names and types of arguments that can be passed to this Native Query */
-    pub arguments: BTreeMap<String, ColumnInfo>,
+    pub arguments: BTreeMap<ndc_models::ArgumentName, ColumnInfo>,
     #[serde(default)]
     pub description: Option<String>,
 }
@@ -41,10 +42,10 @@ pub struct NativeMutationInfo {
     /** SQL expression to use for the Native Query. We can interpolate values using `{{variable_name}}` syntax, such as `SELECT * FROM authors WHERE name = {{author_name}}` */
     pub sql: NativeQuerySql,
     /** Columns returned by the Native Query */
-    pub columns: BTreeMap<String, NativeMutationColumnInfo>,
+    pub columns: BTreeMap<FieldName, NativeMutationColumnInfo>,
     #[serde(default)]
     /** Names and types of arguments that can be passed to this Native Query */
-    pub arguments: BTreeMap<String, ColumnInfo>,
+    pub arguments: BTreeMap<ArgumentName, ColumnInfo>,
     #[serde(default)]
     pub description: Option<String>,
 }
@@ -55,7 +56,7 @@ pub enum NativeQueryPart {
     /// A raw text part
     Text(String),
     /// A parameter
-    Parameter(String),
+    Parameter(smol_str::SmolStr),
 }
 
 /// A Native Query SQL after parsing.
@@ -131,10 +132,10 @@ pub fn parse_native_query(string: &str) -> Vec<NativeQueryPart> {
             None => vec![NativeQueryPart::Text(part.to_string())],
             Some((var, text)) => {
                 if text.is_empty() {
-                    vec![NativeQueryPart::Parameter(var.to_string())]
+                    vec![NativeQueryPart::Parameter(var.into())]
                 } else {
                     vec![
-                        NativeQueryPart::Parameter(var.to_string()),
+                        NativeQueryPart::Parameter(var.into()),
                         NativeQueryPart::Text(text.to_string()),
                     ]
                 }
@@ -162,7 +163,7 @@ mod tests {
             parse_native_query("select * from t where {{name}} = name"),
             vec![
                 NativeQueryPart::Text("select * from t where ".to_string()),
-                NativeQueryPart::Parameter("name".to_string()),
+                NativeQueryPart::Parameter("name".into()),
                 NativeQueryPart::Text(" = name".to_string()),
             ]
         );
@@ -174,11 +175,11 @@ mod tests {
             parse_native_query("select * from t where id = {{id}} and {{name}} = {{other_name}}"),
             vec![
                 NativeQueryPart::Text("select * from t where id = ".to_string()),
-                NativeQueryPart::Parameter("id".to_string()),
+                NativeQueryPart::Parameter("id".into()),
                 NativeQueryPart::Text(" and ".to_string()),
-                NativeQueryPart::Parameter("name".to_string()),
+                NativeQueryPart::Parameter("name".into()),
                 NativeQueryPart::Text(" = ".to_string()),
-                NativeQueryPart::Parameter("other_name".to_string()),
+                NativeQueryPart::Parameter("other_name".into()),
             ]
         );
     }
@@ -189,7 +190,7 @@ mod tests {
             parse_native_query("select * from t where {{name}} = '{name}'"),
             vec![
                 NativeQueryPart::Text("select * from t where ".to_string()),
-                NativeQueryPart::Parameter("name".to_string()),
+                NativeQueryPart::Parameter("name".into()),
                 NativeQueryPart::Text(" = '{name}'".to_string()),
             ]
         );

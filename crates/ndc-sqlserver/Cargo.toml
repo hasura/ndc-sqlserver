@@ -23,6 +23,7 @@ query-engine-execution = { path = "../query-engine/execution" }
 query-engine-metadata = {path = "../query-engine/metadata"}
 query-engine-sql = { path = "../query-engine/sql" }
 query-engine-translation = { path = "../query-engine/translation" }
+query-engine-metrics = { path = "../query-engine/metrics" }
 
 ndc-sqlserver-configuration = { path = "../configuration" }
 

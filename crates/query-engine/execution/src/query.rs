@@ -74,7 +74,7 @@ async fn execute_queries(
 pub(crate) async fn execute_query(
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
     query: &sql::string::SQL,
-    variables: &BTreeMap<String, serde_json::Value>,
+    variables: &BTreeMap<ndc_models::VariableName, serde_json::Value>,
     buffer: &mut (impl BufMut + Send),
 ) -> Result<(), Error> {
     let query_text = query.sql.as_str();
@@ -88,33 +88,35 @@ pub(crate) async fn execute_query(
                 mssql_query.bind(string);
                 Ok(())
             }
-            sql::string::Param::Variable(var) => match variables.get(&var) {
-                Some(value) => match value {
-                    serde_json::Value::String(s) => {
-                        mssql_query.bind(s);
-                        Ok(())
-                    }
-                    serde_json::Value::Number(n) => {
-                        mssql_query.bind(n.as_f64());
-                        Ok(())
-                    }
-                    serde_json::Value::Bool(b) => {
-                        mssql_query.bind(*b);
-                        Ok(())
-                    }
-                    // this is a problem - we don't know the type of the value!
-                    serde_json::Value::Null => Err(Error::Query(
-                        "null variable not currently supported".to_string(),
-                    )),
-                    serde_json::Value::Array(_array) => Err(Error::Query(
-                        "array variable not currently supported".to_string(),
-                    )),
-                    serde_json::Value::Object(_object) => Err(Error::Query(
-                        "object variable not currently supported".to_string(),
-                    )),
-                },
-                None => Err(Error::Query(format!("Variable not found '{}'", var))),
-            },
+            sql::string::Param::Variable(var) => {
+                match variables.get::<ndc_models::VariableName>(&var.clone().into()) {
+                    Some(value) => match value {
+                        serde_json::Value::String(s) => {
+                            mssql_query.bind(s);
+                            Ok(())
+                        }
+                        serde_json::Value::Number(n) => {
+                            mssql_query.bind(n.as_f64());
+                            Ok(())
+                        }
+                        serde_json::Value::Bool(b) => {
+                            mssql_query.bind(*b);
+                            Ok(())
+                        }
+                        // this is a problem - we don't know the type of the value!
+                        serde_json::Value::Null => Err(Error::Query(
+                            "null variable not currently supported".to_string(),
+                        )),
+                        serde_json::Value::Array(_array) => Err(Error::Query(
+                            "array variable not currently supported".to_string(),
+                        )),
+                        serde_json::Value::Object(_object) => Err(Error::Query(
+                            "object variable not currently supported".to_string(),
+                        )),
+                    },
+                    None => Err(Error::Query(format!("Variable not found '{}'", var))),
+                }
+            }
         }?
     }
 
@@ -185,7 +187,7 @@ pub async fn explain(
 
 fn get_query_text(
     query: &sql::string::SQL,
-    variables: Option<Vec<BTreeMap<String, Value>>>,
+    variables: Option<Vec<BTreeMap<ndc_models::VariableName, Value>>>,
 ) -> Result<String, Error> {
     let empty_map = BTreeMap::new();
     let variable_sets = variables.unwrap_or_default();
@@ -199,24 +201,26 @@ fn get_query_text(
             .try_fold(String::new(), |str, (i, param)| {
                 let type_name: String = match param {
                     sql::string::Param::String(_string) => Ok("VARCHAR(MAX)".to_string()),
-                    sql::string::Param::Variable(var) => match &variables.get(var) {
-                        Some(value) => match value {
-                            serde_json::Value::String(_s) => Ok("VARCHAR(MAX)".to_string()),
-                            serde_json::Value::Number(_n) => Ok("NUMERIC".to_string()),
-                            serde_json::Value::Bool(_b) => Ok("TINYINT".to_string()),
-                            // this is a problem - we don't know the type of the value!
-                            serde_json::Value::Null => Err(Error::Query(
-                                "null variable not currently supported".to_string(),
-                            )),
-                            serde_json::Value::Array(_array) => Err(Error::Query(
-                                "array variable not currently supported".to_string(),
-                            )),
-                            serde_json::Value::Object(_object) => Err(Error::Query(
-                                "object variable not currently supported".to_string(),
-                            )),
-                        },
-                        None => Err(Error::Query(format!("Variable not found '{}'", var))),
-                    },
+                    sql::string::Param::Variable(var) => {
+                        match &variables.get::<ndc_models::VariableName>(&var.clone().into()) {
+                            Some(value) => match value {
+                                serde_json::Value::String(_s) => Ok("VARCHAR(MAX)".to_string()),
+                                serde_json::Value::Number(_n) => Ok("NUMERIC".to_string()),
+                                serde_json::Value::Bool(_b) => Ok("TINYINT".to_string()),
+                                // this is a problem - we don't know the type of the value!
+                                serde_json::Value::Null => Err(Error::Query(
+                                    "null variable not currently supported".to_string(),
+                                )),
+                                serde_json::Value::Array(_array) => Err(Error::Query(
+                                    "array variable not currently supported".to_string(),
+                                )),
+                                serde_json::Value::Object(_object) => Err(Error::Query(
+                                    "object variable not currently supported".to_string(),
+                                )),
+                            },
+                            None => Err(Error::Query(format!("Variable not found '{}'", var))),
+                        }
+                    }
                 }?;
 
                 Ok(format!("{} DECLARE @P{} {}; ", str, i + 1, type_name))

@@ -66,7 +66,7 @@ pub struct MutationExecutionPlan {
 #[derive(Debug)]
 /// Definition of a query execution plan to be run against the database.
 pub struct QueryExecutionPlan {
-    pub variables: Option<Vec<BTreeMap<String, serde_json::Value>>>,
+    pub variables: Option<Vec<BTreeMap<ndc_models::VariableName, serde_json::Value>>>,
     pub root_field: String,
     /// The query.
     pub query: sql::ast::Select,
@@ -95,7 +95,7 @@ pub fn explain_to_sql(explain: &sql::ast::Explain) -> sql::string::SQL {
 
 /// A simple execution plan with only a root field and a query.
 pub fn simple_exec_plan(
-    variables: Option<Vec<BTreeMap<String, serde_json::Value>>>,
+    variables: Option<Vec<BTreeMap<ndc_models::VariableName, serde_json::Value>>>,
     root_field: String,
     query: sql::ast::Select,
 ) -> QueryExecutionPlan {

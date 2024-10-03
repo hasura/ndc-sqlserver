@@ -48,7 +48,9 @@ unused_async = "allow"
 
 [workspace.dependencies]
 # ndc-models was using version 0.1.2 but we needed rustls fix
-ndc-models = { git = "https://github.com/hasura/ndc-spec.git", rev = "c59f824ff95e6a376c34f85816e80164bc1f3894" }
-ndc-sdk = { git = "https://github.com/hasura/ndc-sdk-rs.git", rev = "a273a01efccfc71ef3341cf5f357b2c9ae2d109f",  default-features = false, features = ["rustls"]}
-# ndc-test was using version 0.1.2 but we needed rustls fix
-ndc-test = { git = "https://github.com/hasura/ndc-spec.git", rev = "c59f824ff95e6a376c34f85816e80164bc1f3894", default-features = false, features = ["rustls"] }
+
+ndc-models = { git = "https://github.com/hasura/ndc-spec.git", tag = "v0.1.6" }
+ndc-sdk = { git = "https://github.com/hasura/ndc-sdk-rs.git", tag = "v0.4.0" }
+ndc-test = { git = "https://github.com/hasura/ndc-spec.git", tag = "v0.1.6" }
+
+smol_str = "0.1"

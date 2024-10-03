@@ -61,24 +61,25 @@ fn translate_mutation_operation(
             fields,
         } => {
             let procedure_info: ProcedureInfo = env
-                .lookup_procedure(&name)
-                .ok_or_else(|| Error::ProcedureNotFound(name.clone()))?;
+                .lookup_procedure(name.as_str())
+                .ok_or_else(|| Error::ProcedureNotFound(name.to_string()))?;
             let mutation_operation_kind = match procedure_info {
                 ProcedureInfo::NativeMutation { info, .. } => {
                     MutationOperationKind::NativeMutation(NativeMutationInfo {
-                        name: name.clone(),
+                        name: name.to_string(),
                         info,
                     })
                 }
                 ProcedureInfo::StoredProcedure { name, info } => {
-                    MutationOperationKind::StoredProcedure(super::helpers::StoredProcedureInfo {
-                        name: name.clone(),
+                    let stored_procedure_info = super::helpers::StoredProcedureInfo {
+                        name: name.to_string(),
                         info,
-                    })
+                    };
+                    MutationOperationKind::StoredProcedure(stored_procedure_info)
                 }
             };
             Ok(MutationOperation {
-                name,
+                name: name.to_string(),
                 arguments,
                 fields,
                 kind: mutation_operation_kind,
@@ -97,25 +98,39 @@ pub fn parse_procedure_fields(
     fields: Option<models::NestedField>,
 ) -> Result<
     (
-        (String, Option<IndexMap<String, models::Aggregate>>), // Contains "affected_rows"
-        (String, Option<IndexMap<String, models::Field>>),     // Contains "returning"
+        (
+            models::FieldName,
+            Option<IndexMap<models::FieldName, models::Aggregate>>,
+        ), // Contains "affected_rows"
+        (
+            models::FieldName,
+            Option<IndexMap<models::FieldName, models::Field>>,
+        ), // Contains "returning"
     ),
     Error,
 > {
     match fields {
         Some(models::NestedField::Object(models::NestedObject { fields })) => {
-            let mut affected_rows = ("affected_rows".to_string(), None);
-            let mut returning = ("returning".to_string(), None);
+            let mut affected_rows = ("affected_rows".into(), None);
+            let mut returning = ("returning".into(), None);
 
             for (alias, field) in fields {
                 match field {
-                    models::Field::Column { column, fields: _ } if column == "affected_rows" => {
+                    models::Field::Column {
+                        column,
+                        fields: _,
+                        arguments: _,
+                    } if column.as_str() == "affected_rows" => {
                         affected_rows = (
                             alias.clone(),
                             Some(indexmap!(alias => models::Aggregate::StarCount {})),
                         );
                     }
-                    models::Field::Column { column, fields } if column == "returning" => {
+                    models::Field::Column {
+                        column,
+                        fields,
+                        arguments: _,
+                    } if column.as_str() == "returning" => {
                         returning = match fields {
                             Some(nested_fields) => match nested_fields {
                                 models::NestedField::Object(models::NestedObject { .. }) => {
@@ -312,7 +327,8 @@ fn generate_mutation_execution_plan(
                     alias: json_response_cte_alias.clone(),
                 };
 
-                let procedure_info = env.lookup_collection(&native_mutation_info.name)?;
+                let procedure_info =
+                    env.lookup_collection(&native_mutation_info.name.clone().into())?;
 
                 let select_set = query::translate_query(
                     env,
@@ -333,11 +349,11 @@ fn generate_mutation_execution_plan(
                     ),
                     (
                         state.make_table_alias("rows".to_string()),
-                        sql::helpers::make_column_alias(returning_alias),
+                        sql::helpers::make_column_alias(returning_alias.to_string()),
                     ),
                     vec![],
                     state.make_table_alias("aggregates".to_string()),
-                    make_column_alias(affected_rows.0),
+                    make_column_alias(affected_rows.0.to_string()),
                     select_set,
                 );
 

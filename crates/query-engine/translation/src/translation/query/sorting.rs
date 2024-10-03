@@ -87,7 +87,11 @@ pub fn translate_order_by(
                 .iter()
                 .map(|order_by| {
                     let target = match &order_by.target {
-                        models::OrderByTarget::Column { name, path } => translate_order_by_target(
+                        models::OrderByTarget::Column {
+                            name,
+                            path,
+                            field_path: _,
+                        } => translate_order_by_target(
                             env,
                             state,
                             root_and_current_tables,
@@ -100,6 +104,7 @@ pub fn translate_order_by(
                             column,
                             function,
                             path,
+                            field_path: _,
                         } => translate_order_by_target(
                             env,
                             state,
@@ -184,7 +189,7 @@ fn translate_order_by_star_count_aggregate(
             let relationship = env.lookup_relationship(&path_element.relationship)?;
 
             let target_collection_alias =
-                state.make_table_alias(relationship.target_collection.clone());
+                state.make_table_alias(relationship.target_collection.to_string());
 
             let (table, from_clause) = from_for_path_element(
                 env,
@@ -229,17 +234,17 @@ fn translate_order_by_target(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    (column, path): (&str, &Vec<models::PathElement>),
+    (column, path): (&models::FieldName, &Vec<models::PathElement>),
     // we expect function to be derived derived from the schema we publish by v3-engine,
     // so no sql injection shenanigans should be possible.
-    function: Option<String>,
+    function: Option<models::AggregateFunctionName>,
     joins: &mut Vec<sql::ast::Join>,
 ) -> Result<sql::ast::Expression, Error> {
     let column_or_relationship_select = translate_order_by_target_for_column(
         env,
         state,
         root_and_current_tables,
-        column,
+        column.as_str(),
         path,
         function,
     )?;
@@ -297,7 +302,7 @@ fn translate_order_by_target_for_column(
     root_and_current_tables: &RootAndCurrentTables,
     column_name: &str,
     path: &[models::PathElement],
-    function: Option<String>,
+    function: Option<models::AggregateFunctionName>,
 ) -> Result<ColumnOrSelect, Error> {
     // We want to build a select query where "Track" is the root table, and "Artist"."Name"
     // is the column we need for the order by. Our query will look like this:
@@ -341,8 +346,9 @@ fn translate_order_by_target_for_column(
 
     if path.is_empty() {
         // if there were no relationship columns, we don't need to build a query, just return the column.
-        let table = env.lookup_collection(&root_and_current_tables.current_table.name)?;
-        let selected_column = table.lookup_column(column_name)?;
+        let table =
+            env.lookup_collection(&root_and_current_tables.current_table.name.clone().into())?;
+        let selected_column = table.lookup_column(&column_name.into())?;
 
         let selected_column_name = sql::ast::ColumnReference::AliasedColumn {
             table: root_and_current_tables.current_table.reference.clone(),
@@ -356,8 +362,8 @@ fn translate_order_by_target_for_column(
     // for the order by, and build a select of all the joins to select from.
     else {
         // order by columns
-        let table = env.lookup_collection(&last_table.name)?;
-        let selected_column = table.lookup_column(column_name)?;
+        let table = env.lookup_collection(&last_table.name.into())?;
+        let selected_column = table.lookup_column(&column_name.into())?;
 
         let selected_column_name = sql::ast::ColumnReference::AliasedColumn {
             table: last_table.reference,
@@ -371,7 +377,7 @@ fn translate_order_by_target_for_column(
         let selected_column_expr = match function {
             None => sql::ast::Expression::ColumnReference(selected_column_name.clone()),
             Some(func) => sql::ast::Expression::FunctionCall {
-                function: sql::ast::Function::Unknown(func),
+                function: sql::ast::Function::Unknown(func.to_string()),
                 args: vec![sql::ast::Expression::ColumnReference(
                     selected_column_name.clone(),
                 )],
@@ -420,7 +426,7 @@ fn process_path_element_for_order_by_target_for_column(
     root_and_current_tables: &RootAndCurrentTables,
     target_column_name: &str,
     path: &[models::PathElement],
-    aggregate_function_for_arrays: &Option<String>,
+    aggregate_function_for_arrays: &Option<models::AggregateFunctionName>,
     // to get the information about this path element we need to select from the relevant table
     // and join with the previous table. We add a new join to this list of joins.
     joins: &mut Vec<sql::ast::OuterApply>,
@@ -439,7 +445,7 @@ fn process_path_element_for_order_by_target_for_column(
     }?;
 
     let target_collection_alias =
-        state.make_order_path_part_table_alias(&relationship.target_collection);
+        state.make_order_path_part_table_alias(relationship.target_collection.as_str());
 
     let (table, from_clause) = from_for_path_element(
         env,
@@ -458,7 +464,7 @@ fn process_path_element_for_order_by_target_for_column(
                 .column_mapping
                 .keys()
                 .map(|source_col| {
-                    let collection = env.lookup_collection(&table.name)?;
+                    let collection = env.lookup_collection(&table.name.clone().into())?;
                     let selected_column = collection.lookup_column(source_col)?;
                     // we are going to deliberately use the table column name and not an alias we get from
                     // the query request because this is internal to the sorting mechanism.
@@ -479,7 +485,7 @@ fn process_path_element_for_order_by_target_for_column(
         }
         None => {
             let target_collection = env.lookup_collection(&relationship.target_collection)?;
-            let selected_column = target_collection.lookup_column(target_column_name)?;
+            let selected_column = target_collection.lookup_column(&target_column_name.into())?;
             // we are going to deliberately use the table column name and not an alias we get from
             // the query request because this is internal to the sorting mechanism.
             let selected_column_alias =
@@ -529,7 +535,7 @@ fn from_for_path_element(
     state: &mut State,
     relationship: &models::Relationship,
     target_collection_alias: &sql::ast::TableAlias,
-    arguments: &std::collections::BTreeMap<String, models::RelationshipArgument>,
+    arguments: &std::collections::BTreeMap<models::ArgumentName, models::RelationshipArgument>,
 ) -> Result<(TableNameAndReference, sql::ast::From), Error> {
     let arguments =
         relationships::make_relationship_arguments(relationships::MakeRelationshipArguments {

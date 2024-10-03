@@ -96,9 +96,8 @@ impl Drop for FreshDeployment {
             tokio::runtime::Handle::current().block_on(async move {
                 let drop_db_result = database::drop_database(&db_name, admin_connection_uri).await;
 
-                match drop_db_result {
-                    Err(e) => println!("Error while dropping the temp db: {e}"),
-                    Ok(()) => {}
+                if let Err(e) = drop_db_result {
+                    println!("Error while dropping the temp db: {e}")
                 }
 
                 configuration::delete_ndc_metadata(&ndc_metadata_path)

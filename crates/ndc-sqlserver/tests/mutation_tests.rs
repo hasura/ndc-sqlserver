@@ -64,7 +64,7 @@ mod native_mutations {
             let _ = run_mutation_fail(
                 "fail_insert_artist_and_return_id",
                 fresh_deployment.connection_uri.clone(),
-                StatusCode::INTERNAL_SERVER_ERROR,
+                StatusCode::UNPROCESSABLE_ENTITY,
             )
             .await;
 

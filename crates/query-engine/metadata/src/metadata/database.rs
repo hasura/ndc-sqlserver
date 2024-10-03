@@ -1,5 +1,7 @@
 //! Metadata information regarding the database and tracked information.
 
+use models::{AggregateFunctionName, CollectionName, ComparisonOperatorName, FieldName};
+use ndc_models as models;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
@@ -22,7 +24,9 @@ pub enum Type {
 /// Not all of these are supported for every type.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct ComparisonOperators(pub BTreeMap<ScalarType, BTreeMap<String, ComparisonOperator>>);
+pub struct ComparisonOperators(
+    pub BTreeMap<ScalarType, BTreeMap<ComparisonOperatorName, ComparisonOperator>>,
+);
 
 /// Represents a postgres binary comparison operator
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -45,7 +49,7 @@ pub enum OperatorKind {
 /// Mapping from a "table" name to its information.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct TablesInfo(pub BTreeMap<String, TableInfo>);
+pub struct TablesInfo(pub BTreeMap<CollectionName, TableInfo>);
 
 /// Information about a database table (or any other kind of relation).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -53,7 +57,7 @@ pub struct TablesInfo(pub BTreeMap<String, TableInfo>);
 pub struct TableInfo {
     pub schema_name: String,
     pub table_name: String,
-    pub columns: BTreeMap<String, ColumnInfo>,
+    pub columns: BTreeMap<FieldName, ColumnInfo>,
     #[serde(default)]
     pub uniqueness_constraints: UniquenessConstraints,
     #[serde(default)]
@@ -106,7 +110,7 @@ pub struct UniquenessConstraints(pub BTreeMap<String, UniquenessConstraint>);
 /// The set of columns that make up a uniqueness constraint.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct UniquenessConstraint(pub BTreeSet<String>);
+pub struct UniquenessConstraint(pub BTreeSet<FieldName>);
 
 /// A mapping from the name of a foreign key constraint to its value.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
@@ -118,13 +122,15 @@ pub struct ForeignRelations(pub BTreeMap<String, ForeignRelation>);
 #[serde(rename_all = "camelCase")]
 pub struct ForeignRelation {
     pub foreign_table: String,
-    pub column_mapping: BTreeMap<String, String>,
+    pub column_mapping: BTreeMap<FieldName, FieldName>,
 }
 
 /// All supported aggregate functions, grouped by type.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
-pub struct AggregateFunctions(pub BTreeMap<ScalarType, BTreeMap<String, AggregateFunction>>);
+pub struct AggregateFunctions(
+    pub BTreeMap<ScalarType, BTreeMap<AggregateFunctionName, AggregateFunction>>,
+);
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
