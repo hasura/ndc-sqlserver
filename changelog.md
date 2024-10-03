@@ -8,6 +8,13 @@
 
 ### Fixed
 
+## [v0.2.2]
+
+### Changed
+
+- ndc-spec version to v1.6.0
+
+
 ## [v0.2.1]
 
 ### Added
@@ -44,7 +51,8 @@
 
 <!-- end -->
 
-[Unreleased]: https://github.com/hasura/ndc-sqlserver/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/hasura/ndc-sqlserver/compare/v0.2.3...HEAD
+[v0.2.2]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.2.2
 [v0.2.1]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.2.1
 [v0.2.0]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.2.0
 [v0.1.2]: https://github.com/hasura/ndc-sqlserver/releases/tag/v0.1.2
