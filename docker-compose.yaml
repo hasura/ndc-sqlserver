@@ -29,7 +29,7 @@ services:
       test:
         - CMD-SHELL
         - |
-          /opt/mssql-tools/bin/sqlcmd -C -U SA -P "$$SA_PASSWORD" -d 'Chinook'
+          /opt/mssql-tools18/bin/sqlcmd -C -U SA -P "$$SA_PASSWORD" -d 'Chinook'
       start_period: 5s
       interval: 5s
       timeout: 10s
