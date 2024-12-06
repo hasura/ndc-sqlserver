@@ -319,7 +319,7 @@ fn translate_query_part(
 
     // translate order_by
     let (order_by, order_by_joins) =
-        sorting::translate_order_by(env, state, &root_and_current_tables, &query.order_by)?;
+        sorting::translate_order_by(env, state, &root_and_current_tables, query.order_by.as_ref())?;
 
     relationship_joins.extend(order_by_joins);
     // translate where

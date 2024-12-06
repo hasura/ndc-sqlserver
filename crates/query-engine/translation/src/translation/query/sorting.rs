@@ -75,7 +75,7 @@ pub fn translate_order_by(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    order_by: &Option<models::OrderBy>,
+    order_by: Option<&models::OrderBy>,
 ) -> Result<(sql::ast::OrderBy, Vec<sql::ast::Join>), Error> {
     let mut joins: Vec<sql::ast::Join> = vec![];
 
@@ -214,7 +214,7 @@ fn translate_order_by_star_count_aggregate(
                 state,
                 root_and_current_tables,
                 relationship,
-                &path_element.predicate,
+                path_element.predicate.as_deref(),
                 select_cols,
                 (table, from_clause),
             )?;
@@ -337,7 +337,7 @@ fn translate_order_by_target_for_column(
                 root_and_current_tables,
                 column_name,
                 path,
-                &function,
+                function.as_ref(),
                 &mut joins,
                 (last_table, (index, path_element)),
             )
@@ -426,7 +426,7 @@ fn process_path_element_for_order_by_target_for_column(
     root_and_current_tables: &RootAndCurrentTables,
     target_column_name: &str,
     path: &[models::PathElement],
-    aggregate_function_for_arrays: &Option<models::AggregateFunctionName>,
+    aggregate_function_for_arrays: Option<&models::AggregateFunctionName>,
     // to get the information about this path element we need to select from the relevant table
     // and join with the previous table. We add a new join to this list of joins.
     joins: &mut Vec<sql::ast::OuterApply>,
@@ -510,7 +510,7 @@ fn process_path_element_for_order_by_target_for_column(
             current_table: last_table,
         },
         relationship,
-        &path_element.predicate,
+        path_element.predicate.as_deref(),
         sql::ast::SelectList::SelectList(select_cols),
         (table.clone(), from_clause),
     )?;
@@ -559,7 +559,7 @@ fn select_for_path_element(
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
     relationship: &models::Relationship,
-    predicate: &Option<Box<models::Expression>>,
+    predicate: Option<&models::Expression>,
     select_list: sql::ast::SelectList,
     (join_table, from_clause): (TableNameAndReference, sql::ast::From),
 ) -> Result<sql::ast::Select, Error> {

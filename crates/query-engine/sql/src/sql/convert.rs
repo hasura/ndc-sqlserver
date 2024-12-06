@@ -216,10 +216,7 @@ impl Select {
 
         sql.append_syntax(" ");
 
-        match &self.from {
-            Some(from) => from.to_sql(sql),
-            None => (),
-        }
+        if let Some(from) = &self.from { from.to_sql(sql) }
 
         for join in self.joins.iter() {
             join.to_sql(sql)
@@ -229,10 +226,7 @@ impl Select {
 
         self.order_by.to_sql(sql);
 
-        match &self.limit {
-            Some(limit) => limit.to_sql(sql),
-            None => (),
-        }
+        if let Some(limit) = &self.limit { limit.to_sql(sql) }
 
         self.for_json.to_sql(sql);
     }

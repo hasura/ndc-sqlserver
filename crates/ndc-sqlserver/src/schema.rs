@@ -165,7 +165,6 @@ fn make_procedure_type(
 }
 
 /// Gets the schema of the native mutations.
-
 /// Each native mutation creates two objects:
 /// 1. Object with name `{native_mutation_name}_response`, this object
 ///    will contain two fields:

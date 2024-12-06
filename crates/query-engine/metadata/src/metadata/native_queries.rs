@@ -84,7 +84,7 @@ impl Serialize for NativeQuerySql {
 
 struct NQVisitor;
 
-impl<'de> serde::de::Visitor<'de> for NQVisitor {
+impl serde::de::Visitor<'_> for NQVisitor {
     type Value = NativeQuerySql;
 
     fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
