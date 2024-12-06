@@ -188,7 +188,7 @@ impl<'a> Env<'a> {
     pub fn new(
         metadata: &'a metadata::Metadata,
         relationships: BTreeMap<models::RelationshipName, models::Relationship>,
-    ) -> Env {
+    ) -> Env<'a> {
         Env {
             metadata,
             relationships,

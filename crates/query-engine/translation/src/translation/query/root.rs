@@ -208,7 +208,6 @@ pub fn translate_rows_query(
                         };
                         join_fields.push(relationships::JoinFieldInfo {
                             table_alias,
-                            column_alias: column_alias.clone(),
                             relationship_name: relationship.to_string(),
                             arguments,
                             query: *query,
