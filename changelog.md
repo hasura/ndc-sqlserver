@@ -8,19 +8,23 @@
 
 ### Fixed
 
+## [v1.0.0]
+
+### Fixed
+
+- Added CA certs to container for TLS <https://github.com/hasura/ndc-sqlserver/pull/154>
+
 ## [v0.2.2]
 
 ### Changed
 
 - ndc-spec version to v1.6.0
 
-
 ## [v0.2.1]
 
 ### Added
 
 - Add subcommand `stored-procedures` to the `update` command to introspect stored procedures.
-
 
 ## [v0.2.0]
 

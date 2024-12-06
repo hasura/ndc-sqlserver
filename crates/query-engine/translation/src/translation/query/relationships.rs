@@ -11,7 +11,6 @@ use query_engine_sql::sql;
 
 pub struct JoinFieldInfo {
     pub table_alias: sql::ast::TableAlias,
-    pub column_alias: sql::ast::ColumnAlias,
     pub relationship_name: String,
     pub arguments: BTreeMap<models::ArgumentName, models::RelationshipArgument>,
     pub query: models::Query,

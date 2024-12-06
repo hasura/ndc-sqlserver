@@ -208,7 +208,6 @@ pub fn translate_rows_query(
                         };
                         join_fields.push(relationships::JoinFieldInfo {
                             table_alias,
-                            column_alias: column_alias.clone(),
                             relationship_name: relationship.to_string(),
                             arguments,
                             query: *query,
@@ -319,8 +318,12 @@ fn translate_query_part(
         relationships::translate_joins(env, state, &root_and_current_tables, join_fields)?;
 
     // translate order_by
-    let (order_by, order_by_joins) =
-        sorting::translate_order_by(env, state, &root_and_current_tables, &query.order_by)?;
+    let (order_by, order_by_joins) = sorting::translate_order_by(
+        env,
+        state,
+        &root_and_current_tables,
+        query.order_by.as_ref(),
+    )?;
 
     relationship_joins.extend(order_by_joins);
     // translate where

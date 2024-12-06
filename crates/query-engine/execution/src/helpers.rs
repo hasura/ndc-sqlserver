@@ -15,7 +15,6 @@ pub(crate) async fn execute_statement(
 
 /// Match on the result and execute a rollback statement against the database if we run into an
 /// error.
-
 pub async fn rollback_on_exception<T>(
     result: Result<T, Error>,
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
