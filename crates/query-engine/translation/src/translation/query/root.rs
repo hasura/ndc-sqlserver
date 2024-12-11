@@ -187,7 +187,7 @@ pub fn translate_rows_query(
                         let column_info = collection_info.lookup_column(&column)?;
                         Ok(sql::helpers::make_column(
                             current_table.reference.clone(),
-                            column_info.name.clone(),
+                            column_info.name,
                             sql::helpers::make_column_alias(alias.to_string()),
                         ))
                     }
@@ -202,7 +202,7 @@ pub fn translate_rows_query(
                         let json_column_alias = sql::helpers::make_json_column_alias();
                         let column_name = sql::ast::ColumnReference::AliasedColumn {
                             table: sql::ast::TableReference::AliasedTable(table_alias.clone()),
-                            column: json_column_alias.clone(),
+                            column: json_column_alias,
                         };
                         join_fields.push(relationships::JoinFieldInfo {
                             table_alias,
@@ -362,7 +362,7 @@ pub fn make_from_clause_and_reference(
 
     let current_table = TableNameAndReference {
         name: collection_name.to_string(),
-        reference: collection_alias_name.clone(),
+        reference: collection_alias_name,
     };
     Ok((current_table, from_clause))
 }
