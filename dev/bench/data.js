@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1733938659547,
+  "lastUpdate": 1733938706177,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -6075,6 +6075,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.0826254838449886,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "fa5790dfeefd2c4631ae3c1976506ba1a9dcc7ac",
+          "message": "Bump cachix/cachix-action from 14 to 15 (#158)\n\nBumps [cachix/cachix-action](https://github.com/cachix/cachix-action)\nfrom 14 to 15.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/cachix/cachix-action/releases\">cachix/cachix-action's\nreleases</a>.</em></p>\n<blockquote>\n<h2>cachix-action-v15</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>Pass <code>cachixArgs</code> to the daemon by <a\nhref=\"https://github.com/sandydoo\"><code>@​sandydoo</code></a> in <a\nhref=\"https://redirect.github.com/cachix/cachix-action/pull/177\">cachix/cachix-action#177</a></li>\n<li>Support path filtering when using the daemon by <a\nhref=\"https://github.com/sandydoo\"><code>@​sandydoo</code></a> in <a\nhref=\"https://redirect.github.com/cachix/cachix-action/pull/182\">cachix/cachix-action#182</a></li>\n<li>Skip prep steps if using <code>pathsToPush</code> by <a\nhref=\"https://github.com/sandydoo\"><code>@​sandydoo</code></a> in <a\nhref=\"https://redirect.github.com/cachix/cachix-action/pull/180\">cachix/cachix-action#180</a></li>\n<li>store-scan: improve error handling when listing the store fails by\n<a href=\"https://github.com/sandydoo\"><code>@​sandydoo</code></a> in <a\nhref=\"https://redirect.github.com/cachix/cachix-action/pull/183\">cachix/cachix-action#183</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/cachix/cachix-action/compare/v14...v15\">https://github.com/cachix/cachix-action/compare/v14...v15</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/cachix/cachix-action/commit/ad2ddac53f961de1989924296a1f236fcfbaa4fc\"><code>ad2ddac</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/cachix/cachix-action/issues/184\">#184</a>\nfrom cachix/dependabot/github_actions/cachix/install-...</li>\n<li><a\nhref=\"https://github.com/cachix/cachix-action/commit/403a1b5dadbdd11bf4858c4815d44727e02634f2\"><code>403a1b5</code></a>\nchore(deps): bump cachix/install-nix-action from 26 to 27</li>\n<li><a\nhref=\"https://github.com/cachix/cachix-action/commit/132bc971f5f5691aadd0d1de82b438c366178557\"><code>132bc97</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/cachix/cachix-action/issues/183\">#183</a>\nfrom cachix/fix-179</li>\n<li><a\nhref=\"https://github.com/cachix/cachix-action/commit/662a8831beb5acada52cd71dc06ef391c85066e6\"><code>662a883</code></a>\nstore-scan: use runner or os temp dirs</li>\n<li><a\nhref=\"https://github.com/cachix/cachix-action/commit/08dcf70a394cd1cef74b9d2ddc5ba3179b2ff586\"><code>08dcf70</code></a>\nstore-scan: improve error handling when store listing fails</li>\n<li><a\nhref=\"https://github.com/cachix/cachix-action/commit/991af99d4b9844e58d4aab92f0c7d8ecf9acbe72\"><code>991af99</code></a>\nSkip prep steps if using <code>pathsToPush</code> (<a\nhref=\"https://redirect.github.com/cachix/cachix-action/issues/180\">#180</a>)</li>\n<li><a\nhref=\"https://github.com/cachix/cachix-action/commit/74587ee9209c44c9cc2da93ee9f97487711bf260\"><code>74587ee</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/cachix/cachix-action/issues/182\">#182</a>\nfrom cachix/support-daemon-push-filter</li>\n<li><a\nhref=\"https://github.com/cachix/cachix-action/commit/5ee8857e76faa3dbcbee50e47801c572b7524636\"><code>5ee8857</code></a>\nFix syntax</li>\n<li><a\nhref=\"https://github.com/cachix/cachix-action/commit/7431d10acad17978eb5775c6ded207c34714bda0\"><code>7431d10</code></a>\nUse bash in post-build hook</li>\n<li><a\nhref=\"https://github.com/cachix/cachix-action/commit/ad440c0fec35d27eaeca5a4b88ebfdbbcc706ecf\"><code>ad440c0</code></a>\nMake <code>pushFilter</code> filter out just the positive matches</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/cachix/cachix-action/compare/v14...v15\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=cachix/cachix-action&package-manager=github_actions&previous-version=14&new-version=15)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2024-12-11T17:30:47Z",
+          "tree_id": "ce083da528d573661d51a8f8df794a6e7e7b3335",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/fa5790dfeefd2c4631ae3c1976506ba1a9dcc7ac"
+        },
+        "date": 1733938705732,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 57.623196,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 76.2643434,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 59.686986819513734,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.6680031851030463,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.09487671468139453,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 381.28053,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 414.35721259999997,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 370.38555168560686,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 1.040450697196377,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.08167532672999925,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 127.40604,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 152.069673,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 127.29401415883385,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.7475172534822718,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07005167946851582,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 130.128685,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 154.174959,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 129.22649849874452,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.6134516080068408,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.07292848474083181,
             "unit": "ms"
           }
         ]
