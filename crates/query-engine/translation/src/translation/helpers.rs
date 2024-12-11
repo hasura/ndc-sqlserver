@@ -2,7 +2,7 @@
 
 use std::collections::BTreeMap;
 
-use ndc_sdk::models::{self, ArgumentName};
+use ndc_models::ArgumentName;
 
 use super::error::Error;
 use crate::translation::values;
@@ -13,7 +13,7 @@ use query_engine_sql::sql;
 /// Static information from the query and metadata.
 pub struct Env<'a> {
     metadata: &'a metadata::Metadata,
-    relationships: BTreeMap<models::RelationshipName, models::Relationship>,
+    relationships: BTreeMap<ndc_models::RelationshipName, ndc_models::Relationship>,
 }
 
 #[derive(Debug)]
@@ -48,8 +48,8 @@ impl NativeQueries {
 #[derive(Debug)]
 pub struct MutationOperation {
     pub name: String,
-    pub arguments: BTreeMap<models::ArgumentName, serde_json::Value>,
-    pub fields: Option<models::NestedField>,
+    pub arguments: BTreeMap<ndc_models::ArgumentName, serde_json::Value>,
+    pub fields: Option<ndc_models::NestedField>,
     pub kind: MutationOperationKind,
 }
 
@@ -63,7 +63,7 @@ pub enum MutationOperationKind {
 /// Information we store about a native query call.
 pub struct NativeQueryInfo {
     pub info: metadata::NativeQueryInfo,
-    pub arguments: BTreeMap<models::ArgumentName, models::Argument>,
+    pub arguments: BTreeMap<ndc_models::ArgumentName, ndc_models::Argument>,
     pub alias: sql::ast::TableAlias,
 }
 
@@ -152,7 +152,7 @@ pub enum CollectionOrProcedureInfo {
 /// a SQL statement that can be run in the DB.
 pub fn generate_native_query_sql(
     type_arguments: &BTreeMap<ArgumentName, query_engine_metadata::metadata::ColumnInfo>,
-    native_query_arguments: &BTreeMap<models::ArgumentName, ndc_sdk::models::Argument>,
+    native_query_arguments: &BTreeMap<ndc_models::ArgumentName, ndc_models::Argument>,
     native_query_sql: &NativeQuerySql,
 ) -> Result<Vec<sql::ast::RawSql>, Error> {
     native_query_sql
@@ -169,10 +169,10 @@ pub fn generate_native_query_sql(
                 let exp = match native_query_arguments.get(param.as_str()) {
                     None => Err(Error::ArgumentNotFound(param.to_string())),
                     Some(argument) => match argument {
-                        models::Argument::Literal { value } => {
+                        ndc_models::Argument::Literal { value } => {
                             values::translate_json_value(value, &typ)
                         }
-                        models::Argument::Variable { name } => {
+                        ndc_models::Argument::Variable { name } => {
                             Ok(values::translate_variable(name, &typ))
                         }
                     },
@@ -187,7 +187,7 @@ impl<'a> Env<'a> {
     /// Create a new Env by supplying the metadata and relationships.
     pub fn new(
         metadata: &'a metadata::Metadata,
-        relationships: BTreeMap<models::RelationshipName, models::Relationship>,
+        relationships: BTreeMap<ndc_models::RelationshipName, ndc_models::Relationship>,
     ) -> Env<'a> {
         Env {
             metadata,
@@ -228,7 +228,7 @@ impl<'a> Env<'a> {
     /// Lookup a collection's information in the metadata.
     pub fn lookup_collection(
         &self,
-        collection_name: &models::CollectionName,
+        collection_name: &ndc_models::CollectionName,
     ) -> Result<CollectionOrProcedureInfo, Error> {
         let table = self
             .metadata
@@ -282,8 +282,8 @@ impl<'a> Env<'a> {
 
     pub fn lookup_relationship(
         &self,
-        name: &models::RelationshipName,
-    ) -> Result<&models::Relationship, Error> {
+        name: &ndc_models::RelationshipName,
+    ) -> Result<&ndc_models::Relationship, Error> {
         self.relationships
             .get(name.as_str())
             .ok_or(Error::RelationshipNotFound(name.to_string()))
@@ -293,7 +293,7 @@ impl<'a> Env<'a> {
     pub fn lookup_comparison_operator(
         &self,
         scalar_type: &metadata::ScalarType,
-        name: &models::ComparisonOperatorName,
+        name: &ndc_models::ComparisonOperatorName,
     ) -> Result<&'a metadata::ComparisonOperator, Error> {
         self.metadata
             .comparison_operators
@@ -308,7 +308,7 @@ impl<'a> Env<'a> {
 }
 
 impl CollectionOrProcedureInfo {
-    pub fn lookup_column(&self, column_name: &models::FieldName) -> Result<ColumnInfo, Error> {
+    pub fn lookup_column(&self, column_name: &ndc_models::FieldName) -> Result<ColumnInfo, Error> {
         match &self {
             CollectionOrProcedureInfo::Collection(collection_info) => {
                 collection_info.lookup_column(column_name.as_str())
@@ -411,7 +411,7 @@ impl State {
         &mut self,
         name: &str,
         info: metadata::NativeQueryInfo,
-        arguments: BTreeMap<models::ArgumentName, models::Argument>,
+        arguments: BTreeMap<ndc_models::ArgumentName, ndc_models::Argument>,
     ) -> sql::ast::TableReference {
         let alias = self.make_native_query_table_alias(name);
         self.native_queries.native_queries.push(NativeQueryInfo {

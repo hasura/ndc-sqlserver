@@ -1,6 +1,5 @@
 use indexmap::indexmap;
 use indexmap::IndexMap;
-use ndc_sdk::models::{self};
 use query_engine_metadata::metadata;
 use query_engine_sql::sql::execution_plan::{
     MutationExecutionPlan, MutationOperationExecutionPlan, NativeMutationOperationExecutionPlan,
@@ -30,7 +29,7 @@ mod stored_procedures;
 
 pub fn translate(
     metadata: &metadata::Metadata,
-    mutation_request: models::MutationRequest,
+    mutation_request: ndc_models::MutationRequest,
 ) -> Result<sql::execution_plan::MutationExecutionPlan, Error> {
     let env = Env::new(metadata, mutation_request.collection_relationships);
     let state = State::new();
@@ -52,10 +51,10 @@ pub fn translate(
 /// mutation operation.
 fn translate_mutation_operation(
     env: &Env,
-    mutation_operation: ndc_sdk::models::MutationOperation,
+    mutation_operation: ndc_models::MutationOperation,
 ) -> Result<MutationOperation, Error> {
     match mutation_operation {
-        ndc_sdk::models::MutationOperation::Procedure {
+        ndc_models::MutationOperation::Procedure {
             name,
             arguments,
             fields,
@@ -95,62 +94,62 @@ fn translate_mutation_operation(
 /// The user must supply at least one of these two structures, and otherwise we'll throw an error.
 #[allow(clippy::type_complexity)]
 pub fn parse_procedure_fields(
-    fields: Option<models::NestedField>,
+    fields: Option<ndc_models::NestedField>,
 ) -> Result<
     (
         (
-            models::FieldName,
-            Option<IndexMap<models::FieldName, models::Aggregate>>,
+            ndc_models::FieldName,
+            Option<IndexMap<ndc_models::FieldName, ndc_models::Aggregate>>,
         ), // Contains "affected_rows"
         (
-            models::FieldName,
-            Option<IndexMap<models::FieldName, models::Field>>,
+            ndc_models::FieldName,
+            Option<IndexMap<ndc_models::FieldName, ndc_models::Field>>,
         ), // Contains "returning"
     ),
     Error,
 > {
     match fields {
-        Some(models::NestedField::Object(models::NestedObject { fields })) => {
+        Some(ndc_models::NestedField::Object(ndc_models::NestedObject { fields })) => {
             let mut affected_rows = ("affected_rows".into(), None);
             let mut returning = ("returning".into(), None);
 
             for (alias, field) in fields {
                 match field {
-                    models::Field::Column {
+                    ndc_models::Field::Column {
                         column,
                         fields: _,
                         arguments: _,
                     } if column.as_str() == "affected_rows" => {
                         affected_rows = (
                             alias.clone(),
-                            Some(indexmap!(alias => models::Aggregate::StarCount {})),
+                            Some(indexmap!(alias => ndc_models::Aggregate::StarCount {})),
                         );
                     }
-                    models::Field::Column {
+                    ndc_models::Field::Column {
                         column,
                         fields,
                         arguments: _,
                     } if column.as_str() == "returning" => {
                         returning = match fields {
                             Some(nested_fields) => match nested_fields {
-                                models::NestedField::Object(models::NestedObject { .. }) => {
-                                    Err(Error::UnexpectedStructure(
-                                        "single object in 'returning' clause".to_string(),
-                                    ))?
-                                }
-                                models::NestedField::Array(models::NestedArray { fields }) => {
-                                    match &*fields {
-                                        models::NestedField::Object(models::NestedObject {
-                                            fields,
-                                        }) => (alias, Some(fields.clone())),
-                                        models::NestedField::Array(_) => {
-                                            Err(Error::UnexpectedStructure(
-                                                "multi-dimensional array in 'returning' clause"
-                                                    .to_string(),
-                                            ))?
-                                        }
+                                ndc_models::NestedField::Object(ndc_models::NestedObject {
+                                    ..
+                                }) => Err(Error::UnexpectedStructure(
+                                    "single object in 'returning' clause".to_string(),
+                                ))?,
+                                ndc_models::NestedField::Array(ndc_models::NestedArray {
+                                    fields,
+                                }) => match &*fields {
+                                    ndc_models::NestedField::Object(ndc_models::NestedObject {
+                                        fields,
+                                    }) => (alias, Some(fields.clone())),
+                                    ndc_models::NestedField::Array(_) => {
+                                        Err(Error::UnexpectedStructure(
+                                            "multi-dimensional array in 'returning' clause"
+                                                .to_string(),
+                                        ))?
                                     }
-                                }
+                                },
                             },
                             None => returning,
                         };
@@ -168,7 +167,7 @@ pub fn parse_procedure_fields(
             Ok((affected_rows, returning))
         }
 
-        Some(models::NestedField::Array(_)) => {
+        Some(ndc_models::NestedField::Array(_)) => {
             Err(Error::NotImplementedYet("nested array fields".to_string()))
         }
         None => Err(Error::NoProcedureResultFieldsRequested)?,
@@ -282,7 +281,7 @@ fn generate_mutation_execution_plan(
                         .clone()
                         .into_iter()
                         .map(|(arg_name, arg_value)| {
-                            (arg_name, models::Argument::Literal { value: arg_value })
+                            (arg_name, ndc_models::Argument::Literal { value: arg_value })
                         })
                         .collect(),
                     &native_mutation_info.info.sql,
@@ -298,7 +297,7 @@ fn generate_mutation_execution_plan(
                 let (affected_rows, (returning_alias, returning)) =
                     parse_procedure_fields(mutation_operation.fields)?;
 
-                let query = ndc_sdk::models::Query {
+                let query = ndc_models::Query {
                     aggregates: affected_rows.1,
                     fields: returning,
                     limit: None,
@@ -341,7 +340,7 @@ fn generate_mutation_execution_plan(
                 )?;
 
                 // form a single JSON item shaped `{ type: "procedure", result: "<mutation_operation_result>" }`
-                // that matches the models::RowSet type
+                // that matches the ndc_models::RowSet type
                 let json_select = sql::helpers::select_mutation_rowset(
                     (
                         state.make_table_alias("universe".to_string()),

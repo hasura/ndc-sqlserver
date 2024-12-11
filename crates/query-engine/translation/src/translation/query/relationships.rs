@@ -2,8 +2,6 @@
 
 use std::collections::BTreeMap;
 
-use ndc_sdk::models;
-
 use super::root;
 use crate::translation::error::Error;
 use crate::translation::helpers::{Env, RootAndCurrentTables, State, TableNameAndReference};
@@ -12,8 +10,8 @@ use query_engine_sql::sql;
 pub struct JoinFieldInfo {
     pub table_alias: sql::ast::TableAlias,
     pub relationship_name: String,
-    pub arguments: BTreeMap<models::ArgumentName, models::RelationshipArgument>,
-    pub query: models::Query,
+    pub arguments: BTreeMap<ndc_models::ArgumentName, ndc_models::RelationshipArgument>,
+    pub query: ndc_models::Query,
 }
 
 /// translate any joins we should include in the query into our SQL AST
@@ -123,7 +121,7 @@ pub fn translate_joins(
             }?;
 
             // form a single JSON item shaped `{ rows: [], aggregates: {} }`
-            // that matches the models::RowSet type
+            // that matches the ndc_models::RowSet type
             let json_select = sql::helpers::select_rowset(
                 join_field.table_alias.clone(),
                 state.make_table_alias("rows".to_string()),
@@ -152,7 +150,7 @@ pub fn translate_column_mapping(
     current_table: &TableNameAndReference,
     target_collection_alias_reference: &sql::ast::TableReference,
     expr: sql::ast::Expression,
-    relationship: &models::Relationship,
+    relationship: &ndc_models::Relationship,
 ) -> Result<sql::ast::Expression, Error> {
     let table_info = env.lookup_collection(&current_table.name.clone().into())?;
 
@@ -192,8 +190,9 @@ pub fn translate_column_mapping(
 #[derive(Debug)]
 /// Used in `make_relationship_arguments()` below.
 pub struct MakeRelationshipArguments {
-    pub relationship_arguments: BTreeMap<models::ArgumentName, models::RelationshipArgument>,
-    pub caller_arguments: BTreeMap<models::ArgumentName, models::RelationshipArgument>,
+    pub relationship_arguments:
+        BTreeMap<ndc_models::ArgumentName, ndc_models::RelationshipArgument>,
+    pub caller_arguments: BTreeMap<ndc_models::ArgumentName, ndc_models::RelationshipArgument>,
 }
 
 /// Combine the caller arguments and the relationship arguments into a single map.
@@ -202,20 +201,21 @@ pub struct MakeRelationshipArguments {
 /// and throw an error on the column case. Will be fixed in the future.
 pub fn make_relationship_arguments(
     arguments: MakeRelationshipArguments,
-) -> Result<BTreeMap<models::ArgumentName, models::Argument>, Error> {
+) -> Result<BTreeMap<ndc_models::ArgumentName, ndc_models::Argument>, Error> {
     // these are arguments defined in the relationship definition.
-    let relationship_arguments: BTreeMap<models::ArgumentName, models::Argument> = arguments
-        .relationship_arguments
-        .into_iter()
-        .map(|(key, argument)| Ok((key, relationship_argument_to_argument(argument)?)))
-        .collect::<Result<BTreeMap<models::ArgumentName, models::Argument>, Error>>()?;
+    let relationship_arguments: BTreeMap<ndc_models::ArgumentName, ndc_models::Argument> =
+        arguments
+            .relationship_arguments
+            .into_iter()
+            .map(|(key, argument)| Ok((key, relationship_argument_to_argument(argument)?)))
+            .collect::<Result<BTreeMap<ndc_models::ArgumentName, ndc_models::Argument>, Error>>()?;
 
     // these are arguments defined when calling the relationship.
-    let caller_arguments: BTreeMap<models::ArgumentName, models::Argument> = arguments
+    let caller_arguments: BTreeMap<ndc_models::ArgumentName, ndc_models::Argument> = arguments
         .caller_arguments
         .into_iter()
         .map(|(key, argument)| Ok((key, relationship_argument_to_argument(argument)?)))
-        .collect::<Result<BTreeMap<models::ArgumentName, models::Argument>, Error>>()?;
+        .collect::<Result<BTreeMap<ndc_models::ArgumentName, ndc_models::Argument>, Error>>()?;
 
     let mut arguments = relationship_arguments;
 
@@ -235,12 +235,16 @@ pub fn make_relationship_arguments(
 /// We don't support relationships column arguments yet, so for now we convert to a regular argument
 /// and throw an error on the column case. Will be fixed in the future.
 fn relationship_argument_to_argument(
-    argument: models::RelationshipArgument,
-) -> Result<models::Argument, Error> {
+    argument: ndc_models::RelationshipArgument,
+) -> Result<ndc_models::Argument, Error> {
     match argument {
-        models::RelationshipArgument::Literal { value } => Ok(models::Argument::Literal { value }),
-        models::RelationshipArgument::Variable { name } => Ok(models::Argument::Variable { name }),
-        models::RelationshipArgument::Column { .. } => Err(Error::NotSupported(
+        ndc_models::RelationshipArgument::Literal { value } => {
+            Ok(ndc_models::Argument::Literal { value })
+        }
+        ndc_models::RelationshipArgument::Variable { name } => {
+            Ok(ndc_models::Argument::Variable { name })
+        }
+        ndc_models::RelationshipArgument::Column { .. } => Err(Error::NotSupported(
             "relationship column arguments".to_string(),
         )),
     }

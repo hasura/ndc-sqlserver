@@ -1,5 +1,3 @@
-use ndc_sdk::models;
-
 use super::filtering;
 use super::relationships;
 use super::root;
@@ -75,19 +73,19 @@ pub fn translate_order_by(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    order_by: Option<&models::OrderBy>,
+    order_by: Option<&ndc_models::OrderBy>,
 ) -> Result<(sql::ast::OrderBy, Vec<sql::ast::Join>), Error> {
     let mut joins: Vec<sql::ast::Join> = vec![];
 
     // For each order_by field, extract the relevant field name, direction, and join table (if relevant).
     match order_by {
         None => Ok((sql::ast::OrderBy { elements: vec![] }, vec![])),
-        Some(models::OrderBy { elements }) => {
+        Some(ndc_models::OrderBy { elements }) => {
             let order_by_parts = elements
                 .iter()
                 .map(|order_by| {
                     let target = match &order_by.target {
-                        models::OrderByTarget::Column {
+                        ndc_models::OrderByTarget::Column {
                             name,
                             path,
                             field_path: _,
@@ -100,7 +98,7 @@ pub fn translate_order_by(
                             &mut joins,
                         ),
 
-                        models::OrderByTarget::SingleColumnAggregate {
+                        ndc_models::OrderByTarget::SingleColumnAggregate {
                             column,
                             function,
                             path,
@@ -113,7 +111,7 @@ pub fn translate_order_by(
                             Some(function.clone()),
                             &mut joins,
                         ),
-                        models::OrderByTarget::StarCountAggregate { path } => {
+                        ndc_models::OrderByTarget::StarCountAggregate { path } => {
                             let (column_alias, select) = translate_order_by_star_count_aggregate(
                                 env,
                                 state,
@@ -149,8 +147,8 @@ pub fn translate_order_by(
                         }
                     }?;
                     let direction = match order_by.order_direction {
-                        models::OrderDirection::Asc => sql::ast::OrderByDirection::Asc,
-                        models::OrderDirection::Desc => sql::ast::OrderByDirection::Desc,
+                        ndc_models::OrderDirection::Asc => sql::ast::OrderByDirection::Asc,
+                        ndc_models::OrderDirection::Desc => sql::ast::OrderByDirection::Desc,
                     };
                     Ok(sql::ast::OrderByElement { target, direction })
                 })
@@ -172,7 +170,7 @@ fn translate_order_by_star_count_aggregate(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    path: &[models::PathElement],
+    path: &[ndc_models::PathElement],
 ) -> Result<(sql::ast::ColumnAlias, sql::ast::Select), Error> {
     // we can only do one level of star count aggregate atm
     if path.len() > 1 {
@@ -234,10 +232,10 @@ fn translate_order_by_target(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    (column, path): (&models::FieldName, &Vec<models::PathElement>),
+    (column, path): (&ndc_models::FieldName, &Vec<ndc_models::PathElement>),
     // we expect function to be derived derived from the schema we publish by v3-engine,
     // so no sql injection shenanigans should be possible.
-    function: Option<models::AggregateFunctionName>,
+    function: Option<ndc_models::AggregateFunctionName>,
     joins: &mut Vec<sql::ast::Join>,
 ) -> Result<sql::ast::Expression, Error> {
     let column_or_relationship_select = translate_order_by_target_for_column(
@@ -301,8 +299,8 @@ fn translate_order_by_target_for_column(
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
     column_name: &str,
-    path: &[models::PathElement],
-    function: Option<models::AggregateFunctionName>,
+    path: &[ndc_models::PathElement],
+    function: Option<ndc_models::AggregateFunctionName>,
 ) -> Result<ColumnOrSelect, Error> {
     // We want to build a select query where "Track" is the root table, and "Artist"."Name"
     // is the column we need for the order by. Our query will look like this:
@@ -425,23 +423,23 @@ fn process_path_element_for_order_by_target_for_column(
     (env, state): (&Env, &mut State),
     root_and_current_tables: &RootAndCurrentTables,
     target_column_name: &str,
-    path: &[models::PathElement],
-    aggregate_function_for_arrays: Option<&models::AggregateFunctionName>,
+    path: &[ndc_models::PathElement],
+    aggregate_function_for_arrays: Option<&ndc_models::AggregateFunctionName>,
     // to get the information about this path element we need to select from the relevant table
     // and join with the previous table. We add a new join to this list of joins.
     joins: &mut Vec<sql::ast::OuterApply>,
     // the table we are joining with, the current path element and its index.
-    (last_table, (index, path_element)): (TableNameAndReference, (usize, &models::PathElement)),
+    (last_table, (index, path_element)): (TableNameAndReference, (usize, &ndc_models::PathElement)),
 ) -> Result<TableNameAndReference, Error> {
     // examine the path elements' relationship.
     let relationship = env.lookup_relationship(&path_element.relationship)?;
 
     match relationship.relationship_type {
-        models::RelationshipType::Array if aggregate_function_for_arrays.is_none() => Err(
+        ndc_models::RelationshipType::Array if aggregate_function_for_arrays.is_none() => Err(
             Error::NotSupported("order by an array relationship".to_string()),
         ),
-        models::RelationshipType::Array => Ok(()),
-        models::RelationshipType::Object => Ok(()),
+        ndc_models::RelationshipType::Array => Ok(()),
+        ndc_models::RelationshipType::Object => Ok(()),
     }?;
 
     let target_collection_alias =
@@ -533,9 +531,12 @@ fn process_path_element_for_order_by_target_for_column(
 fn from_for_path_element(
     env: &Env,
     state: &mut State,
-    relationship: &models::Relationship,
+    relationship: &ndc_models::Relationship,
     target_collection_alias: &sql::ast::TableAlias,
-    arguments: &std::collections::BTreeMap<models::ArgumentName, models::RelationshipArgument>,
+    arguments: &std::collections::BTreeMap<
+        ndc_models::ArgumentName,
+        ndc_models::RelationshipArgument,
+    >,
 ) -> Result<(TableNameAndReference, sql::ast::From), Error> {
     let arguments =
         relationships::make_relationship_arguments(relationships::MakeRelationshipArguments {
@@ -558,8 +559,8 @@ fn select_for_path_element(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    relationship: &models::Relationship,
-    predicate: Option<&models::Expression>,
+    relationship: &ndc_models::Relationship,
+    predicate: Option<&ndc_models::Expression>,
     select_list: sql::ast::SelectList,
     (join_table, from_clause): (TableNameAndReference, sql::ast::From),
 ) -> Result<sql::ast::Select, Error> {
