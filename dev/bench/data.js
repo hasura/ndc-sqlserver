@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1733517303028,
+  "lastUpdate": 1733938354831,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -5827,6 +5827,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.07218211689802677,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "danieljamesharvey@gmail.com",
+            "name": "Daniel Harvey",
+            "username": "danieljharvey"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f52934410e072ab55e13cb4b2221ccecc360494c",
+          "message": "Use `ndc-models` directly to avoid openssl everywhere (#156)\n\n<!-- The PR description should answer 2 (maybe 3) important questions:\n-->\n\n### What\n\nFix a problem in https://github.com/hasura/ndc-sqlserver/pull/155 where\npulling `query-engine-translation` into the configuration crate was\npulling `openssl` in. Turns out we're still pulling `ndc-models` from\nthe `ndc-sdk` here (probably from before `ndc-models` became it's own\ncrate).\n\n### How\n\nUse `ndc-models` directly instead of `ndc-sdk`.",
+          "timestamp": "2024-12-11T17:24:58Z",
+          "tree_id": "4226a63e76895c7ad1aa7f7c889a0038c98af169",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/f52934410e072ab55e13cb4b2221ccecc360494c"
+        },
+        "date": 1733938354416,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 57.6802175,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 72.75419105,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 59.11112805082183,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.5946588878270447,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.08912495508219082,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 376.54251350000004,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 411.1249024,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 367.6398790743348,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 1.004642635724963,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.07799240236655695,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 128.998975,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 154.09529525,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 128.51817180803593,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.6250341964282313,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07108608875994131,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 128.762807,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 152.2388177,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 128.22474717570043,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.6108453460333862,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.07267238740570699,
             "unit": "ms"
           }
         ]
