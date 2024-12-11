@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1733939828910,
+  "lastUpdate": 1733939916035,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -6695,6 +6695,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.07500188580086013,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": false,
+          "id": "5e9eda91ecd1c991b73d3dc0cbd54c61427804db",
+          "message": "Bump thiserror from 1.0.59 to 2.0.6 (#163)\n\nBumps [thiserror](https://github.com/dtolnay/thiserror) from 1.0.59 to\n2.0.6.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/dtolnay/thiserror/releases\">thiserror's\nreleases</a>.</em></p>\n<blockquote>\n<h2>2.0.6</h2>\n<ul>\n<li>Suppress deprecation warning on generated From impls (<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/396\">#396</a>)</li>\n</ul>\n<h2>2.0.5</h2>\n<ul>\n<li>Prevent deprecation warning on generated impl for deprecated type\n(<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/394\">#394</a>)</li>\n</ul>\n<h2>2.0.4</h2>\n<ul>\n<li>Eliminate needless_lifetimes clippy lint in generated\n<code>From</code> impls (<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/391\">#391</a>,\nthanks <a\nhref=\"https://github.com/matt-phylum\"><code>@​matt-phylum</code></a>)</li>\n</ul>\n<h2>2.0.3</h2>\n<ul>\n<li>Support the same Path field being repeated in both Debug and Display\nrepresentation in error message (<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/383\">#383</a>)</li>\n<li>Improve error message when a format trait used in error message is\nnot implemented by some field (<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/384\">#384</a>)</li>\n</ul>\n<h2>2.0.2</h2>\n<ul>\n<li>Fix hang on invalid input inside #[error(...)] attribute (<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/382\">#382</a>)</li>\n</ul>\n<h2>2.0.1</h2>\n<ul>\n<li>Support errors that contain a dynamically sized final field (<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/375\">#375</a>)</li>\n<li>Improve inference of trait bounds for fields that are interpolated\nmultiple times in an error message (<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/377\">#377</a>)</li>\n</ul>\n<h2>2.0.0</h2>\n<h2>Breaking changes</h2>\n<ul>\n<li>\n<p>Referencing keyword-named fields by a raw identifier like\n<code>{r#type}</code> inside a format string is no longer accepted;\nsimply use the unraw name like <code>{type}</code> (<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/347\">#347</a>)</p>\n<p>This aligns thiserror with the standard library's formatting macros,\nwhich gained support for implicit argument capture later than the\nrelease of this feature in thiserror 1.x.</p>\n<pre lang=\"rust\"><code>#[derive(Error, Debug)]\n#[error(&quot;... {type} ...&quot;)]  // Before: {r#type}\npub struct Error {\n    pub r#type: Type,\n}\n</code></pre>\n</li>\n<li>\n<p>Trait bounds are no longer inferred on fields whose value is shadowed\nby an explicit named argument in a format message (<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/345\">#345</a>)</p>\n<pre lang=\"rust\"><code>// Before: impl&lt;T: Octal&gt; Display for\nError&lt;T&gt;\n// After: impl&lt;T&gt; Display for Error&lt;T&gt;\n#[derive(Error, Debug)]\n#[error(&quot;{thing:o}&quot;, thing = &quot;...&quot;)]\npub struct Error&lt;T&gt; {\n    thing: T,\n}\n</code></pre>\n</li>\n<li>\n<p>Tuple structs and tuple variants can no longer use numerical\n<code>{0}</code> <code>{1}</code> access at the same time as supplying\nextra positional arguments for a format message, as this makes it\nambiguous whether the number refers to a tuple field vs a different\npositional arg (<a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/354\">#354</a>)</p>\n<pre lang=\"rust\"><code></code></pre>\n</li>\n</ul>\n<!-- raw HTML omitted -->\n</blockquote>\n<p>... (truncated)</p>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/dtolnay/thiserror/commit/2075e87257e5bfe458cc01bc3764dcd499db254d\"><code>2075e87</code></a>\nRelease 2.0.6</li>\n<li><a\nhref=\"https://github.com/dtolnay/thiserror/commit/e9a90851502686c39a7164f67b296b579445f9ff\"><code>e9a9085</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/396\">#396</a>\nfrom dtolnay/deprecatedfrom</li>\n<li><a\nhref=\"https://github.com/dtolnay/thiserror/commit/6e8c7244c9b396f0c194a660fcb4bcff75e50b08\"><code>6e8c724</code></a>\nSuppress deprecation warning on generated From impls</li>\n<li><a\nhref=\"https://github.com/dtolnay/thiserror/commit/caf585c978f43ef0348dcd669af301e7a7e8578b\"><code>caf585c</code></a>\nAdd test of deprecated type in From impl</li>\n<li><a\nhref=\"https://github.com/dtolnay/thiserror/commit/f1f159d7e759e986335ed14dd362eb7d6c9815d4\"><code>f1f159d</code></a>\nRelease 2.0.5</li>\n<li><a\nhref=\"https://github.com/dtolnay/thiserror/commit/366a7b253e4b363dfe7204fea7b2e088a81bf8ee\"><code>366a7b2</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/395\">#395</a>\nfrom dtolnay/fallback</li>\n<li><a\nhref=\"https://github.com/dtolnay/thiserror/commit/88a46035e1bbb17ada53acf28ed7b7b00a0b049a\"><code>88a4603</code></a>\nMove fallback expansion to separate module</li>\n<li><a\nhref=\"https://github.com/dtolnay/thiserror/commit/6712f8cca6cd37c165da4a45ad8820fc97710116\"><code>6712f8c</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/dtolnay/thiserror/issues/394\">#394</a>\nfrom dtolnay/deprecated</li>\n<li><a\nhref=\"https://github.com/dtolnay/thiserror/commit/07e7d990facdfdbd559df323dae1f5deb1ba9ab6\"><code>07e7d99</code></a>\nAdd &quot;in this derive macro expansion&quot; to missing Display\nerrors</li>\n<li><a\nhref=\"https://github.com/dtolnay/thiserror/commit/714229d8214e77df019254afbbca18f1c921737e\"><code>714229d</code></a>\nWork around deprecation warning on generated impl for deprecated\ntype</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/dtolnay/thiserror/compare/1.0.59...2.0.6\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=thiserror&package-manager=cargo&previous-version=1.0.59&new-version=2.0.6)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2024-12-11T17:49:02Z",
+          "tree_id": "c1a034dcd98ce5d0f557f3c7628837401cfdbec9",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/5e9eda91ecd1c991b73d3dc0cbd54c61427804db"
+        },
+        "date": 1733939915530,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 56.99282,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 72.800465,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 58.190440611241094,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.6166011907504299,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.09441983138356037,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 380.964425,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 413.02641090000003,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 370.53378374319806,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 0.9675927402159914,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.08058543607867424,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 128.55803350000002,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 153.13569479999998,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 128.54989269881892,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.6023018543305341,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.06988864173177625,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 130.425391,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 149.07370350000002,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 128.4253610169376,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.7227928911507604,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.0785805702475801,
             "unit": "ms"
           }
         ]
