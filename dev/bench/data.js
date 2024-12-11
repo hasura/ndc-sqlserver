@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1733939771371,
+  "lastUpdate": 1733939828910,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -6571,6 +6571,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.08036241736777558,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "danieljamesharvey@gmail.com",
+            "name": "Daniel Harvey",
+            "username": "danieljharvey"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": false,
+          "id": "b49e56b25170546763b9b9aa64811d86944591be",
+          "message": "Add `redundant-clones` lint rule, remove stuff it finds (#164)\n\n<!-- The PR description should answer 2 (maybe 3) important questions:\n-->\n\n### What\n\nI find this lint rule helpful, popped it on.\n\n### How\n\n<!-- How is it trying to accomplish it (what are the implementation\nsteps)? -->",
+          "timestamp": "2024-12-11T17:47:58Z",
+          "tree_id": "bf06ea9f8506581bd92c6956041343bd30a896c3",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/b49e56b25170546763b9b9aa64811d86944591be"
+        },
+        "date": 1733939828414,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 58.108761,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 75.0329708,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 59.774324985294925,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.5955795880146084,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.08918523761803446,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 382.801959,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 418.1964158,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 374.821561107291,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 0.9603305391005392,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.07738632867368228,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 132.237664,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 152.61602595,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 130.412936179808,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.6950850424886426,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07860639717727264,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 129.897926,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 156.0777314,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 129.43764632142413,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.6633980831014412,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.07500188580086013,
             "unit": "ms"
           }
         ]
