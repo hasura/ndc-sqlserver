@@ -13,8 +13,8 @@ use query_engine_metadata::metadata::stored_procedures::{
     StoredProcedureArgumentInfo, StoredProcedureInfo, StoredProcedures,
 };
 use query_engine_metadata::metadata::{database, Nullable};
-use query_engine_sql::sql::{ast::RawSql,string::SQL};
 use query_engine_metrics::metrics;
+use query_engine_sql::sql::{ast::RawSql, string::SQL};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -167,16 +167,25 @@ async fn configure_stored_procedures(
         Some(config_options) => {
             let mut connection = mssql_pool
                 .get()
-                .await.map_err(Error::GetConnectionFromPool)?;
+                .await
+                .map_err(Error::GetConnectionFromPool)?;
             // Let's do some stored procedures introspection
             let mut stored_procs_query = SQL::new();
-            RawSql::RawText(STORED_PROCS_CONFIGURATION_QUERY.to_string()).to_sql(&mut stored_procs_query);
+            RawSql::RawText(STORED_PROCS_CONFIGURATION_QUERY.to_string())
+                .to_sql(&mut stored_procs_query);
             let mut stored_procs_rows = Vec::new();
-            execute_query(&mut connection, &stored_procs_query, &BTreeMap::new(), &mut stored_procs_rows).await
-                .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
-            let introspected_stored_procedures: Vec<introspection::IntrospectStoredProcedure> = serde_json::from_slice(&stored_procs_rows)
-                .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
-                    let new_stored_procedures = get_stored_procedures(introspected_stored_procedures);
+            execute_query(
+                &mut connection,
+                &stored_procs_query,
+                &BTreeMap::new(),
+                &mut stored_procs_rows,
+            )
+            .await
+            .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
+            let introspected_stored_procedures: Vec<introspection::IntrospectStoredProcedure> =
+                serde_json::from_slice(&stored_procs_rows)
+                    .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
+            let new_stored_procedures = get_stored_procedures(introspected_stored_procedures);
 
             // traverse the new stored procedures and add them to the existing stored procedures
             let mut merged_stored_procedures = existing_stored_procedures.0.clone();
@@ -225,23 +234,36 @@ pub async fn configure(
 
     let mut connection = mssql_pool
         .get()
-        .await.map_err(Error::GetConnectionFromPool)?;
-    
+        .await
+        .map_err(Error::GetConnectionFromPool)?;
+
     // Let's do some table introspection
     let mut table_query = SQL::new();
     RawSql::RawText(TABLE_CONFIGURATION_QUERY.to_string()).to_sql(&mut table_query);
     let mut table_rows = Vec::new();
-    execute_query(&mut connection, &table_query, &BTreeMap::new(), &mut table_rows).await
-        .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
+    execute_query(
+        &mut connection,
+        &table_query,
+        &BTreeMap::new(),
+        &mut table_rows,
+    )
+    .await
+    .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
     let tables: Vec<introspection::IntrospectionTable> = serde_json::from_slice(&table_rows)
         .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
-    
+
     // Let's do some types introspection
     let mut types_query = SQL::new();
     RawSql::RawText(TYPES_QUERY.to_string()).to_sql(&mut types_query);
     let mut types_rows = Vec::new();
-    execute_query(&mut connection, &types_query, &BTreeMap::new(), &mut types_rows).await
-        .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
+    execute_query(
+        &mut connection,
+        &types_query,
+        &BTreeMap::new(),
+        &mut types_rows,
+    )
+    .await
+    .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
     let type_names: Vec<TypeItem> = serde_json::from_slice(&types_rows)
         .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
 

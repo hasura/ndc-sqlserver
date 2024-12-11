@@ -111,12 +111,9 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
             configuration::Error::GetConnectionFromPool(inner) => {
                 std::io::Error::new(std::io::ErrorKind::Other, inner.to_string()).into()
             }
-            configuration::Error::JsonDeserializationError(inner) => {
-                connector::ParseError::from(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    inner.to_string(),
-                ))
-            }
+            configuration::Error::JsonDeserializationError(inner) => connector::ParseError::from(
+                std::io::Error::new(std::io::ErrorKind::Other, inner.to_string()),
+            ),
             configuration::Error::IntrospectionQueryExecutionError(inner) => {
                 connector::ParseError::from(std::io::Error::new(
                     std::io::ErrorKind::Other,
