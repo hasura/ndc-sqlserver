@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1733939132059,
+  "lastUpdate": 1733939701163,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -6323,6 +6323,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.08361184133451371,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": false,
+          "id": "d8e7893139682111968d6f850a71642f8bbcdcb4",
+          "message": "Bump hyper from 0.14.28 to 0.14.31 (#160)\n\nBumps [hyper](https://github.com/hyperium/hyper) from 0.14.28 to\n0.14.31.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/hyperium/hyper/releases\">hyper's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v0.14.31</h2>\n<h2>Bug Fixes</h2>\n<ul>\n<li><strong>http1:</strong> improve performance of parsing sequentially\npartial messages (<a\nhref=\"https://github.com/hyperium/hyper/commit/97b595e5892c239a195b199f9e7910f582351c44\">97b595e</a>)</li>\n</ul>\n<h2>v0.14.30</h2>\n<h2>Bug Fixes</h2>\n<ul>\n<li><strong>http1:</strong> reject final chunked if missing 0 (<a\nhref=\"https://github.com/hyperium/hyper/commit/4a51b2afefcc1373c2a5b834fa0ae8d935dbff46\">4a51b2af</a>)</li>\n</ul>\n<h2>v0.14.29</h2>\n<h2>Bug Fixes</h2>\n<ul>\n<li><strong>http1:</strong> start header read timeout immediately (<a\nhref=\"https://redirect.github.com/hyperium/hyper/issues/3305\">#3305</a>)\n(<a\nhref=\"https://github.com/hyperium/hyper/commit/b5c2592fde5e20d29c69428c85aef3d682ee36bc\">b5c2592f</a>)</li>\n</ul>\n<h2>Features</h2>\n<ul>\n<li><strong>http2:</strong> add config for\n<code>max_local_error_reset_streams</code> in server (<a\nhref=\"https://redirect.github.com/hyperium/hyper/issues/3528\">#3528</a>)\n(<a\nhref=\"https://github.com/hyperium/hyper/commit/dedcb674f35eaec765a42b550caabe6f694d86d1\">dedcb674</a>)</li>\n</ul>\n<h2>New Contributors</h2>\n<ul>\n<li><a href=\"https://github.com/jeromegn\"><code>@​jeromegn</code></a>\nmade their first contribution in <a\nhref=\"https://redirect.github.com/hyperium/hyper/pull/3305\">hyperium/hyper#3305</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/hyperium/hyper/compare/v0.14.28...v0.14.29\">https://github.com/hyperium/hyper/compare/v0.14.28...v0.14.29</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/hyperium/hyper/blob/v0.14.31/CHANGELOG.md\">hyper's\nchangelog</a>.</em></p>\n<blockquote>\n<h3>v0.14.31 (2024-10-15)</h3>\n<h4>Bug Fixes</h4>\n<ul>\n<li><strong>http1:</strong> improve performance of parsing sequentially\npartial messages (<a\nhref=\"https://github.com/hyperium/hyper/commit/97b595e5892c239a195b199f9e7910f582351c44\">97b595e</a>)</li>\n</ul>\n<h3>v0.14.30 (2024-07-09)</h3>\n<h4>Bug Fixes</h4>\n<ul>\n<li><strong>http1:</strong> reject final chunked if missing 0 (<a\nhref=\"https://github.com/hyperium/hyper/commit/4a51b2afefcc1373c2a5b834fa0ae8d935dbff46\">4a51b2af</a>)</li>\n</ul>\n<h3>v0.14.29 (2024-06-03)</h3>\n<h4>Bug Fixes</h4>\n<ul>\n<li><strong>http1:</strong> start header read timeout immediately (<a\nhref=\"https://redirect.github.com/hyperium/hyper/issues/3305\">#3305</a>)\n(<a\nhref=\"https://github.com/hyperium/hyper/commit/b5c2592fde5e20d29c69428c85aef3d682ee36bc\">b5c2592f</a>)</li>\n</ul>\n<h4>Features</h4>\n<ul>\n<li><strong>http2:</strong> add config for\n<code>max_local_error_reset_streams</code> in server (<a\nhref=\"https://redirect.github.com/hyperium/hyper/issues/3528\">#3528</a>)\n(<a\nhref=\"https://github.com/hyperium/hyper/commit/dedcb674f35eaec765a42b550caabe6f694d86d1\">dedcb674</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/hyperium/hyper/commit/7829148b7f3c271863c983a18c37adf5da35e726\"><code>7829148</code></a>\nv0.14.31</li>\n<li><a\nhref=\"https://github.com/hyperium/hyper/commit/97b595e5892c239a195b199f9e7910f582351c44\"><code>97b595e</code></a>\nperf(http1): improve parsing of sequentially partial messages</li>\n<li><a\nhref=\"https://github.com/hyperium/hyper/commit/739d5e634c8f82e7d0578ca979cb6d434bd682c2\"><code>739d5e6</code></a>\nchore(ci): pin some deps for MSRV job</li>\n<li><a\nhref=\"https://github.com/hyperium/hyper/commit/b7e5b4a280c2bd485d470886c8b9bc5bbec50588\"><code>b7e5b4a</code></a>\nstyle(capi): update format of hyper.h</li>\n<li><a\nhref=\"https://github.com/hyperium/hyper/commit/618a18580ae14776c05ab6789a82b5c43281fe8b\"><code>618a185</code></a>\nv0.14.30</li>\n<li><a\nhref=\"https://github.com/hyperium/hyper/commit/4a51b2afefcc1373c2a5b834fa0ae8d935dbff46\"><code>4a51b2a</code></a>\nfix(http1): reject final chunked if missing 0</li>\n<li><a\nhref=\"https://github.com/hyperium/hyper/commit/c38437d377426e01100e07dc1e735f9c382fc6f5\"><code>c38437d</code></a>\nchore(dependencies): bump minimum tokio (<a\nhref=\"https://redirect.github.com/hyperium/hyper/issues/3664\">#3664</a>)</li>\n<li><a\nhref=\"https://github.com/hyperium/hyper/commit/4e61351c1c07f59f8d7b79dcb37c1384acb9f3cb\"><code>4e61351</code></a>\nv0.14.29</li>\n<li><a\nhref=\"https://github.com/hyperium/hyper/commit/b5c2592fde5e20d29c69428c85aef3d682ee36bc\"><code>b5c2592</code></a>\nfix(http1): start header read timeout immediately (<a\nhref=\"https://redirect.github.com/hyperium/hyper/issues/3305\">#3305</a>)</li>\n<li><a\nhref=\"https://github.com/hyperium/hyper/commit/093665e3c318b1360df5a7338facc2b47ac5b54a\"><code>093665e</code></a>\nrefactor(lib): allow warnings in 0.14.x (<a\nhref=\"https://redirect.github.com/hyperium/hyper/issues/3677\">#3677</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/hyperium/hyper/compare/v0.14.28...v0.14.31\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=hyper&package-manager=cargo&previous-version=0.14.28&new-version=0.14.31)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2024-12-11T17:45:30Z",
+          "tree_id": "dbffbb2107e4b26420497cd3649ef3276f63f11d",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/d8e7893139682111968d6f850a71642f8bbcdcb4"
+        },
+        "date": 1733939700037,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 57.259744,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 70.51473525,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 57.45077845353397,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.5774612608620728,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.08438865153302,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 395.142332,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 472.4653142000001,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 386.834407083171,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 1.021035823164084,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.0771481865529798,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 132.84546,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 152.5520348,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 131.08856824598507,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.6736702243042316,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07746646828208378,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 131.7859985,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 155.85046715,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 130.6382147395192,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.7208830224299732,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.07690596221670815,
             "unit": "ms"
           }
         ]
