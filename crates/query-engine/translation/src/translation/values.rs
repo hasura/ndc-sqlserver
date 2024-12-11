@@ -2,7 +2,6 @@
 
 use crate::translation::error::Error;
 
-use ndc_sdk::models;
 use query_engine_metadata::metadata::database;
 use query_engine_sql::sql;
 use sql::ast::{Expression, Value};
@@ -41,7 +40,7 @@ pub fn translate_json_value(
 
 /// Convert a variable into a SQL value.
 pub fn translate_variable(
-    variable: &models::VariableName,
+    variable: &ndc_models::VariableName,
     scalar_type: &database::ScalarType,
 ) -> sql::ast::Expression {
     let exp = Expression::Value(Value::Variable(variable.to_string()));

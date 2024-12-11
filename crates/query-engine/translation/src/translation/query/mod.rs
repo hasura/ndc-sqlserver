@@ -7,8 +7,6 @@ mod relationships;
 mod root;
 mod sorting;
 
-use ndc_sdk::models;
-
 use super::error::Error;
 use super::helpers::{CollectionOrProcedureInfo, Env, State, TableNameAndReference};
 
@@ -18,7 +16,7 @@ use query_engine_sql::sql;
 /// Translate the incoming QueryRequest to an ExecutionPlan (SQL) to be run against the database.
 pub fn translate(
     metadata: &metadata::Metadata,
-    query_request: models::QueryRequest,
+    query_request: ndc_models::QueryRequest,
 ) -> Result<sql::execution_plan::QueryExecutionPlan, Error> {
     let env = Env::new(metadata, query_request.collection_relationships);
     let mut state = State::new();
@@ -42,7 +40,7 @@ pub fn translate(
     )?;
 
     // form a single JSON item shaped `{ rows: [], aggregates: {} }`
-    // that matches the models::RowSet type
+    // that matches the ndc_models::RowSet type
     let mut json_select = sql::helpers::select_rowset(
         state.make_table_alias("universe".to_string()),
         state.make_table_alias("rows".to_string()),
@@ -76,7 +74,7 @@ pub fn translate_query(
 
     current_table: &TableNameAndReference,
     from_clause: &sql::ast::From,
-    query: &models::Query,
+    query: &ndc_models::Query,
     table_alias: &sql::ast::TableAlias,
 ) -> Result<sql::helpers::SelectSet, Error> {
     // translate rows query. if there are no fields, make this a None

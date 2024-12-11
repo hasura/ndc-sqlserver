@@ -2,8 +2,6 @@
 
 use std::collections::BTreeMap;
 
-use ndc_sdk::models;
-
 use crate::translation::error::Error;
 use crate::translation::helpers::{
     ColumnInfo, Env, RootAndCurrentTables, State, TableNameAndReference,
@@ -20,10 +18,10 @@ pub fn translate_expression(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    predicate: &models::Expression,
+    predicate: &ndc_models::Expression,
 ) -> Result<(sql::ast::Expression, Vec<sql::ast::Join>), Error> {
     match predicate {
-        models::Expression::And { expressions } => {
+        ndc_models::Expression::And { expressions } => {
             let mut acc_joins = vec![];
             let and_exprs = expressions
                 .iter()
@@ -41,7 +39,7 @@ pub fn translate_expression(
                 )?;
             Ok((and_exprs, acc_joins))
         }
-        models::Expression::Or { expressions } => {
+        ndc_models::Expression::Or { expressions } => {
             let mut acc_joins = vec![];
             let or_exprs = expressions
                 .iter()
@@ -59,12 +57,12 @@ pub fn translate_expression(
                 )?;
             Ok((or_exprs, acc_joins))
         }
-        models::Expression::Not { expression } => {
+        ndc_models::Expression::Not { expression } => {
             let (expr, joins) =
                 translate_expression(env, state, root_and_current_tables, expression)?;
             Ok((sql::ast::Expression::Not(Box::new(expr)), joins))
         }
-        models::Expression::BinaryComparisonOperator {
+        ndc_models::Expression::BinaryComparisonOperator {
             column,
             operator,
             value,
@@ -77,7 +75,7 @@ pub fn translate_expression(
                 let mut joins = vec![];
                 joins.extend(left_joins);
                 match value {
-                    models::ComparisonValue::Column { column } => {
+                    ndc_models::ComparisonValue::Column { column } => {
                         let (right, right_joins) = translate_comparison_target(
                             env,
                             state,
@@ -94,7 +92,7 @@ pub fn translate_expression(
                             joins,
                         ))
                     }
-                    models::ComparisonValue::Scalar { value: json_value } => match json_value {
+                    ndc_models::ComparisonValue::Scalar { value: json_value } => match json_value {
                         serde_json::Value::Array(values) => {
                             // The expression on the left is definitely not IN an empty list of values
                             if values.is_empty() {
@@ -107,7 +105,7 @@ pub fn translate_expression(
                                             env,
                                             state,
                                             root_and_current_tables,
-                                            &models::ComparisonValue::Scalar {
+                                            &ndc_models::ComparisonValue::Scalar {
                                                 value: value.clone(),
                                             },
                                             &left_typ.clone(),
@@ -129,7 +127,7 @@ pub fn translate_expression(
                         }
                         _ => Err(Error::TypeMismatch(json_value.clone(), left_typ)),
                     },
-                    models::ComparisonValue::Variable { .. } => {
+                    ndc_models::ComparisonValue::Variable { .. } => {
                         // TODO(PY): array type
                         let array_type = left_typ;
                         let (right, right_joins) = translate_comparison_value(
@@ -173,7 +171,7 @@ pub fn translate_expression(
             }
         }
 
-        models::Expression::Exists {
+        ndc_models::Expression::Exists {
             in_collection,
             predicate,
         } => match predicate {
@@ -189,8 +187,8 @@ pub fn translate_expression(
                 vec![],
             )),
         },
-        models::Expression::UnaryComparisonOperator { column, operator } => match operator {
-            models::UnaryComparisonOperator::IsNull => {
+        ndc_models::Expression::UnaryComparisonOperator { column, operator } => match operator {
+            ndc_models::UnaryComparisonOperator::IsNull => {
                 let (value, joins) =
                     translate_comparison_target(env, state, root_and_current_tables, column)?;
 
@@ -247,7 +245,7 @@ fn translate_comparison_pathelements(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    path: &[models::PathElement],
+    path: &[ndc_models::PathElement],
 ) -> Result<(TableNameAndReference, Vec<sql::ast::Join>), Error> {
     let mut joins = vec![];
     let RootAndCurrentTables { current_table, .. } = root_and_current_tables;
@@ -255,7 +253,7 @@ fn translate_comparison_pathelements(
     let final_ref = path.iter().try_fold(
         current_table.clone(),
         |current_table_ref,
-         models::PathElement {
+         ndc_models::PathElement {
              relationship,
              predicate,
              arguments,
@@ -335,10 +333,10 @@ fn translate_comparison_target(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    column: &models::ComparisonTarget,
+    column: &ndc_models::ComparisonTarget,
 ) -> Result<(sql::ast::Expression, Vec<sql::ast::Join>), Error> {
     match column {
-        models::ComparisonTarget::Column {
+        ndc_models::ComparisonTarget::Column {
             name,
             path,
             field_path: _,
@@ -360,7 +358,7 @@ fn translate_comparison_target(
         }
 
         // Compare a column from the root table.
-        models::ComparisonTarget::RootCollectionColumn {
+        ndc_models::ComparisonTarget::RootCollectionColumn {
             name,
             field_path: _,
         } => {
@@ -387,17 +385,17 @@ fn translate_comparison_value(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    value: &models::ComparisonValue,
+    value: &ndc_models::ComparisonValue,
     typ: &database::ScalarType,
 ) -> Result<(sql::ast::Expression, Vec<sql::ast::Join>), Error> {
     match value {
-        models::ComparisonValue::Column { column } => {
+        ndc_models::ComparisonValue::Column { column } => {
             translate_comparison_target(env, state, root_and_current_tables, column)
         }
-        models::ComparisonValue::Scalar { value: json_value } => {
+        ndc_models::ComparisonValue::Scalar { value: json_value } => {
             Ok((values::translate_json_value(json_value, typ)?, vec![]))
         }
-        models::ComparisonValue::Variable { name: var } => {
+        ndc_models::ComparisonValue::Variable { name: var } => {
             Ok((values::translate_variable(var, typ), vec![]))
         }
     }
@@ -410,16 +408,16 @@ pub fn translate_exists_in_collection(
     env: &Env,
     state: &mut State,
     root_and_current_tables: &RootAndCurrentTables,
-    in_collection: models::ExistsInCollection,
-    predicate: &models::Expression,
+    in_collection: ndc_models::ExistsInCollection,
+    predicate: &ndc_models::Expression,
 ) -> Result<sql::ast::Expression, Error> {
     match in_collection {
-        models::ExistsInCollection::NestedCollection {
+        ndc_models::ExistsInCollection::NestedCollection {
             column_name: _,
             arguments: _,
             field_path: _,
         } => todo!("Not implemented"),
-        models::ExistsInCollection::Unrelated {
+        ndc_models::ExistsInCollection::Unrelated {
             collection,
             arguments,
         } => {
@@ -475,7 +473,7 @@ pub fn translate_exists_in_collection(
         // We get a relationship name in exists, query the target table directly,
         // and build a WHERE clause that contains the join conditions and the specified
         // EXISTS condition.
-        models::ExistsInCollection::Related {
+        ndc_models::ExistsInCollection::Related {
             relationship,
             arguments,
         } => {
@@ -549,10 +547,10 @@ pub fn translate_exists_in_collection(
 fn get_comparison_target_type(
     env: &Env,
     root_and_current_tables: &RootAndCurrentTables,
-    column: &models::ComparisonTarget,
+    column: &ndc_models::ComparisonTarget,
 ) -> Result<database::ScalarType, Error> {
     match column {
-        models::ComparisonTarget::RootCollectionColumn {
+        ndc_models::ComparisonTarget::RootCollectionColumn {
             name,
             field_path: _,
         } => {
@@ -561,7 +559,7 @@ fn get_comparison_target_type(
                 .lookup_column(name)?;
             Ok(column.r#type)
         }
-        models::ComparisonTarget::Column {
+        ndc_models::ComparisonTarget::Column {
             name,
             path,
             field_path: _,

@@ -4,8 +4,6 @@ use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
 
-use ndc_sdk::models;
-
 use super::aggregates;
 use super::filtering;
 use crate::translation::error::Error;
@@ -24,7 +22,7 @@ pub fn translate_aggregate_query(
     state: &mut State,
     current_table: &TableNameAndReference,
     from_clause: &sql::ast::From,
-    query: &models::Query,
+    query: &ndc_models::Query,
 ) -> Result<Option<sql::ast::Select>, Error> {
     match &query.aggregates {
         None => Ok(None),
@@ -67,7 +65,7 @@ pub fn make_no_fields_select_query(
     env: &Env,
     state: &mut State,
     from_clause: &sql::ast::From,
-    query: &models::Query,
+    query: &ndc_models::Query,
     table_alias: &sql::ast::TableAlias,
     current_table: &TableNameAndReference,
 ) -> Result<sql::ast::Select, Error> {
@@ -159,7 +157,7 @@ pub fn translate_rows_query(
     collection_info: &CollectionOrProcedureInfo,
     current_table: &TableNameAndReference,
     from_clause: &sql::ast::From,
-    query: &models::Query,
+    query: &ndc_models::Query,
     table_alias: &sql::ast::TableAlias,
 ) -> Result<Option<sql::ast::Select>, Error> {
     // join aliases
@@ -185,7 +183,7 @@ pub fn translate_rows_query(
             let columns: Vec<(sql::ast::ColumnAlias, sql::ast::Expression)> = fields
                 .into_iter()
                 .map(|(alias, field)| match field {
-                    models::Field::Column { column, .. } => {
+                    ndc_models::Field::Column { column, .. } => {
                         let column_info = collection_info.lookup_column(&column)?;
                         Ok(sql::helpers::make_column(
                             current_table.reference.clone(),
@@ -193,7 +191,7 @@ pub fn translate_rows_query(
                             sql::helpers::make_column_alias(alias.to_string()),
                         ))
                     }
-                    models::Field::Relationship {
+                    ndc_models::Field::Relationship {
                         query,
                         relationship,
                         arguments,
@@ -298,7 +296,7 @@ fn translate_query_part(
     env: &Env,
     state: &mut State,
     current_table: &TableNameAndReference,
-    query: &models::Query,
+    query: &ndc_models::Query,
     columns: Vec<(sql::ast::ColumnAlias, sql::ast::Expression)>,
     join_fields: Vec<relationships::JoinFieldInfo>,
 ) -> Result<sql::ast::Select, Error> {
@@ -350,8 +348,8 @@ fn translate_query_part(
 
 /// Create a from clause from a collection name and its reference.
 pub fn make_from_clause_and_reference(
-    collection_name: &models::CollectionName,
-    arguments: &BTreeMap<models::ArgumentName, models::Argument>,
+    collection_name: &ndc_models::CollectionName,
+    arguments: &BTreeMap<ndc_models::ArgumentName, ndc_models::Argument>,
     env: &Env,
     state: &mut State,
     collection_alias: &sql::ast::TableAlias,
@@ -375,7 +373,7 @@ fn make_from_clause(
     state: &mut State,
     current_table_alias: &sql::ast::TableAlias,
     collection_info: &CollectionOrProcedureInfo,
-    arguments: &BTreeMap<models::ArgumentName, models::Argument>,
+    arguments: &BTreeMap<ndc_models::ArgumentName, ndc_models::Argument>,
 ) -> Result<sql::ast::From, Error> {
     match &collection_info {
         CollectionOrProcedureInfo::Collection(collection_info) => match collection_info {

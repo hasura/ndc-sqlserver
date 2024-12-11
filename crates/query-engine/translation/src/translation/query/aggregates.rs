@@ -2,21 +2,19 @@
 
 use indexmap::IndexMap;
 
-use ndc_sdk::models;
-
 use crate::translation::error::Error;
 use query_engine_sql::sql;
 
 /// Translate any aggregates we should include in the query into our SQL AST.
 pub fn translate(
     table: &sql::ast::TableReference,
-    aggregates: &IndexMap<models::FieldName, models::Aggregate>,
+    aggregates: &IndexMap<ndc_models::FieldName, ndc_models::Aggregate>,
 ) -> Result<Vec<(sql::ast::ColumnAlias, sql::ast::Expression)>, Error> {
     aggregates
         .into_iter()
         .map(|(alias, aggregation)| {
             let expression = match aggregation {
-                models::Aggregate::ColumnCount {
+                ndc_models::Aggregate::ColumnCount {
                     column, distinct, ..
                 } => {
                     let count_column_alias = sql::helpers::make_column_alias(column.to_string());
@@ -36,7 +34,7 @@ pub fn translate(
                         ))
                     }
                 }
-                models::Aggregate::SingleColumn {
+                ndc_models::Aggregate::SingleColumn {
                     column,
                     function,
                     field_path: _,
@@ -61,7 +59,7 @@ pub fn translate(
                         },
                     }
                 }
-                models::Aggregate::StarCount {} => {
+                ndc_models::Aggregate::StarCount {} => {
                     sql::ast::Expression::Count(sql::ast::CountType::Star)
                 }
             };
