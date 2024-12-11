@@ -71,7 +71,7 @@ async fn execute_queries(
 }
 
 /// Execute the query on one set of variables.
-pub(crate) async fn execute_query(
+pub async fn execute_query(
     connection: &mut bb8::PooledConnection<'_, bb8_tiberius::ConnectionManager>,
     query: &sql::string::SQL,
     variables: &BTreeMap<ndc_models::VariableName, serde_json::Value>,

@@ -34,6 +34,12 @@ pub enum Error {
     #[error("Error creating connection pool while introspecting the database: {0}")]
     ConnectionPoolError(#[from] bb8_tiberius::Error),
 
+    #[error("Failed to get connection from pool: {0}")]
+    GetConnectionFromPool(#[from] bb8::RunError<bb8_tiberius::Error>),
+
+    #[error("JSON deserialization error: {0}")]
+    JsonDeserializationError(String),
+
     // error while parsing stored procedure introspection
     #[error("Error parsing stored procedure introspection: {0}")]
     StoredProcedureIntrospectionError(serde_json::Error),
