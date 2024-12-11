@@ -117,6 +117,12 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
                     inner.to_string(),
                 ))
             }
+            configuration::Error::IntrospectionQueryExecutionError(inner) => {
+                connector::ParseError::from(std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    inner.to_string(),
+                ))
+            }
             configuration::Error::StoredProcedureIntrospectionError(inner) => {
                 connector::ParseError::from(std::io::Error::new(
                     std::io::ErrorKind::Other,

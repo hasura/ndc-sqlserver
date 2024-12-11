@@ -40,6 +40,9 @@ pub enum Error {
     #[error("JSON deserialization error: {0}")]
     JsonDeserializationError(String),
 
+    #[error("Failed to execute introspection query: {0}")]
+    IntrospectionQueryExecutionError(String),
+
     // error while parsing stored procedure introspection
     #[error("Error parsing stored procedure introspection: {0}")]
     StoredProcedureIntrospectionError(serde_json::Error),

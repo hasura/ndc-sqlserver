@@ -172,7 +172,8 @@ async fn configure_stored_procedures(
             let mut stored_procs_query = SQL::new();
             RawSql::RawText(STORED_PROCS_CONFIGURATION_QUERY.to_string()).to_sql(&mut stored_procs_query);
             let mut stored_procs_rows = Vec::new();
-            execute_query(&mut connection, &stored_procs_query, &BTreeMap::new(), &mut stored_procs_rows).await.unwrap();
+            execute_query(&mut connection, &stored_procs_query, &BTreeMap::new(), &mut stored_procs_rows).await
+                .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
             let introspected_stored_procedures: Vec<introspection::IntrospectStoredProcedure> = serde_json::from_slice(&stored_procs_rows)
                 .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
                     let new_stored_procedures = get_stored_procedures(introspected_stored_procedures);
@@ -230,7 +231,8 @@ pub async fn configure(
     let mut table_query = SQL::new();
     RawSql::RawText(TABLE_CONFIGURATION_QUERY.to_string()).to_sql(&mut table_query);
     let mut table_rows = Vec::new();
-    execute_query(&mut connection, &table_query, &BTreeMap::new(), &mut table_rows).await.unwrap();
+    execute_query(&mut connection, &table_query, &BTreeMap::new(), &mut table_rows).await
+        .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
     let tables: Vec<introspection::IntrospectionTable> = serde_json::from_slice(&table_rows)
         .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
     
@@ -238,7 +240,8 @@ pub async fn configure(
     let mut types_query = SQL::new();
     RawSql::RawText(TYPES_QUERY.to_string()).to_sql(&mut types_query);
     let mut types_rows = Vec::new();
-    execute_query(&mut connection, &types_query, &BTreeMap::new(), &mut types_rows).await.unwrap();
+    execute_query(&mut connection, &types_query, &BTreeMap::new(), &mut types_rows).await
+        .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
     let type_names: Vec<TypeItem> = serde_json::from_slice(&types_rows)
         .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
 
