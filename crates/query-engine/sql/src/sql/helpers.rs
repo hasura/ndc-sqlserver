@@ -161,7 +161,7 @@ pub fn select_rowset(
             let mut final_row_select = simple_select(rows_row);
 
             final_row_select.from = Some(From::Select {
-                alias: row_table_alias.clone(),
+                alias: row_table_alias,
                 select: Box::new(row_select),
                 alias_path: AliasPath {
                     elements: vec![row_column_alias],
@@ -264,7 +264,7 @@ pub fn select_rowset(
 
             final_select.joins = vec![Join::CrossJoin(CrossJoin {
                 select: Box::new(aggregate_select_star),
-                alias: aggregate_table_alias.clone(),
+                alias: aggregate_table_alias,
                 alias_path: AliasPath {
                     elements: vec![aggregate_column_alias],
                 },
@@ -478,7 +478,7 @@ pub fn select_mutation_rowset(
 
             final_select.joins = vec![Join::CrossJoin(CrossJoin {
                 select: Box::new(aggregate_select_star),
-                alias: aggregate_table_alias.clone(),
+                alias: aggregate_table_alias,
                 alias_path: AliasPath {
                     elements: vec![make_column_alias("aggregates".to_string())],
                 },

@@ -70,10 +70,7 @@ fn translate_mutation_operation(
                     })
                 }
                 ProcedureInfo::StoredProcedure { name, info } => {
-                    let stored_procedure_info = super::helpers::StoredProcedureInfo {
-                        name: name.to_string(),
-                        info,
-                    };
+                    let stored_procedure_info = super::helpers::StoredProcedureInfo { name, info };
                     MutationOperationKind::StoredProcedure(stored_procedure_info)
                 }
             };
