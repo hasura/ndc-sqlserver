@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1733939992597,
+  "lastUpdate": 1733950776293,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -6943,6 +6943,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.07535842280409784,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "brandon@codedmart.com",
+            "name": "Brandon Martin",
+            "username": "codedmart"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "915b1a60e7f0b9081b8a3340f73026a3bc27bcb3",
+          "message": "Use execute_query for introspection (#155)\n\n<!-- The PR description should answer 2 (maybe 3) important questions:\n-->\n\n### What\nThe configuration introspection was using `select_first_row` which was\nnot properly streaming all results and had a limits which caused\nintrospections to fail on larger sets of tables.\n\n<!-- What is this PR trying to accomplish (and why, if it's not\nobvious)? -->\n\n### How\nThis removes `select_first_row` and uses `execute_query` to fetch all\nintrospection data.\n\n<!-- How is it trying to accomplish it (what are the implementation\nsteps)? -->\n\n---------\n\nCo-authored-by: Daniel Harvey <danieljamesharvey@gmail.com>",
+          "timestamp": "2024-12-11T20:52:22Z",
+          "tree_id": "ea8fa70d20e5e98985bc720711e8ad57d544ca7d",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/915b1a60e7f0b9081b8a3340f73026a3bc27bcb3"
+        },
+        "date": 1733950775605,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 57.890818,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 71.781719,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 58.746348418641496,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.6305660009089848,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.09368710987208412,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 377.617791,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 414.62141940000004,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 368.94127540438166,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 1.0930119331597439,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.08093381136276792,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 129.7352445,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 153.8474517,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 129.40096926071425,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.657032405688085,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07281458690461957,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 129.826255,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 155.76947255,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 129.3741568256278,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.6065137060763277,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.07177562285339367,
             "unit": "ms"
           }
         ]
