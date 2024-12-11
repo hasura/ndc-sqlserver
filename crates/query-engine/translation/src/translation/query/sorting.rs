@@ -352,7 +352,7 @@ fn translate_order_by_target_for_column(
             table: root_and_current_tables.current_table.reference.clone(),
             // we are going to deliberately use the table column name and not an alias we get from
             // the query request because this is internal to the sorting mechanism.
-            column: sql::helpers::make_column_alias(selected_column.name.0.clone()),
+            column: sql::helpers::make_column_alias(selected_column.name.0),
         };
         Ok(ColumnOrSelect::Column(selected_column_name))
     }
@@ -367,18 +367,16 @@ fn translate_order_by_target_for_column(
             table: last_table.reference,
             // we are going to deliberately use the table column name and not an alias we get from
             // the query request because this is internal to the sorting mechanism.
-            column: sql::helpers::make_column_alias(selected_column.name.0.clone()),
+            column: sql::helpers::make_column_alias(selected_column.name.0),
         };
 
         // if we got a function, we wrap the required column with
         // a function call.
         let selected_column_expr = match function {
-            None => sql::ast::Expression::ColumnReference(selected_column_name.clone()),
+            None => sql::ast::Expression::ColumnReference(selected_column_name),
             Some(func) => sql::ast::Expression::FunctionCall {
                 function: sql::ast::Function::Unknown(func.to_string()),
-                args: vec![sql::ast::Expression::ColumnReference(
-                    selected_column_name.clone(),
-                )],
+                args: vec![sql::ast::Expression::ColumnReference(selected_column_name)],
             },
         };
 
@@ -467,7 +465,7 @@ fn process_path_element_for_order_by_target_for_column(
                     // we are going to deliberately use the table column name and not an alias we get from
                     // the query request because this is internal to the sorting mechanism.
                     let selected_column_alias =
-                        sql::helpers::make_column_alias(selected_column.name.0.clone());
+                        sql::helpers::make_column_alias(selected_column.name.0);
                     // we use the real name of the column as an alias as well.
                     Ok((
                         selected_column_alias.clone(),
@@ -486,8 +484,7 @@ fn process_path_element_for_order_by_target_for_column(
             let selected_column = target_collection.lookup_column(&target_column_name.into())?;
             // we are going to deliberately use the table column name and not an alias we get from
             // the query request because this is internal to the sorting mechanism.
-            let selected_column_alias =
-                sql::helpers::make_column_alias(selected_column.name.0.clone());
+            let selected_column_alias = sql::helpers::make_column_alias(selected_column.name.0);
             // we use the real name of the column as an alias as well.
             Ok(vec![(
                 selected_column_alias.clone(),

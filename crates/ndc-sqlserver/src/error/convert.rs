@@ -7,7 +7,7 @@ pub fn execution_error_to_response(error: query_engine_execution::error::Error) 
     use query_engine_execution::error::*;
     match error {
         Error::Query(query_error) => {
-            connector::QueryError::new_invalid_request(&query_error.to_string()).into()
+            connector::QueryError::new_invalid_request(&query_error).into()
         }
         Error::Mutation(mutation_error) => {
             connector::MutationError::new_invalid_request(&mutation_error.to_string()).into()

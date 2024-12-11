@@ -179,7 +179,7 @@ pub async fn explain(
     let pretty = sqlformat::format(
         &query.sql,
         &sqlformat::QueryParams::None,
-        sqlformat::FormatOptions::default(),
+        &sqlformat::FormatOptions::default(),
     );
 
     Ok((pretty, results.join("\n")))
