@@ -106,13 +106,19 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
                 std::io::Error::new(std::io::ErrorKind::Other, inner).into()
             }
             configuration::Error::ConnectionPoolError(inner) => {
-                std::io::Error::new(std::io::ErrorKind::Other, inner.to_string()).into()
+                std::io::Error::new(std::io::ErrorKind::Other, inner).into()
+            }
+            configuration::Error::GetConnectionFromPool(inner) => {
+                std::io::Error::new(std::io::ErrorKind::Other, inner).into()
+            }
+            configuration::Error::JsonDeserializationError(inner) => {
+                connector::ParseError::from(std::io::Error::new(std::io::ErrorKind::Other, inner))
+            }
+            configuration::Error::IntrospectionQueryExecutionError(inner) => {
+                connector::ParseError::from(std::io::Error::new(std::io::ErrorKind::Other, inner))
             }
             configuration::Error::StoredProcedureIntrospectionError(inner) => {
-                connector::ParseError::from(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    inner.to_string(),
-                ))
+                connector::ParseError::from(std::io::Error::new(std::io::ErrorKind::Other, inner))
             }
         })?;
 

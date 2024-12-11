@@ -7,20 +7,20 @@ use crate::secret::Secret;
 use crate::{uri, ConnectionUri};
 
 use ndc_models::{AggregateFunctionName, CollectionName, ComparisonOperatorName, FieldName};
+use query_engine_execution::query::execute_query;
 use query_engine_metadata::metadata;
 use query_engine_metadata::metadata::stored_procedures::{
     StoredProcedureArgumentInfo, StoredProcedureInfo, StoredProcedures,
 };
 use query_engine_metadata::metadata::{database, Nullable};
-
 use query_engine_metrics::metrics;
+use query_engine_sql::sql::{ast::RawSql, string::SQL};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use thiserror::Error;
-use tiberius::Query;
 
 // TODO(KC): Move the `table_configuration.sql` to the `static` folder present
 // in the root of this repo.
@@ -156,22 +156,6 @@ async fn create_mssql_pool(
     bb8::Pool::builder().max_size(2).build(mgr).await
 }
 
-async fn select_first_row(
-    mssql_pool: &bb8::Pool<bb8_tiberius::ConnectionManager>,
-    query: &str,
-) -> tiberius::Row {
-    let mut connection = mssql_pool.get().await.unwrap();
-
-    // let's do a query to check everything is ok
-    let select = Query::new(query);
-
-    // go!
-    let stream = select.query(&mut connection).await.unwrap();
-
-    // Nothing is fetched, the first result set starts.
-    stream.into_row().await.unwrap().unwrap()
-}
-
 // get_stored_procedures fetches the stored procedures from the database and returns them as a
 // vector of introspection::IntrospectStoredProcedure.
 async fn configure_stored_procedures(
@@ -181,11 +165,26 @@ async fn configure_stored_procedures(
 ) -> Result<StoredProcedures, Error> {
     match config_options {
         Some(config_options) => {
-            let stored_procedures_row =
-                select_first_row(mssql_pool, STORED_PROCS_CONFIGURATION_QUERY).await;
+            let mut connection = mssql_pool
+                .get()
+                .await
+                .map_err(Error::GetConnectionFromPool)?;
+            // Let's do some stored procedures introspection
+            let mut stored_procs_query = SQL::new();
+            RawSql::RawText(STORED_PROCS_CONFIGURATION_QUERY.to_string())
+                .to_sql(&mut stored_procs_query);
+            let mut stored_procs_rows = Vec::new();
+            execute_query(
+                &mut connection,
+                &stored_procs_query,
+                &BTreeMap::new(),
+                &mut stored_procs_rows,
+            )
+            .await
+            .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
             let introspected_stored_procedures: Vec<introspection::IntrospectStoredProcedure> =
-                serde_json::from_str(stored_procedures_row.get(0).unwrap())
-                    .map_err(Error::StoredProcedureIntrospectionError)?;
+                serde_json::from_slice(&stored_procs_rows)
+                    .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
             let new_stored_procedures = get_stored_procedures(introspected_stored_procedures);
 
             // traverse the new stored procedures and add them to the existing stored procedures
@@ -233,26 +232,47 @@ pub async fn configure(
         .await
         .map_err(Error::ConnectionPoolError)?;
 
-    let mut metadata = query_engine_metadata::metadata::Metadata::default();
+    let mut connection = mssql_pool
+        .get()
+        .await
+        .map_err(Error::GetConnectionFromPool)?;
 
+    // Let's do some table introspection
+    let mut table_query = SQL::new();
+    RawSql::RawText(TABLE_CONFIGURATION_QUERY.to_string()).to_sql(&mut table_query);
+    let mut table_rows = Vec::new();
+    execute_query(
+        &mut connection,
+        &table_query,
+        &BTreeMap::new(),
+        &mut table_rows,
+    )
+    .await
+    .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
+    let tables: Vec<introspection::IntrospectionTable> = serde_json::from_slice(&table_rows)
+        .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
+
+    // Let's do some types introspection
+    let mut types_query = SQL::new();
+    RawSql::RawText(TYPES_QUERY.to_string()).to_sql(&mut types_query);
+    let mut types_rows = Vec::new();
+    execute_query(
+        &mut connection,
+        &types_query,
+        &BTreeMap::new(),
+        &mut types_rows,
+    )
+    .await
+    .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
+    let type_names: Vec<TypeItem> = serde_json::from_slice(&types_rows)
+        .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
+
+    let mut metadata = query_engine_metadata::metadata::Metadata::default();
     metadata.native_queries = configuration.metadata.native_queries.clone();
     metadata.native_mutations = configuration.metadata.native_mutations.clone();
-
-    let tables_row = select_first_row(&mssql_pool, TABLE_CONFIGURATION_QUERY).await;
-
-    let tables: Vec<introspection::IntrospectionTable> =
-        serde_json::from_str(tables_row.get(0).unwrap()).unwrap();
-
     metadata.tables = get_tables_info(tables);
-
-    let types_row = select_first_row(&mssql_pool, TYPES_QUERY).await;
-
-    let type_names: Vec<TypeItem> = serde_json::from_str(types_row.get(0).unwrap()).unwrap();
-
     metadata.comparison_operators = get_comparison_operators(&type_names);
-
     metadata.aggregate_functions = get_aggregate_functions(&type_names);
-
     metadata.stored_procedures = configure_stored_procedures(
         &mssql_pool,
         configuration.metadata.stored_procedures.clone(),

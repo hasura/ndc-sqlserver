@@ -10,7 +10,8 @@ workspace = true
 ndc-models = { workspace = true }
 query-engine-metadata = { path = "../query-engine/metadata" }
 query-engine-metrics = { path = "../query-engine/metrics" }
-
+query-engine-execution = { path = "../query-engine/execution" }
+query-engine-sql = { path = "../query-engine/sql" }
 
 schemars = { version = "0.8.16", features = ["smol_str", "preserve_order"] }
 serde = "1.0.198"
