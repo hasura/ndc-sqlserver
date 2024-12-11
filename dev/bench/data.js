@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1733939916035,
+  "lastUpdate": 1733939992597,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -6819,6 +6819,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.0785805702475801,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": false,
+          "id": "025960a725e7b5b9d0c7668951817b60aa70d0f2",
+          "message": "Bump sqlformat from 0.2.3 to 0.3.3 (#159)\n\nBumps [sqlformat](https://github.com/shssoichiro/sqlformat-rs) from\n0.2.3 to 0.3.3.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/releases\">sqlformat's\nreleases</a>.</em></p>\n<blockquote>\n<h2>Version 0.3.3</h2>\n<ul>\n<li>Reduce binary size by removing regex dependency (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/68\">#68</a>)</li>\n</ul>\n<h2>Version 0.3.0</h2>\n<ul>\n<li>[breaking] fix: Ignore keywords for uppercase=True (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/53\">#53</a>)</li>\n<li>fix: uppercase=false does not lowercase the query (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/50\">#50</a>)</li>\n<li>fix: Possible to provide an escape hatch for expressions (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/51\">#51</a>)</li>\n</ul>\n<h2>Version 0.2.6</h2>\n<ul>\n<li>fix: ON UPDATE with two many blank formatted incorrectly (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/46\">#46</a>)</li>\n<li>fix: <code>EXCEPT</code> not handled well</li>\n<li>fix: REFERENCES xyz ON UPDATE .. causes formatter to treat the\nremaining as an UPDATE statement</li>\n<li>fix: Escaped strings formatted incorrectly</li>\n<li>fix: RETURNING is not placed on a new line</li>\n<li>fix: fix the issue of misaligned comments after formatting (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/40\">#40</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Changelog</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/blob/master/CHANGELOG.md\">sqlformat's\nchangelog</a>.</em></p>\n<blockquote>\n<h3>Version 0.3.3</h3>\n<ul>\n<li>Reduce binary size by removing regex dependency (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/68\">#68</a>)</li>\n</ul>\n<h3>Version 0.3.2</h3>\n<ul>\n<li>support ClickHouse/DuckDB join variants</li>\n<li>handle double colons better</li>\n</ul>\n<h3>Version 0.3.1</h3>\n<ul>\n<li>Allow latest regex version (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/55\">#55</a>)\n<ul>\n<li>[slightly breaking] Increases minimum Rust version to 1.65</li>\n</ul>\n</li>\n<li>Fixes for operator parsing (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/57\">#57</a>)</li>\n<li>Performance improvements (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/58\">#58</a>)</li>\n</ul>\n<h3>Version 0.3.0</h3>\n<ul>\n<li>[breaking] fix: Ignore keywords for uppercase=True (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/53\">#53</a>)</li>\n<li>fix: uppercase=false does not lowercase the query (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/50\">#50</a>)</li>\n<li>fix: Possible to provide an escape hatch for expressions (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/51\">#51</a>)</li>\n</ul>\n<h3>Version 0.2.6</h3>\n<ul>\n<li>fix: ON UPDATE with two many blank formatted incorrectly (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/46\">#46</a>)</li>\n<li>fix: <code>EXCEPT</code> not handled well</li>\n<li>fix: REFERENCES xyz ON UPDATE .. causes formatter to treat the\nremaining as an UPDATE statement</li>\n<li>fix: Escaped strings formatted incorrectly</li>\n<li>fix: RETURNING is not placed on a new line</li>\n<li>fix: fix the issue of misaligned comments after formatting (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/40\">#40</a>)</li>\n</ul>\n<h3>Version 0.2.4</h3>\n<ul>\n<li>Remove <code>itertools</code> dependency <a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/pull/34\">#34</a></li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/commit/8f8d29e12537351d793103b82e22316a6bded387\"><code>8f8d29e</code></a>\nVersion 0.3.3</li>\n<li><a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/commit/b5b483fd01f777fb93da3e0b1040d8638081d179\"><code>b5b483f</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/68\">#68</a>\nfrom magic-akari/master</li>\n<li><a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/commit/cfafdb8bea284a5861643c8337fd8dd927fdce25\"><code>cfafdb8</code></a>\nchore: clean code</li>\n<li><a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/commit/8842dc4b3af0b63fde8970a692f13dc6d40bdd6b\"><code>8842dc4</code></a>\nchore: clean code</li>\n<li><a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/commit/1740801d4503305ce80879994d2487e9eb66321a\"><code>1740801</code></a>\nrefactor: Remove regex dependency by using state machine</li>\n<li><a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/commit/244ecb6514ce8bbab951f36ddd9e67e2628622d9\"><code>244ecb6</code></a>\nVersion 0.3.2</li>\n<li><a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/commit/827d639bef94d8e5a5a0e29b41185c8d572f24e6\"><code>827d639</code></a>\nsupport ClickHouse/DuckDB join variants</li>\n<li><a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/commit/fe382a4142d0d1ee470b761a2e506c5e4cdc6dad\"><code>fe382a4</code></a>\nhandle_double_colons (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/63\">#63</a>)</li>\n<li><a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/commit/aa5b1453dbd936c889d0ad7ef61245320a0b72c5\"><code>aa5b145</code></a>\nVersion 0.3.1</li>\n<li><a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/commit/3c008712dfd2b703108fa486713f1e0b67b8be67\"><code>3c00871</code></a>\noptimize matching (<a\nhref=\"https://redirect.github.com/shssoichiro/sqlformat-rs/issues/58\">#58</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/shssoichiro/sqlformat-rs/compare/v0.2.3...v0.3.3\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=sqlformat&package-manager=cargo&previous-version=0.2.3&new-version=0.3.3)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\n---------\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Daniel Harvey <danieljamesharvey@gmail.com>",
+          "timestamp": "2024-12-11T17:50:36Z",
+          "tree_id": "89c693eacb9078b983af6f5ff3705720d6aacb93",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/025960a725e7b5b9d0c7668951817b60aa70d0f2"
+        },
+        "date": 1733939992108,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 58.139208999999994,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 76.25218629999999,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 60.158913639523256,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.6706922195258116,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.09223460004983366,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 378.80828499999996,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 413.05137375000004,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 370.4371109579301,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 0.9836843004467255,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.07885961615791512,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 130.60475,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 150.9492562,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 128.86397713342072,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.682748528552537,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07850351328954118,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 130.19314450000002,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 150.9643254,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 128.73340208219332,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.6821222018678839,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.07535842280409784,
             "unit": "ms"
           }
         ]
