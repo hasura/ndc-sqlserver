@@ -30,7 +30,7 @@ pub fn test_translation(testname: &str) -> Result<String, translation::error::Er
     let pretty = sqlformat::format(
         &query.sql,
         &sqlformat::QueryParams::None,
-        sqlformat::FormatOptions::default(),
+        &sqlformat::FormatOptions::default(),
     );
 
     Ok(format!("{}\n\n{:?}", pretty, params))
