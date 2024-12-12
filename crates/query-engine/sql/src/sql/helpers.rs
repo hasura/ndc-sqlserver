@@ -61,7 +61,7 @@ pub fn make_column(
     )
 }
 
-/// Should we cast the column to a specific type?
+/// Some types need to be stringified to match representations in `ndc-spec`, this function wraps those types in cast so they becomes strings in JSON.
 pub fn cast_column(column_type: &ScalarType, expression: Expression) -> Expression {
     match column_type.0.as_str() {
         "bigint" | "decimal" | "numeric" | "money" | "smallmoney" => Expression::Cast {
