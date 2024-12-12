@@ -90,7 +90,7 @@ pub fn translate_query(
 
     // translate aggregate select. if there are no fields, make this a None
     let aggregate_select =
-        root::translate_aggregate_query(env, state, current_table, from_clause, query)?;
+        root::translate_aggregate_query(env, state, collection_info, current_table, from_clause, query)?;
 
     match (row_select, aggregate_select) {
         (Some(rows), None) => Ok(sql::helpers::SelectSet::Rows(rows)),
