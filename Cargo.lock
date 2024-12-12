@@ -1251,7 +1251,7 @@ dependencies = [
 
 [[package]]
 name = "ndc-sqlserver"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1283,7 +1283,7 @@ dependencies = [
 
 [[package]]
 name = "ndc-sqlserver-cli"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -1299,7 +1299,7 @@ dependencies = [
 
 [[package]]
 name = "ndc-sqlserver-configuration"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "bb8",
  "bb8-tiberius",
@@ -1690,7 +1690,7 @@ checksum = "106dd99e98437432fed6519dedecfade6a06a73bb7b2a1e019fdd2bee5778d94"
 
 [[package]]
 name = "query-engine-execution"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "bb8",
  "bb8-tiberius",
@@ -1710,7 +1710,7 @@ dependencies = [
 
 [[package]]
 name = "query-engine-metadata"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "ndc-models",
  "schemars",
@@ -1720,14 +1720,14 @@ dependencies = [
 
 [[package]]
 name = "query-engine-metrics"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "prometheus",
 ]
 
 [[package]]
 name = "query-engine-sql"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "ndc-models",
  "serde_json",
@@ -1735,7 +1735,7 @@ dependencies = [
 
 [[package]]
 name = "query-engine-translation"
-version = "1.0.0"
+version = "2.0.0"
 dependencies = [
  "indexmap 2.2.6",
  "insta",
