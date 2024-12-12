@@ -50,12 +50,28 @@ pub fn make_column(
     table: TableReference,
     name: ColumnName,
     alias: ColumnAlias,
+    column_type: &ScalarType,
 ) -> (ColumnAlias, Expression) {
     (
         alias,
-        Expression::ColumnReference(ColumnReference::TableColumn { table, name }),
+        cast_column(
+            column_type,
+            Expression::ColumnReference(ColumnReference::TableColumn { table, name }),
+        ),
     )
 }
+
+/// Some types need to be stringified to match representations in `ndc-spec`, this function wraps those types in cast so they becomes strings in JSON.
+pub fn cast_column(column_type: &ScalarType, expression: Expression) -> Expression {
+    match column_type.0.as_str() {
+        "bigint" | "decimal" | "numeric" | "money" | "smallmoney" => Expression::Cast {
+            expression: Box::new(expression),
+            r#type: ScalarType("varchar".to_string()),
+        },
+        _ => expression,
+    }
+}
+
 /// Create column aliases using this function so we build everything in one place.
 pub fn make_column_alias(name: String) -> ColumnAlias {
     ColumnAlias { name }

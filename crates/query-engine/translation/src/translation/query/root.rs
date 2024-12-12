@@ -11,6 +11,7 @@ use crate::translation::helpers::CollectionOrProcedureInfo;
 use crate::translation::helpers::{
     CollectionInfo, Env, RootAndCurrentTables, State, TableNameAndReference,
 };
+use query_engine_sql::sql::ast::ScalarType;
 
 use super::relationships;
 use super::sorting;
@@ -20,6 +21,7 @@ use query_engine_sql::sql;
 pub fn translate_aggregate_query(
     env: &Env,
     state: &mut State,
+    collection_info: &CollectionOrProcedureInfo,
     current_table: &TableNameAndReference,
     from_clause: &sql::ast::From,
     query: &ndc_models::Query,
@@ -28,8 +30,12 @@ pub fn translate_aggregate_query(
         None => Ok(None),
         Some(aggregate_fields) => {
             // create all aggregate columns
-            let aggregate_columns =
-                aggregates::translate(&current_table.reference, aggregate_fields)?;
+            let aggregate_columns = aggregates::translate(
+                &current_table.reference,
+                aggregate_fields,
+                collection_info,
+                env,
+            )?;
 
             // create the select clause and the joins, order by, where clauses.
             // We don't add the limit afterwards.
@@ -189,6 +195,7 @@ pub fn translate_rows_query(
                             current_table.reference.clone(),
                             column_info.name,
                             sql::helpers::make_column_alias(alias.to_string()),
+                            &ScalarType(column_info.r#type.0),
                         ))
                     }
                     ndc_models::Field::Relationship {

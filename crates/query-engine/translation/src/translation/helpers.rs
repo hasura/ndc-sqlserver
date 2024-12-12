@@ -12,7 +12,7 @@ use query_engine_sql::sql;
 #[derive(Debug)]
 /// Static information from the query and metadata.
 pub struct Env<'a> {
-    metadata: &'a metadata::Metadata,
+    pub metadata: &'a metadata::Metadata,
     relationships: BTreeMap<ndc_models::RelationshipName, ndc_models::Relationship>,
 }
 
