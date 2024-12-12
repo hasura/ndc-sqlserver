@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1733950776293,
+  "lastUpdate": 1734025349472,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -7067,6 +7067,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.07177562285339367,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "brandon@codedmart.com",
+            "name": "Brandon Martin",
+            "username": "codedmart"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "932d0ebf7ed6a499cbafa5b280fb8167b3195d10",
+          "message": "Scalar type representation (#165)\n\n<!-- The PR description should answer 2 (maybe 3) important questions:\n-->\n\n### What\nReturn proper representation for scalar types. Still need to verify\nand/or fix serialization of types.\n\n<!-- What is this PR trying to accomplish (and why, if it's not\nobvious)? -->\n\n### How\n\n<!-- How is it trying to accomplish it (what are the implementation\nsteps)? -->\n\n---------\n\nCo-authored-by: Daniel Harvey <danieljamesharvey@gmail.com>",
+          "timestamp": "2024-12-12T17:34:59Z",
+          "tree_id": "e047669cfbe92be4bf3f4ab22c9d0f324e5c919b",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/932d0ebf7ed6a499cbafa5b280fb8167b3195d10"
+        },
+        "date": 1734025348795,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 58.128416,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 72.86839814999999,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 58.852662498485266,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.5693886725242194,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.0885524690336741,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 380.707899,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 420.6914432,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 372.1053565613051,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 1.1661857934013256,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.08105226884094376,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 131.053895,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 156.37827675,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 130.39322508619722,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.6889917905684797,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.07881572422135678,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 130.607579,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 152.1837962,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 129.76805792581848,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.5939201029270862,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.07273046019271652,
             "unit": "ms"
           }
         ]
