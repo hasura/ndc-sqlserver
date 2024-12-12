@@ -6,7 +6,7 @@ expression: result
   {
     "rows": [
       {
-        "bigint": "1,
+        "bigint": "1",
         "int": 245,
         "float": 24.555,
         "numeric": "24.555",
