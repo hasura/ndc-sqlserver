@@ -8,6 +8,18 @@
 
 ### Fixed
 
+## [2.0.0]
+
+### Added
+
+- Proper ndc-spec type `representation` for scalar types [#165](https://github.com/hasura/ndc-sqlserver/pull/165)
+
+### Changed
+
+### Fixed
+
+- Properly stream introspection results [#155](https://github.com/hasura/ndc-sqlserver/pull/155)
+
 ## [v1.0.0]
 
 ### Fixed
