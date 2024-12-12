@@ -1,5 +1,6 @@
 //! Configuration and state for our connector.
 use serde::Deserialize;
+use ndc_models::TypeRepresentation;
 
 #[derive(Deserialize, Debug)]
 pub struct IntrospectStoredProcedureArgument {
@@ -63,4 +64,31 @@ pub struct IntrospectionForeignKeyColumn {
 #[derive(Deserialize, Debug)]
 pub struct IntrospectionSchema {
     pub name: String,
+}
+
+pub fn map_type_representation(sql_type: &str) -> Option<TypeRepresentation> {
+    match sql_type.to_lowercase().as_str() {
+        "bigint" => Some(TypeRepresentation::Int64),
+        "bit" => Some(TypeRepresentation::Boolean),
+        "decimal" | "numeric" | "money" | "smallmoney" => Some(TypeRepresentation::BigDecimal),
+        "int" => Some(TypeRepresentation::Int32),
+        "smallint" => Some(TypeRepresentation::Int16),
+        "tinyint" => Some(TypeRepresentation::Int16),
+        "float" => Some(TypeRepresentation::Float64),
+        "real" => Some(TypeRepresentation::Float32),
+        "date" => Some(TypeRepresentation::Date),
+        "datetime" | "datetime2" | "smalldatetime" | "timestamp" => Some(TypeRepresentation::Timestamp),
+        "datetimeoffset" => Some(TypeRepresentation::TimestampTZ),
+        "time" => Some(TypeRepresentation::String),
+        "char" | "varchar" | "text" | "nchar" | "nvarchar" | "ntext" => Some(TypeRepresentation::String),
+        "binary" | "varbinary" | "image" => Some(TypeRepresentation::String),
+        "uniqueidentifier" => Some(TypeRepresentation::UUID),
+        "xml" => Some(TypeRepresentation::String),
+        "geometry" => Some(TypeRepresentation::Geometry),
+        "geography" => Some(TypeRepresentation::Geography),
+        "json" => Some(TypeRepresentation::JSON),
+        // TODO: Add support for hierarchyid and sql_variant
+        // "hierarchyid" | "sql_variant" => XXX,
+        _ => None,
+    }
 }

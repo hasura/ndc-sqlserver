@@ -12,9 +12,8 @@ use ndc_sdk::models::ObjectTypeName;
 use ndc_sdk::models::ProcedureName;
 use ndc_sdk::models::ScalarTypeName;
 use ndc_sdk::models::TypeRepresentation;
-use query_engine_metadata::metadata;
-
 use ndc_sqlserver_configuration as configuration;
+use query_engine_metadata::metadata;
 use query_engine_metadata::metadata::stored_procedures::{
     StoredProcedureArgumentInfo, StoredProcedures,
 };
@@ -308,8 +307,9 @@ pub fn get_schema(
                 (
                     scalar_type.0.clone().into(),
                     models::ScalarType {
-                        // TODO(PY): Add representation for beta
-                        representation: None,
+                        representation: configuration::introspection::map_type_representation(
+                            scalar_type.0.as_str(),
+                        ),
                         aggregate_functions: metadata
                             .aggregate_functions
                             .0
