@@ -2,8 +2,11 @@
 
 use indexmap::IndexMap;
 
-use crate::translation::{error::Error, helpers::{Env, CollectionOrProcedureInfo}};
-use query_engine_sql::sql::{self, helpers::cast_column, ast::ScalarType};
+use crate::translation::{
+    error::Error,
+    helpers::{CollectionOrProcedureInfo, Env},
+};
+use query_engine_sql::sql::{self, ast::ScalarType, helpers::cast_column};
 
 /// Translate any aggregates we should include in the query into our SQL AST.
 pub fn translate(
@@ -48,22 +51,25 @@ pub fn translate(
                         },
                     );
                     let column_type = match collection_info {
-                        CollectionOrProcedureInfo::Collection(ci) => {
-                            match ci {
-                                crate::translation::helpers::CollectionInfo::Table { info, .. } => {
-                                    info.columns.get(column.as_str()).map(|c| c.r#type.clone())
-                                },
-                                crate::translation::helpers::CollectionInfo::NativeQuery { info, .. } => {
-                                    info.columns.get(column.as_str()).map(|c| c.r#type.clone())
-                                },
-                                _ => None,
+                        CollectionOrProcedureInfo::Collection(ci) => match ci {
+                            crate::translation::helpers::CollectionInfo::Table { info, .. } => {
+                                info.columns.get(column.as_str()).map(|c| c.r#type.clone())
                             }
-                        }
-                        CollectionOrProcedureInfo::Procedure(_) => None
+                            crate::translation::helpers::CollectionInfo::NativeQuery {
+                                info,
+                                ..
+                            } => info.columns.get(column.as_str()).map(|c| c.r#type.clone()),
+                            _ => None,
+                        },
+                        CollectionOrProcedureInfo::Procedure(_) => None,
                     };
-                    let function_type = column_type.and_then(|column_type| env.metadata.aggregate_functions.0
-                        .get(&column_type)
-                        .and_then(|functions| functions.get(function.as_str())));
+                    let function_type = column_type.and_then(|column_type| {
+                        env.metadata
+                            .aggregate_functions
+                            .0
+                            .get(&column_type)
+                            .and_then(|functions| functions.get(function.as_str()))
+                    });
                     match function.as_str() {
                         "SUM" | "AVG" => sql::ast::Expression::Cast {
                             expression: Box::new(sql::ast::Expression::FunctionCall {
@@ -81,12 +87,12 @@ pub fn translate(
                                 args: vec![column_ref_expression],
                             };
                             match function_type.map(|f| f.return_type.clone()) {
-                                Some(scalar_type) => cast_column(ScalarType(scalar_type.0), expression),
-                                None => expression
+                                Some(scalar_type) => {
+                                    cast_column(&ScalarType(scalar_type.0), expression)
+                                }
+                                None => expression,
                             }
                         }
-                        
-                        
                     }
                 }
                 ndc_models::Aggregate::StarCount {} => {

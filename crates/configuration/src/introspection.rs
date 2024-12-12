@@ -1,6 +1,6 @@
 //! Configuration and state for our connector.
-use serde::Deserialize;
 use ndc_models::TypeRepresentation;
+use serde::Deserialize;
 
 #[derive(Deserialize, Debug)]
 pub struct IntrospectStoredProcedureArgument {
@@ -80,7 +80,9 @@ pub fn map_type_representation(sql_type: &str) -> Option<TypeRepresentation> {
         "datetime" | "datetime2" | "smalldatetime" => Some(TypeRepresentation::Timestamp),
         "datetimeoffset" => Some(TypeRepresentation::TimestampTZ),
         "time" | "timestamp" => Some(TypeRepresentation::String),
-        "char" | "varchar" | "text" | "nchar" | "nvarchar" | "ntext" => Some(TypeRepresentation::String),
+        "char" | "varchar" | "text" | "nchar" | "nvarchar" | "ntext" => {
+            Some(TypeRepresentation::String)
+        }
         "binary" | "varbinary" | "image" => Some(TypeRepresentation::String),
         "uniqueidentifier" => Some(TypeRepresentation::UUID),
         "xml" => Some(TypeRepresentation::String),

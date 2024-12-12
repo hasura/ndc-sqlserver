@@ -30,8 +30,12 @@ pub fn translate_aggregate_query(
         None => Ok(None),
         Some(aggregate_fields) => {
             // create all aggregate columns
-            let aggregate_columns =
-                aggregates::translate(&current_table.reference, aggregate_fields, collection_info, env)?;
+            let aggregate_columns = aggregates::translate(
+                &current_table.reference,
+                aggregate_fields,
+                collection_info,
+                env,
+            )?;
 
             // create the select clause and the joins, order by, where clauses.
             // We don't add the limit afterwards.
@@ -191,7 +195,7 @@ pub fn translate_rows_query(
                             current_table.reference.clone(),
                             column_info.name,
                             sql::helpers::make_column_alias(alias.to_string()),
-                            ScalarType(column_info.r#type.0),
+                            &ScalarType(column_info.r#type.0),
                         ))
                     }
                     ndc_models::Field::Relationship {
