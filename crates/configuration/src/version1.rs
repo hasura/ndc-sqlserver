@@ -149,7 +149,8 @@ fn is_odbc_connection_string(conn_str: &str) -> Result<(), bb8_tiberius::Error> 
     if conn_str.contains("Driver=") || conn_str.contains("DSN=") {
         Err(bb8_tiberius::Error::Tiberius(tiberius::error::Error::Io {
             kind: std::io::ErrorKind::Other,
-            message: "ODBC connection strings are not supported. ADO.NET is the supported format.".into(),
+            message: "ODBC connection strings are not supported. ADO.NET is the supported format."
+                .into(),
         }))
     } else {
         Ok(())
