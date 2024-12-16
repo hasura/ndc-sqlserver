@@ -144,13 +144,27 @@ pub async fn create_state(
     })
 }
 
+// If the connection string is ODBC we want to throw an error.
+fn is_odbc_connection_string(conn_str: &str) -> Result<(), bb8_tiberius::Error> {
+    if conn_str.contains("Driver=") || conn_str.contains("DSN=") {
+        Err(bb8_tiberius::Error::Tiberius(tiberius::error::Error::Io {
+            kind: std::io::ErrorKind::Other,
+            message: "ODBC connection strings are not supported. ADO.NET is the supported format."
+                .into(),
+        }))
+    } else {
+        Ok(())
+    }
+}
+
 /// Create a connection pool with default settings.
 async fn create_mssql_pool(
     configuration: &str,
 ) -> Result<bb8::Pool<bb8_tiberius::ConnectionManager>, bb8_tiberius::Error> {
     let connection_string = configuration.to_owned();
+    // Lets check the string and error early if it is an ODBC connection string
+    is_odbc_connection_string(&connection_string)?;
     let config = tiberius::Config::from_ado_string(&connection_string)?;
-
     let mgr = bb8_tiberius::ConnectionManager::new(config);
 
     bb8::Pool::builder().max_size(2).build(mgr).await

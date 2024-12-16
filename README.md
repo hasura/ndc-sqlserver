@@ -4,6 +4,11 @@
 [![ndc-hub](https://img.shields.io/badge/ndc--hub-sqlserver-blue.svg?style=flat)](https://hasura.io/connectors/sqlserver)
 [![License](https://img.shields.io/badge/license-Apache--2.0-purple.svg?style=flat)](LICENSE.txt)
 
+> **Note:** ADO.NET is the supported connection string format for SQL Server for ndc-sqlserver in DDN. 
+> You can find the documentation for ADO.NET SQL Server connection strings [here](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/connection-string-syntax#sqlclient-connection-strings).
+> This is a change from Hasura version 2, where ODBC connection strings were supported.
+
+
 With this connector, Hasura allows you to instantly create a real-time GraphQL API on top of your data models in
 Microsoft SQL Server. This connector supports SQL Server's functionalities listed in the table below, allowing for
 efficient and scalable data operations. Additionally, users benefit from all the powerful features of Hasura’s Data
@@ -76,6 +81,8 @@ The CLI will ask for a specific port to run the connector on. Choose a port that
 default suggested port.
 
 #### Step 2.3: Provide the env vars for the connector
+
+> **Note:** The `CONNECTION_URI` is the connection string of the SQL Server database. You can find the documentation for ADO.NET SQL Server connection string formats [here](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/connection-string-syntax#sqlclient-connection-strings).
 
 | Name           | Description                                      | Required | Default |
 |----------------|--------------------------------------------------|----------|---------|
