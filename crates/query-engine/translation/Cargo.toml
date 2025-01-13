@@ -15,7 +15,7 @@ query-engine-metadata = { path = "../metadata" }
 query-engine-sql = { path = "../sql" }
 
 indexmap = "2.1"
-serde_json = "1.0.116"
+serde_json = "1.0.135"
 
 [dev-dependencies]
 insta = { version = "1.38.0", features = ["json"] }

@@ -31,7 +31,7 @@ ndc-sqlserver-configuration = { path = "../configuration" }
 tiberius = { version = "0.12.2", default-features = false, features = ["rustls"] }
 async-trait = "0.1.80"
 serde = { version = "1.0.198", features = ["derive", "rc"] }
-serde_json = { version = "1.0.116", features = ["raw_value"] }
+serde_json = { version = "1.0.135", features = ["raw_value"] }
 tokio = { version = "1.42.0", features = ["full"] }
 tracing = "0.1.40"
 prometheus = "0.13.3"
