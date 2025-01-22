@@ -113,9 +113,9 @@ jobs:
 
           # Calculate SHA256 of the binary
           if [[ "${{ matrix.platform }}" == "windows-amd64" ]]; then
-            SHA256=$(certutil -hashfile cli/${{ matrix.target }}/hasura-ndc-sqlserver.exe SHA256 | grep -v "hash" | awk '{print $1}')
+            SHA256=$(certutil -hashfile cli/${{ matrix.platform }}/hasura-ndc-sqlserver.exe SHA256 | grep -v "hash" | awk '{print $1}')
           else
-            SHA256=$(sha256sum cli/${{ matrix.target }}/hasura-ndc-sqlserver | cut -d' ' -f1)
+            SHA256=$(sha256sum cli/${{ matrix.platform }}/hasura-ndc-sqlserver | cut -d' ' -f1)
           fi
 
           # Create manifest entry
