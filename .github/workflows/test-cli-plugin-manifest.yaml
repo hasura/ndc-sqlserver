@@ -122,19 +122,18 @@ jobs:
             SHA256=$(sha256sum cli/${{ matrix.platform }}/hasura-ndc-sqlserver | cut -d' ' -f1)
           fi
 
-          # Create manifest entry
-          echo "{
-            \"name\": \"hasura-ndc-sqlserver\",
-            \"platform\": \"${{ matrix.platform }}\",
-            \"sha256\": \"${SHA256}\",
-            \"url\": \"https://github.com/${{ github.repository }}/releases/download/${{ github.event.pull_request.head.sha }}/hasura-ndc-sqlserver-${{ matrix.platform }}${{ matrix.extension }}\"
-          }" > manifest-entry.json
+          cat << EOF > manifest-entry.yaml
+- selector: ${{ matrix.platform }}
+  uri: "https://github.com/${{ github.repository }}/releases/download/v2.0.0-test/cli.tar.gz"
+  sha256: "${SHA256}"
+  bin: "${BIN_PATH}"
+EOF
 
       - name: Upload manifest entry
         uses: actions/upload-artifact@v4
         with:
           name: manifest-${{ matrix.platform }}
-          path: manifest-entry.json
+          path: manifest-entry.yaml
           retention-days: 1
 
       # - name: Generate manifest entry
@@ -171,11 +170,11 @@ jobs:
         with:
           path: entries
 
+
       - name: Combine manifest entries
         run: |
-          echo '{"binaries": [' > cli-manifest.json
-          find entries -name "manifest-entry.json" -exec cat {} \; | sed '$!s/$/,/' >> cli-manifest.json
-          echo ']}' >> cli-manifest.json
+          # Combine all yaml entries into a single file
+          find entries -name "manifest-entry.yaml" -exec cat {} \; > cli-manifest.yaml
 
           echo "Generated CLI Plugin Manifest:"
-          cat cli-manifest.json
+          cat cli-manifest.yaml
