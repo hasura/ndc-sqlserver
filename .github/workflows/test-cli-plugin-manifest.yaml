@@ -18,15 +18,20 @@ jobs:
         include:
           - runner: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
+            platform: linux-amd64
           - runner: ubuntu-20.04
             target: aarch64-unknown-linux-gnu
             linux-packages: gcc-aarch64-linux-gnu
             linker: /usr/bin/aarch64-linux-gnu-gcc
+            platform: linux-arm64
           - runner: macos-latest
             target: x86_64-apple-darwin
+            platform: darwin-amd64
           - runner: macos-latest
             target: aarch64-apple-darwin
+            platform: darwin-arm64
           - runner: windows-latest
+            platform: windows-amd64
             target: x86_64-pc-windows-msvc
             extension: .exe
             extra-rust-flags: "-C target-feature=+crt-static"
@@ -92,9 +97,41 @@ jobs:
           echo "Building for target: ${CARGO_BUILD_TARGET}"
           cargo build --release --bin ndc-sqlserver-cli
 
-          mkdir -p release
-          mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli release/ndc-sqlserver-cli-${{ matrix.target }}${{ matrix.extension }}
-          echo "Generated binary successfully"
+          # Create platform-specific directory under cli/
+          mkdir -p cli/${{ matrix.platform }}
+
+          # Move the binary with the correct name
+          if [[ "${{ matrix.platform }}" == "windows-amd64" ]]; then
+            mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli${{ matrix.extension }} cli/${{ matrix.target }}/hasura-ndc-sqlserver.exe
+          else
+            mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli cli/${{ matrix.target }}/hasura-ndc-sqlserver
+          fi
+
+      - name: Generate manifest entry
+        shell: bash
+        run: |
+
+          # Calculate SHA256 of the binary
+          if [[ "${{ matrix.platform }}" == "windows-amd64" ]]; then
+            SHA256=$(certutil -hashfile cli/${{ matrix.target }}/hasura-ndc-sqlserver.exe SHA256 | grep -v "hash" | awk '{print $1}')
+          else
+            SHA256=$(sha256sum cli/${{ matrix.target }}/hasura-ndc-sqlserver | cut -d' ' -f1)
+          fi
+
+          # Create manifest entry
+          echo "{
+            \"name\": \"hasura-ndc-sqlserver\",
+            \"platform\": \"${{ matrix.platform }}\",
+            \"sha256\": \"${SHA256}\",
+            \"url\": \"https://github.com/${{ github.repository }}/releases/download/${{ github.event.pull_request.head.sha }}/hasura-ndc-sqlserver-${{ matrix.platform }}${{ matrix.extension }}\"
+          }" > manifest-entry.json
+
+      - name: Upload manifest entry
+        uses: actions/upload-artifact@v4
+        with:
+          name: manifest-${{ matrix.platform }}
+          path: manifest-entry.json
+          retention-days: 1
 
       # - name: Generate manifest entry
       #   shell: bash
@@ -121,20 +158,20 @@ jobs:
       #     path: manifest-entry.json
       #     retention-days: 1
 
-  # create-manifest:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Download all manifest entries
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         path: entries
+  create-manifest:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all manifest entries
+        uses: actions/download-artifact@v4
+        with:
+          path: entries
 
-  #     - name: Combine manifest entries
-  #       run: |
-  #         echo '{"binaries": [' > cli-manifest.json
-  #         find entries -name "manifest-entry.json" -exec cat {} \; | sed '$!s/$/,/' >> cli-manifest.json
-  #         echo ']}' >> cli-manifest.json
+      - name: Combine manifest entries
+        run: |
+          echo '{"binaries": [' > cli-manifest.json
+          find entries -name "manifest-entry.json" -exec cat {} \; | sed '$!s/$/,/' >> cli-manifest.json
+          echo ']}' >> cli-manifest.json
 
-  #         echo "Generated CLI Plugin Manifest:"
-  #         cat cli-manifest.json
+          echo "Generated CLI Plugin Manifest:"
+          cat cli-manifest.json
