@@ -102,9 +102,9 @@ jobs:
 
           # Move the binary with the correct name
           if [[ "${{ matrix.platform }}" == "windows-amd64" ]]; then
-            mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli${{ matrix.extension }} cli/${{ matrix.target }}/hasura-ndc-sqlserver.exe
+            mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli${{ matrix.extension }} cli/${{ matrix.platform }}/hasura-ndc-sqlserver.exe
           else
-            mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli cli/${{ matrix.target }}/hasura-ndc-sqlserver
+            mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli cli/${{ matrix.platform }}/hasura-ndc-sqlserver
           fi
 
       - name: Generate manifest entry
