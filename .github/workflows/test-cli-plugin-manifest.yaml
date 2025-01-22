@@ -126,7 +126,7 @@ jobs:
           - selector: ${{ matrix.platform }}
             uri: "https://github.com/${{ github.repository }}/releases/download/v2.0.0-test/cli.tar.gz"
             sha256: "${SHA256}"
-            bin: "${BIN_PATH}"
+            bin: "${{matrix.platform}}/hasura-ndc-sqlserver${{ matrix.extension }}"
           EOF
 
       - name: Upload manifest entry
