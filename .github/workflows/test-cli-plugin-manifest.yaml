@@ -1,6 +1,7 @@
 name: Test CLI Plugin Manifest
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
