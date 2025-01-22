@@ -123,11 +123,11 @@ jobs:
           fi
 
           cat << EOF > manifest-entry.yaml
-- selector: ${{ matrix.platform }}
-  uri: "https://github.com/${{ github.repository }}/releases/download/v2.0.0-test/cli.tar.gz"
-  sha256: "${SHA256}"
-  bin: "${BIN_PATH}"
-EOF
+          - selector: ${{ matrix.platform }}
+            uri: "https://github.com/${{ github.repository }}/releases/download/v2.0.0-test/cli.tar.gz"
+            sha256: "${SHA256}"
+            bin: "${BIN_PATH}"
+          EOF
 
       - name: Upload manifest entry
         uses: actions/upload-artifact@v4
