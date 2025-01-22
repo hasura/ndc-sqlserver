@@ -159,7 +159,7 @@ jobs:
       #     retention-days: 1
 
   create-manifest:
-    needs: build
+    needs: build-cli-binaries
     runs-on: ubuntu-latest
     steps:
       - name: Download all manifest entries
