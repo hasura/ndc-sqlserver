@@ -136,7 +136,18 @@ jobs:
           path: manifest-entry.yaml
           retention-days: 1
 
-      # - name: Generate manifest entry
+      - name: Upload linux-amd64 binary
+        uses: actions/upload-artifact@v4
+        if: matrix.platform == 'linux-amd64'
+        with:
+          name: linux-binary
+          path: cli/${{ matrix.platform }}/hasura-ndc-sqlserver
+          retention-days: 1
+
+
+
+
+      # name: Generate manifest entry
       #   shell: bash
       #   run: |
       #     # Calculate SHA256 of the binary
@@ -170,6 +181,11 @@ jobs:
         with:
           path: entries
 
+       - name: Download linux binary
+         uses: actions/download-artifact@v4
+         with:
+           name: linux-binary
+           path: cli/linux-amd64
 
       - name: Combine manifest entries
         run: |
@@ -182,6 +198,6 @@ jobs:
       - name: generate a connector package
         run: |
          sudo apt-get update && sudo apt-get install -y tree
-         echo "${tree .}"
-         chmod +x cli/x86_64-unknown-linux-gnu/hasura-ndc-sqlserver
-         ./cli/x86_64-unknown-linux-gnu/hasura-ndc-sqlserver initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
+         tree .
+         chmod +x ./cli/linux-amd64/hasura-ndc-sqlserver
+         ./cli/linux-amd64/hasura-ndc-sqlserver initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
