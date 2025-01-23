@@ -307,9 +307,9 @@ jobs:
           name: release-artifacts
           path: release
 
-      - name: generate a changelog
-        run: |
-          ./scripts/release-notes.py "${GITHUB_REF_NAME}" >> release/notes.md
+      # - name: generate a changelog
+      #   run: |
+      #     ./scripts/release-notes.py "${GITHUB_REF_NAME}" >> release/notes.md
 
       - name: generate a connector package
         run: |
@@ -321,16 +321,9 @@ jobs:
           ls metadata-configuration
           tar -vczf package.tar.gz -C metadata-configuration .
 
-      - name: generate a connector package
-        run: |
-          cd release/release-artifacts
-          chmod +x ./cli/cli-binary-linux-amd64/hasura-ndc-sqlserver
-          ./cli/linux-amd64/hasura-ndc-sqlserver --context=release/package initialize --with-metadata
-          tar vczf release/artifacts/package.tar.gz -C configuration .
-
       - name: create a draft release
         uses: ncipollo/release-action@v1
         with:
           draft: true
-          bodyFile: release/notes.md
+#           bodyFile: release/notes.md
           artifacts: release/artifacts/*
