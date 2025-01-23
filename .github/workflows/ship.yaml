@@ -293,8 +293,8 @@ jobs:
   release:
     name: release to GitHub
     needs:
-      - push-docker-images # not strictly necessary, but if this fails, we should abort
-#      - build-cli-binaries
+#      - push-docker-images # not strictly necessary, but if this fails, we should abort
+      - build-cli-binaries
     runs-on: ubuntu-latest
     # We release when a tag is pushed.
  #   if: startsWith(github.ref, 'refs/tags/v')
