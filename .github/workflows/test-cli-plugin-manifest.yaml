@@ -129,6 +129,13 @@ jobs:
             bin: "${{matrix.platform}}/hasura-ndc-sqlserver${{ matrix.extension }}"
           EOF
 
+      - name: Package binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-binaries
+          path: cli/
+          retention-days: 1
+
       - name: Upload manifest entry
         uses: actions/upload-artifact@v4
         with:
@@ -143,6 +150,29 @@ jobs:
           name: linux-binary
           path: cli/${{ matrix.platform }}/hasura-ndc-sqlserver
           retention-days: 1
+
+
+  # Add a new job after build-cli-binaries:
+  create-cli-package:
+    needs: build-cli-binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: cli-binaries
+          path: cli/
+
+      - name: Create tarball
+        run: tar -czf cli.tar.gz -C cli .
+
+      - name: Upload CLI package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli.tar.gz
+          path: cli.tar.gz
+          retention-days: 1
+
 
   create-manifest:
     needs: build-cli-binaries
