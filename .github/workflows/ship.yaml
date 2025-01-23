@@ -260,7 +260,7 @@ jobs:
         with:
           pattern: cli-binary-*
           path: cli
-          merge-multiple: true
+          seperate-directories: true
 
       - name: Create tarball
         run: |
