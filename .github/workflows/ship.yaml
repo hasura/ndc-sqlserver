@@ -234,7 +234,7 @@ jobs:
           - selector: ${{ matrix.platform }}
             uri: "https://github.com/${{ github.repository }}/releases/download/v2.0.0-test/cli.tar.gz"
             sha256: "${SHA256}"
-            bin: "${{matrix.platform}}/hasura-ndc-sqlserver${{ matrix.extension }}"
+            bin: "cli-binary-${{matrix.platform}}/hasura-ndc-sqlserver${{ matrix.extension }}"
           EOF
 
       - name: Upload manifest entry
@@ -260,7 +260,6 @@ jobs:
         with:
           pattern: cli-binary-*
           path: cli
-          seperate-directories: true
 
       - name: Create tarball
         run: |
