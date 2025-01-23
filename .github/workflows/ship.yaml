@@ -332,14 +332,9 @@ jobs:
          ./cli/linux-amd64/hasura-ndc-sqlserver --context=release/package initialize --with-metadata
          tar vczf release/artifacts/package.tar.gz -C configuration .
 
-      - name: upload artifact
-        uses: actions/upload-artifact@v4
+      - name: create a draft release
+        uses: ncipollo/release-action@v1
         with:
-          name: release-artifacts
-
-      # - name: create a draft release
-      #   uses: ncipollo/release-action@v1
-      #   with:
-      #     draft: true
-      #     bodyFile: release/notes.md
-      #     artifacts: release/artifacts/*
+          draft: true
+          bodyFile: release/notes.md
+          artifacts: release/artifacts/*
