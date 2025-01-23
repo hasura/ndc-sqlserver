@@ -173,7 +173,8 @@ jobs:
          mkdir -p configuration
          ./cli/linux-amd64/hasura-ndc-sqlserver --context=configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
          cat configuration/.hasura-connector/connector-metadata.yaml
-         tar vczf package.tar.gz -C configuration .
+         cd configuration
+         tar vczf package.tar.gz -C configuration configuration
 
       - name: Upload connector package
         uses: actions/upload-artifact@v4
