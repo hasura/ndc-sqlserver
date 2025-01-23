@@ -144,34 +144,6 @@ jobs:
           path: cli/${{ matrix.platform }}/hasura-ndc-sqlserver
           retention-days: 1
 
-
-
-
-      # name: Generate manifest entry
-      #   shell: bash
-      #   run: |
-      #     # Calculate SHA256 of the binary
-      #     if [ "${{ runner.os }}" = "Windows" ]; then
-      #       SHA256=$(certutil -hashfile target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}${{ matrix.binary_suffix }} SHA256 | grep -v "hash" | awk '{print $1}')
-      #     else
-      #       SHA256=$(sha256sum target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}${{ matrix.binary_suffix }} | cut -d' ' -f1)
-      #     fi
-
-      #     # Create manifest entry
-      #     echo "{
-      #       \"name\": \"${{ env.BINARY_NAME }}\",
-      #       \"target\": \"${{ matrix.target }}\",
-      #       \"sha256\": \"${SHA256}\",
-      #       \"url\": \"https://github.com/${{ github.repository }}/releases/download/${{ github.event.pull_request.head.sha }}/${{ env.BINARY_NAME }}-${{ matrix.target }}${{ matrix.binary_suffix }}\"
-      #     }" > manifest-entry.json
-
-      # - name: Upload manifest entry
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: manifest-${{ matrix.target }}
-      #     path: manifest-entry.json
-      #     retention-days: 1
-
   create-manifest:
     needs: build-cli-binaries
     runs-on: ubuntu-latest
@@ -201,3 +173,11 @@ jobs:
          mkdir -p configuration
          ./cli/linux-amd64/hasura-ndc-sqlserver --context=configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
          cat configuration/.hasura-connector/connector-metadata.yaml
+          tar vczf release/artifacts/package.tar.gz -C configuration .
+
+      - name: Upload connector package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package.tar.gz
+          path: release/artifacts/package.tar.gz
+          retention-days: 1
