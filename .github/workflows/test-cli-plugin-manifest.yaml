@@ -181,11 +181,11 @@ jobs:
         with:
           path: entries
 
-       - name: Download linux binary
-         uses: actions/download-artifact@v4
-         with:
-           name: linux-binary
-           path: cli/linux-amd64
+      - name: Download linux binary
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-binary
+          path: cli/linux-amd64
 
       - name: Combine manifest entries
         run: |
