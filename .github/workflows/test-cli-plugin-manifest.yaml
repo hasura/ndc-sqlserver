@@ -170,10 +170,11 @@ jobs:
       - name: generate a connector package
         run: |
          chmod +x ./cli/linux-amd64/hasura-ndc-sqlserver
-         mkdir -p configuration
+         mkdir -p metadata-configuration
          ./cli/linux-amd64/hasura-ndc-sqlserver --context=configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
-         cat configuration/.hasura-connector/connector-metadata.yaml
-         tar vczf package.tar.gz -C configuration .
+         cat metadata-configuration/.hasura-connector/connector-metadata.yaml
+         ls metadata-configuration
+         tar -vczf package.tar.gz -C metadata-configuration .
 
       - name: Upload connector package
         uses: actions/upload-artifact@v4
