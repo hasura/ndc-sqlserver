@@ -180,5 +180,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: package.tar.gz
-          path: .
+          path: package.tar.gz
           retention-days: 1
