@@ -171,7 +171,7 @@ jobs:
         run: |
          chmod +x ./cli/linux-amd64/hasura-ndc-sqlserver
          mkdir -p metadata-configuration
-         ./cli/linux-amd64/hasura-ndc-sqlserver --context=configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
+         ./cli/linux-amd64/hasura-ndc-sqlserver --context=metadata-configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
          cat metadata-configuration/.hasura-connector/connector-metadata.yaml
          ls metadata-configuration
          tar -vczf package.tar.gz -C metadata-configuration .
