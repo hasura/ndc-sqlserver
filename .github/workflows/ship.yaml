@@ -258,7 +258,7 @@ jobs:
       - name: Download all binaries
         uses: actions/download-artifact@v4
         with:
-          name: cli-binary-*
+          pattern: cli-binary-*
           path: cli
           merge-multiple: true
 
