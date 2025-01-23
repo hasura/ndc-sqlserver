@@ -197,8 +197,6 @@ jobs:
 
       - name: generate a connector package
         run: |
-         sudo apt-get update && sudo apt-get install -y tree
-         tree .
          chmod +x ./cli/linux-amd64/hasura-ndc-sqlserver
          mkdir -p configuration
          ./cli/linux-amd64/hasura-ndc-sqlserver --context=configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
