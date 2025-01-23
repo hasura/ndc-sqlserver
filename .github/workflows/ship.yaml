@@ -313,20 +313,19 @@ jobs:
       - name: generate a connector package
         path: release/release-artifacts
         run: |
-         chmod +x ./cli/cli-binarylinux-amd64/hasura-ndc-sqlserver
-         mkdir -p metadata-configuration
-         ./cli/linux-amd64/hasura-ndc-sqlserver --context=metadata-configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
-         cat metadata-configuration/.hasura-connector/connector-metadata.yaml
-         ls metadata-configuration
-         tar -vczf package.tar.gz -C metadata-configuration .
-
+          chmod +x ./cli/cli-binary-linux-amd64/hasura-ndc-sqlserver
+          mkdir -p metadata-configuration
+          ./cli/linux-amd64/hasura-ndc-sqlserver --context=metadata-configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
+          cat metadata-configuration/.hasura-connector/connector-metadata.yaml
+          ls metadata-configuration
+          tar -vczf package.tar.gz -C metadata-configuration .
 
       - name: generate a connector package
         path: release/release-artifacts
         run: |
-         chmod +x ./cli/cli-binary-linux-amd64/hasura-ndc-sqlserver
-         ./cli/linux-amd64/hasura-ndc-sqlserver --context=release/package initialize --with-metadata
-         tar vczf release/artifacts/package.tar.gz -C configuration .
+          chmod +x ./cli/cli-binary-linux-amd64/hasura-ndc-sqlserver
+          ./cli/linux-amd64/hasura-ndc-sqlserver --context=release/package initialize --with-metadata
+          tar vczf release/artifacts/package.tar.gz -C configuration .
 
       - name: create a draft release
         uses: ncipollo/release-action@v1
