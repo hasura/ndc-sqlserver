@@ -237,26 +237,6 @@ jobs:
             bin: "${{matrix.platform}}/hasura-ndc-sqlserver${{ matrix.extension }}"
           EOF
 
-      - name: Package binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: cli-binaries
-          path: cli/
-          retention-days: 1
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cli-${{ matrix.platform }}
-          path: cli
-          if-no-files-found: error
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ndc-sqlserver-cli-${{ matrix.target }}
-          path: release
-          if-no-files-found: error
-
       - name: Upload manifest entry
         uses: actions/upload-artifact@v4
         with:
@@ -264,35 +244,49 @@ jobs:
           path: manifest-entry.yaml
           retention-days: 1
 
-
-      - name: Upload linux-amd64 binary
+      - name: Upload binary
         uses: actions/upload-artifact@v4
-        if: matrix.platform == 'linux-amd64'
         with:
-          name: linux-binary
-          path: cli/${{ matrix.platform }}/hasura-ndc-sqlserver
+          name: cli-binaries
+          path: cli/${{ matrix.platform }}
           retention-days: 1
 
-
-  # Add a new job after build-cli-binaries:
   create-cli-package:
     needs: build-cli-binaries
     runs-on: ubuntu-latest
     steps:
-      - name: Download binaries
+      - name: Download all binaries
         uses: actions/download-artifact@v4
         with:
           name: cli-binaries
-          path: cli/
+          path: cli
 
       - name: Create tarball
-        run: tar -czf cli.tar.gz -C cli .
+        run: |
+          tar -czf cli.tar.gz -C cli .
+          echo "Created cli.tar.gz containing:"
+          tar -tvf cli.tar.gz
 
-      - name: Upload CLI package
+      - name: Download manifest entries
+        uses: actions/download-artifact@v4
+        with:
+          path: entries
+
+      - name: Combine manifest entries
+        run: |
+          # Combine all yaml entries into a single file
+          find entries -name "manifest-entry.yaml" -exec cat {} \; > cli-manifest.yaml
+
+          echo "Generated CLI Plugin Manifest:"
+          cat cli-manifest.yaml
+
+      - name: Upload CLI package and manifest
         uses: actions/upload-artifact@v4
         with:
-          name: cli.tar.gz
-          path: cli.tar.gz
+          name: release-artifacts
+          path: |
+            cli.tar.gz
+            cli-manifest.yaml
           retention-days: 1
 
 
@@ -315,7 +309,7 @@ jobs:
       - name: Download linux binary
         uses: actions/download-artifact@v4
         with:
-          name: linux-binary
+          name: linux-amd64/hasura-ndc-sqlserver
           path: cli/linux-amd64
 
       - name: generate a changelog
