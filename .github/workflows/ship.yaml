@@ -303,20 +303,15 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          path: release/artifacts
-          merge-multiple: true
-
-      - name: Download linux binary
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-amd64/hasura-ndc-sqlserver
-          path: cli/linux-amd64
+          name: release-artifacts
+          path: release
 
       - name: generate a changelog
         run: |
           ./scripts/release-notes.py "${GITHUB_REF_NAME}" >> release/notes.md
 
       - name: generate a connector package
+        path: release/release-artifacts
         run: |
          chmod +x ./cli/cli-binarylinux-amd64/hasura-ndc-sqlserver
          mkdir -p metadata-configuration
@@ -327,6 +322,7 @@ jobs:
 
 
       - name: generate a connector package
+        path: release/release-artifacts
         run: |
          chmod +x ./cli/cli-binary-linux-amd64/hasura-ndc-sqlserver
          ./cli/linux-amd64/hasura-ndc-sqlserver --context=release/package initialize --with-metadata
