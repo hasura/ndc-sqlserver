@@ -122,16 +122,23 @@ jobs:
         include:
           - runner: ubuntu-20.04
             target: x86_64-unknown-linux-gnu
+            platform: linux-amd64
           - runner: ubuntu-20.04
             target: aarch64-unknown-linux-gnu
+            platform: linux-arm64
             linux-packages: gcc-aarch64-linux-gnu
             linker: /usr/bin/aarch64-linux-gnu-gcc
           - runner: macos-latest
             target: x86_64-apple-darwin
+            platform: darwin-amd64
+            os: macOS
           - runner: macos-latest
             target: aarch64-apple-darwin
+            platform: darwin-arm64
+            os: macOS
           - runner: windows-latest
             target: x86_64-pc-windows-msvc
+            platform: windows-amd64
             extension: .exe
             extra-rust-flags: "-C target-feature=+crt-static"
     runs-on: ${{ matrix.runner }}
@@ -200,14 +207,94 @@ jobs:
           echo "Building for target: ${CARGO_BUILD_TARGET}"
           cargo build --release --bin ndc-sqlserver-cli
 
-          mkdir -p release
-          mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli release/ndc-sqlserver-cli-${{ matrix.target }}${{ matrix.extension }}
+          # Create platform-specific directory under cli/
+          mkdir -p cli/${{ matrix.platform }}
+
+          # Move the binary with the correct name
+          if [[ "${{ matrix.platform }}" == "windows-amd64" ]]; then
+            mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli${{ matrix.extension }} cli/${{ matrix.platform }}/hasura-ndc-sqlserver.exe
+          else
+            mv -v target/${{ matrix.target }}/release/ndc-sqlserver-cli cli/${{ matrix.platform }}/hasura-ndc-sqlserver
+          fi
+
+      - name: Generate manifest entry
+        shell: bash
+        run: |
+
+          # Calculate SHA256 of the binary
+          if [[ "${{ matrix.platform }}" == "windows-amd64" ]]; then
+            SHA256=$(certutil -hashfile cli/${{ matrix.platform }}/hasura-ndc-sqlserver.exe SHA256 | grep -v "hash" | awk '{print $1}')
+          elif [[ "${{ matrix.os }}" == "macOS" ]]; then
+            SHA256=$(shasum -a 256 cli/${{ matrix.platform }}/hasura-ndc-sqlserver | cut -d' ' -f1)
+          else
+            SHA256=$(sha256sum cli/${{ matrix.platform }}/hasura-ndc-sqlserver | cut -d' ' -f1)
+          fi
+
+          cat << EOF > manifest-entry.yaml
+          - selector: ${{ matrix.platform }}
+            uri: "https://github.com/${{ github.repository }}/releases/download/v2.0.0-test/cli.tar.gz"
+            sha256: "${SHA256}"
+            bin: "${{matrix.platform}}/hasura-ndc-sqlserver${{ matrix.extension }}"
+          EOF
+
+      - name: Package binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli-binaries
+          path: cli/
+          retention-days: 1
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cli-${{ matrix.platform }}
+          path: cli
+          if-no-files-found: error
 
       - uses: actions/upload-artifact@v4
         with:
           name: ndc-sqlserver-cli-${{ matrix.target }}
           path: release
           if-no-files-found: error
+
+      - name: Upload manifest entry
+        uses: actions/upload-artifact@v4
+        with:
+          name: manifest-${{ matrix.platform }}
+          path: manifest-entry.yaml
+          retention-days: 1
+
+
+      - name: Upload linux-amd64 binary
+        uses: actions/upload-artifact@v4
+        if: matrix.platform == 'linux-amd64'
+        with:
+          name: linux-binary
+          path: cli/${{ matrix.platform }}/hasura-ndc-sqlserver
+          retention-days: 1
+
+
+  # Add a new job after build-cli-binaries:
+  create-cli-package:
+    needs: build-cli-binaries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: cli-binaries
+          path: cli/
+
+      - name: Create tarball
+        run: tar -czf cli.tar.gz -C cli .
+
+      - name: Upload CLI package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cli.tar.gz
+          path: cli.tar.gz
+          retention-days: 1
+
 
   release:
     name: release to GitHub
@@ -225,10 +312,11 @@ jobs:
           path: release/artifacts
           merge-multiple: true
 
-      - name: generate SHA-256 checksums
-        run: |
-          cd release/artifacts
-          sha256sum * > ./sha256sum
+      - name: Download linux binary
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-binary
+          path: cli/linux-amd64
 
       - name: generate a changelog
         run: |
@@ -236,9 +324,19 @@ jobs:
 
       - name: generate a connector package
         run: |
-          chmod +x ./release/artifacts/ndc-sqlserver-cli-*
-          ./release/artifacts/ndc-sqlserver-cli-x86_64-unknown-linux-gnu --context=release/package initialize --with-metadata
-          tar vczf release/artifacts/package.tar.gz -C release/package .
+         chmod +x ./cli/linux-amd64/hasura-ndc-sqlserver
+         mkdir -p metadata-configuration
+         ./cli/linux-amd64/hasura-ndc-sqlserver --context=metadata-configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
+         cat metadata-configuration/.hasura-connector/connector-metadata.yaml
+         ls metadata-configuration
+         tar -vczf package.tar.gz -C metadata-configuration .
+
+
+      - name: generate a connector package
+        run: |
+         chmod +x ./cli/linux-amd64/hasura-ndc-sqlserver
+         ./cli/linux-amd64/hasura-ndc-sqlserver --context=release/package initialize --with-metadata
+         tar vczf release/artifacts/package.tar.gz -C configuration .
 
       - name: create a draft release
         uses: ncipollo/release-action@v1
