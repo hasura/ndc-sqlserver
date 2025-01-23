@@ -297,7 +297,7 @@ jobs:
       - build-cli-binaries
     runs-on: ubuntu-latest
     # We release when a tag is pushed.
-    if: startsWith(github.ref, 'refs/tags/v')
+ #   if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - uses: actions/checkout@v4
 
@@ -318,7 +318,7 @@ jobs:
 
       - name: generate a connector package
         run: |
-         chmod +x ./cli/linux-amd64/hasura-ndc-sqlserver
+         chmod +x ./cli/cli-binarylinux-amd64/hasura-ndc-sqlserver
          mkdir -p metadata-configuration
          ./cli/linux-amd64/hasura-ndc-sqlserver --context=metadata-configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
          cat metadata-configuration/.hasura-connector/connector-metadata.yaml
@@ -328,13 +328,18 @@ jobs:
 
       - name: generate a connector package
         run: |
-         chmod +x ./cli/linux-amd64/hasura-ndc-sqlserver
+         chmod +x ./cli/cli-binary-linux-amd64/hasura-ndc-sqlserver
          ./cli/linux-amd64/hasura-ndc-sqlserver --context=release/package initialize --with-metadata
          tar vczf release/artifacts/package.tar.gz -C configuration .
 
-      - name: create a draft release
-        uses: ncipollo/release-action@v1
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          draft: true
-          bodyFile: release/notes.md
-          artifacts: release/artifacts/*
+          name: release-artifacts
+
+      # - name: create a draft release
+      #   uses: ncipollo/release-action@v1
+      #   with:
+      #     draft: true
+      #     bodyFile: release/notes.md
+      #     artifacts: release/artifacts/*
