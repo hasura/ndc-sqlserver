@@ -181,6 +181,6 @@ jobs:
 
       - name: generate a connector package
         run: |
-          chmod +x ./release/artifacts/ndc-sqlserver-cli-*
-          ./release/artifacts/ndc-sqlserver-cli-x86_64-unknown-linux-gnu --context=release/package initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
-          echo "$(tree release/package)"
+          chmod +x cli/linux-amd64/hasura-ndc-sqlserver
+          ./cli/linux-amd64/hasura-ndc-sqlserver initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
+          echo "$(tree .)"
