@@ -313,9 +313,7 @@ jobs:
 
       - name: generate a connector package
         run: |
-          tree .
-          unzip release/release-artifacts.zip
-          cd release/release-artifacts
+          tar xvf release/cli.tar.gz -C release/cli
           chmod +x ./cli/cli-binary-linux-amd64/hasura-ndc-sqlserver
           mkdir -p metadata-configuration
           ./cli/linux-amd64/hasura-ndc-sqlserver --context=metadata-configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
