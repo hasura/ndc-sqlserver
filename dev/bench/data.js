@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1734359364816,
+  "lastUpdate": 1737709028073,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -7563,6 +7563,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.07901358125133763,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "karthikeyan@hasura.io",
+            "name": "Karthikeyan Chinnakonda",
+            "username": "codingkarthik"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": false,
+          "id": "95fffd5b8ea3a13aa84b3f7de674ef72a8617b63",
+          "message": "Update connector packaging to support Inline Binary definitions (#182)\n\n# Update connector packaging to support multi-platform CLI binaries\n\nThis PR updates our GitHub Actions workflow to support building and\npackaging CLI binaries for multiple platforms while following the latest\nconnector packaging specification. The changes introduce a more robust\napproach to creating platform-specific CLI binaries and generating the\ncorresponding metadata for the Hasura CLI plugin system.\n\n## Key Changes\n\n### Multi-Platform Binary Support\nThe build workflow now creates platform-specific binaries for:\n- Linux (x86_64 and ARM64)\n- macOS (x86_64 and ARM64) \n- Windows (x86_64)\n\n### Enhanced Build and Packaging Process\nEach binary is properly named and packaged following Hasura's\nconventions, with SHA256 checksums generated for verification. The\nbinaries are combined into a single tarball (cli.tar.gz) that gets\nattached to GitHub releases.\n\n### Updated CLI Initialization\nThe CLI initialization command has been enhanced to support the new\nbinary CLI manifest format. This manifest contains platform-specific\ninformation including download URLs, SHA256 checksums, and binary paths.\nWhen initializing a new connector configuration, the CLI can now embed\nthis manifest into the connector metadata, enabling the Hasura CLI to\nautomatically download and use the correct binary for the user's\nplatform.\n\n### Modernized Metadata Generation\nThe connector metadata generation has been updated to align with the\nlatest specification from the packaging RFC. Notable changes include:\n- Added support for version field in metadata\n- Enhanced environment variable definitions to include required flag\n- Updated command definitions to support more flexible command types\n(string, dockerized, shell script)\n- Implemented the new BinaryInline CLI plugin definition format\n- Added support for native toolchain definitions and documentation links\n\n## Impact\nThese changes make our connector more portable across different\nplatforms while maintaining security through checksum verification. The\nupdated metadata format provides better integration with the Hasura\necosystem and improved user experience through platform-specific binary\nselection.\n\n## Testing\n- Verified binary builds for all supported platforms\n- Tested metadata generation with the new CLI manifest\n- Confirmed tarball creation and manifest combination\n- Validated GitHub release artifacts\n\n## Related\n- RFC:\nhttps://github.com/hasura/ndc-hub/blob/main/rfcs/0011-cli-and-connector-packaging.md",
+          "timestamp": "2025-01-24T08:47:26Z",
+          "tree_id": "c0732d32d17cb8c4aec53636a2430bc263456f18",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/95fffd5b8ea3a13aa84b3f7de674ef72a8617b63"
+        },
+        "date": 1737709027381,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 54.4665305,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 70.66936449999999,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 55.861043082577126,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.4811001735383371,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.06133688704532405,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 383.61928350000005,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 418.8222379,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 375.13359180731516,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 0.9408964294872817,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.06776240610889064,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 127.999221,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 151.33040599999998,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 127.40564935134452,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.5248125199371714,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.05902503351017756,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 130.9748545,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 153.93904199999997,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 130.28936023111646,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.641019377128174,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.06836659960105453,
             "unit": "ms"
           }
         ]
