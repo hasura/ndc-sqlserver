@@ -40,7 +40,7 @@ thiserror = "2.0.6"
 [dev-dependencies]
 ndc-test = { workspace = true }
 
-axum = "0.6.20"
+axum = "0.7.5"
 axum-test-helper = "0.3.0"
 env_logger = "0.11.3"
 hyper = { version = "0.14.31", features = ["tcp"] }
