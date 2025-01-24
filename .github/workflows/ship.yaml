@@ -305,7 +305,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: release-artifacts
-          path: release
+          path: release/artifacts
 
       # - name: generate a changelog
       #   run: |
@@ -313,13 +313,13 @@ jobs:
 
       - name: generate a connector package
         run: |
-          tar xvf release/cli.tar.gz -C release/cli
-          chmod +x ./cli/cli-binary-linux-amd64/hasura-ndc-sqlserver
+          tar xvf release/artifacts/cli.tar.gz -C release/artifacts
+          chmod +x ./release/artifacts/cli/cli-binary-linux-amd64/hasura-ndc-sqlserver
           mkdir -p metadata-configuration
-          ./cli/linux-amd64/hasura-ndc-sqlserver --context=metadata-configuration initialize --with-metadata --binary-cli-manifest=cli-manifest.yaml
+          ./release/artifacts/cli/linux-amd64/hasura-ndc-sqlserver --context=metadata-configuration initialize --with-metadata --binary-cli-manifest=release/artifacts/cli-manifest.yaml
           cat metadata-configuration/.hasura-connector/connector-metadata.yaml
           ls metadata-configuration
-          tar -vczf package.tar.gz -C metadata-configuration .
+          tar -vczf release/artifacts/package.tar.gz -C metadata-configuration .
 
       - name: create a draft release
         uses: ncipollo/release-action@v1
