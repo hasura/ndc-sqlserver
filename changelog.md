@@ -1,6 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [v2.0.1]
+
+### Added
+
+- Changed the connector packaging format
 
 ### Added
 
