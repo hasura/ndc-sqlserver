@@ -317,7 +317,7 @@ jobs:
           tree release/artifacts
           chmod +x ./release/artifacts/cli-binary-linux-amd64/hasura-ndc-sqlserver
           mkdir -p metadata-configuration
-          ./release/artifacts/cli/linux-amd64/hasura-ndc-sqlserver --context=metadata-configuration initialize --with-metadata --binary-cli-manifest=release/artifacts/cli-manifest.yaml
+          ./release/artifacts/cli-binary-linux-amd64/hasura-ndc-sqlserver --context=metadata-configuration initialize --with-metadata --binary-cli-manifest=release/artifacts/cli-manifest.yaml
           cat metadata-configuration/.hasura-connector/connector-metadata.yaml
           ls metadata-configuration
           tar -vczf release/artifacts/package.tar.gz -C metadata-configuration .
