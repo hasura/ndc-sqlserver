@@ -28,7 +28,7 @@ jobs:
         with:
           shared-key: "build" # share the cache across jobs
 
-      - uses: hoverkraft-tech/compose-action@v1.5.1
+      - uses: hoverkraft-tech/compose-action@v2.1.0
         with:
           compose-file: "./docker-compose.yaml"
           up-flags: "--pull=always --wait"
