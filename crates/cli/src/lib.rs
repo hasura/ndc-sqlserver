@@ -36,6 +36,9 @@ pub enum Command {
         #[arg(long)]
         /// Whether to create the hasura connector metadata.
         with_metadata: bool,
+        #[arg(long)]
+        /// The path to the binary CLI manifest.
+        binary_cli_manifest: PathBuf,
     },
     /// Update the configuration by introspecting the database, using the configuration options.
     Update {
@@ -54,7 +57,10 @@ pub enum Error {
 /// Run a command in a given directory.
 pub async fn run(command: Command, context: Context<impl Environment>) -> anyhow::Result<()> {
     match command {
-        Command::Initialize { with_metadata } => initialize(with_metadata, context).await?,
+        Command::Initialize {
+            with_metadata,
+            binary_cli_manifest,
+        } => initialize(with_metadata, context, binary_cli_manifest).await?,
         Command::Update { subcommand } => update(context, subcommand).await?,
     };
     Ok(())
@@ -68,11 +74,15 @@ pub async fn run(command: Command, context: Context<impl Environment>) -> anyhow
 ///
 /// Optionally, this can also create the connector metadata, which is used by the Hasura CLI to
 /// automatically work with this CLI as a plugin.
-async fn initialize(with_metadata: bool, context: Context<impl Environment>) -> anyhow::Result<()> {
+async fn initialize(
+    with_metadata: bool,
+    context: Context<impl Environment>,
+    binary_cli_manifest: PathBuf,
+) -> anyhow::Result<()> {
     let configuration_file = context
         .context_path
         .join(configuration::CONFIGURATION_FILENAME);
-    fs::create_dir_all(&context.context_path)?; // TODO(PY): .await
+    fs::create_dir_all(&context.context_path)?;
 
     // refuse to initialize the directory unless it is empty
     let mut items_in_dir = fs::read_dir(&context.context_path)?;
@@ -97,12 +107,18 @@ async fn initialize(with_metadata: bool, context: Context<impl Environment>) -> 
         serde_json::to_string_pretty(&output)? + "\n",
     )?;
 
+    // Read and parse the binary CLI manifest directly into BinaryCliPluginPlatform
+    let manifest_contents = fs::read_to_string(&binary_cli_manifest)?;
+    let platforms: Vec<metadata::BinaryCliPluginPlatform> =
+        serde_yaml::from_str(&manifest_contents)?;
+
     // if requested, create the metadata
     if with_metadata {
         let metadata_dir = context.context_path.join(".hasura-connector");
         let _ = fs::create_dir(&metadata_dir);
         let metadata_file = metadata_dir.join("connector-metadata.yaml");
         let metadata = metadata::ConnectorMetadataDefinition {
+            version: Some("v1".to_string()),
             packaging_definition: metadata::PackagingDefinition::PrebuiltDockerImage(
                 metadata::PrebuiltDockerImagePackaging {
                     docker_image: format!(
@@ -115,21 +131,25 @@ async fn initialize(with_metadata: bool, context: Context<impl Environment>) -> 
                 name: "CONNECTION_URI".to_string(),
                 description: "The SQL server connection URI".to_string(),
                 default_value: None,
+                required: true,
             }],
             commands: metadata::Commands {
-                update: Some("hasura-ndc-sqlserver update".to_string()),
+                update: Some(metadata::Command::String(
+                    "hasura-ndc-sqlserver update".to_string(),
+                )),
                 watch: None,
+                print_schema_and_capabilities: None,
+                upgrade_configuration: None,
             },
-            cli_plugin: Some(metadata::CliPluginDefinition {
-                name: "ndc-sqlserver".to_string(),
-                version: context.release_version.unwrap_or("latest").to_string(),
-            }),
+            cli_plugin: Some(metadata::CliPluginDefinition::BinaryInline { platforms }),
             docker_compose_watch: vec![metadata::DockerComposeWatchItem {
                 path: "./".to_string(),
                 target: Some("/etc/connector".to_string()),
                 action: metadata::DockerComposeWatchAction::SyncAndRestart,
                 ignore: vec![],
             }],
+            native_toolchain_definition: None,
+            documentation_page: None,
         };
 
         fs::write(metadata_file, serde_yaml::to_string(&metadata)?)?;
