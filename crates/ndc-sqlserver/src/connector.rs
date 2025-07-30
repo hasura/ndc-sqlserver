@@ -103,9 +103,7 @@ impl<Env: Environment + Send + Sync + 'static> connector::ConnectorSetup for SQL
             configuration::Error::IoErrorButStringified(inner) => {
                 std::io::Error::other(inner).into()
             }
-            configuration::Error::ConnectionPoolError(inner) => {
-                std::io::Error::other(inner).into()
-            }
+            configuration::Error::ConnectionPoolError(inner) => std::io::Error::other(inner).into(),
             configuration::Error::GetConnectionFromPool(inner) => {
                 std::io::Error::other(inner).into()
             }
