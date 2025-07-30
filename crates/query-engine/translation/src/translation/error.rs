@@ -45,31 +45,29 @@ impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self {
             Error::CollectionNotFound(collection_name) => {
-                write!(f, "Collection '{}' not found.", collection_name)
+                write!(f, "Collection '{collection_name}' not found.")
             }
             Error::ColumnNotFoundInCollection(column_name, collection_name) => write!(
                 f,
-                "Column '{}' not found in collection '{}'.",
-                column_name, collection_name
+                "Column '{column_name}' not found in collection '{collection_name}'."
             ),
             Error::ColumnNotFoundInProcedure(column_name, procedure_name) => write!(
                 f,
-                "Column '{}' not found in procedure '{}'.",
-                column_name, procedure_name
+                "Column '{column_name}' not found in procedure '{procedure_name}'."
             ),
 
             Error::NoConstraintsForOrdering(table_name) => {
-                write!(f, "No constraints found for ordering. An order by clause or a primary key on the table '{}' is required for queries with a limit or offset clause.", table_name)
+                write!(f, "No constraints found for ordering. An order by clause or a primary key on the table '{table_name}' is required for queries with a limit or offset clause.")
             }
             Error::NoColumnsForOrdering => {
                 write!(f, "No columns found for ordering")
             }
 
             Error::RelationshipNotFound(relationship_name) => {
-                write!(f, "Relationship '{}' not found.", relationship_name)
+                write!(f, "Relationship '{relationship_name}' not found.")
             }
             Error::ArgumentNotFound(argument) => {
-                write!(f, "Argument '{}' not found.", argument)
+                write!(f, "Argument '{argument}' not found.")
             }
             Error::OperatorNotFound {
                 operator_name,
@@ -77,39 +75,38 @@ impl std::fmt::Display for Error {
             } => {
                 write!(
                     f,
-                    "Operator '{}' not found in type {:?}.",
-                    operator_name, type_name
+                    "Operator '{operator_name}' not found in type {type_name:?}."
                 )
             }
             Error::RelationshipArgumentWasOverriden(key) => {
-                write!(f, "The relationship argument '{}' was defined as part of the relationship, but was overriden.", key)
+                write!(f, "The relationship argument '{key}' was defined as part of the relationship, but was overriden.")
             }
             Error::EmptyPathForStarCountAggregate => {
                 write!(f, "No path elements supplied for Star Count Aggregate")
             }
             Error::TypeMismatch(value, typ) => {
-                write!(f, "Value '{:?}' is not of type '{:?}'.", value, typ)
+                write!(f, "Value '{value}' is not of type '{typ:?}'.")
             }
             Error::CapabilityNotSupported(thing) => {
-                write!(f, "Queries containing {} are not supported.", thing)
+                write!(f, "Queries containing {thing} are not supported.")
             }
             Error::NotSupported(thing) => {
-                write!(f, "Queries containing {} are not supported.", thing)
+                write!(f, "Queries containing {thing} are not supported.")
             }
             Error::NoFieldsAndAggregates => {
                 write!(f, "No fields or aggregates found in query")
             }
             Error::ProcedureNotFound(name) => {
-                write!(f, "Procedure '{}' not found.", name)
+                write!(f, "Procedure '{name}' not found.")
             }
             Error::SerdeSerializationError(serde_err) => {
-                write!(f, "JSON serialization error: {}", serde_err)
+                write!(f, "JSON serialization error: {serde_err}")
             }
             Error::UnexpectedStructure(s) => {
-                write!(f, "Unexpected structure received: {}", s)
+                write!(f, "Unexpected structure received: {s}")
             }
             Error::NotImplementedYet(e) => {
-                write!(f, "{} is not implemented yet", e)
+                write!(f, "{e} is not implemented yet")
             }
             Error::NoProcedureResultFieldsRequested => {
                 write!(f, "No procedure fields were requested.")

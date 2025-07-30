@@ -179,7 +179,7 @@ impl Timer {
             Err(_) => {
                 self.0.stop_and_discard();
             }
-        };
+        }
         result
     }
 }
@@ -201,85 +201,85 @@ impl std::error::Error for Error {}
 #[derive(Debug, Clone)]
 pub struct ErrorMetrics {
     /// the connector received an invalid request.
-    invalid_request_total: IntCounter,
+    invalid_request: IntCounter,
     /// the connector received a request using capabilities it does not support.
-    unsupported_capability_total: IntCounter,
+    unsupported_capability: IntCounter,
     /// the connector could not fulfill a request because it does not support
     /// certain features (which are not described as capabilities).
-    unsupported_feature_total: IntCounter,
+    unsupported_feature: IntCounter,
     /// the connector had an internal error.
-    connector_error_total: IntCounter,
+    connector_error: IntCounter,
     /// the database emmited an error.
-    database_error_total: IntCounter,
+    database_error: IntCounter,
     /// we failed to acquire a database connection from the pool
-    connection_acquisition_error_total: IntCounter,
+    connection_acquisition_error: IntCounter,
 }
 
 impl ErrorMetrics {
     /// Set up counters and gauges used to produce Prometheus metrics
     pub fn initialize(metrics_registry: &mut prometheus::Registry) -> Result<Self, Error> {
-        let invalid_request_total = add_int_counter_metric(
+        let invalid_request = add_int_counter_metric(
             metrics_registry,
-            "ndc_sqlserver_error_invalid_request_total_count",
+            "ndc_sqlserver_error_invalid_request_count",
             "Total number of invalid requests encountered.",
         )?;
 
-        let unsupported_capability_total = add_int_counter_metric(
+        let unsupported_capability = add_int_counter_metric(
             metrics_registry,
-            "ndc_sqlserver_error_unsupported_capability_total_count",
+            "ndc_sqlserver_error_unsupported_capability_count",
             "Total number of invalid requests with unsupported capabilities encountered.",
         )?;
 
-        let unsupported_feature_total = add_int_counter_metric(
+        let unsupported_feature = add_int_counter_metric(
             metrics_registry,
-            "ndc_sqlserver_error_unsupported_capabilities_total_count",
+            "ndc_sqlserver_error_unsupported_capabilities_count",
             "Total number of invalid requests with unsupported capabilities encountered.",
         )?;
 
-        let connector_error_total = add_int_counter_metric(
+        let connector_error = add_int_counter_metric(
             metrics_registry,
-            "ndc_sqlserver_error_connector_error_total_count",
+            "ndc_sqlserver_error_connector_error_count",
             "Total number of requests failed due to an internal conenctor error.",
         )?;
 
-        let database_error_total = add_int_counter_metric(
+        let database_error = add_int_counter_metric(
             metrics_registry,
-            "ndc_sqlserver_error_database_error_total_count",
+            "ndc_sqlserver_error_database_error_count",
             "Total number of requests failed due to a database error.",
         )?;
 
-        let connection_acquisition_error_total = add_int_counter_metric(
+        let connection_acquisition_error = add_int_counter_metric(
             metrics_registry,
-            "ndc_sqlserver_error_connection_acquisition_error_total_count",
+            "ndc_sqlserver_error_connection_acquisition_error_count",
             "Total number of failures to acquire a database connection.",
         )?;
 
         Ok(ErrorMetrics {
-            invalid_request_total,
-            unsupported_capability_total,
-            unsupported_feature_total,
-            connector_error_total,
-            database_error_total,
-            connection_acquisition_error_total,
+            invalid_request,
+            unsupported_capability,
+            unsupported_feature,
+            connector_error,
+            database_error,
+            connection_acquisition_error,
         })
     }
 
     pub fn record_invalid_request(&self) {
-        self.invalid_request_total.inc();
+        self.invalid_request.inc();
     }
     pub fn record_unsupported_capability(&self) {
-        self.unsupported_capability_total.inc();
+        self.unsupported_capability.inc();
     }
     pub fn record_unsupported_feature(&self) {
-        self.unsupported_feature_total.inc();
+        self.unsupported_feature.inc();
     }
     pub fn record_connector_error(&self) {
-        self.connector_error_total.inc();
+        self.connector_error.inc();
     }
     pub fn record_database_error(&self) {
-        self.database_error_total.inc();
+        self.database_error.inc();
     }
     pub fn record_connection_acquisition_error(&self) {
-        self.connection_acquisition_error_total.inc()
+        self.connection_acquisition_error.inc()
     }
 }

@@ -167,8 +167,8 @@ fn make_procedure_type(
 /// Each native mutation creates two objects:
 /// 1. Object with name `{native_mutation_name}_response`, this object
 ///    will contain two fields:
-///         a. affected_rows: int - The rows affected by the native mutation.
-///         b. returning: `{native_mutation_name}` - Data returned by the native mutation.
+///    a. affected_rows: int - The rows affected by the native mutation.
+///    b. returning: `{native_mutation_name}` - Data returned by the native mutation.
 /// 2. Object with name `{native_mutation_name}` whose fields will
 ///    contain the fields specified in the `columns`.
 fn get_native_mutations_schema(
@@ -275,7 +275,7 @@ fn get_stored_procedures_schema(
                 return Err(connector::ErrorResponse::from_error(Box::new(
                     SchemaError::DuplicateObject(object_type_name),
                 )));
-            };
+            }
 
             let stored_proc_schema = models::ProcedureInfo {
                 name: proc_name.to_string().into(),

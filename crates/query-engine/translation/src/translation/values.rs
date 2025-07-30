@@ -16,8 +16,7 @@ pub fn translate_json_value(
         serde_json::Value::Bool(b) => Ok((Expression::Value(Value::Bool(*b)), false)),
         serde_json::Value::Number(n) => {
             let lit = n.as_f64().ok_or(Error::NotSupported(format!(
-                "converting literal '{}' into a float64",
-                n
+                "converting literal '{n}' into a float64"
             )))?;
             Ok((Expression::Value(Value::Float8(lit)), false))
         }

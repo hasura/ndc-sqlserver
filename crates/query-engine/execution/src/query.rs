@@ -117,7 +117,7 @@ pub async fn execute_query(
                             "object variable not currently supported".to_string(),
                         )),
                     },
-                    None => Err(Error::Query(format!("Variable not found '{}'", var))),
+                    None => Err(Error::Query(format!("Variable not found '{var}'"))),
                 }
             }
         }?
@@ -221,7 +221,7 @@ fn get_query_text(
                                     "object variable not currently supported".to_string(),
                                 )),
                             },
-                            None => Err(Error::Query(format!("Variable not found '{}'", var))),
+                            None => Err(Error::Query(format!("Variable not found '{var}'"))),
                         }
                     }
                 }?;

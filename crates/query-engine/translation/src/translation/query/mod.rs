@@ -102,7 +102,7 @@ pub fn translate_query(
         (Some(rows), None) => Ok(sql::helpers::SelectSet::Rows(rows)),
         (None, Some(aggregates)) => Ok(sql::helpers::SelectSet::Aggregates(aggregates)),
         (Some(rows), Some(aggregates)) => {
-            Ok(sql::helpers::SelectSet::RowsAndAggregates(rows, aggregates))
+            Ok(sql::helpers::SelectSet::RowsAndAggregates(rows, Box::new(aggregates)))
         }
         (None, None) => Err(Error::NoFieldsAndAggregates),
     }

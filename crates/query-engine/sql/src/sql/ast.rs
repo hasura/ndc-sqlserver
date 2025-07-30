@@ -70,7 +70,7 @@ pub struct CommonTableExpression {
 #[derive(Debug, Clone, PartialEq)]
 pub enum CTExpr {
     RawSql(Vec<RawSql>),
-    Select(Select),
+    Select(Box<Select>),
 }
 
 /// A collection of `RawSQLStatement` that will

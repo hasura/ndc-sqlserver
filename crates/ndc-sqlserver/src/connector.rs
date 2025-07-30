@@ -101,22 +101,22 @@ impl<Env: Environment + Send + Sync + 'static> connector::ConnectorSetup for SQL
             }
             configuration::Error::IoError(inner) => connector::ParseError::IoError(inner),
             configuration::Error::IoErrorButStringified(inner) => {
-                std::io::Error::new(std::io::ErrorKind::Other, inner).into()
+                std::io::Error::other(inner).into()
             }
             configuration::Error::ConnectionPoolError(inner) => {
-                std::io::Error::new(std::io::ErrorKind::Other, inner).into()
+                std::io::Error::other(inner).into()
             }
             configuration::Error::GetConnectionFromPool(inner) => {
-                std::io::Error::new(std::io::ErrorKind::Other, inner).into()
+                std::io::Error::other(inner).into()
             }
             configuration::Error::JsonDeserializationError(inner) => {
-                connector::ParseError::from(std::io::Error::new(std::io::ErrorKind::Other, inner))
+                connector::ParseError::from(std::io::Error::other(inner))
             }
             configuration::Error::IntrospectionQueryExecutionError(inner) => {
-                connector::ParseError::from(std::io::Error::new(std::io::ErrorKind::Other, inner))
+                connector::ParseError::from(std::io::Error::other(inner))
             }
             configuration::Error::StoredProcedureIntrospectionError(inner) => {
-                connector::ParseError::from(std::io::Error::new(std::io::ErrorKind::Other, inner))
+                connector::ParseError::from(std::io::Error::other(inner))
             }
         })?;
 

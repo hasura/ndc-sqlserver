@@ -195,7 +195,7 @@ async fn configure_stored_procedures(
                 &mut stored_procs_rows,
             )
             .await
-            .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
+            .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{e:?}")))?;
             let introspected_stored_procedures: Vec<introspection::IntrospectStoredProcedure> =
                 serde_json::from_slice(&stored_procs_rows)
                     .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
@@ -209,9 +209,6 @@ async fn configure_stored_procedures(
                     std::collections::btree_map::Entry::Occupied(mut e) => {
                         if config_options.overwrite_existing_stored_procedures {
                             e.insert(stored_procedure);
-                        } else {
-                            // do not overwrite the existing stored procedure
-                            continue;
                         }
                     }
                     std::collections::btree_map::Entry::Vacant(e) => {
@@ -262,7 +259,7 @@ pub async fn configure(
         &mut table_rows,
     )
     .await
-    .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
+    .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{e:?}")))?;
     let tables: Vec<introspection::IntrospectionTable> = serde_json::from_slice(&table_rows)
         .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
 
@@ -277,7 +274,7 @@ pub async fn configure(
         &mut types_rows,
     )
     .await
-    .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{:?}", e)))?;
+    .map_err(|e| Error::IntrospectionQueryExecutionError(format!("{e:?}")))?;
     let type_names: Vec<TypeItem> = serde_json::from_slice(&types_rows)
         .map_err(|e| Error::JsonDeserializationError(e.to_string()))?;
 
@@ -457,7 +454,7 @@ fn get_aggregate_functions_for_type(
                 return_type: metadata::ScalarType(precise_return_type.to_string()),
             },
         );
-    };
+    }
 
     aggregate_functions.insert(
         AggregateFunctionName::new("COUNT_BIG".to_string().into()),
