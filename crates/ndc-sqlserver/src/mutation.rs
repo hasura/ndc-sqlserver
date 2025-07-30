@@ -50,7 +50,7 @@ pub async fn mutation(
 
         Ok(result)
     }
-    .instrument(info_span!("/mutation"))
+    .instrument(info_span!("Execute mutation"))
     .await;
 
     timer.complete_with(result)

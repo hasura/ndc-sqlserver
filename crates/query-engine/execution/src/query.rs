@@ -29,14 +29,14 @@ pub async fn mssql_execute_query_plan(
     let acquisition_timer = metrics.time_connection_acquisition_wait();
     let connection_result = mssql_pool
         .get()
-        .instrument(info_span!("Acquire connection"))
+        .instrument(info_span!("Acquire connection", internal.visibility = "user"))
         .await
         .map_err(Error::ConnectionPool);
     let mut connection = acquisition_timer.complete_with(connection_result)?;
 
     let query_timer = metrics.time_query_execution();
     let bytes_result = execute_queries(&mut connection, plan)
-        .instrument(info_span!("Database request"))
+        .instrument(info_span!("Database request", internal.visibility = "user"))
         .await;
     query_timer.complete_with(bytes_result)
 }

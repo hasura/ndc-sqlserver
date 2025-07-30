@@ -185,7 +185,7 @@ pub async fn execute_mutations(
     let acquisition_timer = metrics.time_connection_acquisition_wait();
     let connection_result = mssql_pool
         .get()
-        .instrument(info_span!("Acquire connection"))
+        .instrument(info_span!("Acquire connection", internal.visibility = "user"))
         .await
         .map_err(Error::ConnectionPool);
     let mut connection = acquisition_timer.complete_with(connection_result)?;
@@ -195,6 +195,7 @@ pub async fn execute_mutations(
         execute_mutations_transaction(plan, &mut connection).await,
         &mut connection,
     )
+    .instrument(info_span!("Execute mutation", internal.visibility = "user"))
     .await;
     query_timer.complete_with(mutation_response)
 }

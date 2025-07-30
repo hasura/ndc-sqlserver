@@ -63,7 +63,7 @@ pub async fn explain(
 
         Ok(response)
     }
-    .instrument(info_span!("/explain"))
+    .instrument(info_span!("Explain explain", internal.visibility = "user"))
     .await
 }
 
