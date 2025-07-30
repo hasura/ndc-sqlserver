@@ -1,5 +1,17 @@
 # Changelog
 
+## [v2.0.2]
+
+### Added
+
+- Update SDK to v0.5.0 and update tracing
+
+### Added
+
+### Changed
+
+### Fixed
+
 ## [v2.0.1]
 
 ### Added
