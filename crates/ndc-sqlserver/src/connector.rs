@@ -36,17 +36,16 @@ impl<Env: Environment> SQLServerSetup<Env> {
 }
 
 #[async_trait]
-impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetup<Env> {
+impl<Env: Environment + Send + Sync + 'static> connector::ConnectorSetup for SQLServerSetup<Env> {
     type Connector = SQLServer;
 
     /// Validate the raw configuration provided by the user,
     /// returning a configuration error or a validated [`Connector::Configuration`].
     async fn parse_configuration(
         &self,
-        configuration_dir: impl AsRef<Path> + Send,
+        configuration_dir: &Path,
     ) -> Result<<Self::Connector as connector::Connector>::Configuration> {
         let configuration_file = configuration_dir
-            .as_ref()
             .join(configuration::CONFIGURATION_FILENAME);
         let configuration_file_contents =
             fs::read_to_string(&configuration_file).await.map_err(|_| {
