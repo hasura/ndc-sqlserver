@@ -45,8 +45,7 @@ impl<Env: Environment + Send + Sync + 'static> connector::ConnectorSetup for SQL
         &self,
         configuration_dir: &Path,
     ) -> Result<<Self::Connector as connector::Connector>::Configuration> {
-        let configuration_file = configuration_dir
-            .join(configuration::CONFIGURATION_FILENAME);
+        let configuration_file = configuration_dir.join(configuration::CONFIGURATION_FILENAME);
         let configuration_file_contents =
             fs::read_to_string(&configuration_file).await.map_err(|_| {
                 connector::ParseError::CouldNotFindConfiguration(configuration_file.clone())
