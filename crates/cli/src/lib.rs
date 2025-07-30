@@ -62,7 +62,7 @@ pub async fn run(command: Command, context: Context<impl Environment>) -> anyhow
             binary_cli_manifest,
         } => initialize(with_metadata, context, binary_cli_manifest).await?,
         Command::Update { subcommand } => update(context, subcommand).await?,
-    };
+    }
     Ok(())
 }
 

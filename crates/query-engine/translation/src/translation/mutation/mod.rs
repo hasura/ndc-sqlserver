@@ -249,7 +249,7 @@ pub fn generate_native_mutation_response_cte(
     CommonTableExpression {
         alias: cte_alias,
         column_names: Some(json_schema.0.into_iter().map(|c| c.0).collect()),
-        select: sql::ast::CTExpr::Select(cte_select),
+        select: sql::ast::CTExpr::Select(Box::new(cte_select)),
     }
 }
 

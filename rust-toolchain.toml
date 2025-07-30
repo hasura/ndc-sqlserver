@@ -1,5 +1,5 @@
 [toolchain]
-channel = "1.83.0"
+channel = "1.88.0"
 profile = "default" # see https://rust-lang.github.io/rustup/concepts/profiles.html
 components = [
   "rust-analyzer",

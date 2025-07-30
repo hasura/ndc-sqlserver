@@ -122,7 +122,7 @@ impl TemporaryTable {
                 "varchar" => "VARCHAR(MAX)",
                 anything_else => anything_else,
             };
-            sql.append_syntax(format!("{col_name} {}", col_type).as_str());
+            sql.append_syntax(format!("{col_name} {col_type}").as_str());
             if index < (self.columns.len() - 1) {
                 sql.append_syntax(", ");
             }
@@ -538,8 +538,8 @@ impl Value {
     pub fn to_sql(&self, sql: &mut SQL) {
         match &self {
             Value::EmptyJsonArray => sql.append_syntax("'[]'"),
-            Value::Int8(i) => sql.append_syntax(format!("{}", i).as_str()),
-            Value::Float8(n) => sql.append_syntax(format!("{}", n).as_str()),
+            Value::Int8(i) => sql.append_syntax(format!("{i}").as_str()),
+            Value::Float8(n) => sql.append_syntax(format!("{n}").as_str()),
             Value::Character(s) => sql.append_param(Param::String(s.clone())),
             Value::String(s) => sql.append_param(Param::String(s.clone())),
             Value::Variable(v) => sql.append_param(Param::Variable(v.clone())),
@@ -575,10 +575,10 @@ impl Limit {
             None => (),
             Some(limit) => {
                 sql.append_syntax(" FETCH NEXT ");
-                sql.append_syntax(format!("{}", limit).as_str());
+                sql.append_syntax(format!("{limit}").as_str());
                 sql.append_syntax(" ROWS ONLY");
             }
-        };
+        }
     }
 }
 
@@ -592,7 +592,7 @@ impl TableReference {
                 sql.append_identifier(&table.0);
             }
             TableReference::AliasedTable(alias) => alias.to_sql(sql),
-        };
+        }
     }
 }
 
@@ -624,7 +624,7 @@ impl ColumnReference {
                 sql.append_syntax(".");
                 column.to_sql(sql);
             }
-        };
+        }
     }
 }
 

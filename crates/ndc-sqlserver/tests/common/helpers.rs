@@ -122,12 +122,12 @@ pub async fn create_router(connection_uri: &str) -> axum::Router {
     let setup = connector::SQLServerSetup::new(environment);
 
     // initialise server state with the static configuration.
-    let state = ndc_sdk::default_main::init_server_state(setup, test_deployment_file)
+    let state = ndc_sdk::state::init_server_state(setup, &test_deployment_file)
         .await
         .unwrap();
 
     // create a fresh client
-    ndc_sdk::default_main::create_router(state, None)
+    ndc_sdk::default_main::create_router(state, None, None)
 }
 
 /// Make a single request against a new server, and get the response.

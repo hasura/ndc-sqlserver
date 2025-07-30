@@ -6,7 +6,7 @@ use super::ast::*;
 pub enum SelectSet {
     Rows(Select),
     Aggregates(Select),
-    RowsAndAggregates(Select, Select),
+    RowsAndAggregates(Select, Box<Select>),
 }
 
 // Empty clauses //
@@ -270,7 +270,7 @@ pub fn select_rowset(
 
             let mut aggregate_select_star = star_select(From::Select {
                 alias: aggregate_table_alias.clone(),
-                select: Box::new(aggregate_select),
+                select: Box::new(*aggregate_select),
                 alias_path: AliasPath {
                     elements: vec![aggregate_column_alias.clone()],
                 },
@@ -484,7 +484,7 @@ pub fn select_mutation_rowset(
 
             let mut aggregate_select_star = star_select(From::Select {
                 alias: aggregate_table_alias.clone(),
-                select: Box::new(aggregate_select),
+                select: Box::new(*aggregate_select),
                 alias_path: AliasPath {
                     elements: vec![make_column_alias("aggregates".to_string())],
                 },

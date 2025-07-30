@@ -36,18 +36,16 @@ impl<Env: Environment> SQLServerSetup<Env> {
 }
 
 #[async_trait]
-impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetup<Env> {
+impl<Env: Environment + Send + Sync + 'static> connector::ConnectorSetup for SQLServerSetup<Env> {
     type Connector = SQLServer;
 
     /// Validate the raw configuration provided by the user,
     /// returning a configuration error or a validated [`Connector::Configuration`].
     async fn parse_configuration(
         &self,
-        configuration_dir: impl AsRef<Path> + Send,
+        configuration_dir: &Path,
     ) -> Result<<Self::Connector as connector::Connector>::Configuration> {
-        let configuration_file = configuration_dir
-            .as_ref()
-            .join(configuration::CONFIGURATION_FILENAME);
+        let configuration_file = configuration_dir.join(configuration::CONFIGURATION_FILENAME);
         let configuration_file_contents =
             fs::read_to_string(&configuration_file).await.map_err(|_| {
                 connector::ParseError::CouldNotFindConfiguration(configuration_file.clone())
@@ -103,22 +101,20 @@ impl<Env: Environment + Send + Sync> connector::ConnectorSetup for SQLServerSetu
             }
             configuration::Error::IoError(inner) => connector::ParseError::IoError(inner),
             configuration::Error::IoErrorButStringified(inner) => {
-                std::io::Error::new(std::io::ErrorKind::Other, inner).into()
+                std::io::Error::other(inner).into()
             }
-            configuration::Error::ConnectionPoolError(inner) => {
-                std::io::Error::new(std::io::ErrorKind::Other, inner).into()
-            }
+            configuration::Error::ConnectionPoolError(inner) => std::io::Error::other(inner).into(),
             configuration::Error::GetConnectionFromPool(inner) => {
-                std::io::Error::new(std::io::ErrorKind::Other, inner).into()
+                std::io::Error::other(inner).into()
             }
             configuration::Error::JsonDeserializationError(inner) => {
-                connector::ParseError::from(std::io::Error::new(std::io::ErrorKind::Other, inner))
+                connector::ParseError::from(std::io::Error::other(inner))
             }
             configuration::Error::IntrospectionQueryExecutionError(inner) => {
-                connector::ParseError::from(std::io::Error::new(std::io::ErrorKind::Other, inner))
+                connector::ParseError::from(std::io::Error::other(inner))
             }
             configuration::Error::StoredProcedureIntrospectionError(inner) => {
-                connector::ParseError::from(std::io::Error::new(std::io::ErrorKind::Other, inner))
+                connector::ParseError::from(std::io::Error::other(inner))
             }
         })?;
 

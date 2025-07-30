@@ -261,7 +261,7 @@ fn translate_order_by_target(
 
             // Build a join and push it to the accumulated joins.
             let new_join = sql::ast::OuterApply {
-                select: Box::new(select),
+                select: Box::new(*select),
                 alias: table_alias.clone(),
                 alias_path: sql::helpers::empty_alias_path(),
             };
@@ -287,7 +287,7 @@ enum ColumnOrSelect {
     /// Select represents a select query which contain the requested column.
     Select {
         column: sql::ast::ColumnAlias,
-        select: sql::ast::Select,
+        select: Box<sql::ast::Select>,
     },
 }
 
@@ -408,7 +408,7 @@ fn translate_order_by_target_for_column(
         // and return the requested column alias and the inner select.
         Ok(ColumnOrSelect::Select {
             column: selected_column_alias,
-            select,
+            select: Box::new(select),
         })
     }
 }

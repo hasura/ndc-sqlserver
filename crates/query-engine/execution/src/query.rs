@@ -29,14 +29,17 @@ pub async fn mssql_execute_query_plan(
     let acquisition_timer = metrics.time_connection_acquisition_wait();
     let connection_result = mssql_pool
         .get()
-        .instrument(info_span!("Acquire connection"))
+        .instrument(info_span!(
+            "Acquire connection",
+            internal.visibility = "user"
+        ))
         .await
         .map_err(Error::ConnectionPool);
     let mut connection = acquisition_timer.complete_with(connection_result)?;
 
     let query_timer = metrics.time_query_execution();
     let bytes_result = execute_queries(&mut connection, plan)
-        .instrument(info_span!("Database request"))
+        .instrument(info_span!("Database request", internal.visibility = "user"))
         .await;
     query_timer.complete_with(bytes_result)
 }
@@ -114,7 +117,7 @@ pub async fn execute_query(
                             "object variable not currently supported".to_string(),
                         )),
                     },
-                    None => Err(Error::Query(format!("Variable not found '{}'", var))),
+                    None => Err(Error::Query(format!("Variable not found '{var}'"))),
                 }
             }
         }?
@@ -218,7 +221,7 @@ fn get_query_text(
                                     "object variable not currently supported".to_string(),
                                 )),
                             },
-                            None => Err(Error::Query(format!("Variable not found '{}'", var))),
+                            None => Err(Error::Query(format!("Variable not found '{var}'"))),
                         }
                     }
                 }?;
