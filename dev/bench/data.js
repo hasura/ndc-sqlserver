@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1754384302047,
+  "lastUpdate": 1754384426764,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -8555,6 +8555,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.05922607002598661,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": false,
+          "id": "9c17801f569b8b4e7742cf664540168772089226",
+          "message": "Bump anyhow from 1.0.82 to 1.0.98 (#197)\n\nBumps [anyhow](https://github.com/dtolnay/anyhow) from 1.0.82 to 1.0.98.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/dtolnay/anyhow/releases\">anyhow's\nreleases</a>.</em></p>\n<blockquote>\n<h2>1.0.98</h2>\n<ul>\n<li>Add <a\nhref=\"https://docs.rs/anyhow/1/anyhow/struct.Error.html#method.into_boxed_dyn_error\"><code>self.into_boxed_dyn_error()</code></a>\nand <a\nhref=\"https://docs.rs/anyhow/1/anyhow/struct.Error.html#method.reallocate_into_boxed_dyn_error_without_backtrace\"><code>self.reallocate_into_boxed_dyn_error_without_backtrace()</code></a>\nmethods for anyhow::Error (<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/415\">#415</a>)</li>\n</ul>\n<h2>1.0.97</h2>\n<ul>\n<li>Documentation improvements</li>\n</ul>\n<h2>1.0.96</h2>\n<ul>\n<li>Documentation improvements</li>\n</ul>\n<h2>1.0.95</h2>\n<ul>\n<li>Add <a\nhref=\"https://docs.rs/anyhow/1/anyhow/struct.Error.html#method.from_boxed\"><code>Error::from_boxed</code></a>\n(<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/401\">#401</a>,\n<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/402\">#402</a>)</li>\n</ul>\n<h2>1.0.94</h2>\n<ul>\n<li>Documentation improvements</li>\n</ul>\n<h2>1.0.93</h2>\n<ul>\n<li>Update dev-dependencies to <code>thiserror</code> v2</li>\n</ul>\n<h2>1.0.92</h2>\n<ul>\n<li>Support Rust 1.82's <code>&amp;raw const</code> and <code>&amp;raw\nmut</code> syntax inside <code>ensure!</code> (<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/390\">#390</a>)</li>\n</ul>\n<h2>1.0.91</h2>\n<ul>\n<li>Ensure OUT_DIR is left with deterministic contents after build\nscript execution (<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/388\">#388</a>)</li>\n</ul>\n<h2>1.0.90</h2>\n<ul>\n<li>Documentation improvements</li>\n</ul>\n<h2>1.0.89</h2>\n<ul>\n<li>Make anyhow::Error's <code>UnwindSafe</code> and\n<code>RefUnwindSafe</code> impl consistently available between versions\nof Rust newer and older than 1.72 (<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/386\">#386</a>)</li>\n</ul>\n<h2>1.0.88</h2>\n<ul>\n<li>Documentation improvements</li>\n</ul>\n<h2>1.0.87</h2>\n<ul>\n<li>Support more APIs, including <code>Error::new</code> and\n<code>Error::chain</code>, in no-std mode on Rust 1.81+ (<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/383\">#383</a>)</li>\n</ul>\n<h2>1.0.86</h2>\n<ul>\n<li>Fix parse error in <code>ensure!</code> with non-literal after minus\nsign (<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/373\">#373</a>)</li>\n</ul>\n<h2>1.0.85</h2>\n<ul>\n<li>Improve <code>ensure!</code> macro's rules to unblock some rustc\npretty-printer improvements (<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/368\">#368</a>,\n<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/371\">#371</a>)</li>\n</ul>\n<h2>1.0.84</h2>\n<ul>\n<li>Disallow calling <code>ensure!</code> through a <code>Not</code>\nimpl for a type that is not <code>bool</code> (<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/367\">#367</a>)</li>\n</ul>\n<h2>1.0.83</h2>\n<ul>\n<li>Integrate compile-time checking of cfgs (<a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/363\">#363</a>)</li>\n</ul>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/dtolnay/anyhow/commit/709fe86f04878a62a29b9279f5bb96422f8bca28\"><code>709fe86</code></a>\nRelease 1.0.98</li>\n<li><a\nhref=\"https://github.com/dtolnay/anyhow/commit/cbc1ad2b1621c538a5643f2f0c3800b98f3e40a0\"><code>cbc1ad2</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/415\">#415</a>\nfrom dtolnay/intodyn</li>\n<li><a\nhref=\"https://github.com/dtolnay/anyhow/commit/e1a2017668cb365aac7573917d0c861298611ab5\"><code>e1a2017</code></a>\nAdd 2 different conversions to Box&lt;dyn Error + Send + Sync +\n'static&gt;</li>\n<li><a\nhref=\"https://github.com/dtolnay/anyhow/commit/29f2eddd1541201701a5a04caaed9c647f8fbddf\"><code>29f2edd</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/416\">#416</a>\nfrom dtolnay/oldnostd</li>\n<li><a\nhref=\"https://github.com/dtolnay/anyhow/commit/2244db872ff66000fafec5ffc5ada3be263b6b58\"><code>2244db8</code></a>\nOmit unused object_boxed from vtable in old no-std rustc</li>\n<li><a\nhref=\"https://github.com/dtolnay/anyhow/commit/213a9c2e6cfba42cf6d9adba3ff75bda4d30d907\"><code>213a9c2</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/dtolnay/anyhow/issues/414\">#414</a>\nfrom dtolnay/nightly</li>\n<li><a\nhref=\"https://github.com/dtolnay/anyhow/commit/02aa6b6faa5ca221debf7aad2279d54b37de5286\"><code>02aa6b6</code></a>\nMake all nightly go through the module that was probed</li>\n<li><a\nhref=\"https://github.com/dtolnay/anyhow/commit/bfb89ef244fa60af17fb844dc3bddf4b62e4ac9f\"><code>bfb89ef</code></a>\nRelease 1.0.97</li>\n<li><a\nhref=\"https://github.com/dtolnay/anyhow/commit/c7fca9b08627fe0c4034a3fd38595ffd7dcc8e0e\"><code>c7fca9b</code></a>\nIgnore elidable_lifetime_names pedantic clippy lint</li>\n<li><a\nhref=\"https://github.com/dtolnay/anyhow/commit/427c0bb0f34d5da378112f6a19db9efebfd0e40a\"><code>427c0bb</code></a>\nPoint standard library links to stable</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/dtolnay/anyhow/compare/1.0.82...1.0.98\">compare\nview</a></li>\n</ul>\n</details>\n<br />\n\n\n[![Dependabot compatibility\nscore](https://dependabot-badges.githubapp.com/badges/compatibility_score?dependency-name=anyhow&package-manager=cargo&previous-version=1.0.82&new-version=1.0.98)](https://docs.github.com/en/github/managing-security-vulnerabilities/about-dependabot-security-updates#about-compatibility-scores)\n\nDependabot will resolve any conflicts with this PR as long as you don't\nalter it yourself. You can also trigger a rebase manually by commenting\n`@dependabot rebase`.\n\n[//]: # (dependabot-automerge-start)\n[//]: # (dependabot-automerge-end)\n\n---\n\n<details>\n<summary>Dependabot commands and options</summary>\n<br />\n\nYou can trigger Dependabot actions by commenting on this PR:\n- `@dependabot rebase` will rebase this PR\n- `@dependabot recreate` will recreate this PR, overwriting any edits\nthat have been made to it\n- `@dependabot merge` will merge this PR after your CI passes on it\n- `@dependabot squash and merge` will squash and merge this PR after\nyour CI passes on it\n- `@dependabot cancel merge` will cancel a previously requested merge\nand block automerging\n- `@dependabot reopen` will reopen this PR if it is closed\n- `@dependabot close` will close this PR and stop Dependabot recreating\nit. You can achieve the same result by closing it manually\n- `@dependabot show <dependency name> ignore conditions` will show all\nof the ignore conditions of the specified dependency\n- `@dependabot ignore this major version` will close this PR and stop\nDependabot creating any more for this major version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this minor version` will close this PR and stop\nDependabot creating any more for this minor version (unless you reopen\nthe PR or upgrade to it yourself)\n- `@dependabot ignore this dependency` will close this PR and stop\nDependabot creating any more for this dependency (unless you reopen the\nPR or upgrade to it yourself)\n\n\n</details>\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>",
+          "timestamp": "2025-08-05T08:49:47Z",
+          "tree_id": "1e0852d4ba881e109b61d5b4175a383c145319ca",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/9c17801f569b8b4e7742cf664540168772089226"
+        },
+        "date": 1754384426258,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 52.758849,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 64.67804570000001,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 53.04389728024219,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.4614777849620495,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.05869962170559993,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 373.803873,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 401.99953425,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 364.8143156771823,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 0.848316637931191,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.0631904666180521,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 127.00434,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 143.323662,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 125.91576283498293,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.554739525125683,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.060075408815917615,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 126.2388025,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 143.21540425,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 124.833558954939,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.5610722091388141,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.06035840262158032,
             "unit": "ms"
           }
         ]
