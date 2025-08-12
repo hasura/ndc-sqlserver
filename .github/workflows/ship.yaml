@@ -261,7 +261,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download all binaries
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: cli-binary-*
           path: cli
@@ -273,7 +273,7 @@ jobs:
           tar -tvf cli.tar.gz
 
       - name: Download manifest entries
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: entries
 
@@ -307,7 +307,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-artifacts
           path: release/artifacts
