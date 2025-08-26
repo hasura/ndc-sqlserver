@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1754384426764,
+  "lastUpdate": 1756201195393,
   "repoUrl": "https://github.com/hasura/ndc-sqlserver",
   "entries": {
     "Component benchmarks": [
@@ -8679,6 +8679,130 @@ window.BENCHMARK_DATA = {
           {
             "name": "select - processing time",
             "value": 0.06035840262158032,
+            "unit": "ms"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "danieljamesharvey@gmail.com",
+            "name": "Daniel Harvey",
+            "username": "danieljharvey"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c2ccf40aba9020ca4553c06b87f412b4b4e7ef34",
+          "message": "Auto update rust toolchain (#205)\n\nAs per:\nhttps://github.blog/changelog/2025-08-19-dependabot-now-supports-rust-toolchain-updates/",
+          "timestamp": "2025-08-26T10:37:06+01:00",
+          "tree_id": "5f17c3fecea33395d0e2c7b95ec78c332163edda",
+          "url": "https://github.com/hasura/ndc-sqlserver/commit/c2ccf40aba9020ca4553c06b87f412b4b4e7ef34"
+        },
+        "date": 1756201194678,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "select-by-pk - median",
+            "value": 52.920952,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - p(95)",
+            "value": 66.179112,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - connection acquisition time",
+            "value": 53.3622125261796,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - request time - (query + acquisition)",
+            "value": 0.47287920718648024,
+            "unit": "ms"
+          },
+          {
+            "name": "select-by-pk - processing time",
+            "value": 0.0600906510086259,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - median",
+            "value": 374.5877785,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - p(95)",
+            "value": 400.02184934999997,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - connection acquisition time",
+            "value": 363.5357885569339,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - request time - (query + acquisition)",
+            "value": 0.8216053025549286,
+            "unit": "ms"
+          },
+          {
+            "name": "select-variables - processing time",
+            "value": 0.06344522883270329,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - median",
+            "value": 125.030921,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - p(95)",
+            "value": 142.8749767,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - connection acquisition time",
+            "value": 124.15245310679475,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - request time - (query + acquisition)",
+            "value": 0.488038159306285,
+            "unit": "ms"
+          },
+          {
+            "name": "select-where - processing time",
+            "value": 0.05861947020133291,
+            "unit": "ms"
+          },
+          {
+            "name": "select - median",
+            "value": 126.185076,
+            "unit": "ms"
+          },
+          {
+            "name": "select - p(95)",
+            "value": 141.81303250000002,
+            "unit": "ms"
+          },
+          {
+            "name": "select - connection acquisition time",
+            "value": 124.58838080752106,
+            "unit": "ms"
+          },
+          {
+            "name": "select - request time - (query + acquisition)",
+            "value": 0.5158032276718956,
+            "unit": "ms"
+          },
+          {
+            "name": "select - processing time",
+            "value": 0.060245810189671324,
             "unit": "ms"
           }
         ]
