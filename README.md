@@ -50,59 +50,35 @@ Below, you'll find a matrix of all supported features for the SQL Server connect
 
 1. Create a [Hasura Cloud account](https://console.hasura.io)
 2. Please ensure you have the [DDN CLI](https://hasura.io/docs/3.0/cli/installation) and [Docker](https://docs.docker.com/engine/install/) installed
-3. [Create a supergraph](https://hasura.io/docs/3.0/getting-started/init-supergraph)
-4. [Create a subgraph](https://hasura.io/docs/3.0/getting-started/init-subgraph)
+3. [Create a supergraph](https://hasura.io/docs/3.0/cli/commands/ddn_supergraph_init)
 
 The steps below explain how to Initialize and configure a connector for local development. You can learn how to deploy a
-connector — after it's been configured — [here](https://hasura.io/docs/3.0/getting-started/deployment/deploy-a-connector).
+connector — after it's been configured — [here](https://hasura.io/docs/3.0/deployment/ddn/deploy-a-connector).
 
 ## Using the SQL Server connector
 
-### Step 1: Authenticate your CLI session
+With the [context set](https://hasura.io/docs/3.0/cli/commands/ddn_context_set/) for an existing subgraph, initialize
+the connector:
 
-```bash
-ddn auth login
+```sh
+ddn connector init -i
 ```
-
-### Step 2: Configure the connector
-
-Once you have an initialized supergraph and subgraph, run the initialization command in interactive mode while
-providing a name for the connector in the prompt:
-
-```bash
-ddn connector init <connector-name> -i
-```
-
-#### Step 2.1: Choose the `hasura/sqlserver` from the list
-
-#### Step 2.2: Choose a port for the connector
-
-The CLI will ask for a specific port to run the connector on. Choose a port that is not already in use or use the
-default suggested port.
-
-#### Step 2.3: Provide the env vars for the connector
-
 > **Note:** The `CONNECTION_URI` is the connection string of the SQL Server database. You can find the documentation for ADO.NET SQL Server connection string formats [here](https://learn.microsoft.com/en-us/dotnet/framework/data/adonet/connection-string-syntax#sqlclient-connection-strings).
 
+When the wizard runs, you'll be prompted to enter the following env vars necessary for your connector to function:
+
 | Name           | Description                                      | Required | Default |
-|----------------|--------------------------------------------------|----------|---------|
+| -------------- | ------------------------------------------------ | -------- | ------- |
 | CONNECTION_URI | The connection string of the SQL Server database | Yes      | N/A     |
 
-## Step 3: Introspect the connector
+After the CLI initializes the connector, you'll need to:
 
-```bash
-ddn connector introspect <connector-name>
-```
-
-This will generate a `configuration.json` file that will have the schema of your SQL Server database.
-
-## Step 4: Add your resources
-
-```bash
-ddn connector-link add-resources <connector-name>
-```
-
-This command will track all the containers in your SQL Server DB as [Models](https://hasura.io/docs/3.0/supergraph-modeling/models).
+- [Introspect](https://hasura.io/docs/3.0/cli/commands/ddn_connector_introspect) the source.
+- Add your [models](https://hasura.io/docs/3.0/cli/commands/ddn_model_add),
+  [commands](https://hasura.io/docs/3.0/cli/commands/ddn_command_add), and
+  [relationships](https://hasura.io/docs/3.0/cli/commands/ddn_relationship_add).
+- Create a [new build](https://hasura.io/docs/3.0/cli/commands/ddn_supergraph_build_local).
+- Test it by [running your project along with the connector](https://hasura.io/docs/3.0/cli/commands/ddn_run#examples).
 
 ## Documentation
 
